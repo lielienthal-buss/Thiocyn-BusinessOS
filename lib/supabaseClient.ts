@@ -12,6 +12,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+console.log("URL:", import.meta.env.VITE_SUPABASE_URL);
+console.log("KEY exists:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
     "Supabase configuration missing. Admin Login and Database features will not function correctly. " +
