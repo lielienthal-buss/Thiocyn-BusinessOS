@@ -1,18 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join the Team | Take A Shot Hiring Portal</title>
-    
-    <!-- LinkedIn / Open Graph Meta Tags -->
-    <meta property="og:title" content="Join the Unstoppable | Take A Shot GmbH" />
-    <meta property="og:description" content="We are looking for doers. Apply now via our AI-powered applicant portal and take your shot." />
-    <meta property="og:image" content="https://takeashot.de/og-image-recruiting.jpg" />
-    <meta property="og:url" content="https://jobs.takeashot.de" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-
+    <title>Applicant Portal | Take A Shot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       @keyframes blob-drift {
@@ -27,39 +19,19 @@
       .animation-delay-4000 { animation-delay: 4s; }
       
       .glass-card {
-        background: rgba(255, 255, 255, 0.4);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 
-          0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-          0 10px 15px -3px rgba(0, 0, 0, 0.05),
-          inset 0 0 0 1px rgba(255, 255, 255, 0.2);
       }
       .dark .glass-card {
-        background: rgba(15, 23, 42, 0.3);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 
-          0 20px 25px -5px rgba(0, 0, 0, 0.2),
-          inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
       body {
         overflow-x: hidden;
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: rgba(0,0,0,0.1);
-        border-radius: 10px;
-      }
-      .dark ::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.1);
       }
     </style>
     <script>
@@ -86,7 +58,7 @@
         }
       }
     </script>
-    <script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
@@ -98,7 +70,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="bg-slate-200 dark:bg-black text-slate-900 dark:text-slate-100 transition-colors duration-700 min-h-screen">
+  <body class="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
@@ -76,7 +77,7 @@ const App: React.FC = () => {
       case 'dashboard':
         return (
           <div className="animate-[fadeIn_0.5s_ease-out]">
-            <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-300 dark:border-slate-800 pb-10 mb-10 relative z-10 gap-6">
+            <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-100 dark:border-slate-800 pb-10 mb-10 relative z-10 gap-6">
               <div>
                 <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">Take A Shot Hub</h1>
                 <p className="text-gray-500 text-sm mt-1">
@@ -111,23 +112,23 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen relative py-12 px-4 transition-colors duration-500 selection:bg-primary-100">
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-[150px] animate-blob"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/20 dark:bg-indigo-600/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
-        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-teal-300/20 dark:bg-teal-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-400/10 dark:bg-primary-600/5 rounded-full blur-[150px] animate-blob"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/10 dark:bg-indigo-600/5 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
+        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-teal-300/10 dark:bg-teal-600/5 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <nav className="flex justify-center mb-16">
-          <div className="glass-card p-1.5 rounded-full shadow-2xl flex space-x-1 border-white/50 dark:border-slate-800">
+          <div className="glass-card p-1.5 rounded-full shadow-2xl flex space-x-1 border-white/40 dark:border-slate-800">
             <button 
               onClick={() => setView('public')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'public' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
+              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'public' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
             >
               Portal
             </button>
             <button 
               onClick={() => setView('admin')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'admin' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
+              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'admin' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-400 hover:text-gray-600 dark:hover:text-white'}`}
             >
               Pipeline
             </button>
@@ -140,7 +141,7 @@ const App: React.FC = () => {
             <main className="space-y-20">
               <ApplicationForm />
               <div className="space-y-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Ask our AI Guide</h2>
+                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-400 mb-8">Got Questions? Ask our AI Guide</h2>
                 <ChatBot />
               </div>
             </main>
