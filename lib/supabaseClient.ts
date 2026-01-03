@@ -1,29 +1,35 @@
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 /**
  * Supabase Client Configuration
- * 
- * IMPORTANT: For the 'Admin Login' to work, you MUST provide 
- * NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY 
- * in your environment variables.
+ * Optimized for Vercel deployment using NEXT_PUBLIC_ prefix for client-side access.
+ * Fallback to standard process.env for server-side / build-time environments.
  */
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const getEnv = (key: string) => {
+  try {
+    // Check for Vercel/Next.js style public variables first
+    const publicValue = (globalThis as any).process?.env?.[`NEXT_PUBLIC_${key}`];
+    if (publicValue) return publicValue;
 
-console.log("URL:", import.meta.env.VITE_SUPABASE_URL);
-console.log("KEY exists:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+    // Check for standard variables
+    return (globalThis as any).process?.env?.[key] || null;
+  } catch (e) {
+    return null;
+  }
+};
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    "Supabase configuration missing. Admin Login and Database features will not function correctly. " +
-    "Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
-  );
-}
+const supabaseUrl = getEnv('SUPABASE_URL') || 'https://placeholder-project.supabase.co';
+const supabaseAnonKey = getEnv('SUPABASE_ANON_KEY') || 'placeholder-anon-key';
 
-// Fallback to placeholder to prevent immediate crash, though auth will fail
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder-project.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+/**
+ * Helper to check if the app is connected to a real Supabase instance.
+ * Useful for toggling between "Demo Mode" and "Live Mode" in the UI.
+ */
+export const isSupabaseConfigured = () => {
+  const url = getEnv('SUPABASE_URL');
+  const key = getEnv('SUPABASE_ANON_KEY');
+  return !!url && !url.includes('placeholder') && !!key && !key.includes('placeholder');
+};
