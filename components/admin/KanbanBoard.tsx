@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { getApplications, updateApplicationStatus, seedMockData, addApplicationNote } from '../../lib/actions';
 import type { Application, ApplicationStatus, ApplicationNote } from '../../types';
@@ -6,7 +5,6 @@ import SpinnerIcon from '../icons/SpinnerIcon';
 
 const STATUS_COLUMNS: ApplicationStatus[] = ['applied', 'completed', 'reviewed', 'interview', 'hired', 'rejected'];
 
-<<<<<<< HEAD
 const BIG_FIVE_MAP: Record<string, { label: string, desc: string, color: string }> = {
   q1: { 
     label: "Extraversion", 
@@ -35,8 +33,6 @@ const BIG_FIVE_MAP: Record<string, { label: string, desc: string, color: string 
   },
 };
 
-=======
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
 const KanbanBoard: React.FC = () => {
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,11 +209,7 @@ const KanbanBoard: React.FC = () => {
       {/* Application Detail Modal */}
       {selectedApp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-md animate-in fade-in duration-300">
-<<<<<<< HEAD
           <div className="glass-card w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.3)] border-white/20">
-=======
-          <div className="glass-card w-full max-w-4xl max-h-[90vh] rounded-[3rem] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.3)] border-white/20">
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
             {/* Modal Header */}
             <div className="p-8 border-b border-white/10 flex justify-between items-start bg-white/5">
               <div>
@@ -263,7 +255,6 @@ const KanbanBoard: React.FC = () => {
                   )}
                 </div>
 
-<<<<<<< HEAD
                 {/* Status Switcher Card */}
                 <div className="glass-card p-6 rounded-[2rem] bg-gray-50/50 dark:bg-slate-900/50 border border-white/20">
                   <h3 className="font-black text-xs uppercase tracking-[0.2em] text-gray-400 mb-4">Pipeline Status</h3>
@@ -312,23 +303,6 @@ const KanbanBoard: React.FC = () => {
                          </div>
                        );
                      })}
-=======
-                {/* Personality Card */}
-                <div className="glass-card p-6 rounded-[2rem] bg-teal-500/5">
-                   <h3 className="font-black text-xs uppercase tracking-[0.2em] text-teal-600 mb-4">Personality Traits</h3>
-                   <div className="space-y-3">
-                     {selectedApp.personalityData && Object.entries(selectedApp.personalityData).map(([trait, value]) => (
-                       <div key={trait}>
-                         <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 mb-1">
-                           <span>{trait.replace('q', 'Trait ')}</span>
-                           <span>{value}/5</span>
-                         </div>
-                         <div className="w-full h-1 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                           <div className="h-full bg-teal-500" style={{ width: `${(value / 5) * 100}%` }}></div>
-                         </div>
-                       </div>
-                     ))}
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
                    </div>
                 </div>
 
@@ -339,11 +313,7 @@ const KanbanBoard: React.FC = () => {
                     Internal Recruitment Notes
                   </h3>
                   
-<<<<<<< HEAD
                   <div className="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 scrollbar-hide">
-=======
-                  <div className="space-y-4 mb-8">
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
                     {selectedApp.notes && selectedApp.notes.length > 0 ? (
                       selectedApp.notes.map((note) => (
                         <div key={note.id} className="p-4 rounded-2xl bg-white/20 dark:bg-slate-800/20 border border-white/10 group/note relative">
@@ -355,11 +325,7 @@ const KanbanBoard: React.FC = () => {
                         </div>
                       ))
                     ) : (
-<<<<<<< HEAD
                       <p className="text-sm text-gray-400 font-medium italic text-center py-6">No internal notes yet.</p>
-=======
-                      <p className="text-sm text-gray-400 font-medium italic text-center py-6">No internal notes yet. Add the first one below.</p>
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
                     )}
                   </div>
 
@@ -367,13 +333,8 @@ const KanbanBoard: React.FC = () => {
                     <textarea 
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-<<<<<<< HEAD
                       placeholder="Add a recruiter observation..."
                       className="w-full p-4 bg-white/30 dark:bg-slate-900/30 rounded-2xl border border-white/20 focus:ring-2 focus:ring-primary-500 outline-none text-sm font-medium min-h-[80px] backdrop-blur-sm"
-=======
-                      placeholder="Type a recruiter note..."
-                      className="w-full p-4 bg-white/30 dark:bg-slate-900/30 rounded-2xl border border-white/20 focus:ring-2 focus:ring-primary-500 outline-none text-sm font-medium min-h-[100px] backdrop-blur-sm"
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
                     />
                     <div className="flex justify-end">
                       <button 
@@ -381,11 +342,7 @@ const KanbanBoard: React.FC = () => {
                         className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/20 active:scale-[0.98] disabled:opacity-50 flex items-center gap-2"
                       >
                         {noteLoading && <SpinnerIcon className="w-3 h-3 animate-spin" />}
-<<<<<<< HEAD
                         Save Note
-=======
-                        Add Note
->>>>>>> 835c80c1846c9611d4fa9717dac6289ca0afdf7f
                       </button>
                     </div>
                   </form>
