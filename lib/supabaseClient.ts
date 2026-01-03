@@ -10,12 +10,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const getEnv = (key: string) => {
   // Vite client-side
-  try {
-    if (typeof import !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env) {
-      const vite = import.meta.env[`VITE_${key}`];
-      if (vite) return vite;
-    }
-  } catch (e) { /* ignore in non-module console */ }
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    const vite = import.meta.env[`VITE_${key}`];
+    if (vite) return vite;
+  }
 
   // Next.js client/server or Node server
   try {
