@@ -2,8 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DIAGNOSTIC: If you see a bright red background, CSS is loading! */
-body {
-  background-color: #FF0000 !important;
-}
-

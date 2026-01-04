@@ -108,7 +108,7 @@ const ApplicationForm: React.FC = () => {
   if (submitted) return <ThankYouView />;
 
   return (
-    <div className="glass-card p-10 rounded-[3rem] shadow-xl border-white/40 group hover:shadow-primary-500/5 transition-all duration-500">
+    <div className="glass-card p-8 md:p-14 rounded-[4rem] shadow-2xl relative overflow-hidden transition-all duration-500 border-white/50">
       <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter leading-[0.9] mb-4">
         Apply Now <br/><span className="text-primary-600 underline decoration-indigo-500/30">and take a shot!</span>
       </h2>
