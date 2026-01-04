@@ -1,55 +1,82 @@
-
 import React, { useState, useEffect } from 'react';
-import KanbanBoard from './KanbanBoard';
-import InsightsView from './InsightsView';
-import EmailTemplateManager from './EmailTemplateManager';
 import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
-import { getApplications } from '../../lib/actions';
-import type { Application } from '../../types';
+import ApplicantDetailView from './ApplicantDetailView';
+import { getApplications, getSettings } from '../../lib/actions';
+import type { Application, RecruiterSettings } from '../../types';
+import SpinnerIcon from '../icons/SpinnerIcon';
+
+type Tab = 'applications' | 'settings';
 
 const Dashboard: React.FC = () => {
-  const [tab, setTab] = useState<'pipeline' | 'list' | 'insights' | 'emails' | 'settings'>('pipeline');
+  const [tab, setTab] = useState<Tab>('applications');
   const [apps, setApps] = useState<Application[]>([]);
+  const [settings, setSettings] = useState<RecruiterSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
 
   const loadData = async () => {
-    const data = await getApplications();
-    setApps(data);
+    setLoading(true);
+    const [applications, recruiterSettings] = await Promise.all([
+      getApplications(),
+      getSettings()
+    ]);
+    setApps(applications);
+    setSettings(recruiterSettings);
     setLoading(false);
   };
 
   useEffect(() => {
     loadData();
-  }, [tab]); // Refresh data when tab changes to stay in sync
+  }, []);
+
+  const selectedApp = apps.find(app => app.id === selectedAppId);
+
+  const renderContent = () => {
+    if (loading) {
+      return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
+    }
+
+    if (tab === 'settings') {
+      return <SettingsView />;
+    }
+
+    if (tab === 'applications') {
+      if (selectedApp) {
+        return (
+          <ApplicantDetailView
+            application={selectedApp}
+            settings={settings}
+            onBack={() => setSelectedAppId(null)}
+            onNoteAdded={loadData}
+          />
+        );
+      }
+      return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
+    }
+    
+    return null;
+  };
 
   return (
     <div className="space-y-10">
-      <nav className="flex items-center gap-10 border-b border-gray-100 dark:border-slate-800 pb-2 overflow-x-auto scrollbar-hide">
+      <nav className="flex items-center gap-10 border-b border-gray-100 dark:border-slate-800 pb-2">
         {[
-          { id: 'pipeline', label: 'Kanban Pipeline' },
-          { id: 'list', label: 'Candidate Management' },
-          { id: 'insights', label: 'KPI Dashboard' },
-          { id: 'emails', label: 'Email Templates' },
-          { id: 'settings', label: 'Configuration' },
+          { id: 'applications', label: 'Applications' },
+          { id: 'settings', label: 'Settings' },
         ].map(t => (
           <button 
             key={t.id}
-            onClick={() => setTab(t.id as any)}
-            className={`text-[11px] font-black uppercase tracking-[0.3em] pb-4 transition-all relative whitespace-nowrap ${tab === t.id ? 'text-primary-600' : 'text-gray-400 hover:text-gray-600'}`}
+            onClick={() => setTab(t.id as Tab)}
+            className={`text-sm font-bold uppercase pb-4 transition-colors ${tab === t.id ? 'text-primary-600 border-b-2 border-primary-600' : 'text-gray-500'}`}
           >
             {t.label}
-            {tab === t.id && <div className="absolute bottom-[-1px] left-0 right-0 h-1 bg-primary-600 rounded-full animate-[fadeIn_0.3s_ease-out]" />}
           </button>
         ))}
       </nav>
 
       <main>
-        {tab === 'pipeline' && <KanbanBoard />}
-        {tab === 'list' && <ApplicationListView />}
-        {tab === 'insights' && <InsightsView applications={apps} />}
-        {tab === 'emails' && <EmailTemplateManager />}
-        {tab === 'settings' && <SettingsView />}
+        {renderContent()}
       </main>
     </div>
   );

@@ -1,70 +1,72 @@
--- CreateEnum
-CREATE TYPE "ApplicationStatus" AS ENUM ('applied', 'completed', 'reviewed', 'interview', 'hired', 'rejected');
 
--- CreateEnum
-CREATE TYPE "RecruiterRole" AS ENUM ('admin', 'recruiter', 'viewer');
+-- Drop existing tables and types to start fresh
+DROP TABLE IF EXISTS "public"."application_notes" CASCADE;
+DROP TABLE IF EXISTS "public"."applications" CASCADE;
+DROP TABLE IF EXISTS "public"."recruiter_settings" CASCADE;
+DROP TYPE IF EXISTS "public"."ApplicationStatus";
 
--- CreateTable
-CREATE TABLE "Applicants" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "fullName" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "linkedinUrl" TEXT,
-    "resumeUrl" TEXT,
-    "aiScore" DOUBLE PRECISION,
-    "aiAnalysis" TEXT,
-    "personalityData" JSONB,
-    "status" "ApplicationStatus" NOT NULL DEFAULT 'applied',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+-- Recreate types
+CREATE TYPE "public"."ApplicationStatus" AS ENUM ('new', 'review', 'task_sent', 'task_submitted', 'interview', 'accepted', 'rejected');
 
-    CONSTRAINT "Applicants_pkey" PRIMARY KEY ("id")
+-- Create tables
+CREATE TABLE "public"."applications" (
+    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+    "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+    "full_name" text,
+    "email" text,
+    "timezone" text,
+    "availability_hours_per_week" integer,
+    "availability_start_date" date,
+    "availability_end_date" date,
+    "project_interest" text[],
+    "disc_d" integer,
+    "disc_i" integer,
+    "disc_s" integer,
+    "disc_c" integer,
+    "disc_primary" text,
+    "disc_secondary" text,
+    "motivation_text" text,
+    "project_example_text" text,
+    "requirements_handling_text" text,
+    "remote_work_text" text,
+    "status" "public"."ApplicationStatus" NOT NULL DEFAULT 'new',
+    "task_sent_at" timestamp with time zone,
+    "task_submitted_at" timestamp with time zone,
+    "interview_at" timestamp with time zone,
+    "decided_at" timestamp with time zone,
+    CONSTRAINT "applications_pkey" PRIMARY KEY (id)
 );
 
--- CreateTable
-CREATE TABLE "Recruiters" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "fullName" TEXT,
-    "role" "RecruiterRole" NOT NULL DEFAULT 'recruiter',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "Recruiters_pkey" PRIMARY KEY ("id")
+CREATE TABLE "public"."recruiter_settings" (
+    "id" bigint NOT NULL DEFAULT 1,
+    "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+    "calendly_url" text,
+    "company_name" text,
+    "ai_instruction" text,
+    CONSTRAINT "recruiter_settings_pkey" PRIMARY KEY (id)
 );
 
--- CreateTable
-CREATE TABLE "ApplicationNotes" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "applicationId" UUID NOT NULL,
-    "recruiterId" UUID NOT NULL,
-    "note" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- Insert default settings
+INSERT INTO "public"."recruiter_settings" (id, company_name) VALUES (1, 'Take A Shot GmbH') ON CONFLICT (id) DO NOTHING;
 
-    CONSTRAINT "ApplicationNotes_pkey" PRIMARY KEY ("id")
+CREATE TABLE "public"."application_notes" (
+    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+    "application_id" uuid NOT NULL,
+    "created_at" timestamp with time zone NOT NULL DEFAULT now(),
+    "author_email" text,
+    "note_text" text,
+    CONSTRAINT "application_notes_pkey" PRIMARY KEY (id),
+    CONSTRAINT "application_notes_application_id_fkey" FOREIGN KEY (application_id) REFERENCES "public"."applications" (id) ON DELETE CASCADE
 );
 
--- CreateTable
-CREATE TABLE "EmailTemplates" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
-    "name" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "body" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+-- Enable RLS
+ALTER TABLE "public"."applications" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public" ."recruiter_settings" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."application_notes" ENABLE ROW LEVEL SECURITY;
 
-    CONSTRAINT "EmailTemplates_pkey" PRIMARY KEY ("id")
-);
-
--- CreateIndex
-CREATE UNIQUE INDEX "Applicants_email_key" ON "Applicants"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Recruiters_email_key" ON "Recruiters"("email");
-
--- AddForeignKey
-ALTER TABLE "ApplicationNotes" ADD CONSTRAINT "ApplicationNotes_applicationId_fkey" FOREIGN KEY ("applicationId") REFERENCES "Applicants"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ApplicationNotes" ADD CONSTRAINT "ApplicationNotes_recruiterId_fkey" FOREIGN KEY ("recruiterId") REFERENCES "Recruiters"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- Create RLS policies
+CREATE POLICY "Allow public read access" ON "public"."recruiter_settings" FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated users to insert applications" ON "public"."applications" FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Allow authenticated users to read all data" ON "public"."applications" FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated users to update applications" ON "public"."applications" FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated users to manage notes" ON "public"."application_notes" FOR ALL TO authenticated USING (true);

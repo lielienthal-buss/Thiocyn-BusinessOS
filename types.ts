@@ -1,26 +1,30 @@
-
-export type ApplicationStatus = 'applied' | 'completed' | 'reviewed' | 'interview' | 'hired' | 'rejected';
-
-export interface BigFiveResults {
-  o: number; // Openness
-  c: number; // Conscientiousness
-  e: number; // Extraversion
-  a: number; // Agreeableness
-  n: number; // Neuroticism
-}
+export type ApplicationStatus = 'new' | 'review' | 'task_sent' | 'task_submitted' | 'interview' | 'accepted' | 'rejected';
 
 export interface Application {
   id: string;
-  createdAt: string;
+  created_at: string;
+  full_name: string;
   email: string;
-  fullName: string;
-  linkedinUrl: string;
+  timezone?: string;
+  availability_hours_per_week?: number;
+  availability_start_date?: string;
+  availability_end_date?: string;
+  project_interest?: string[];
+  disc_d?: number;
+  disc_i?: number;
+  disc_s?: number;
+  disc_c?: number;
+  disc_primary?: string;
+  disc_secondary?: string;
+  motivation_text?: string;
+  project_example_text?: string;
+  requirements_handling_text?: string;
+  remote_work_text?: string;
   status: ApplicationStatus;
-  cvPath: string;
-  taskPath: string;
-  aiScore?: number;
-  aiAnalysis?: string;
-  personalityData?: Record<string, number>;
+  task_sent_at?: string;
+  task_submitted_at?: string;
+  interview_at?: string;
+  decided_at?: string;
   notes?: ApplicationNote[];
 }
 
@@ -32,36 +36,25 @@ export interface ApplicationNote {
   created_at: string;
 }
 
-export interface EmailTemplate {
-  id: string;
-  slug: string;
-  subject: string;
-  body: string;
-  description: string;
-}
-
-export interface ApplicationFormData {
-  fullName: string;
-  email: string;
-  linkedinUrl: string;
-  cv: File | null;
-  miniTask: File | null;
-  personalityData: Record<string, number>;
-  consent: boolean;
-}
-
-export interface ApplicationData {
-  fullName: string;
-  email: string;
-  linkedinUrl: string;
-  coverLetter: string;
-  resume: File | null;
-}
-
-export type RecruiterSettings = {
+export interface RecruiterSettings {
   id: number;
-  created_at: string; // ISO timestamp
+  created_at: string;
   calendly_url?: string | null;
   company_name?: string | null;
   ai_instruction?: string | null;
-};
+}
+
+export interface ApplicationFormData {
+  full_name: string;
+  email: string;
+  timezone: string;
+  availability_hours_per_week: number;
+  availability_start_date: string;
+  availability_end_date: string;
+  project_interest: string[];
+  disc_answers: Record<string, string>;
+  motivation_text: string;
+  project_example_text: string;
+  requirements_handling_text: string;
+  remote_work_text: string;
+}
