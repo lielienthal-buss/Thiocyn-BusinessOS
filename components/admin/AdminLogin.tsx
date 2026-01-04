@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
 import SpinnerIcon from '../icons/SpinnerIcon';
@@ -62,7 +63,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onGoToSignup, onGoToForgot }) =
             </button>
           </div>
           <p className="text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-            To use live data, please configure <br/> VITE_SUPABASE_URL
+            To use live data, please configure <br/> NEXT_PUBLIC_SUPABASE_URL
           </p>
         </div>
       ) : (

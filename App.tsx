@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
@@ -154,7 +155,7 @@ const App: React.FC = () => {
         )}
 
         {view === 'imprint' && <Imprint onBack={() => setView('public')} />}
-        {view === 'privacy' && <PrivacyPolicy onBack={() => setView('public')} />}
+        {view === 'privacy' && <PrivacyPolicy onBack={() => setView('privacy')} />}
         
         <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} />
       </div>
