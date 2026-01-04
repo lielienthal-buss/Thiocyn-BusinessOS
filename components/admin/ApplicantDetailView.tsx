@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Application, ApplicationNote, RecruiterSettings } from '../../types';
 import { updateApplicationStatus, addApplicationNote } from '../../lib/actions';
@@ -30,9 +29,37 @@ const emailTemplates = {
   }
 };
 
+const discQuestions = [
+  { id: 'disc_q1', text: 'I am assertive, and direct.' },
+  { id: 'disc_q2', text: 'I am optimistic and outgoing.' },
+  { id: 'disc_q3', text: 'I am patient and a good listener.' },
+  { id: 'disc_q4', text: 'I am precise and analytical.' },
+  { id: 'disc_q5', text: 'I like to take on challenges.' },
+  { id: 'disc_q6', text: 'I enjoy persuading and influencing others.' },
+  { id: 'disc_q7', text: 'I prefer a stable and predictable environment.' },
+  { id: 'disc_q8', text: 'I value accuracy and quality.' },
+  { id: 'disc_q9', text: 'I can be demanding at times.' },
+  { id: 'disc_q10', text: 'I enjoy collaborating in a team.' },
+];
+
 const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, onNoteAdded }) => {
   const [newNote, setNewNote] = useState('');
   const [isSubmittingNote, setIsSubmittingNote] = useState(false);
+
+  const getDiscPrimaryAndSecondary = (app: Application) => {
+    const counts = {
+      D: app.disc_count_d || 0,
+      I: app.disc_count_i || 0,
+      S: app.disc_count_s || 0,
+      C: app.disc_count_c || 0,
+    };
+    const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
+    const primary = sorted[0][0];
+    const secondary = sorted.length > 1 ? sorted[1][0] : '';
+    return { primary, secondary };
+  };
+
+  const { primary: discPrimary, secondary: discSecondary } = getDiscPrimaryAndSecondary(application);
 
   const handleStatusChange = async (newStatus: Application['status'], templateKey?: keyof typeof emailTemplates) => {
     let timestamps: Record<string, string> = {};
@@ -98,6 +125,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
               <p><strong>Remote Work:</strong> {application.remote_work_text}</p>
             </div>
           </div>
+          {/* DISC Answers */}
+          <div className="card">
+            <h3 className="font-bold text-lg mb-4">DISC Questionnaire Answers</h3>
+            <div className="space-y-2 text-sm">
+              {discQuestions.map((q, index) => (
+                <p key={q.id}><strong>{index + 1}. {q.text}</strong>: {(application as any)[q.id]}</p>
+              ))}
+            </div>
+          </div>
           {/* Notes */}
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Internal Notes</h3>
@@ -129,8 +165,14 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
           </div>
           <div className="card">
             <h3 className="font-bold text-lg mb-4">DISC Profile</h3>
-            <p className="text-2xl font-bold">{application.disc_primary}</p>
-            <p className="text-sm text-gray-500">Secondary: {application.disc_secondary}</p>
+            <p className="text-2xl font-bold">{discPrimary}</p>
+            <p className="text-sm text-gray-500">Secondary: {discSecondary}</p>
+            <div className="mt-4 text-sm">
+              <p>D: {application.disc_count_d}</p>
+              <p>I: {application.disc_count_i}</p>
+              <p>S: {application.disc_count_s}</p>
+              <p>C: {application.disc_count_c}</p>
+            </div>
           </div>
         </div>
       </div>

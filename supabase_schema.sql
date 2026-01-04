@@ -1,4 +1,3 @@
-
 -- Drop existing tables and types to start fresh
 DROP TABLE IF EXISTS "public"."application_notes" CASCADE;
 DROP TABLE IF EXISTS "public"."applications" CASCADE;
@@ -19,12 +18,20 @@ CREATE TABLE "public"."applications" (
     "availability_start_date" date,
     "availability_end_date" date,
     "project_interest" text[],
-    "disc_d" integer,
-    "disc_i" integer,
-    "disc_s" integer,
-    "disc_c" integer,
-    "disc_primary" text,
-    "disc_secondary" text,
+    "disc_q1" text,
+    "disc_q2" text,
+    "disc_q3" text,
+    "disc_q4" text,
+    "disc_q5" text,
+    "disc_q6" text,
+    "disc_q7" text,
+    "disc_q8" text,
+    "disc_q9" text,
+    "disc_q10" text,
+    "disc_count_d" integer DEFAULT 0,
+    "disc_count_i" integer DEFAULT 0,
+    "disc_count_s" integer DEFAULT 0,
+    "disc_count_c" integer DEFAULT 0,
     "motivation_text" text,
     "project_example_text" text,
     "requirements_handling_text" text,
@@ -70,3 +77,39 @@ CREATE POLICY "Allow authenticated users to insert applications" ON "public"."ap
 CREATE POLICY "Allow authenticated users to read all data" ON "public"."applications" FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow authenticated users to update applications" ON "public"."applications" FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Allow authenticated users to manage notes" ON "public"."application_notes" FOR ALL TO authenticated USING (true);
+
+-- --------------------------
+-- 2) Trigger-Funktion für DISC Counts
+-- --------------------------
+CREATE OR REPLACE FUNCTION update_disc_counts()
+RETURNS trigger AS $$
+DECLARE
+  q_val text;
+BEGIN
+  NEW.disc_count_d := 0;
+  NEW.disc_count_i := 0;
+  NEW.disc_count_s := 0;
+  NEW.disc_count_c := 0;
+
+  FOR i IN 1..10 LOOP
+    EXECUTE 'SELECT NEW.disc_q' || i INTO q_val;
+    CASE q_val
+      WHEN 'A' THEN NEW.disc_count_d := NEW.disc_count_d + 1;
+      WHEN 'B' THEN NEW.disc_count_i := NEW.disc_count_i + 1;
+      WHEN 'C' THEN NEW.disc_count_s := NEW.disc_count_s + 1;
+      WHEN 'D' THEN NEW.disc_count_c := NEW.disc_count_c + 1;
+      ELSE -- Handle cases where q_val is NULL or not A/B/C/D
+    END CASE;
+  END LOOP;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- --------------------------
+-- 3) Trigger anlegen
+-- --------------------------
+CREATE TRIGGER trg_update_disc_counts
+BEFORE INSERT OR UPDATE ON public.applications
+FOR EACH ROW
+EXECUTE FUNCTION update_disc_counts();

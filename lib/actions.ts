@@ -1,4 +1,3 @@
-
 import { supabase } from "./supabaseClient";
 import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNote, RecruiterSettings } from "../types";
 
@@ -8,34 +7,33 @@ import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNo
 
 export async function submitApplicationAction(data: ApplicationFormData): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
-    // 1. Calculate DISC scores
-    const discMapping: { [key: string]: 'D' | 'I' | 'S' | 'C' } = { 'A': 'D', 'B': 'I', 'C': 'S', 'D': 'C' };
-    const discCounts = { D: 0, I: 0, S: 0, C: 0 };
-    Object.values(data.disc_answers).forEach(answer => {
-      const trait = discMapping[answer];
-      if (trait) {
-        discCounts[trait]++;
-      }
-    });
-
-    const sortedDisc = Object.entries(discCounts).sort(([, a], [, b]) => b - a);
-    const disc_primary = sortedDisc[0][0];
-    const disc_secondary = sortedDisc[1][0];
-
-    // 2. Prepare data for Supabase
+    // Prepare data for Supabase
     const applicationData = {
-      ...data,
-      disc_d: discCounts.D,
-      disc_i: discCounts.I,
-      disc_s: discCounts.S,
-      disc_c: discCounts.C,
-      disc_primary,
-      disc_secondary,
+      full_name: data.full_name,
+      email: data.email,
+      timezone: data.timezone,
+      availability_hours_per_week: data.availability_hours_per_week,
+      availability_start_date: data.availability_start_date,
+      availability_end_date: data.availability_end_date,
+      project_interest: data.project_interest,
+      disc_q1: data.disc_q1,
+      disc_q2: data.disc_q2,
+      disc_q3: data.disc_q3,
+      disc_q4: data.disc_q4,
+      disc_q5: data.disc_q5,
+      disc_q6: data.disc_q6,
+      disc_q7: data.disc_q7,
+      disc_q8: data.disc_q8,
+      disc_q9: data.disc_q9,
+      disc_q10: data.disc_q10,
+      motivation_text: data.motivation_text,
+      project_example_text: data.project_example_text,
+      requirements_handling_text: data.requirements_handling_text,
+      remote_work_text: data.remote_work_text,
       status: 'new'
     };
-    delete (applicationData as any).disc_answers; // Don't store raw answers
 
-    // 3. Insert into Supabase
+    // Insert into Supabase
     const { data: app, error: insertError } = await supabase
       .from('applications')
       .insert(applicationData)
@@ -68,7 +66,14 @@ export async function getApplications(): Promise<Application[]> {
   try {
     const { data, error } = await supabase
       .from('applications')
-      .select(`*, notes:application_notes (*)`)
+      .select(`
+        *,
+        notes:application_notes (*),
+        disc_count_d,
+        disc_count_i,
+        disc_count_s,
+        disc_count_c
+      `)
       .order('created_at', { ascending: false });
 
     if (error) {

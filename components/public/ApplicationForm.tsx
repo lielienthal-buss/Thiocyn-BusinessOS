@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { submitApplicationAction } from '../../lib/actions';
 import InputField from '../InputField';
@@ -6,16 +7,16 @@ import ThankYouView from '../ThankYouView';
 import type { ApplicationFormData } from '../../types';
 
 const discQuestions = [
-  { id: 'q1', text: 'I am assertive, and direct.' },
-  { id: 'q2', text: 'I am optimistic and outgoing.' },
-  { id: 'q3', text: 'I am patient and a good listener.' },
-  { id: 'q4', text: 'I am precise and analytical.' },
-  { id: 'q5', text: 'I like to take on challenges.' },
-  { id: 'q6', text: 'I enjoy persuading and influencing others.' },
-  { id: 'q7', text: 'I prefer a stable and predictable environment.' },
-  { id: 'q8', text: 'I value accuracy and quality.' },
-  { id: 'q9', text: 'I can be demanding at times.' },
-  { id: 'q10', text: 'I enjoy collaborating in a team.' },
+  { id: 'disc_q1', text: 'I am assertive, and direct.' },
+  { id: 'disc_q2', text: 'I am optimistic and outgoing.' },
+  { id: 'disc_q3', text: 'I am patient and a good listener.' },
+  { id: 'disc_q4', text: 'I am precise and analytical.' },
+  { id: 'disc_q5', text: 'I like to take on challenges.' },
+  { id: 'disc_q6', text: 'I enjoy persuading and influencing others.' },
+  { id: 'disc_q7', text: 'I prefer a stable and predictable environment.' },
+  { id: 'disc_q8', text: 'I value accuracy and quality.' },
+  { id: 'disc_q9', text: 'I can be demanding at times.' },
+  { id: 'disc_q10', text: 'I enjoy collaborating in a team.' },
 ];
 
 const projectInterests = ['Web Development', 'Mobile Development', 'AI/ML', 'DevOps', 'UI/UX Design'];
@@ -33,7 +34,16 @@ const ApplicationForm: React.FC = () => {
     availability_start_date: '',
     availability_end_date: '',
     project_interest: [],
-    disc_answers: {},
+    disc_q1: '',
+    disc_q2: '',
+    disc_q3: '',
+    disc_q4: '',
+    disc_q5: '',
+    disc_q6: '',
+    disc_q7: '',
+    disc_q8: '',
+    disc_q9: '',
+    disc_q10: '',
     motivation_text: '',
     project_example_text: '',
     requirements_handling_text: '',
@@ -129,7 +139,7 @@ const ApplicationForm: React.FC = () => {
                       type="radio"
                       name={q.id}
                       value={option}
-                      onChange={e => setFormData(prev => ({ ...prev, disc_answers: { ...prev.disc_answers, [q.id]: e.target.value } }))}
+                      onChange={handleInputChange}
                       required
                       className="form-radio"
                     />

@@ -1,3 +1,4 @@
+
 export type ApplicationStatus = 'new' | 'review' | 'task_sent' | 'task_submitted' | 'interview' | 'accepted' | 'rejected';
 
 export interface Application {
@@ -10,12 +11,20 @@ export interface Application {
   availability_start_date?: string;
   availability_end_date?: string;
   project_interest?: string[];
-  disc_d?: number;
-  disc_i?: number;
-  disc_s?: number;
-  disc_c?: number;
-  disc_primary?: string;
-  disc_secondary?: string;
+  disc_q1?: string;
+  disc_q2?: string;
+  disc_q3?: string;
+  disc_q4?: string;
+  disc_q5?: string;
+  disc_q6?: string;
+  disc_q7?: string;
+  disc_q8?: string;
+  disc_q9?: string;
+  disc_q10?: string;
+  disc_count_d?: number;
+  disc_count_i?: number;
+  disc_count_s?: number;
+  disc_count_c?: number;
   motivation_text?: string;
   project_example_text?: string;
   requirements_handling_text?: string;
@@ -52,7 +61,16 @@ export interface ApplicationFormData {
   availability_start_date: string;
   availability_end_date: string;
   project_interest: string[];
-  disc_answers: Record<string, string>;
+  disc_q1: string;
+  disc_q2: string;
+  disc_q3: string;
+  disc_q4: string;
+  disc_q5: string;
+  disc_q6: string;
+  disc_q7: string;
+  disc_q8: string;
+  disc_q9: string;
+  disc_q10: string;
   motivation_text: string;
   project_example_text: string;
   requirements_handling_text: string;

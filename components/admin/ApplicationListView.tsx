@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { getApplications } from '../../lib/actions';
 import type { Application } from '../../types';
@@ -21,6 +22,17 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
     fetchData();
   }, []);
 
+  const getDiscPrimary = (app: Application) => {
+    const counts = {
+      D: app.disc_count_d || 0,
+      I: app.disc_count_i || 0,
+      S: app.disc_count_s || 0,
+      C: app.disc_count_c || 0,
+    };
+    const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
+    return sorted[0][0];
+  };
+
   if (loading) {
     return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
   }
@@ -32,7 +44,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           <tr>
             <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Name</th>
             <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Status</th>
-            <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">DISC Primary</th>
+            <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">DISC (D/I/S/C)</th>
             <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Availability</th>
             <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Project Interest</th>
             <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500"></th>
@@ -47,7 +59,9 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                   {app.status}
                 </span>
               </td>
-              <td className="px-6 py-4 font-semibold">{app.disc_primary}</td>
+              <td className="px-6 py-4 font-semibold">
+                {getDiscPrimary(app)} ({app.disc_count_d}/{app.disc_count_i}/{app.disc_count_s}/{app.disc_count_c})
+              </td>
               <td className="px-6 py-4">{app.availability_hours_per_week} hrs/week</td>
               <td className="px-6 py-4">{app.project_interest?.join(', ')}</td>
               <td className="px-6 py-4 text-right">
