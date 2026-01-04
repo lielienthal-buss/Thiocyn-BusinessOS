@@ -208,22 +208,22 @@ export async function seedMockData(): Promise<boolean> {
       slug: "application_received",
       description: "Sent immediately after successful portal submission",
       subject: "We received your application, {{full_name}}!",
-      body: "Hello {{full_name}},
+      body: `Hello {{full_name}},
 
 Thank you for applying to Take A Shot GmbH. We've received your documents and will review them shortly.
 
 Best,
-The Recruiting Team"
+The Recruiting Team`
     },
     {
       slug: "status_update",
       description: "Triggered when application moves in the pipeline",
       subject: "Update on your application",
-      body: "Hi {{full_name}},
+      body: `Hi {{full_name}},
 
 Your application status has been updated to: {{status}}.
 
-We will get in touch soon for the next steps."
+We will get in touch soon for the next steps.`
     }
   ];
 
