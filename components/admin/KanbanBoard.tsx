@@ -103,6 +103,23 @@ const KanbanBoard: React.FC = () => {
     setDraggedAppId(null);
   };
 
+  // Mailto helper function
+  const openMail = (application: Application) => {
+    const to = application.email;
+    const subject = encodeURIComponent("Ihre Bewerbung bei Take A Shot");
+    const body = encodeURIComponent(
+      `Hallo ${application.fullName.split(' ')[0] || ''},
+
+vielen Dank für Ihre Bewerbung.
+
+Wir melden uns zeitnah bei Ihnen.
+
+Beste Grüße
+Take A Shot`
+    );
+    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  };
+
   if (loading) return (
     <div className="flex flex-col items-center justify-center h-64 space-y-4">
       <SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" />
