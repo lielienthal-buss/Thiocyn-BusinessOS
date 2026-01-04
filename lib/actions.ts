@@ -80,7 +80,10 @@ export async function getApplications(): Promise<Application[]> {
       console.error("Fetch applications error:", error.message, error.details || "");
       return [];
     }
-    return data || [];
+    return data.map(app => ({
+      ...app,
+      project_interest: Array.isArray(app.project_interest) ? app.project_interest : [],
+    })) || [];
   } catch (err: any) {
     console.error("Fetch applications exception:", err.message || err);
     return [];
