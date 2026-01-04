@@ -33,6 +33,8 @@ export async function submitApplicationAction(data: ApplicationFormData): Promis
       status: 'new'
     };
 
+    console.log('Application data being sent to Supabase:', applicationData); // Added log
+
     // Insert into Supabase
     const { data: app, error: insertError } = await supabase
       .from('applications')
