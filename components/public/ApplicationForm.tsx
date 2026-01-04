@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { submitApplicationAction } from '../../lib/actions';
 import InputField from '../InputField';
@@ -19,7 +18,7 @@ const discQuestions = [
   { id: 'disc_q10', text: 'I enjoy collaborating in a team.' },
 ];
 
-const projectInterests = ['Web Development', 'Mobile Development', 'AI/ML', 'DevOps', 'UI/UX Design'];
+const projectInterests = ['Marketing/Video Editing', 'Sales', 'AI/ML', 'DevOps', 'UI/UX Design'];
 
 const ApplicationForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -129,6 +128,9 @@ const ApplicationForm: React.FC = () => {
         {/* DISC Questionnaire */}
         <div className="space-y-4">
           <h3 className="text-lg font-bold border-b pb-2">DISC Questionnaire</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            "is fully true" = A; "not true at all" = D
+          </p>
           {discQuestions.map((q, index) => (
             <div key={q.id}>
               <p className="font-semibold mb-2">{index + 1}. {q.text}</p>
