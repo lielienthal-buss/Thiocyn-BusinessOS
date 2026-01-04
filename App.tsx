@@ -155,7 +155,7 @@ const App: React.FC = () => {
         )}
 
         {view === 'imprint' && <Imprint onBack={() => setView('public')} />}
-        {view === 'privacy' && <PrivacyPolicy onBack={() => setView('privacy')} />}
+        {view === 'privacy' && <PrivacyPolicy onBack={() => setView('public')} />}
         
         <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} />
       </div>
