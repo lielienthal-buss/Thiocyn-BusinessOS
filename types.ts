@@ -57,3 +57,11 @@ export interface ApplicationData {
   coverLetter: string;
   resume: File | null;
 }
+
+export type RecruiterSettings = {
+  id: number;
+  created_at: string; // ISO timestamp
+  calendly_url?: string | null;
+  company_name?: string | null;
+  ai_instruction?: string | null;
+};

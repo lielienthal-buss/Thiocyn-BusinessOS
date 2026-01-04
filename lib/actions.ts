@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { supabase } from "./supabaseClient";
-import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNote, EmailTemplate } from "../types";
+import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNote, EmailTemplate, RecruiterSettings } from "../types";
 
 /**
  * Server Actions for the Hiring Tool.
@@ -208,13 +208,22 @@ export async function seedMockData(): Promise<boolean> {
       slug: "application_received",
       description: "Sent immediately after successful portal submission",
       subject: "We received your application, {{full_name}}!",
-      body: "Hello {{full_name}},\n\nThank you for applying to Take A Shot GmbH. We've received your documents and will review them shortly.\n\nBest,\nThe Recruiting Team"
+      body: "Hello {{full_name}},
+
+Thank you for applying to Take A Shot GmbH. We've received your documents and will review them shortly.
+
+Best,
+The Recruiting Team"
     },
     {
       slug: "status_update",
       description: "Triggered when application moves in the pipeline",
       subject: "Update on your application",
-      body: "Hi {{full_name}},\n\nYour application status has been updated to: {{status}}.\n\nWe will get in touch soon for the next steps."
+      body: "Hi {{full_name}},
+
+Your application status has been updated to: {{status}}.
+
+We will get in touch soon for the next steps."
     }
   ];
 
@@ -236,4 +245,41 @@ export async function seedMockData(): Promise<boolean> {
     console.error("Seeding failed:", err.message || err);
     return false;
   }
+}
+
+export async function getSettings(): Promise<RecruiterSettings | null> {
+  const { data, error } = await supabase
+    .from('recruiter_settings')
+    .select('*')
+    .eq('id', 1)
+    .single();
+  if (error) {
+    console.error('Error fetching settings:', error);
+    return null;
+  }
+  return data;
+}
+
+export async function updateSettings(settings: Partial<RecruiterSettings>): Promise<boolean> {
+  const { error } = await supabase
+    .from('recruiter_settings')
+    .update(settings)
+    .eq('id', 1);
+  if (error) {
+    console.error('Error updating settings:', error);
+    return false;
+  }
+  return true;
+}
+
+export async function markEmailAsSentAction(applicationId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('applications')
+    .update({ email_sent: true, sent_at: new Date().toISOString() })
+    .eq('id', applicationId);
+  if (error) {
+    console.error('Error marking email as sent:', error);
+    return false;
+  }
+  return true;
 }

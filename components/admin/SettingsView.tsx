@@ -1,31 +1,48 @@
 
 import React, { useState, useEffect } from 'react';
-import { getSettings, updateSettings } from '../../lib/actions';
-import type { RecruiterSettings } from '../../types';
+import { useSettings } from '../../lib/useSettings';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
 const SettingsView: React.FC = () => {
-  const [settings, setSettings] = useState<RecruiterSettings | null>(null);
+  const { settings, loading, error, save, refreshing } = useSettings();
+  
+  const [companyName, setCompanyName] = useState('');
+  const [calendlyUrl, setCalendlyUrl] = useState('');
+  const [aiInstruction, setAiInstruction] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    getSettings().then(setSettings);
-  }, []);
+    if (settings) {
+      setCompanyName(settings.company_name ?? '');
+      setCalendlyUrl(settings.calendly_url ?? '');
+      setAiInstruction(settings.ai_instruction ?? '');
+    }
+  }, [settings]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!settings) return;
     setSaving(true);
-    const success = await updateSettings(settings);
-    if (success) {
+    setMessage('');
+    const ok = await save({
+      company_name: companyName,
+      calendly_url: calendlyUrl,
+      ai_instruction: aiInstruction,
+    });
+    if (ok) {
       setMessage('Settings updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     }
     setSaving(false);
   };
 
-  if (!settings) return <div className="flex justify-center py-20"><SpinnerIcon className="animate-spin text-primary-600" /></div>;
+  if (loading) {
+    return <div className="flex justify-center py-20"><SpinnerIcon className="animate-spin text-primary-600" /></div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-center py-20">{error}</div>;
+  }
 
   return (
     <div className="max-w-3xl mx-auto animate-[fadeIn_0.5s_ease-out]">
@@ -40,8 +57,8 @@ const SettingsView: React.FC = () => {
             <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Default Calendly URL</label>
             <input 
               type="url" 
-              value={settings.calendly_url} 
-              onChange={e => setSettings({...settings, calendly_url: e.target.value})}
+              value={calendlyUrl} 
+              onChange={e => setCalendlyUrl(e.target.value)}
               className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium"
               placeholder="https://calendly.com/your-team/interview"
             />
@@ -51,8 +68,8 @@ const SettingsView: React.FC = () => {
             <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Company Display Name</label>
             <input 
               type="text" 
-              value={settings.company_name} 
-              onChange={e => setSettings({...settings, company_name: e.target.value})}
+              value={companyName} 
+              onChange={e => setCompanyName(e.target.value)}
               className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium"
             />
           </div>
@@ -61,8 +78,8 @@ const SettingsView: React.FC = () => {
             <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">AI Recruiting Persona (Instruction)</label>
             <textarea 
               rows={4}
-              value={settings.ai_instruction} 
-              onChange={e => setSettings({...settings, ai_instruction: e.target.value})}
+              value={aiInstruction} 
+              onChange={e => setAiInstruction(e.target.value)}
               className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed"
             />
             <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">This prompt guides the Gemini AI in analyzing applications.</p>
@@ -78,10 +95,10 @@ const SettingsView: React.FC = () => {
         <div className="pt-6">
           <button 
             type="submit" 
-            disabled={saving}
+            disabled={saving || refreshing}
             className="w-full py-6 bg-primary-600 hover:bg-primary-700 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-primary-500/30 flex justify-center items-center gap-3 transition-all hover:scale-[1.01]"
           >
-            {saving ? <SpinnerIcon className="animate-spin w-5 h-5" /> : "Apply Global Settings"}
+            {saving || refreshing ? <SpinnerIcon className="animate-spin w-5 h-5" /> : "Apply Global Settings"}
           </button>
         </div>
       </form>
