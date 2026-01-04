@@ -207,14 +207,16 @@ const ApplicationForm: React.FC = () => {
         )}
 
         {/* Cloudflare Turnstile Widget */}
-        <div
-          className="cf-turnstile"
-          data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY as string}
-          data-callback="onTurnstileSuccess"
-          data-theme="dark"
-          data-size="normal"
-          data-tabindex="0"
-        ></div>
+        <div className="mt-8"> {/* Added a wrapper div with margin-top */}
+          <div
+            className="cf-turnstile"
+            data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY as string}
+            data-callback="onTurnstileSuccess"
+            // Removed data-theme="dark" to let it adapt to page theme
+            data-size="normal"
+            data-tabindex="0"
+          ></div>
+        </div>
 
         <button type="submit" disabled={loading} className="w-full py-4 bg-green-600 text-white font-bold rounded-lg disabled:opacity-50">
           {loading ? <SpinnerIcon className="animate-spin h-6 w-6 mx-auto" /> : 'Submit Application'}
