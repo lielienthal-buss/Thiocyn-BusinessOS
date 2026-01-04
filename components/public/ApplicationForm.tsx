@@ -116,7 +116,7 @@ const ApplicationForm: React.FC = () => {
         Show us your potential. Fill out the form to get started.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-12">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Personal & Availability */}
         <div className="space-y-6">
           <h3 className="text-lg font-bold border-b pb-2">Personal & Availability</h3>
@@ -131,7 +131,7 @@ const ApplicationForm: React.FC = () => {
         </div>
 
         {/* Project Interest */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-8">
           <h3 className="text-lg font-bold border-b pb-2">Project Interest</h3>
           <div className="flex flex-wrap gap-3">
             {projectInterests.map(interest => (
@@ -152,7 +152,7 @@ const ApplicationForm: React.FC = () => {
         </div>
 
         {/* DISC Questionnaire */}
-        <div className="space-y-4">
+        <div className="space-y-4 mt-8">
           <h3 className="text-lg font-bold border-b pb-2">DISC Questionnaire</h3>
           <p className="text-sm text-gray-500 mb-4">
             "is fully true" = A; "not true at all" = D
@@ -180,7 +180,7 @@ const ApplicationForm: React.FC = () => {
         </div>
 
         {/* Written Questions */}
-        <div className="space-y-6">
+        <div className="space-y-6 mt-8">
           <h3 className="text-lg font-bold border-b pb-2">Written Questions</h3>
           <div>
             <label className="block font-semibold mb-2">What is your motivation to work with us?</label>
@@ -201,7 +201,7 @@ const ApplicationForm: React.FC = () => {
         </div>
 
         {errors.length > 0 && (
-          <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 text-center">
+          <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 text-center mt-8">
             {errors.join(' • ')}
           </div>
         )}
@@ -218,7 +218,7 @@ const ApplicationForm: React.FC = () => {
           ></div>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full py-4 bg-green-600 text-white font-bold rounded-lg disabled:opacity-50">
+        <button type="submit" disabled={loading} className="w-full py-4 bg-green-600 text-white font-bold rounded-lg disabled:opacity-50 mt-8">
           {loading ? <SpinnerIcon className="animate-spin h-6 w-6 mx-auto" /> : 'Submit Application'}
         </button>
       </form>
