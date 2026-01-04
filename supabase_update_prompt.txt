@@ -1,0 +1,25 @@
+Please update my Supabase database schema with the following changes:
+
+1.  **Remove the old Row Level Security (RLS) policy** that allowed authenticated users to insert into the `applications` table.
+2.  **Create a new RLS policy** for the `applications` table that allows **anonymous (`anon`) users to insert** new records.
+3.  **Add a new column named `captcha_token`** of type `text` to the `public.applications` table. This column should be nullable.
+
+Here are the specific SQL commands for these changes:
+
+```sql
+-- 1. Remove old RLS policy
+DROP POLICY IF EXISTS "Allow authenticated users to insert applications" ON public.applications;
+
+-- 2. Create new RLS policy for anonymous inserts
+CREATE POLICY "Allow anon users to insert applications"
+ON public.applications
+FOR INSERT
+TO anon
+WITH CHECK (true);
+
+-- 3. Add captcha_token column to applications table
+ALTER TABLE public.applications
+ADD COLUMN captcha_token text;
+```
+
+Please ensure these changes are applied correctly and safely.

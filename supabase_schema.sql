@@ -36,6 +36,7 @@ CREATE TABLE "public"."applications" (
     "project_example_text" text,
     "requirements_handling_text" text,
     "remote_work_text" text,
+    "captcha_token" text,
     "status" "public"."ApplicationStatus" NOT NULL DEFAULT 'new',
     "task_sent_at" timestamp with time zone,
     "task_submitted_at" timestamp with time zone,
@@ -73,7 +74,8 @@ ALTER TABLE "public"."application_notes" ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
 CREATE POLICY "Allow public read access" ON "public"."recruiter_settings" FOR SELECT USING (true);
-CREATE POLICY "Allow authenticated users to insert applications" ON "public"."applications" FOR INSERT TO authenticated WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow authenticated users to insert applications" ON public.applications;
+CREATE POLICY "Allow anon users to insert applications" ON "public"."applications" FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "Allow authenticated users to read all data" ON "public"."applications" FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Allow authenticated users to update applications" ON "public"."applications" FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Allow authenticated users to manage notes" ON "public"."application_notes" FOR ALL TO authenticated USING (true);

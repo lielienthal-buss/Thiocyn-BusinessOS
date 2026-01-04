@@ -75,4 +75,5 @@ export interface ApplicationFormData {
   project_example_text: string;
   requirements_handling_text: string;
   remote_work_text: string;
+  captcha_token?: string; // Add captcha_token here
 }

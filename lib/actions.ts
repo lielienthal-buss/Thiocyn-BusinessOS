@@ -5,7 +5,7 @@ import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNo
  * Server Actions for the Hiring Tool.
  */
 
-export async function submitApplicationAction(data: ApplicationFormData): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function submitApplicationAction(data: ApplicationFormData, captchaToken: string): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     // Prepare data for Supabase
     const applicationData = {
@@ -30,7 +30,8 @@ export async function submitApplicationAction(data: ApplicationFormData): Promis
       project_example_text: data.project_example_text,
       requirements_handling_text: data.requirements_handling_text,
       remote_work_text: data.remote_work_text,
-      status: 'new'
+      status: 'new',
+      captcha_token: captchaToken // Add captcha_token here
     };
 
     console.log('Application data being sent to Supabase:', applicationData); // Added log

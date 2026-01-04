@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submitApplicationAction } from '../../lib/actions';
 import InputField from '../InputField';
 import SpinnerIcon from '../icons/SpinnerIcon';
 import ThankYouView from '../ThankYouView';
 import type { ApplicationFormData } from '../../types';
+
+// Extend Window interface to include onTurnstileSuccess
+declare global {
+  interface Window {
+    onTurnstileSuccess: (token: string) => void;
+  }
+}
 
 const discQuestions = [
   { id: 'disc_q1', text: 'I am assertive, and direct.' },
@@ -24,6 +31,7 @@ const ApplicationForm: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null); // State for Turnstile token
   
   const [formData, setFormData] = useState<ApplicationFormData>({
     full_name: '',
@@ -49,6 +57,18 @@ const ApplicationForm: React.FC = () => {
     remote_work_text: '',
   });
 
+  // Set global Turnstile callback
+  useEffect(() => {
+    window.onTurnstileSuccess = (token: string) => {
+      console.log("Turnstile token:", token); // Optional debug log
+      setCaptchaToken(token);
+    };
+    // Cleanup function (optional, but good practice)
+    return () => {
+      delete window.onTurnstileSuccess;
+    };
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -68,8 +88,14 @@ const ApplicationForm: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
+
+    if (!captchaToken) {
+      alert("Bitte bestätige, dass du kein Roboter bist.");
+      setLoading(false);
+      return;
+    }
     
-    const result = await submitApplicationAction(formData);
+    const result = await submitApplicationAction(formData, captchaToken); // Pass captchaToken
     
     setLoading(false);
     if (result.success) {
