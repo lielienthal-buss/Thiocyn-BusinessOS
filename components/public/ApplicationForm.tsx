@@ -116,112 +116,120 @@ const ApplicationForm: React.FC = () => {
         Show us your potential. Fill out the form to get started.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Personal & Availability */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-bold border-b pb-2">Personal & Availability</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <InputField id="full_name" name="full_name" label="Full Name" type="text" value={formData.full_name} onChange={handleInputChange} required />
-              <InputField id="email" name="email" label="Email" type="email" value={formData.email} onChange={handleInputChange} required />
-            </div>
-            <div className="space-y-6 flex flex-col justify-between">
-              <InputField id="timezone" name="timezone" label="Your Timezone" type="text" placeholder="e.g., Europe/Berlin" value={formData.timezone} onChange={handleInputChange} required />
-              <InputField id="availability_hours_per_week" name="availability_hours_per_week" label="Hours/Week" type="number" value={formData.availability_hours_per_week} onChange={handleInputChange} required />
-              <InputField id="availability_start_date" name="availability_start_date" label="Available From" type="date" value={formData.availability_start_date} onChange={handleInputChange} required />
-              <InputField id="availability_end_date" name="availability_end_date" label="Available Until" type="date" value={formData.availability_end_date} onChange={handleInputChange} />
-            </div>
-          </div>
-        </div>
-
-        {/* Project Interest */}
-        <div className="space-y-4 mt-8">
-          <h3 className="text-lg font-bold border-b pb-2">Project Interest</h3>
-          <div className="flex flex-wrap gap-3">
-            {projectInterests.map(interest => (
-              <button
-                key={interest}
-                type="button"
-                onClick={() => handleMultiSelectChange('project_interest', interest)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-                  formData.project_interest.includes(interest)
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-200 dark:bg-slate-700'
-                }`}
-              >
-                {interest}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* DISC Questionnaire */}
-        <div className="space-y-4 mt-8">
-          <h3 className="text-lg font-bold border-b pb-2">DISC Questionnaire</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            "is fully true" = A; "not true at all" = D
-          </p>
-          {discQuestions.map((q, index) => (
-            <div key={q.id}>
-              <p className="font-semibold mb-2">{index + 1}. {q.text}</p>
-              <div className="flex gap-4">
-                {['A', 'B', 'C', 'D'].map(option => (
-                  <label key={option} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name={q.id}
-                      value={option}
-                      onChange={handleInputChange}
-                      required
-                      className="form-radio"
-                    />
-                    {option}
-                  </label>
-                ))}
+      <form onSubmit={handleSubmit}>
+        {/* === FORM SECTIONS === */}
+        <div className="space-y-8">
+          {/* Personal & Availability */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold border-b pb-2">Personal & Availability</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <InputField id="full_name" name="full_name" label="Full Name" type="text" value={formData.full_name} onChange={handleInputChange} required />
+                <InputField id="email" name="email" label="Email" type="email" value={formData.email} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-6 flex flex-col justify-between">
+                <InputField id="timezone" name="timezone" label="Your Timezone" type="text" placeholder="e.g., Europe/Berlin" value={formData.timezone} onChange={handleInputChange} required />
+                <InputField id="availability_hours_per_week" name="availability_hours_per_week" label="Hours/Week" type="number" value={formData.availability_hours_per_week} onChange={handleInputChange} required />
+                <InputField id="availability_start_date" name="availability_start_date" label="Available From" type="date" value={formData.availability_start_date} onChange={handleInputChange} required />
+                <InputField id="availability_end_date" name="availability_end_date" label="Available Until" type="date" value={formData.availability_end_date} onChange={handleInputChange} required />
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Project Interest */}
+          <div className="space-y-4 mt-8">
+            <h3 className="text-lg font-bold border-b pb-2">Project Interest</h3>
+            <div className="flex flex-wrap gap-3">
+              {projectInterests.map(interest => (
+                <button
+                  key={interest}
+                  type="button"
+                  onClick={() => handleMultiSelectChange('project_interest', interest)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                    formData.project_interest.includes(interest)
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-gray-200 dark:bg-slate-700'
+                  }`}
+                >
+                  {interest}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* DISC Questionnaire */}
+          <div className="space-y-4 mt-8">
+            <h3 className="text-lg font-bold border-b pb-2">DISC Questionnaire</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              "is fully true" = A; "not true at all" = D
+            </p>
+            {discQuestions.map((q, index) => (
+              <div key={q.id}>
+                <p className="font-semibold mb-2">{index + 1}. {q.text}</p>
+                <div className="flex gap-4">
+                  {['A', 'B', 'C', 'D'].map(option => (
+                    <label key={option} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name={q.id}
+                        value={option}
+                        onChange={handleInputChange}
+                        required
+                        className="form-radio"
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Written Questions */}
+          <div className="space-y-6 mt-8">
+            <h3 className="text-lg font-bold border-b pb-2">Written Questions</h3>
+            <div>
+              <label className="block font-semibold mb-2">What is your motivation to work with us?</label>
+              <textarea name="motivation_text" rows={4} value={formData.motivation_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+            </div>
+            <div>
+              <label className="block font-semibold mb-2">Describe an independent project you are proud of.</label>
+              <textarea name="project_example_text" rows={4} value={formData.project_example_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+            </div>
+            <div>
+              <label className="block font-semibold mb-2">How do you handle unclear requirements?</label>
+              <textarea name="requirements_handling_text" rows={4} value={formData.requirements_handling_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+            </div>
+            <div>
+              <label className="block font-semibold mb-2">How do you organize yourself for remote work?</label>
+              <textarea name="remote_work_text" rows={4} value={formData.remote_work_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
+            </div>
+          </div>
+
+          {errors.length > 0 && (
+            <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 text-center mt-8">
+              {errors.join(' • ')}
+            </div>
+          )}
         </div>
 
-        {/* Written Questions */}
-        <div className="space-y-6 mt-8">
-          <h3 className="text-lg font-bold border-b pb-2">Written Questions</h3>
-          <div>
-            <label className="block font-semibold mb-2">What is your motivation to work with us?</label>
-            <textarea name="motivation_text" rows={4} value={formData.motivation_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
-          </div>
-          <div>
-            <label className="block font-semibold mb-2">Describe an independent project you are proud of.</label>
-            <textarea name="project_example_text" rows={4} value={formData.project_example_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
-          </div>
-          <div>
-            <label className="block font-semibold mb-2">How do you handle unclear requirements?</label>
-            <textarea name="requirements_handling_text" rows={4} value={formData.requirements_handling_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
-          </div>
-          <div>
-            <label className="block font-semibold mb-2">How do you organize yourself for remote work?</label>
-            <textarea name="remote_work_text" rows={4} value={formData.remote_work_text} onChange={handleInputChange} className="w-full p-2 border rounded" required />
-          </div>
-        </div>
-
-        {errors.length > 0 && (
-          <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 text-center mt-8">
-            {errors.join(' • ')}
-          </div>
-        )}
-
-        {/* Cloudflare Turnstile Widget */}
-        <div className="mt-8 p-4 border-4 border-dashed border-purple-500 bg-purple-100"> {/* Added clear visual indicators */}
+        {/* === TURNSTILE (ISOLIERT!) === */}
+        <div className="mt-8 flex justify-center">
           <div
             className="cf-turnstile"
             data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY as string}
             data-callback="onTurnstileSuccess"
             data-size="normal"
             data-tabindex="0"
-          ></div>
+          />
         </div>
 
-        <button type="submit" disabled={loading} className="w-full py-4 bg-green-600 text-white font-bold rounded-lg disabled:opacity-50 mt-8">
+        {/* === SUBMIT === */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 bg-green-600 text-white font-bold rounded-lg disabled:opacity-50 mt-8"
+        >
           {loading ? <SpinnerIcon className="animate-spin h-6 w-6 mx-auto" /> : 'Submit Application'}
         </button>
       </form>
