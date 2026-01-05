@@ -211,12 +211,11 @@ const ApplicationForm: React.FC = () => {
         )}
 
         {/* Cloudflare Turnstile Widget */}
-        <div className="mt-8"> {/* Added a wrapper div with margin-top */}
+        <div className="mt-8 p-4 border-4 border-dashed border-purple-500 bg-purple-100"> {/* Added clear visual indicators */}
           <div
             className="cf-turnstile"
             data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY as string}
             data-callback="onTurnstileSuccess"
-            // Removed data-theme="dark" to let it adapt to page theme
             data-size="normal"
             data-tabindex="0"
           ></div>
