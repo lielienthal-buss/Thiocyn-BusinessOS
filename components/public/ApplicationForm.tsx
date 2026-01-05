@@ -120,13 +120,17 @@ const ApplicationForm: React.FC = () => {
         {/* Personal & Availability */}
         <div className="space-y-6">
           <h3 className="text-lg font-bold border-b pb-2">Personal & Availability</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputField id="full_name" name="full_name" label="Full Name" type="text" value={formData.full_name} onChange={handleInputChange} required />
-            <InputField id="email" name="email" label="Email" type="email" value={formData.email} onChange={handleInputChange} required />
-            <InputField id="timezone" name="timezone" label="Your Timezone" type="text" placeholder="e.g., Europe/Berlin" value={formData.timezone} onChange={handleInputChange} required />
-            <InputField id="availability_hours_per_week" name="availability_hours_per_week" label="Hours/Week" type="number" value={formData.availability_hours_per_week} onChange={handleInputChange} required />
-            <InputField id="availability_start_date" name="availability_start_date" label="Available From" type="date" value={formData.availability_start_date} onChange={handleInputChange} required />
-            <InputField id="availability_end_date" name="availability_end_date" label="Available Until" type="date" value={formData.availability_end_date} onChange={handleInputChange} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              <InputField id="full_name" name="full_name" label="Full Name" type="text" value={formData.full_name} onChange={handleInputChange} required />
+              <InputField id="email" name="email" label="Email" type="email" value={formData.email} onChange={handleInputChange} required />
+            </div>
+            <div className="space-y-6 flex flex-col justify-between">
+              <InputField id="timezone" name="timezone" label="Your Timezone" type="text" placeholder="e.g., Europe/Berlin" value={formData.timezone} onChange={handleInputChange} required />
+              <InputField id="availability_hours_per_week" name="availability_hours_per_week" label="Hours/Week" type="number" value={formData.availability_hours_per_week} onChange={handleInputChange} required />
+              <InputField id="availability_start_date" name="availability_start_date" label="Available From" type="date" value={formData.availability_start_date} onChange={handleInputChange} required />
+              <InputField id="availability_end_date" name="availability_end_date" label="Available Until" type="date" value={formData.availability_end_date} onChange={handleInputChange} />
+            </div>
           </div>
         </div>
 
