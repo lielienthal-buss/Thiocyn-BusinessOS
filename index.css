@@ -1,36 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@keyframes blob-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-}
-.animate-blob {
-  animation: blob-drift 10s infinite alternate ease-in-out;
-}
-.animation-delay-2000 { animation-delay: 2s; }
-.animation-delay-4000 { animation-delay: 4s; }
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-    0 10px 15px -3px rgba(0, 0, 0, 0.05),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-.dark .glass-card {
-  background: rgba(15, 23, 42, 0.3);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 20px 25px -5px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+:root {
+  --font-primary: 'Inter', sans-serif;
 }
 
+body {
+  font-family: var(--font-primary);
+  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(30,30,30,0.9));
+  min-height: 100vh;
+  padding: 2rem;
+  color: white;
+}
 
+.input-field {
+  @apply w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary transition;
+}

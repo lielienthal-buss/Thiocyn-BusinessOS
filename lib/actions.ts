@@ -11,27 +11,9 @@ export async function submitApplicationAction(data: ApplicationFormData, captcha
     const applicationData = {
       full_name: data.full_name,
       email: data.email,
-      timezone: data.timezone,
-      availability_hours_per_week: data.availability_hours_per_week,
-      availability_start_date: data.availability_start_date,
-      availability_end_date: data.availability_end_date,
-      project_interest: data.project_interest,
-      disc_q1: data.disc_q1,
-      disc_q2: data.disc_q2,
-      disc_q3: data.disc_q3,
-      disc_q4: data.disc_q4,
-      disc_q5: data.disc_q5,
-      disc_q6: data.disc_q6,
-      disc_q7: data.disc_q7,
-      disc_q8: data.disc_q8,
-      disc_q9: data.disc_q9,
-      disc_q10: data.disc_q10,
-      motivation_text: data.motivation_text,
-      project_example_text: data.project_example_text,
-      requirements_handling_text: data.requirements_handling_text,
-      remote_work_text: data.remote_work_text,
-      status: 'new',
-      captcha_token: captchaToken // Add captcha_token here
+      cover_letter: data.cover_letter,
+      status: 'new' as ApplicationStatus,
+      captcha_token: captchaToken
     };
 
     console.log('Application data being sent to Supabase:', applicationData); // Added log
