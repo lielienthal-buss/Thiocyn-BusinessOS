@@ -18,7 +18,7 @@ const LegalPage: React.FC<LegalPageProps> = ({ title, onBack, children }) => {
         Back to Portal
       </button>
       
-      <div className="glass-card p-12 md:p-16 rounded-[3.5rem] shadow-2xl border-white/50">
+      <div className="glass-card p-12 md:p-16 rounded-[4rem] shadow-2xl border-white/20">
         <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-12 border-b border-gray-100 dark:border-slate-800 pb-8">
           {title}
         </h1>

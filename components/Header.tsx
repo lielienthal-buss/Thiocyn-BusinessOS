@@ -3,7 +3,7 @@ import React from 'react';
 
 const Header: React.FC = () => {
   return (
-    <header className="glass-card p-12 rounded-[3.5rem] flex flex-col md:flex-row items-center gap-10 shadow-2xl border-white/50">
+    <header className="glass-card p-12 rounded-[3.5rem] flex flex-col md:flex-row items-center gap-10 shadow-2xl border-white/20">
       <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-primary-400 to-primary-700 text-white flex items-center justify-center shadow-2xl shadow-primary-500/40 transform hover:rotate-12 transition-transform duration-500">
         <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>

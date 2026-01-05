@@ -76,7 +76,7 @@ const ChatBot: React.FC = () => {
   };
 
   return (
-    <div className="md:col-span-12 glass-card rounded-[3rem] overflow-hidden flex flex-col h-[600px] shadow-2xl border-white/40 dark:border-slate-800 animate-[fadeIn_0.5s_ease-out]">
+    <div className="md:col-span-12 glass-card rounded-[3rem] overflow-hidden flex flex-col h-[600px] shadow-2xl border-white/20 dark:border-slate-800 animate-[fadeIn_0.5s_ease-out]">
       {/* Header */}
       <div className="p-8 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-white/30 backdrop-blur-xl">
         <div className="flex items-center gap-4">
@@ -127,7 +127,7 @@ const ChatBot: React.FC = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about our values, remote setup, or tech..."
-            className="w-full pl-8 pr-16 py-5 bg-white/80 dark:bg-slate-800/80 border border-white/30 dark:border-slate-700 rounded-[2rem] focus:ring-4 focus:ring-primary-500/10 outline-none transition-all text-sm font-medium shadow-inner"
+            className="w-full pl-8 pr-16 py-5 bg-white/80 dark:bg-slate-800/80 border border-white/20 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-primary-500/10 outline-none transition-all text-sm font-medium shadow-inner"
           />
           <button 
             type="submit"

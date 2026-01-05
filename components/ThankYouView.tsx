@@ -6,7 +6,7 @@ const ThankYouView: React.FC = () => {
   return (
     <div className="animate-[fadeIn_0.6s_ease-out] space-y-6">
       {/* Main Success Tile */}
-      <div className="glass-card p-12 rounded-[3rem] text-center shadow-2xl border-white/40 dark:border-slate-800">
+      <div className="glass-card p-12 rounded-[3rem] text-center shadow-2xl border-white/20 dark:border-slate-800">
         <div className="flex justify-center items-center mb-8">
           <div className="bg-green-500 text-white p-5 rounded-[2rem] shadow-2xl shadow-green-500/40 transform hover:scale-110 transition-transform duration-500">
             <CheckCircleIcon className="w-12 h-12" />
@@ -42,7 +42,7 @@ const ThankYouView: React.FC = () => {
             color: "bg-teal-500/5 text-teal-600"
           }
         ].map((item, i) => (
-          <div key={i} className={`glass-card p-8 rounded-[2.5rem] flex flex-col justify-between ${item.color}`}>
+          <div key={i} className={`glass-card p-8 rounded-[2.5rem] flex flex-col justify-between ${item.color} border border-white/20`}>
             <span className="text-3xl font-black opacity-20 mb-4">{item.step}</span>
             <div>
               <h4 className="font-black text-lg mb-2 tracking-tight text-gray-900 dark:text-white">{item.title}</h4>

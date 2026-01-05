@@ -46,7 +46,7 @@ const SettingsView: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto animate-[fadeIn_0.5s_ease-out]">
-      <form onSubmit={handleSave} className="glass-card p-12 rounded-[3.5rem] space-y-10 shadow-2xl">
+      <form onSubmit={handleSave} className="glass-card p-12 rounded-[4rem] space-y-10 shadow-2xl border-white/20">
         <div className="border-b border-gray-100 dark:border-slate-800 pb-8">
           <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">Global Hub Configuration</h2>
           <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-2">Adjust your AI & Communication triggers</p>
@@ -59,7 +59,7 @@ const SettingsView: React.FC = () => {
               type="url" 
               value={calendlyUrl} 
               onChange={e => setCalendlyUrl(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20"
               placeholder="https://calendly.com/your-team/interview"
             />
           </div>
@@ -70,7 +70,7 @@ const SettingsView: React.FC = () => {
               type="text" 
               value={companyName} 
               onChange={e => setCompanyName(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20"
             />
           </div>
 
@@ -80,7 +80,7 @@ const SettingsView: React.FC = () => {
               rows={4}
               value={aiInstruction} 
               onChange={e => setAiInstruction(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-3xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed border-white/20"
             />
             <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">This prompt guides the Gemini AI in analyzing applications.</p>
           </div>

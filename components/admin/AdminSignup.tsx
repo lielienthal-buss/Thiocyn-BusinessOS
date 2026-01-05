@@ -48,7 +48,7 @@ const AdminSignup: React.FC<AdminSignupProps> = ({ onBackToLogin }) => {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-20 bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700">
+    <div className="glass-card max-w-md mx-auto mt-20 p-10 rounded-[3rem] shadow-2xl animate-[fadeIn_0.5s_ease-out] border-white/20">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">New Recruiter Account</h2>
         <p className="text-gray-500 text-sm mt-2">Create an account to manage the hiring pipeline.</p>
@@ -62,7 +62,7 @@ const AdminSignup: React.FC<AdminSignupProps> = ({ onBackToLogin }) => {
             required 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600 outline-none"
+            className="w-full px-6 py-4 bg-white/50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
             placeholder="name@company.com"
           />
         </div>
@@ -75,7 +75,7 @@ const AdminSignup: React.FC<AdminSignupProps> = ({ onBackToLogin }) => {
             minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600 outline-none"
+            className="w-full px-6 py-4 bg-white/50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
             placeholder="••••••••"
           />
         </div>

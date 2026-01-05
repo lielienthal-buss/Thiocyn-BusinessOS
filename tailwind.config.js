@@ -22,6 +22,9 @@ export default {
           '900': '#1e3a8a',
           '950': '#172554',
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
       }
     },
   },
