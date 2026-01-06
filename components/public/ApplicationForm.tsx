@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CaptchaComponent from './CaptchaComponent'; // Dein Captcha Wrapper
-import './index.css'; // Stelle sicher, dass Tailwind + Fonts geladen sind
+import '../../index.css'; // Stelle sicher, dass Tailwind + Fonts geladen sind
 
 interface ApplicationFormData {
   full_name: string;
