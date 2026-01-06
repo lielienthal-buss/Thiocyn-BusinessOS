@@ -8,7 +8,10 @@ export function CaptchaComponent({
   return (
     <Turnstile
       sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-      onSuccess={onVerify}
+      onSuccess={(token) => {
+    console.log("Captcha success:", token);
+    onVerify(token);
+  }}
     />
   );
 }

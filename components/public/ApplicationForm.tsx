@@ -31,6 +31,7 @@ const ApplicationForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Submitting form, captcha token =", captchaToken);
     e.preventDefault();
 
     if (!captchaToken) {
