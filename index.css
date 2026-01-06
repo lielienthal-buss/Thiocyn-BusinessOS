@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@reference utilities;
-
 :root {
   --font-primary: 'Inter', sans-serif;
 }
