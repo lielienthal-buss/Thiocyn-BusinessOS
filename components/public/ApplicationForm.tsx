@@ -91,7 +91,7 @@ const ApplicationForm: React.FC = () => {
       <div className="col-span-12 flex justify-end">
         <button
           type="submit"
-          className="px-6 py-3 bg-primary/80 hover:bg-primary/100 rounded-xl text-white font-semibold transition shadow-md hover:shadow-xl"
+          className="px-6 py-3 bg-primary-600 hover:bg-primary-700 rounded-xl text-white font-semibold transition shadow-md hover:shadow-xl"
         >
           Submit
         </button>
