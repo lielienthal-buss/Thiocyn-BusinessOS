@@ -36,46 +36,39 @@ const ApplicationForm: React.FC = () => {
 
     console.log("Submitting form, captcha token =", captchaToken);
 
+    // 1️⃣ Captcha prüfen
     if (!captchaToken) {
       alert("Bitte Captcha ausfüllen!");
+      return;
+    }
+
+    // 2️⃣ Pflichtfelder prüfen
+    if (!formData.full_name || !formData.email) {
+      alert("Name und E-Mail sind Pflichtfelder.");
       return;
     }
 
     setSubmitting(true);
 
     try {
-      // Get the file from formData
-      const file = formData.resume; // Assuming formData.resume holds the File object
-      if (!file) throw new Error("Keine Datei ausgewählt");
-
-      // Upload file to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('uploads') // Assuming 'uploads' is your bucket name
-        .upload(`applications/${file.name}`, file);
-
-      if (uploadError) throw uploadError;
-
-      // Insert application data into Supabase table
-      const { error: insertError } = await supabase
-        .from('applications')
+      // 3️⃣ Insert in Supabase (nur die existierenden Felder)
+      const { error } = await supabase
+        .from("applications")
         .insert({
           full_name: formData.full_name,
           email: formData.email,
-          cover_letter: formData.cover_letter,
-          file_path: uploadData.path, // Store the path to the uploaded file
+          cover_letter: formData.cover_letter || null, // optional
           captcha_token: captchaToken,
         });
 
-      if (insertError) throw insertError;
+      if (error) throw error;
 
+      // 4️⃣ Erfolgreich
       alert("Bewerbung erfolgreich gesendet!");
-
-      // Reset form and captcha
       setFormData({
         full_name: '',
         email: '',
         cover_letter: '',
-        resume: null, // Reset resume field
       });
       setCaptchaToken(null);
 
