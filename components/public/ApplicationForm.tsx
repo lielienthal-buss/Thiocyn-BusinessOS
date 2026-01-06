@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CaptchaComponent from './CaptchaComponent'; // Dein Captcha Wrapper
 import '../../index.css'; // Stelle sicher, dass Tailwind + Fonts geladen sind
+import { supabase } from '../../lib/supabaseClient';
 
 interface ApplicationFormData {
   full_name: string;
@@ -31,8 +32,9 @@ const ApplicationForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("Submitting form, captcha token =", captchaToken);
     e.preventDefault();
+
+    console.log("Submitting form, captcha token =", captchaToken);
 
     if (!captchaToken) {
       alert("Bitte bestätige das Captcha.");
@@ -42,11 +44,29 @@ const ApplicationForm: React.FC = () => {
     setSubmitting(true);
 
     try {
-      console.log("Submitting with captcha:", captchaToken);
+      const { data, error } = await supabase
+        .from("applications")
+        .insert([{ ...formData, captcha_token: captchaToken }]);
 
-      // TODO: Supabase insert
+      if (error) {
+        console.error("Supabase Insert Error:", error);
+        alert("Upload fehlgeschlagen: " + error.message);
+        return;
+      }
+
+      console.log("Insert successful:", data);
+      alert("Bewerbung erfolgreich eingereicht!");
+
+      // Reset form and captcha
+      setFormData({
+        full_name: '',
+        email: '',
+        cover_letter: '',
+      });
+      setCaptchaToken(null);
+
     } catch (err) {
-      console.error(err);
+      console.error("Unexpected Error:", err);
       alert("Fehler beim Absenden.");
     } finally {
       setSubmitting(false);
