@@ -57,12 +57,15 @@ const ApplicationForm: React.FC = () => {
           full_name: formData.full_name,
           email: formData.email,
           cover_letter: formData.cover_letter || null, // optional
-          captcha_token: captchaToken,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase Insert Error:", error);
+        alert("Upload fehlgeschlagen: " + (error.message || JSON.stringify(error)));
+        return;
+      }
 
-      // 4️⃣ Erfolgreich
+      console.log("Insert successful:", data);
       alert("Bewerbung erfolgreich gesendet!");
       setFormData({
         full_name: '',
