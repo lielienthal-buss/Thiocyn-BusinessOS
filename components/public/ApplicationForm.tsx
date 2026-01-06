@@ -57,6 +57,8 @@ const ApplicationForm: React.FC = () => {
           full_name: formData.full_name,
           email: formData.email,
           cover_letter: formData.cover_letter || null, // optional
+          project_interest: null, // Explicitly set to null
+          disc_answers: null,     // Explicitly set to null
         });
 
       if (error) {
