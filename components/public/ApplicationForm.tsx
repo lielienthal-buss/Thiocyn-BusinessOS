@@ -7,7 +7,6 @@ interface ApplicationFormData {
   full_name: string;
   email: string;
   cover_letter: string;
-  [key: string]: any;
 }
 
 const QuestionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
