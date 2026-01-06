@@ -51,7 +51,7 @@ const ApplicationForm: React.FC = () => {
 
     try {
       // 3️⃣ Insert in Supabase (nur die existierenden Felder)
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("applications")
         .insert({
           full_name: formData.full_name,
