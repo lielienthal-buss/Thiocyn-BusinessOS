@@ -24,17 +24,32 @@ const ApplicationForm: React.FC = () => {
   });
 
   const [captchaToken, setCaptchaToken] = useState<string | null>(null); // Captcha Token bleibt dynamisch
-  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!captchaToken) return alert('Bitte Captcha bestätigen');
-    console.log('Form submitted', formData);
-    setSubmitted(true);
+
+    if (!captchaToken) {
+      alert("Bitte bestätige das Captcha.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      console.log("Submitting with captcha:", captchaToken);
+
+      // TODO: Supabase insert
+    } catch (err) {
+      console.error(err);
+      alert("Fehler beim Absenden.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -91,9 +106,10 @@ const ApplicationForm: React.FC = () => {
       <div className="col-span-12 flex justify-end">
         <button
           type="submit"
+          disabled={submitting}
           className="px-6 py-3 bg-primary-600 hover:bg-primary-700 rounded-xl text-white font-semibold transition shadow-md hover:shadow-xl"
         >
-          Submit
+          {submitting ? "Sende…" : "Bewerbung absenden"}
         </button>
       </div>
     </form>

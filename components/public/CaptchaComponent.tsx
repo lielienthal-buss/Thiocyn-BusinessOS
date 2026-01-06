@@ -1,37 +1,16 @@
-import React, { useEffect } from 'react';
+import Turnstile from "react-turnstile";
 
-// Extend Window interface to include onTurnstileSuccess
-declare global {
-  interface Window {
-    onTurnstileSuccess: (token: string) => void;
-  }
-}
-
-interface CaptchaComponentProps {
+export function CaptchaComponent({
+  onVerify,
+}: {
   onVerify: (token: string) => void;
-}
-
-const CaptchaComponent: React.FC<CaptchaComponentProps> = ({ onVerify }) => {
-  useEffect(() => {
-    window.onTurnstileSuccess = (token: string) => {
-      console.log("Turnstile token:", token); // Optional debug log
-      onVerify(token);
-    };
-    // Cleanup function (optional, but good practice)
-    return () => {
-      delete window.onTurnstileSuccess;
-    };
-  }, [onVerify]);
-
+}) {
   return (
-    <div
-      className="cf-turnstile"
-      data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY as string}
-      data-callback="onTurnstileSuccess"
-      data-size="normal"
-      data-tabindex="0"
+    <Turnstile
+      sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+      onSuccess={onVerify}
     />
   );
-};
+}
 
 export default CaptchaComponent;
