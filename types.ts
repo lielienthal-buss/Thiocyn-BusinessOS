@@ -75,4 +75,8 @@ export interface ApplicationFormData {
   // Step 3
   disc_answers: Record<string, string>;
   captcha_token: string | null;
+
+  // Meta
+  recruiter_id?: string | null;
+  captcha_verified?: boolean;
 }

@@ -4,45 +4,36 @@ DROP TABLE IF EXISTS "public"."applications" CASCADE;
 DROP TABLE IF EXISTS "public"."recruiter_settings" CASCADE;
 DROP TYPE IF EXISTS "public"."ApplicationStatus";
 
--- Recreate types
-CREATE TYPE "public"."ApplicationStatus" AS ENUM ('new', 'review', 'task_sent', 'task_submitted', 'interview', 'accepted', 'rejected');
-
 -- Create tables
 CREATE TABLE "public"."applications" (
     "id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "created_at" timestamp with time zone NOT NULL DEFAULT now(),
     "full_name" text,
     "email" text,
-    "cover_letter" text, -- Added
-    "timezone" text,
+    "status" text, -- Changed from ENUM to text to allow 'applied'
+    "recruiter_id" uuid,
+    "available_from" timestamptz,
+    "available_until" timestamptz,
+    "availability_start_date" timestamptz,
+    "availability_end_date" timestamptz,
     "availability_hours_per_week" integer,
-    "availability_start_date" date,
-    "availability_end_date" date,
-    "project_interest" text[],
-    "disc_q1" text,
-    "disc_q2" text,
-    "disc_q3" text,
-    "disc_q4" text,
-    "disc_q5" text,
-    "disc_q6" text,
-    "disc_q7" text,
-    "disc_q8" text,
-    "disc_q9" text,
-    "disc_q10" text,
-    "disc_count_d" integer DEFAULT 0,
-    "disc_count_i" integer DEFAULT 0,
-    "disc_count_s" integer DEFAULT 0,
-    "disc_count_c" integer DEFAULT 0,
+    "timezone" text,
+    "captcha_verified" boolean,
+    "captcha_token" text,
+    "disc_answers" jsonb, -- The flexible JSONB column for DISC
     "motivation_text" text,
-    "project_example_text" text,,
+    "project_example_text" text,
     "requirements_handling_text" text,
     "remote_work_text" text,
-    "captcha_token" text,
-    "status" "public"."ApplicationStatus" NOT NULL DEFAULT 'new',
+    "cover_letter" text,
+    "project_interest" text[],
+    
+    -- Timestamps for tracking
     "task_sent_at" timestamp with time zone,
     "task_submitted_at" timestamp with time zone,
     "interview_at" timestamp with time zone,
     "decided_at" timestamp with time zone,
+
     CONSTRAINT "applications_pkey" PRIMARY KEY (id)
 );
 

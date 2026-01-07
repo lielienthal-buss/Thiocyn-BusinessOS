@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
 import { ApplicationFormData } from '../../types';
+import { submitApplication } from '../../lib/actions';
 
 import Step1Basics from './Step1Basics';
 import Step2Experience from './Step2Experience';
@@ -28,6 +28,10 @@ const initialFormData: ApplicationFormData = {
   // Step 3
   disc_answers: {},
   captcha_token: null,
+
+  // Meta
+  recruiter_id: null,
+  captcha_verified: false,
 };
 
 const Stepper: React.FC<{ currentStep: number }> = ({ currentStep }) => (
@@ -75,6 +79,9 @@ const ApplicationForm: React.FC = () => {
   
   const handleCaptchaVerify = (token: string | null) => {
     handleChange('captcha_token', token);
+    if (token) {
+      handleChange('captcha_verified', true);
+    }
   };
 
   const handleNext = () => {
@@ -101,39 +108,18 @@ const ApplicationForm: React.FC = () => {
     }
 
     setSubmitting(true);
-    try {
-      const { error } = await supabase.from("applications").insert({
-        // Map all fields from formData to the DB schema
-        full_name: formData.full_name,
-        email: formData.email,
-        timezone: formData.timezone,
-        availability_hours_per_week: formData.availability_hours_per_week,
-        available_from: formData.available_from || null,
-        available_until: formData.available_until || null,
-        motivation_text: formData.motivation_text,
-        cover_letter: formData.cover_letter,
-        project_example_text: formData.project_example_text,
-        requirements_handling_text: formData.requirements_handling_text,
-        remote_work_text: formData.remote_work_text,
-        project_interest: formData.project_interest,
-        availability_start_date: formData.availability_start_date || null,
-        availability_end_date: formData.availability_end_date || null,
-        disc_answers: formData.disc_answers,
-        captcha_token: formData.captcha_token,
-      });
+    
+    const result = await submitApplication(formData);
 
-      if (error) throw error;
-
+    if (result.success) {
       alert("Application submitted successfully!");
       setFormData(initialFormData);
       setStep(1);
-
-    } catch (err) {
-      console.error("Submission error:", err);
-      alert("Failed to submit application: " + (err instanceof Error ? err.message : "Unknown error"));
-    } finally {
-      setSubmitting(false);
+    } else {
+      alert("Failed to submit application: " + (result.error?.message || "Unknown error"));
     }
+
+    setSubmitting(false);
   };
 
   return (

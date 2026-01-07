@@ -30,38 +30,59 @@ const emailTemplates = {
 };
 
 const discQuestions = [
-  { id: 'disc_q1', text: 'I am assertive, and direct.' },
-  { id: 'disc_q2', text: 'I am optimistic and outgoing.' },
-  { id: 'disc_q3', text: 'I am patient and a good listener.' },
-  { id: 'disc_q4', text: 'I am precise and analytical.' },
-  { id: 'disc_q5', text: 'I like to take on challenges.' },
-  { id: 'disc_q6', text: 'I enjoy persuading and influencing others.' },
-  { id: 'disc_q7', text: 'I prefer a stable and predictable environment.' },
-  { id: 'disc_q8', text: 'I value accuracy and quality.' },
-  { id: 'disc_q9', text: 'I can be demanding at times.' },
-  { id: 'disc_q10', text: 'I enjoy collaborating in a team.' },
+    { id: 'disc_q1', text: 'I am direct and to the point.' },
+    { id: 'disc_q2', text: 'I enjoy influencing and inspiring others.' },
+    { id: 'disc_q3', text: 'I prefer a stable and predictable work environment.' },
+    { id: 'disc_q4', text: 'I focus on details and ensure high quality.' },
+    { id: 'disc_q5', text: 'I take charge when necessary.' },
+    { id: 'disc_q6', text: 'I am optimistic and outgoing.' },
+    { id: 'disc_q7', text: 'I am a good listener and very patient.' },
+    { id: 'disc_q8', text: 'I follow rules and procedures closely.' },
+    { id: 'disc_q9', text: 'I am driven by results and challenges.' },
+    { id: 'disc_q10', text: 'I thrive in social and collaborative settings.' },
 ];
+
+// Mapping of DISC questions to their types (D, I, S, C)
+const DISC_QUESTION_MAP: { [key: string]: 'D' | 'I' | 'S' | 'C' } = {
+  disc_q1: 'D', disc_q5: 'D', disc_q9: 'D',
+  disc_q2: 'I', disc_q6: 'I', disc_q10: 'I',
+  disc_q3: 'S', disc_q7: 'S',
+  disc_q4: 'C', disc_q8: 'C',
+};
+
+// Scoring for answers
+const DISC_SCORE_MAP: { [key: string]: number } = {
+  'Agree': 1,
+  'Strongly Agree': 2,
+};
+
 
 const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, onNoteAdded }) => {
   const [newNote, setNewNote] = useState('');
   const [isSubmittingNote, setIsSubmittingNote] = useState(false);
 
-  const getDiscPrimaryAndSecondary = (app: Application) => {
-    const counts = {
-      D: app.disc_count_d || 0,
-      I: app.disc_count_i || 0,
-      S: app.disc_count_s || 0,
-      C: app.disc_count_c || 0,
-    };
+  const getDiscProfile = (app: Application) => {
+    const counts = { D: 0, I: 0, S: 0, C: 0 };
+    if (!app.disc_answers) return { counts, primary: 'N/A', secondary: 'N/A' };
+
+    for (const [questionId, answer] of Object.entries(app.disc_answers)) {
+      const questionType = DISC_QUESTION_MAP[questionId];
+      const score = DISC_SCORE_MAP[answer] || 0;
+      if (questionType && score > 0) {
+        counts[questionType] += score;
+      }
+    }
+    
     const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
-    const primary = sorted[0][0];
-    const secondary = sorted.length > 1 ? sorted[1][0] : '';
-    return { primary, secondary };
+    const primary = sorted[0] ? sorted[0][0] : 'N/A';
+    const secondary = sorted[1] ? sorted[1][0] : 'N/A';
+    
+    return { counts, primary, secondary };
   };
 
-  const { primary: discPrimary, secondary: discSecondary } = getDiscPrimaryAndSecondary(application);
+  const { counts: discCounts, primary: discPrimary, secondary: discSecondary } = getDiscProfile(application);
 
-  const handleStatusChange = async (newStatus: Application['status'], templateKey?: keyof typeof emailTemplates) => {
+  const handleStatusChange = async (newStatus: string, templateKey?: keyof typeof emailTemplates) => {
     let timestamps: Record<string, string> = {};
     if (newStatus === 'task_sent') timestamps.task_sent_at = new Date().toISOString();
     if (newStatus === 'interview') timestamps.interview_at = new Date().toISOString();
@@ -130,7 +151,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
             <h3 className="font-bold text-lg mb-4">DISC Questionnaire Answers</h3>
             <div className="space-y-2 text-sm">
               {discQuestions.map((q, index) => (
-                <p key={q.id}><strong>{index + 1}. {q.text}</strong>: {(application as any)[q.id]}</p>
+                <p key={q.id}><strong>{index + 1}. {q.text}</strong>: {application.disc_answers?.[q.id] || 'N/A'}</p>
               ))}
             </div>
           </div>
@@ -168,10 +189,10 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
             <p className="text-2xl font-bold">{discPrimary}</p>
             <p className="text-sm text-gray-500">Secondary: {discSecondary}</p>
             <div className="mt-4 text-sm">
-              <p>D: {application.disc_count_d}</p>
-              <p>I: {application.disc_count_i}</p>
-              <p>S: {application.disc_count_s}</p>
-              <p>C: {application.disc_count_c}</p>
+              <p>D: {discCounts.D}</p>
+              <p>I: {discCounts.I}</p>
+              <p>S: {discCounts.S}</p>
+              <p>C: {discCounts.C}</p>
             </div>
           </div>
         </div>

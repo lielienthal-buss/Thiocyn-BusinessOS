@@ -1,122 +1,166 @@
-import { supabase } from "./supabaseClient";
-import type { ApplicationFormData, ApplicationStatus, Application, ApplicationNote, RecruiterSettings } from "../types";
+// lib/actions.ts
+import { supabase } from './supabaseClient';
+import { Application, ApplicationFormData, RecruiterSettings } from '../types';
 
-/**
- * Server Actions for the Hiring Tool.
- */
-
-export async function submitApplicationAction(data: ApplicationFormData, captchaToken: string): Promise<{ success: boolean; id?: string; error?: string }> {
-  try {
-    // Prepare data for Supabase
-    const applicationData = {
-      full_name: data.full_name,
-      email: data.email,
-      cover_letter: data.cover_letter,
-      status: 'submitted' as ApplicationStatus,
-      captcha_token: captchaToken
-    };
-
-    console.log('Application data being sent to Supabase:', applicationData); // Added log
-
-    // Insert into Supabase
-    const { data: app, error: insertError } = await supabase
-      .from('applications')
-      .insert(applicationData)
-      .select()
-      .single();
-
-    if (insertError) throw insertError;
-
-    return { success: true, id: app.id };
-  } catch (err: any) {
-    console.error("Submission error:", err.message || err);
-    return { success: false, error: err.message };
-  }
-}
-
-export async function updateApplicationStatus(id: string, newStatus: ApplicationStatus, timestamps: Partial<Record<string, string>> = {}): Promise<boolean> {
-  const { error } = await supabase
-    .from('applications')
-    .update({ status: newStatus, ...timestamps })
-    .eq('id', id);
-  
-  if (error) {
-    console.error("Status update failed:", error.message || error);
-    return false;
-  }
-  return true;
-}
-
-export async function getApplications(): Promise<Application[]> {
-  try {
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .eq("status", "submitted")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Fetch applications error:", error.message, error.details || "");
-      return [];
-    }
-    return data.map(app => ({
-      ...app,
-      project_interest: Array.isArray(app.project_interest) ? app.project_interest : [],
-    })) || [];
-  } catch (err: any) {
-    console.error("Fetch applications exception:", err.message || err);
-    return [];
-  }
-}
-
-export async function addApplicationNote(applicationId: string, text: string): Promise<ApplicationNote | null> {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return null;
+export async function submitApplication(formData: ApplicationFormData) {
+  // This object is not used in the final insert, but was part of user's snippet.
+  // It could be useful if you switch to a single jsonb column later.
+  const formResponseData = {
+    motivation_text: formData.motivation_text,
+    cover_letter: formData.cover_letter,
+    project_example_text: formData.project_example_text,
+    requirements_handling_text: formData.requirements_handling_text,
+    remote_work_text: formData.remote_work_text,
+    project_interest: formData.project_interest,
+    disc_answers: formData.disc_answers,
+  };
 
   const { data, error } = await supabase
-    .from('application_notes')
-    .insert({
-      application_id: applicationId,
-      note_text: text,
-      author_email: session.user.email
-    })
-    .select()
-    .single();
+    .from('applications')
+    .insert([
+      {
+        full_name: formData.full_name,
+        email: formData.email,
+        status: 'applied', // Standard-Status
+        recruiter_id: formData.recruiter_id || null,
+        available_from: formData.available_from || null,
+        available_until: formData.available_until || null,
+        availability_start_date: formData.availability_start_date || null,
+        availability_end_date: formData.availability_end_date || null,
+        availability_hours_per_week: formData.availability_hours_per_week || null,
+        timezone: formData.timezone || null,
+        captcha_verified: formData.captcha_verified || false,
+        captcha_token: formData.captcha_token || null,
+        disc_answers: formData.disc_answers,
+        motivation_text: formData.motivation_text,
+        project_example_text: formData.project_example_text,
+        requirements_handling_text: formData.requirements_handling_text,
+        remote_work_text: formData.remote_work_text,
+        cover_letter: formData.cover_letter,
+        project_interest: formData.project_interest,
+      },
+    ]);
 
   if (error) {
-    console.error("Failed to add note:", error.message || error);
-    return null;
+    console.error('Submit application error:', error.message, error.details || '');
+    return { success: false, error };
   }
-  return data;
+
+  return { success: true, data };
 }
 
+/**
+ * Fetches the recruiter settings.
+ * Assumes a single row with id = 1.
+ */
 export async function getSettings(): Promise<RecruiterSettings | null> {
   const { data, error } = await supabase
     .from('recruiter_settings')
     .select('*')
     .eq('id', 1)
     .single();
+
   if (error) {
     console.error('Error fetching settings:', error);
-    return null;
+    throw error;
   }
+
   return data;
 }
 
-export async function updateSettings(settings: Partial<RecruiterSettings>): Promise<boolean> {
+/**
+ * Updates the recruiter settings.
+ * @param changes A partial object of the settings to update.
+ */
+export async function updateSettings(changes: Partial<RecruiterSettings>): Promise<boolean> {
   const { error } = await supabase
     .from('recruiter_settings')
-    .update(settings)
+    .update(changes)
     .eq('id', 1);
+
   if (error) {
     console.error('Error updating settings:', error);
     return false;
   }
+
   return true;
 }
 
-export async function markEmailAsSentAction(applicationId: string): Promise<boolean> {
-  // This is a placeholder as per the prompt. In a real app, this might not be needed if mailto is the only comms.
-  console.log(`Marking email as sent for ${applicationId}`);
-  return Promise.resolve(true);
+/**
+ * Fetches all applications.
+ */
+export async function getApplications(): Promise<Application[]> {
+    const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching applications:', error);
+        return [];
+    }
+
+    return data || [];
+}
+
+/**
+ * Fetches a single application by its ID.
+ */
+export async function getApplicant(id: string): Promise<Application | null> {
+    const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error(`Error fetching applicant ${id}:`, error);
+        return null;
+    }
+
+    return data;
+}
+
+/**
+ * Updates the status and optionally other timestamp fields of a specific application.
+ */
+export async function updateApplicationStatus(id: string, status: string, otherUpdates: Record<string, any> = {}): Promise<boolean> {
+    const { error } = await supabase
+        .from('applications')
+        .update({ status, ...otherUpdates })
+        .eq('id', id);
+
+    if (error) {
+        console.error(`Error updating status for applicant ${id}:`, error);
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Adds a note to an application.
+ */
+export async function addApplicationNote(application_id: string, note_text: string): Promise<boolean> {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+        console.error('Cannot add note: user not authenticated.');
+        return false;
+    }
+
+    const { error } = await supabase
+        .from('application_notes')
+        .insert({
+            application_id,
+            note_text,
+            author_email: user.email,
+        });
+
+    if (error) {
+        console.error(`Error adding note for applicant ${application_id}:`, error);
+        return false;
+    }
+
+    return true;
 }
