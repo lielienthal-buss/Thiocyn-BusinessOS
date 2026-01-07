@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
@@ -7,13 +6,12 @@ import ChatBot from './components/public/ChatBot';
 import Footer from './components/Footer';
 import Dashboard from './components/admin/Dashboard';
 import AdminLogin from './components/admin/AdminLogin';
-import AdminSignup from './components/admin/AdminSignup';
 import ForgotPassword from './components/admin/ForgotPassword';
 import Imprint from './components/public/Imprint';
 import PrivacyPolicy from './components/public/PrivacyPolicy';
 
 type ViewType = 'public' | 'admin' | 'imprint' | 'privacy';
-type AdminSubView = 'login' | 'signup' | 'forgot' | 'dashboard';
+type AdminSubView = 'login' | 'forgot' | 'dashboard';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewType>('public');
@@ -66,12 +64,10 @@ const App: React.FC = () => {
     const isAuthenticated = session || isDemoMode;
     
     if (!isAuthenticated && adminSubView === 'dashboard') {
-      return <AdminLogin onGoToSignup={() => setAdminSubView('signup')} onGoToForgot={() => setAdminSubView('forgot')} />;
+      return <AdminLogin onGoToForgot={() => setAdminSubView('forgot')} />;
     }
 
     switch (adminSubView) {
-      case 'signup':
-        return <AdminSignup onBackToLogin={() => setAdminSubView('login')} />;
       case 'forgot':
         return <ForgotPassword onBackToLogin={() => setAdminSubView('login')} />;
       case 'dashboard':
@@ -105,7 +101,7 @@ const App: React.FC = () => {
         );
       case 'login':
       default:
-        return <AdminLogin onGoToSignup={() => setAdminSubView('signup')} onGoToForgot={() => setAdminSubView('forgot')} />;
+        return <AdminLogin onGoToForgot={() => setAdminSubView('forgot')} />;
     }
   };
 

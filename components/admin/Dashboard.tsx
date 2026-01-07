@@ -2,26 +2,22 @@ import React, { useState, useEffect } from 'react';
 import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
-import { getApplications, getSettings } from '../../lib/actions';
-import type { Application, RecruiterSettings } from '../../types';
+import { getSettings } from '../../lib/actions';
+import type { RecruiterSettings } from '../../types';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
 type Tab = 'applications' | 'settings';
 
 const Dashboard: React.FC = () => {
   const [tab, setTab] = useState<Tab>('applications');
-  const [apps, setApps] = useState<Application[]>([]);
   const [settings, setSettings] = useState<RecruiterSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
-    const [applications, recruiterSettings] = await Promise.all([
-      getApplications(),
-      getSettings()
-    ]);
-    setApps(applications);
+    // Only fetch settings now, as lists manage their own data
+    const recruiterSettings = await getSettings();
     setSettings(recruiterSettings);
     setLoading(false);
   };
@@ -29,8 +25,6 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadData();
   }, []);
-
-  const selectedApp = apps.find(app => app.id === selectedAppId);
 
   const renderContent = () => {
     if (loading) {
@@ -42,13 +36,13 @@ const Dashboard: React.FC = () => {
     }
 
     if (tab === 'applications') {
-      if (selectedApp) {
+      if (selectedAppId) {
         return (
           <ApplicantDetailView
-            application={selectedApp}
+            applicationId={selectedAppId}
             settings={settings}
             onBack={() => setSelectedAppId(null)}
-            onNoteAdded={loadData}
+            onNoteAdded={loadData} // This could be optimized to not reload all settings
           />
         );
       }

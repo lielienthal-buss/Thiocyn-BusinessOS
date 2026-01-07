@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Application, ApplicationNote, RecruiterSettings } from '../../types';
-import { updateApplicationStatus, addApplicationNote } from '../../lib/actions';
+import { getApplicant, updateApplicationStatus, addApplicationNote } from '../../lib/actions';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
 interface Props {
-  application: Application;
+  applicationId: string;
   settings: RecruiterSettings | null;
   onBack: () => void;
   onNoteAdded: () => void;
 }
 
+// Mapping of email templates for different application statuses
 const emailTemplates = {
   task: {
     subject: "Your Task from {{company_name}}",
@@ -29,6 +30,7 @@ const emailTemplates = {
   }
 };
 
+// DISC questions and their mapping to personality types
 const discQuestions = [
     { id: 'disc_q1', text: 'I am direct and to the point.' },
     { id: 'disc_q2', text: 'I enjoy influencing and inspiring others.' },
@@ -57,14 +59,31 @@ const DISC_SCORE_MAP: { [key: string]: number } = {
 };
 
 
-const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, onNoteAdded }) => {
+const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack, onNoteAdded }) => {
+  const [application, setApplication] = useState<Application | null>(null);
+  const [loading, setLoading] = useState(true);
   const [newNote, setNewNote] = useState('');
   const [isSubmittingNote, setIsSubmittingNote] = useState(false);
 
+  // Effect to load applicant data when the component mounts or applicationId changes
+  useEffect(() => {
+    const loadApplicant = async () => {
+      setLoading(true);
+      // Fetch applicant data using the provided applicationId
+      const app = await getApplicant(applicationId);
+      setApplication(app);
+      setLoading(false);
+    };
+    loadApplicant();
+  }, [applicationId]);
+
+  // Function to calculate DISC profile based on application answers
   const getDiscProfile = (app: Application) => {
     const counts = { D: 0, I: 0, S: 0, C: 0 };
+    // Return default if no disc_answers are present
     if (!app.disc_answers) return { counts, primary: 'N/A', secondary: 'N/A' };
 
+    // Iterate over answers and sum scores based on question type
     for (const [questionId, answer] of Object.entries(app.disc_answers)) {
       const questionType = DISC_QUESTION_MAP[questionId];
       const score = DISC_SCORE_MAP[answer] || 0;
@@ -73,6 +92,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
       }
     }
     
+    // Sort counts to determine primary and secondary DISC types
     const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
     const primary = sorted[0] ? sorted[0][0] : 'N/A';
     const secondary = sorted[1] ? sorted[1][0] : 'N/A';
@@ -80,43 +100,65 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
     return { counts, primary, secondary };
   };
 
+  // Show loading spinner if data is being fetched
+  if (loading) {
+    return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
+  }
+
+  // Show error message if applicant not found
+  if (!application) {
+    return <div className="text-center py-20">Applicant not found.</div>;
+  }
+
+  // Calculate DISC profile for the current application
   const { counts: discCounts, primary: discPrimary, secondary: discSecondary } = getDiscProfile(application);
 
+  // Handler for changing application status and sending emails
   const handleStatusChange = async (newStatus: string, templateKey?: keyof typeof emailTemplates) => {
     let timestamps: Record<string, string> = {};
+    // Set timestamps based on status change
     if (newStatus === 'task_sent') timestamps.task_sent_at = new Date().toISOString();
     if (newStatus === 'interview') timestamps.interview_at = new Date().toISOString();
     if (newStatus === 'accepted' || newStatus === 'rejected') timestamps.decided_at = new Date().toISOString();
     
+    // Update application status in the backend
     await updateApplicationStatus(application.id, newStatus, timestamps);
 
+    // If a template key is provided, send an email
     if (templateKey) {
       const template = emailTemplates[templateKey];
+      // Replace placeholders in subject and body
       let subject = template.subject.replace('{{company_name}}', settings?.company_name || '');
       let body = template.body
         .replace('{{name}}', application.full_name)
         .replace('{{company_name}}', settings?.company_name || '')
         .replace('{{calendly_url}}', settings?.calendly_url || '[CALENDLY_LINK]');
       
+      // Open mailto link to send email
       window.location.href = `mailto:${application.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
-    onBack(); // Go back to list after action
+    onBack(); // Navigate back to the list after action
   };
 
+  // Handler for adding a new note to the application
   const handleAddNote = async () => {
-    if (!newNote.trim()) return;
+    if (!newNote.trim()) return; // Do nothing if note is empty
     setIsSubmittingNote(true);
     await addApplicationNote(application.id, newNote);
     setNewNote('');
     setIsSubmittingNote(false);
+    // Reload applicant data to show the new note
+    const reloadedApp = await getApplicant(applicationId);
+    setApplication(reloadedApp);
     onNoteAdded();
   };
 
   return (
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
+      {/* Back button */}
       <button onClick={onBack} className="text-sm font-bold text-primary-600">&larr; Back to List</button>
       
-      {/* Header */}
+      {/* Header Section: Applicant Name, Email, and Status */}
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-3xl font-bold">{application.full_name}</h2>
@@ -125,7 +167,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
         <div className="px-4 py-2 text-sm font-bold rounded-full bg-blue-100 text-blue-800">{application.status}</div>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons: Send Task, Invite to Interview, Accept, Reject */}
       <div className="flex flex-wrap gap-4">
         <button onClick={() => handleStatusChange('task_sent', 'task')} className="btn-primary">Send Task</button>
         <button onClick={() => handleStatusChange('interview', 'interview')} className="btn-primary">Invite to Interview</button>
@@ -133,10 +175,10 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
         <button onClick={() => handleStatusChange('rejected', 'rejection')} className="btn-danger">Reject</button>
       </div>
 
-      {/* Details Grid */}
+      {/* Details Grid: Written Answers, DISC Answers, Notes, and Sidebar Details */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
-          {/* Written Answers */}
+          {/* Written Answers Section */}
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Written Answers</h3>
             <div className="space-y-4 text-sm">
@@ -146,7 +188,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
               <p><strong>Remote Work:</strong> {application.remote_work_text}</p>
             </div>
           </div>
-          {/* DISC Answers */}
+          {/* DISC Answers Section */}
           <div className="card">
             <h3 className="font-bold text-lg mb-4">DISC Questionnaire Answers</h3>
             <div className="space-y-2 text-sm">
@@ -155,7 +197,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
               ))}
             </div>
           </div>
-          {/* Notes */}
+          {/* Internal Notes Section */}
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Internal Notes</h3>
             <div className="space-y-2 mb-4">
@@ -166,6 +208,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
                 </div>
               ))}
             </div>
+            {/* Input for adding new notes */}
             <div className="flex gap-2">
               <textarea value={newNote} onChange={e => setNewNote(e.target.value)} rows={2} className="w-full p-2 border rounded text-black" placeholder="Add a note..."></textarea>
               <button onClick={handleAddNote} disabled={isSubmittingNote} className="btn-primary self-start">
@@ -174,7 +217,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
             </div>
           </div>
         </div>
-        {/* Sidebar */}
+        {/* Sidebar Section: Details and DISC Profile */}
         <div className="space-y-6">
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Details</h3>

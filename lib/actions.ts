@@ -87,20 +87,24 @@ export async function updateSettings(changes: Partial<RecruiterSettings>): Promi
 }
 
 /**
- * Fetches all applications.
+ * Fetches a paginated list of applications.
  */
-export async function getApplications(): Promise<Application[]> {
-    const { data, error } = await supabase
+export async function getApplications(page: number, pageSize: number): Promise<{ data: Application[], count: number }> {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error, count } = await supabase
         .from('applications')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
     if (error) {
         console.error('Error fetching applications:', error);
-        return [];
+        return { data: [], count: 0 };
     }
 
-    return data || [];
+    return { data: data || [], count: count || 0 };
 }
 
 /**
