@@ -50,16 +50,11 @@ export async function updateApplicationStatus(id: string, newStatus: Application
 export async function getApplications(): Promise<Application[]> {
   try {
     const { data, error } = await supabase
-      .from('applications')
-      .select(`
-        *,
-        notes:application_notes (*),
-        disc_count_d,
-        disc_count_i,
-        disc_count_s,
-        disc_count_c
-      `)
-      .order('created_at', { ascending: false });
+      .from("applications")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    console.log("[getApplications] rows:", data);
 
     if (error) {
       console.error("Fetch applications error:", error.message, error.details || "");
