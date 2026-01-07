@@ -54,8 +54,25 @@ export interface RecruiterSettings {
 }
 
 export interface ApplicationFormData {
+  // Step 1
   full_name: string;
   email: string;
+  timezone: string;
+  availability_hours_per_week: number | null;
+  available_from: string;
+  available_until: string;
+  motivation_text: string;
   cover_letter: string;
-  captcha_token?: string;
+
+  // Step 2
+  project_example_text: string;
+  requirements_handling_text: string;
+  remote_work_text: string;
+  project_interest: string[];
+  availability_start_date: string;
+  availability_end_date: string;
+
+  // Step 3
+  disc_answers: Record<string, string>;
+  captcha_token: string | null;
 }
