@@ -52,9 +52,8 @@ export async function getApplications(): Promise<Application[]> {
     const { data, error } = await supabase
       .from("applications")
       .select("*")
+      .eq("status", "submitted")
       .order("created_at", { ascending: false });
-
-    console.log("[getApplications] rows:", data);
 
     if (error) {
       console.error("Fetch applications error:", error.message, error.details || "");
