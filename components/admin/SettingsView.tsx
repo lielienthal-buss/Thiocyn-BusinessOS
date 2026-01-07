@@ -59,7 +59,7 @@ const SettingsView: React.FC = () => {
               type="url" 
               value={calendlyUrl} 
               onChange={e => setCalendlyUrl(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20 text-black"
               placeholder="https://calendly.com/your-team/interview"
             />
           </div>
@@ -70,7 +70,7 @@ const SettingsView: React.FC = () => {
               type="text" 
               value={companyName} 
               onChange={e => setCompanyName(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20 text-black"
             />
           </div>
 
@@ -80,7 +80,7 @@ const SettingsView: React.FC = () => {
               rows={4}
               value={aiInstruction} 
               onChange={e => setAiInstruction(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed border-white/20"
+              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed border-white/20 text-black"
             />
             <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">This prompt guides the Gemini AI in analyzing applications.</p>
           </div>

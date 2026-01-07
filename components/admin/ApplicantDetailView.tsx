@@ -146,7 +146,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application, settings, onBack, o
               ))}
             </div>
             <div className="flex gap-2">
-              <textarea value={newNote} onChange={e => setNewNote(e.target.value)} rows={2} className="w-full p-2 border rounded" placeholder="Add a note..."></textarea>
+              <textarea value={newNote} onChange={e => setNewNote(e.target.value)} rows={2} className="w-full p-2 border rounded text-black" placeholder="Add a note..."></textarea>
               <button onClick={handleAddNote} disabled={isSubmittingNote} className="btn-primary self-start">
                 {isSubmittingNote ? <SpinnerIcon className="animate-spin h-5 w-5" /> : 'Add'}
               </button>
