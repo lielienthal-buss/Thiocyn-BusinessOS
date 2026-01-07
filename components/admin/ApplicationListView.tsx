@@ -39,14 +39,14 @@ const PaginationControls: React.FC<{ currentPage: number; totalCount: number; pa
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 text-xs font-bold rounded-md bg-white/50 dark:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           &larr; Previous
         </button>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 text-xs font-bold rounded-md bg-white/50 dark:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next &rarr;
         </button>

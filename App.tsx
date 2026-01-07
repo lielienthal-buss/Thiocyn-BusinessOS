@@ -88,7 +88,7 @@ const App: React.FC = () => {
                 <div className="hidden md:block text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] bg-primary-50 dark:bg-primary-900/40 px-6 py-2 rounded-full border border-primary-100 dark:border-primary-800">Recruiter Access</div>
                 <button 
                   onClick={handleLogout}
-                  className="text-[10px] font-black text-red-500 hover:text-red-700 transition-colors uppercase tracking-[0.2em] px-4 py-2 border border-red-100 dark:border-red-900/30 rounded-full"
+                  className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg"
                 >
                   Logout
                 </button>
@@ -126,7 +126,7 @@ const App: React.FC = () => {
               onClick={() => setView('admin')}
               className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'admin' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
             >
-              Pipeline
+              Admin Hub
             </button>
           </div>
         </nav>

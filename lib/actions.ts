@@ -126,12 +126,12 @@ export async function getAllApplications(): Promise<Application[]> {
 }
 
 /**
- * Fetches a single application by its ID.
+ * Fetches a single application by its ID, including associated notes.
  */
 export async function getApplicant(id: string): Promise<Application | null> {
     const { data, error } = await supabase
         .from('applications')
-        .select('*')
+        .select('*, application_notes(*)') // Select application and all related notes
         .eq('id', id)
         .single();
 

@@ -24,6 +24,7 @@ const INTEREST_OPTIONS = [
   "AI/ML Engineering",
   "Project Management",
   "DevOps",
+  "Video Creation/Marketing", // Added new option
 ];
 
 interface Props {

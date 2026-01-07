@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import SpinnerIcon from '../icons/SpinnerIcon';
@@ -30,7 +29,7 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin }) => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700">
+    <div className="max-w-md mx-auto mt-20 p-8 rounded-2xl shadow-xl bg-gray-900/30 backdrop-blur-2xl border border-white/20">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Forgot Password?</h2>
         <p className="text-gray-500 text-sm mt-2">Enter your email to receive a reset link.</p>
@@ -65,8 +64,8 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin }) => {
       </form>
 
       <div className="mt-6 text-center">
-        <button onClick={onBackToLogin} className="text-xs text-gray-500 hover:text-primary-600">
-          Back to Login
+        <button onClick={onBackToLogin} className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg">
+          &larr; Back to Login
         </button>
       </div>
     </div>

@@ -156,7 +156,7 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
   return (
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
       {/* Back button */}
-      <button onClick={onBack} className="text-sm font-bold text-primary-600">&larr; Back to List</button>
+      <button onClick={onBack} className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg">&larr; Back to List</button>
       
       {/* Header Section: Applicant Name, Email, and Status */}
       <div className="flex justify-between items-start">
@@ -211,7 +211,7 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
             {/* Input for adding new notes */}
             <div className="flex gap-2">
               <textarea value={newNote} onChange={e => setNewNote(e.target.value)} rows={2} className="w-full p-2 border rounded text-black" placeholder="Add a note..."></textarea>
-              <button onClick={handleAddNote} disabled={isSubmittingNote} className="btn-primary self-start">
+              <button onClick={handleAddNote} disabled={isSubmittingNote} className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg self-start">
                 {isSubmittingNote ? <SpinnerIcon className="animate-spin h-5 w-5" /> : 'Add'}
               </button>
             </div>
@@ -222,6 +222,9 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Details</h3>
             <div className="space-y-2 text-sm">
+              {application.aiScore !== undefined && application.aiScore !== null && (
+                <p><strong>AI Score:</strong> {Math.round(application.aiScore * 100)}%</p>
+              )}
               <p><strong>Interest:</strong> {application.project_interest?.join(', ')}</p>
               <p><strong>Availability:</strong> {application.availability_hours_per_week} hrs/week</p>
               <p><strong>Timezone:</strong> {application.timezone}</p>
