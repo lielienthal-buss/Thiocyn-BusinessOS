@@ -97,7 +97,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   }
 
   return (
-    <div className="glass-card rounded-[3rem] overflow-hidden shadow-2xl border-white/20 animate-[fadeIn_0.5s_ease-out]">
+    <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20 animate-[fadeIn_0.5s_ease-out]">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead className="bg-white/50 dark:bg-slate-900/50">

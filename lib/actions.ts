@@ -108,6 +108,24 @@ export async function getApplications(page: number, pageSize: number): Promise<{
 }
 
 /**
+ * Fetches all applications (non-paginated).
+ * Useful for insights/KPIs where all data is needed.
+ */
+export async function getAllApplications(): Promise<Application[]> {
+    const { data, error } = await supabase
+        .from('applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching all applications:', error);
+        return [];
+    }
+
+    return data || [];
+}
+
+/**
  * Fetches a single application by its ID.
  */
 export async function getApplicant(id: string): Promise<Application | null> {

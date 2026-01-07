@@ -35,6 +35,7 @@ export interface Application {
   interview_at?: string;
   decided_at?: string;
   notes?: ApplicationNote[];
+  aiScore?: number;
 }
 
 export interface ApplicationNote {

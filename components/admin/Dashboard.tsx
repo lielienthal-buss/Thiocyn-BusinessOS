@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
+import InsightsView from './InsightsView'; // Import the new InsightsView
 import { getSettings } from '../../lib/actions';
 import type { RecruiterSettings } from '../../types';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
-type Tab = 'applications' | 'settings';
+type Tab = 'applications' | 'settings' | 'insights'; // Add 'insights' to the Tab type
 
 const Dashboard: React.FC = () => {
   const [tab, setTab] = useState<Tab>('applications');
@@ -16,7 +17,6 @@ const Dashboard: React.FC = () => {
 
   const loadData = async () => {
     setLoading(true);
-    // Only fetch settings now, as lists manage their own data
     const recruiterSettings = await getSettings();
     setSettings(recruiterSettings);
     setLoading(false);
@@ -35,6 +35,10 @@ const Dashboard: React.FC = () => {
       return <SettingsView />;
     }
 
+    if (tab === 'insights') { // New case for InsightsView
+      return <InsightsView />;
+    }
+
     if (tab === 'applications') {
       if (selectedAppId) {
         return (
@@ -42,7 +46,7 @@ const Dashboard: React.FC = () => {
             applicationId={selectedAppId}
             settings={settings}
             onBack={() => setSelectedAppId(null)}
-            onNoteAdded={loadData} // This could be optimized to not reload all settings
+            onNoteAdded={loadData}
           />
         );
       }
@@ -57,6 +61,7 @@ const Dashboard: React.FC = () => {
       <nav className="flex items-center gap-10 border-b border-gray-100 dark:border-slate-800 pb-2">
         {[
           { id: 'applications', label: 'Applications' },
+          { id: 'insights', label: 'Insights' }, // Add Insights tab button
           { id: 'settings', label: 'Settings' },
         ].map(t => (
           <button 

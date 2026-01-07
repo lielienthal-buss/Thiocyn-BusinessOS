@@ -115,7 +115,7 @@ const App: React.FC = () => {
 
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <nav className="flex justify-center mb-16">
-          <div className="glass-card p-1.5 rounded-full shadow-2xl flex space-x-1 border-white/20 dark:border-slate-800">
+          <div className="p-1.5 rounded-full shadow-2xl flex space-x-1 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
             <button 
               onClick={() => setView('public')}
               className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'public' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}

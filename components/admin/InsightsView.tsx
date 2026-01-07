@@ -1,15 +1,25 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Application } from '../../types';
+import { getAllApplications } from '../../lib/actions';
+import SpinnerIcon from '../icons/SpinnerIcon';
 
-interface InsightsViewProps {
-  applications: Application[];
-}
+const InsightsView: React.FC = () => {
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const InsightsView: React.FC<InsightsViewProps> = ({ applications }) => {
+  useEffect(() => {
+    const fetchAllApps = async () => {
+      setLoading(true);
+      const allApps = await getAllApplications();
+      setApplications(allApps);
+      setLoading(false);
+    };
+    fetchAllApps();
+  }, []);
+
   const total = applications.length;
   const last30Days = applications.filter(a => {
-    const date = new Date(a.createdAt);
+    const date = new Date(a.created_at); // Use created_at from schema
     const now = new Date();
     return (now.getTime() - date.getTime()) < (30 * 24 * 60 * 60 * 1000);
   }).length;
@@ -19,29 +29,37 @@ const InsightsView: React.FC<InsightsViewProps> = ({ applications }) => {
     return acc;
   }, {} as Record<string, number>);
 
+  // Ensure 'hired' status is handled, assuming 'accepted' maps to 'hired' for funnel
+  const hiredCount = statusCounts['accepted'] || 0;
+  const interviewedCount = statusCounts['interview'] || 0;
+
   const aiBuckets = [
     { label: '0-40%', count: applications.filter(a => (a.aiScore || 0) <= 0.4).length, color: 'bg-red-500' },
     { label: '41-70%', count: applications.filter(a => (a.aiScore || 0) > 0.4 && (a.aiScore || 0) <= 0.7).length, color: 'bg-orange-500' },
     { label: '71-100%', count: applications.filter(a => (a.aiScore || 0) > 0.7).length, color: 'bg-green-500' },
   ];
 
+  if (loading) {
+    return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 animate-[fadeIn_0.5s_ease-out]">
       {/* Primary Metrics */}
-      <div className="md:col-span-4 glass-card p-8 rounded-[2.5rem] flex flex-col justify-center">
+      <div className="md:col-span-4 p-8 rounded-[2.5rem] flex flex-col justify-center bg-gray-900/30 backdrop-blur-2xl border border-white/20">
         <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Total Pool</p>
         <h4 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter">{total}</h4>
         <p className="text-xs text-gray-400 mt-2 font-bold">{last30Days} in the last 30 days</p>
       </div>
 
       {/* Funnel Conversion */}
-      <div className="md:col-span-8 glass-card p-8 rounded-[2.5rem]">
+      <div className="md:col-span-8 p-8 rounded-[2.5rem] bg-gray-900/30 backdrop-blur-2xl border border-white/20">
         <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-6">Hiring Funnel</h3>
         <div className="space-y-4">
           {[
             { label: 'Applied', count: total, percentage: 100 },
-            { label: 'Interviewed', count: statusCounts['interview'] || 0, percentage: (total > 0 ? (statusCounts['interview'] || 0) / total * 100 : 0) },
-            { label: 'Hired', count: statusCounts['hired'] || 0, percentage: (total > 0 ? (statusCounts['hired'] || 0) / total * 100 : 0) },
+            { label: 'Interviewed', count: interviewedCount, percentage: (total > 0 ? interviewedCount / total * 100 : 0) },
+            { label: 'Hired', count: hiredCount, percentage: (total > 0 ? hiredCount / total * 100 : 0) },
           ].map((step, i) => (
             <div key={i} className="space-y-1">
               <div className="flex justify-between text-[10px] font-black uppercase">
@@ -57,7 +75,7 @@ const InsightsView: React.FC<InsightsViewProps> = ({ applications }) => {
       </div>
 
       {/* AI Score Distribution */}
-      <div className="md:col-span-6 glass-card p-8 rounded-[2.5rem]">
+      <div className="md:col-span-6 p-8 rounded-[2.5rem] bg-gray-900/30 backdrop-blur-2xl border border-white/20">
         <h3 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-8">AI Match Distribution</h3>
         <div className="flex items-end justify-between gap-4 h-40">
           {aiBuckets.map((bucket, i) => (
@@ -75,7 +93,7 @@ const InsightsView: React.FC<InsightsViewProps> = ({ applications }) => {
       </div>
 
       {/* Status Breakdown Grid */}
-      <div className="md:col-span-6 glass-card p-8 rounded-[2.5rem] grid grid-cols-2 gap-4">
+      <div className="md:col-span-6 p-8 rounded-[2.5rem] grid grid-cols-2 gap-4 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
         {Object.entries(statusCounts).map(([status, count]) => (
           <div key={status} className="p-4 rounded-2xl bg-white/30 dark:bg-slate-900/30 border border-white/10">
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{status}</p>

@@ -126,7 +126,7 @@ const ApplicationForm: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto">
       <Stepper currentStep={step} />
       
-      <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl shadow-2xl">
+      <form onSubmit={handleSubmit} className="p-8 rounded-2xl shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20">
         <div className="animate-[fadeIn_0.5s_ease-out]">
           {step === 1 && <Step1Basics formData={formData} handleChange={handleChange} />}
           {step === 2 && <Step2Experience formData={formData} handleChange={handleChange} />}

@@ -4,7 +4,7 @@ import CaptchaComponent from './CaptchaComponent';
 
 // Re-usable Card component for consistent styling
 const QuestionCard: React.FC<{ title: string; children: React.ReactNode; className?: string }> = ({ title, children, className }) => (
-  <div className={`glass-card p-6 rounded-xl flex flex-col gap-3 ${className}`}>
+  <div className={`p-6 rounded-xl flex flex-col gap-3 bg-slate-800/60 backdrop-blur-lg border border-white/10 ${className}`}>
     <h3 className="text-white font-bold text-sm">{title}</h3>
     {children}
   </div>
