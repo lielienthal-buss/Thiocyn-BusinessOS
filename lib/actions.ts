@@ -12,7 +12,7 @@ export async function submitApplicationAction(data: ApplicationFormData, captcha
       full_name: data.full_name,
       email: data.email,
       cover_letter: data.cover_letter,
-      status: 'new' as ApplicationStatus,
+      status: 'submitted' as ApplicationStatus,
       captcha_token: captchaToken
     };
 
