@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Application, ApplicationNote, RecruiterSettings } from '../../types';
 import { getApplicant, updateApplicationStatus, addApplicationNote } from '../../lib/actions';
 import SpinnerIcon from '../icons/SpinnerIcon';
+import DISCVisualizerAdvanced from './DISCVisualizerAdvanced'; // Import the new visualizer
 
 interface Props {
   applicationId: string;
@@ -222,24 +223,22 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
           <div className="card">
             <h3 className="font-bold text-lg mb-4">Details</h3>
             <div className="space-y-2 text-sm">
-              {application.aiScore !== undefined && application.aiScore !== null && (
-                <p><strong>AI Score:</strong> {Math.round(application.aiScore * 100)}%</p>
-              )}
               <p><strong>Interest:</strong> {application.project_interest?.join(', ')}</p>
               <p><strong>Availability:</strong> {application.availability_hours_per_week} hrs/week</p>
               <p><strong>Timezone:</strong> {application.timezone}</p>
             </div>
           </div>
           <div className="card">
-            <h3 className="font-bold text-lg mb-4">DISC Profile</h3>
-            <p className="text-2xl font-bold">{discPrimary}</p>
-            <p className="text-sm text-gray-500">Secondary: {discSecondary}</p>
-            <div className="mt-4 text-sm">
-              <p>D: {discCounts.D}</p>
-              <p>I: {discCounts.I}</p>
-              <p>S: {discCounts.S}</p>
-              <p>C: {discCounts.C}</p>
-            </div>
+            <h3 className="font-bold text-lg mb-4">DISC & AI Profile</h3>
+            <DISCVisualizerAdvanced
+              discCounts={{
+                d: discCounts.D,
+                i: discCounts.I,
+                s: discCounts.S,
+                c: discCounts.C,
+              }}
+              aiScore={application.aiScore}
+            />
           </div>
         </div>
       </div>
