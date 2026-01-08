@@ -1,5 +1,4 @@
 import React from "react";
-// import { Tooltip } from "@headlessui/react"; // optional für schöne Tooltips
 
 interface DISCVisualizerProps {
   discCounts: {
@@ -8,7 +7,7 @@ interface DISCVisualizerProps {
     s: number;
     c: number;
   };
-  aiScore?: number; // 0-1, optional
+  aiScore?: number; // optional 0–1
 }
 
 const COLORS: Record<string, string> = {
@@ -27,7 +26,7 @@ const DESCRIPTIONS: Record<string, string> = {
 
 const MAX_SCORE = 10;
 
-const DISCVisualizerAdvanced: React.FC<DISCVisualizerProps> = ({
+const DISCVisualizerPro: React.FC<DISCVisualizerProps> = ({
   discCounts,
   aiScore,
 }) => {
@@ -38,15 +37,29 @@ const DISCVisualizerAdvanced: React.FC<DISCVisualizerProps> = ({
     { label: "C", value: discCounts.c },
   ];
 
+  // Funktion für dynamische AI Score Farbe
+  const getAiScoreColor = (score: number) => {
+    if (score >= 0.75) return "#34d399"; // grün
+    if (score >= 0.5) return "#facc15";  // gelb
+    return "#f87171";                     // rot
+  };
+
   return (
-    <div className="w-full max-w-md p-4 bg-white rounded shadow-md space-y-4">
+    <div className="w-full max-w-md p-4 bg-white rounded-lg shadow-md space-y-6">
+      {/* AI Score prominent */}
       {aiScore !== undefined && (
-        <div className="text-center mb-2">
-          <h3 className="text-lg font-semibold">AI Score</h3>
-          <p className="text-2xl font-bold">{Math.round(aiScore * 100)}%</p>
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">AI Score</h3>
+          <div
+            className="inline-block px-6 py-3 rounded-full text-white text-4xl font-extrabold shadow-lg"
+            style={{ backgroundColor: getAiScoreColor(aiScore) }}
+          >
+            {Math.round(aiScore * 100)}%
+          </div>
         </div>
       )}
 
+      {/* DISC Balken */}
       {data.map((item) => {
         const percent = (item.value / MAX_SCORE) * 100;
 
@@ -59,12 +72,9 @@ const DISCVisualizerAdvanced: React.FC<DISCVisualizerProps> = ({
             <div className="w-full bg-gray-200 h-5 rounded relative group">
               <div
                 className="h-5 rounded transition-all duration-500"
-                style={{
-                  width: `${percent}%`,
-                  backgroundColor: COLORS[item.label],
-                }}
+                style={{ width: `${percent}%`, backgroundColor: COLORS[item.label] }}
               />
-              {/* Tooltip mit Beschreibung */}
+              {/* Tooltip */}
               <div className="absolute left-0 top-full mt-1 opacity-0 group-hover:opacity-100 transition-opacity text-xs bg-gray-800 text-white rounded px-2 py-1 shadow-lg z-10">
                 {DESCRIPTIONS[item.label]}
               </div>
@@ -76,4 +86,4 @@ const DISCVisualizerAdvanced: React.FC<DISCVisualizerProps> = ({
   );
 };
 
-export default DISCVisualizerAdvanced;
+export default DISCVisualizerPro;

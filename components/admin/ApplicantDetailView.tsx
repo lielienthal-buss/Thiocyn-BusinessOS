@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Application, ApplicationNote, RecruiterSettings } from '../../types';
 import { getApplicant, updateApplicationStatus, addApplicationNote } from '../../lib/actions';
 import SpinnerIcon from '../icons/SpinnerIcon';
-import DISCVisualizerAdvanced from './DISCVisualizerAdvanced'; // Import the new visualizer
+import DISCVisualizerPro from './DISCVisualizerPro'; // Import the new visualizer
 
 interface Props {
   applicationId: string;
@@ -230,7 +230,7 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
           </div>
           <div className="card">
             <h3 className="font-bold text-lg mb-4">DISC & AI Profile</h3>
-            <DISCVisualizerAdvanced
+            <DISCVisualizerPro
               discCounts={{
                 d: discCounts.D,
                 i: discCounts.I,
