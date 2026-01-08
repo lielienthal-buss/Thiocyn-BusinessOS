@@ -117,7 +117,7 @@ const Step1Basics: React.FC<Props> = ({ formData, handleChange }) => {
             name="available_from"
             value={formData.available_from}
             onChange={handleTextChange}
-            className="input-field"
+            className="input-field block appearance-none"
           />
         </QuestionCard>
 
@@ -128,7 +128,7 @@ const Step1Basics: React.FC<Props> = ({ formData, handleChange }) => {
             name="available_until"
             value={formData.available_until}
             onChange={handleTextChange}
-            className="input-field"
+            className="input-field block appearance-none"
           />
         </QuestionCard>
       </div>

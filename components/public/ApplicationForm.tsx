@@ -35,8 +35,8 @@ const initialFormData: ApplicationFormData = {
 };
 
 const Stepper: React.FC<{ currentStep: number }> = ({ currentStep }) => (
-  <div className="flex justify-center items-center mb-12">
-    <div className="flex items-center">
+  <div className="flex justify-center mb-12"> {/* Removed items-center from outer div */}
+    <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-2"> {/* Added flex-wrap and gap */}
       {[1, 2, 3].map((step, index) => (
         <React.Fragment key={step}>
           <div className="flex items-center">
@@ -47,14 +47,14 @@ const Stepper: React.FC<{ currentStep: number }> = ({ currentStep }) => (
             >
               {step}
             </div>
-            <div className={`text-xs font-bold uppercase tracking-widest ml-3 mr-6 ${currentStep >= step ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-slate-500'}`}>
+            <div className={`text-xs font-bold uppercase tracking-widest ml-2 ${currentStep >= step ? 'text-gray-800 dark:text-white' : 'text-gray-400 dark:text-slate-500'}`}> {/* Reduced ml-3 to ml-2 */}
               {step === 1 && 'Basics'}
               {step === 2 && 'Experience'}
               {step === 3 && 'Personality'}
             </div>
           </div>
           {index < 2 && (
-            <div className="w-16 h-1 bg-gray-200 dark:bg-slate-700 rounded-full">
+            <div className="w-8 h-1 bg-gray-200 dark:bg-slate-700 rounded-full mx-1 sm:w-16"> {/* Reduced w-16 to w-8, added mx-1, and sm:w-16 */}
               <div
                 className="h-1 rounded-full bg-primary-600 transition-all duration-500"
                 style={{ width: currentStep > step ? '100%' : '0%' }}

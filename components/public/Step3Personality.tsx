@@ -73,7 +73,9 @@ const Step3Personality: React.FC<Props> = ({ formData, handleChange, handleCaptc
       {/* Captcha */}
       <QuestionCard title="Verification">
         <p className="text-sm text-gray-300 mb-4">Please verify you're human before submitting.</p>
-        <CaptchaComponent onVerify={handleCaptchaVerify} />
+        <div className="overflow-x-auto max-w-full"> {/* Added wrapper for overflow handling */}
+          <CaptchaComponent onVerify={handleCaptchaVerify} />
+        </div>
       </QuestionCard>
 
       {/* Final Review Notice */}
