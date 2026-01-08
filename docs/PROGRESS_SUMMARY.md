@@ -54,3 +54,60 @@ This document summarizes the key tasks performed and issues resolved during the 
 - Removal of debug `console.log` statements (already confirmed as done).
 
 This summary serves as a record of the progress made and the current state of the project.
+
+## 9. Project Cleanup, Performance Optimization, and Feature Enhancements
+
+This section details the significant refactoring, performance improvements, and new feature integrations implemented.
+
+### 9.1. Codebase Cleanup
+- **Removed Unused Files:** Identified and deleted numerous unused `.tsx` files, including:
+  - `components/ApplicationForm.tsx` (duplicate/old version)
+  - `components/FAQ.tsx` (recreated later for new purpose)
+  - `components/icons/CheckCircleIcon.tsx`
+  - `components/icons/EmailIcon.tsx` (recreated due to usage)
+  - `components/icons/LinkedInIcon.tsx`
+  - `components/icons/UploadIcon.tsx`
+  - `components/icons/UserIcon.tsx`
+  - `components/InputField.tsx`
+  - `components/ThankYouView.tsx`
+  - `components/admin/KanbanBoard.tsx`
+- **Rationale:** Reduced project clutter, improved maintainability, and decreased overall bundle size.
+
+### 9.2. Performance Optimization (Code-Splitting)
+- **Implemented React.lazy and Suspense:** Applied dynamic imports for several large, conditionally rendered components:
+  - `Dashboard`
+  - `ApplicationForm`
+  - `ForgotPassword`
+  - `Imprint`
+  - `PrivacyPolicy`
+  - `LegalPage`
+- **Result:** Significantly reduced the initial JavaScript bundle size and improved application load times by loading component code only when needed.
+
+### 9.3. Feature Integrations & Enhancements
+
+#### 9.3.1. Email Template Management
+- **Frontend Integration:** Integrated `EmailTemplateManager.tsx` into the admin `Dashboard` as a new tab, allowing for future management of email templates.
+- **Backend Schema:** Added the `email_templates` table definition and its RLS policies to `supabase_schema.sql`, including default templates.
+- **Backend Actions:** Implemented placeholder `getEmailTemplates` and `updateEmailTemplate` functions in `lib/actions.ts` and updated the `EmailTemplate` type in `types.ts` to support template management.
+
+#### 9.3.2. Legal Page
+- **Creation & Integration:** Created `components/public/LegalPage.tsx` with provided content and integrated it into `App.tsx` and the `Footer` navigation.
+
+#### 9.3.3. AI Scoring Preparation & Visualization
+- **Database Schema:** Added the `aiScore` column (`real` type) to the `applications` table in `supabase_schema.sql` for storing AI-generated applicant scores.
+- **Frontend Visualization:** Integrated `DISCVisualizerPro.tsx` into `ApplicantDetailView.tsx`. This component provides:
+  - A prominent, color-coded display of the `aiScore`.
+  - Visual bars for D/I/S/C personality traits with percentages, raw scores, and tooltips.
+- **Strategy:** Automated AI scoring generation is deferred for the MVP to minimize costs and complexity, with the `aiScore` column ready for future backend integration (e.g., Supabase Edge Function) or manual input.
+
+#### 9.3.4. Chatbot Replacement with FAQ
+- **Component Swap:** Replaced the `ChatBot` component with a newly created `FAQ` component in the public view of `App.tsx`.
+- **Rationale:** Simplified the public-facing interaction and reduced complexity/cost for the MVP.
+
+### 9.4. Backend RLS Policies Review
+- Reviewed existing RLS policies for `applications` and `application_notes`, confirming their adequacy for current needs. Noted that any backend process setting `aiScore` would require appropriate permissions.
+
+### 9.5. Build Error Resolutions
+- Resolved build errors encountered during the process:
+  - Recreated `components/icons/EmailIcon.tsx` (with a placeholder SVG) as it was found to be in use after initial deletion.
+  - Implemented placeholder `getEmailTemplates` and `updateEmailTemplate` functions and updated `EmailTemplate` type to resolve dependencies for `EmailTemplateManager.tsx`.
