@@ -122,24 +122,61 @@ export async function updateEmailTemplate(id: string, changes: Partial<EmailTemp
 }
 
 /**
- * Fetches a paginated list of applications.
+ * Deletes an application by its ID.
  */
-export async function getApplications(page: number, pageSize: number): Promise<{ data: Application[], count: number }> {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
+export async function deleteApplication(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('applications')
+    .delete()
+    .eq('id', id);
 
-    const { data, error, count } = await supabase
-        .from('applications')
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(from, to);
+  if (error) {
+    console.error(`Error deleting application ${id}:`, error);
+    return false;
+  }
 
-    if (error) {
-        console.error('Error fetching applications:', error);
-        return { data: [], count: 0 };
-    }
+  return true;
+}
 
-    return { data: data || [], count: count || 0 };
+/**
+ * Fetches a paginated and filtered list of applications.
+ * @param page The current page number.
+ * @param pageSize The number of items per page.
+ * @param status Optional: Filter by application status.
+ * @param nameEmail Optional: Filter by full name or email (case-insensitive, partial match).
+ */
+export async function getApplications(
+  page: number,
+  pageSize: number,
+  status: string = 'all',
+  nameEmail: string = ''
+): Promise<{ data: Application[], count: number }> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from('applications')
+    .select('*', { count: 'exact' });
+
+  if (status !== 'all') {
+    query = query.eq('status', status);
+  }
+
+  if (nameEmail) {
+    const search = `%${nameEmail.toLowerCase()}%`;
+    query = query.or(`full_name.ilike.${search},email.ilike.${search}`);
+  }
+
+  const { data, error, count } = await query
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    console.error('Error fetching applications:', error);
+    return { data: [], count: 0 };
+  }
+
+  return { data: data || [], count: count || 0 };
 }
 
 /**

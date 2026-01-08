@@ -65,7 +65,7 @@ const DISCVisualizerPro: React.FC<DISCVisualizerProps> = ({
 
         return (
           <div key={item.label} className="mb-3">
-            <div className="flex justify-between items-center text-sm font-semibold mb-1">
+            <div className="flex justify-between items-center text-sm font-semibold mb-1 text-gray-800 dark:text-white">
               <span>{item.label}</span>
               <span>{item.value}/{MAX_SCORE}</span>
             </div>

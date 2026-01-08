@@ -19,3 +19,23 @@ body {
 .input-field {
   @apply w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition;
 }
+
+/* Base button styles */
+.btn {
+  @apply px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 ease-in-out;
+}
+
+/* Primary button */
+.btn-primary {
+  @apply btn bg-primary-600 text-white hover:bg-primary-700 shadow-md hover:shadow-lg;
+}
+
+/* Success button */
+.btn-success {
+  @apply btn bg-green-600 text-white hover:bg-green-700 shadow-md hover:shadow-lg;
+}
+
+/* Danger button */
+.btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg;
+}

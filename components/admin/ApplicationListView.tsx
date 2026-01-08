@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getApplications } from '../../lib/actions';
-import type { Application } from '../../types';
+import { getApplications, deleteApplication, getSettings } from '../../lib/actions';
+import type { Application, RecruiterSettings } from '../../types';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
 interface Props {
@@ -61,17 +61,29 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [filterStatus, setFilterStatus] = useState<string>('all'); // New state for status filter
+  const [filterNameEmail, setFilterNameEmail] = useState<string>(''); // New state for name/email filter
+  const [recruiterSettings, setRecruiterSettings] = useState<RecruiterSettings | null>(null); // For email templates
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const { data, count } = await getApplications(currentPage, PAGE_SIZE);
+      // Pass filters to getApplications
+      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStatus, filterNameEmail);
       setApps(data);
       setTotalCount(count);
       setLoading(false);
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, filterStatus, filterNameEmail]); // Add filters to dependency array
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const settings = await getSettings();
+      setRecruiterSettings(settings);
+    };
+    loadSettings();
+  }, []);
 
   const getDiscCounts = (app: Application) => {
     const counts = { D: 0, I: 0, S: 0, C: 0 };
@@ -92,12 +104,56 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
     return sorted[0] ? sorted[0][0] : 'N/A';
   };
 
+  const handleDelete = async (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete the application for ${name}?`)) {
+      setLoading(true);
+      await deleteApplication(id);
+      // After deletion, refetch data for the current page
+      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStatus, filterNameEmail);
+      setApps(data);
+      setTotalCount(count);
+      setLoading(false);
+    }
+  };
+
+  const handleEmail = (app: Application) => {
+    const subject = `Regarding your application to ${recruiterSettings?.company_name || 'Take A Shot GmbH'}`;
+    const body = `Hi ${app.full_name},
+
+`; // Placeholder body
+    window.location.href = `mailto:${app.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   if (loading && apps.length === 0) {
     return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
   }
 
   return (
     <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20 animate-[fadeIn_0.5s_ease-out]">
+      {/* Filter Controls */}
+      <div className="p-6 flex flex-wrap gap-4 items-center border-b border-white/10">
+        <input
+          type="text"
+          placeholder="Filter by Name or Email"
+          value={filterNameEmail}
+          onChange={(e) => setFilterNameEmail(e.target.value)}
+          className="input-field flex-grow max-w-xs"
+        />
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="input-field max-w-[150px]"
+        >
+          <option value="all">All Statuses</option>
+          <option value="applied">Applied</option>
+          <option value="review">Review</option>
+          <option value="task_sent">Task Sent</option>
+          <option value="task_submitted">Task Submitted</option>
+          <option value="interview">Interview</option>
+          <option value="accepted">Accepted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead className="bg-white/50 dark:bg-slate-900/50">
@@ -107,7 +163,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
               <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">DISC (D/I/S/C)</th>
               <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Availability</th>
               <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Project Interest</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500"></th>
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-800 relative">
@@ -133,12 +189,26 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                   <td className="px-6 py-4">{app.availability_hours_per_week} hrs/week</td>
                   <td className="px-6 py-4">{app.project_interest?.join(', ')}</td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => onSelectApplicant(app.id)}
-                      className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg"
-                    >
-                      View
-                    </button>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={() => onSelectApplicant(app.id)}
+                        className="btn-primary"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleEmail(app)}
+                        className="btn-primary"
+                      >
+                        Email
+                      </button>
+                      <button
+                        onClick={() => handleDelete(app.id, app.full_name || 'this applicant')}
+                        className="btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Application, ApplicationNote, RecruiterSettings } from '../../types';
-import { getApplicant, updateApplicationStatus, addApplicationNote } from '../../lib/actions';
+import { getApplicant, updateApplicationStatus, addApplicationNote, deleteApplication } from '../../lib/actions';
 import SpinnerIcon from '../icons/SpinnerIcon';
 import DISCVisualizerPro from './DISCVisualizerPro'; // Import the new visualizer
 
@@ -154,10 +154,21 @@ const ApplicantDetailView: React.FC<Props> = ({ applicationId, settings, onBack,
     onNoteAdded();
   };
 
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete the application for ${application.full_name}?`)) {
+      setLoading(true); // Show loading state while deleting
+      await deleteApplication(application.id);
+      onBack(); // Navigate back to the list after deletion
+    }
+  };
+
   return (
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
-      {/* Back button */}
-      <button onClick={onBack} className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg">&larr; Back to List</button>
+      {/* Back and Delete buttons */}
+      <div className="flex justify-between items-center">
+        <button onClick={onBack} className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg">&larr; Back to List</button>
+        <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg">Delete Application</button>
+      </div>
       
       {/* Header Section: Applicant Name, Email, and Status */}
       <div className="flex justify-between items-start">
