@@ -84,7 +84,8 @@ export interface ApplicationFormData {
 
 export interface EmailTemplate {
   id: string;
-  name: string;
+  slug: string; // Changed from 'name' to 'slug'
+  description: string; // Added 'description'
   subject: string;
   body: string;
   created_at?: string;

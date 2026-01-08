@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
 const ApplicationForm = React.lazy(() => import('./components/public/ApplicationForm'));
-const ChatBot = React.lazy(() => import('./components/public/ChatBot'));
 import Footer from './components/Footer';
+import FAQ from './components/FAQ'; // Import FAQ
 const Dashboard = React.lazy(() => import('./components/admin/Dashboard'));
 import AdminLogin from './components/admin/AdminLogin';
 const ForgotPassword = React.lazy(() => import('./components/admin/ForgotPassword')); // Also lazy load ForgotPassword
@@ -142,10 +142,8 @@ const App: React.FC = () => {
                 <ApplicationForm />
               </React.Suspense>
               <div className="space-y-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Ask our AI Guide</h2>
-                <React.Suspense fallback={<div>Loading Chatbot...</div>}>
-                  <ChatBot />
-                </React.Suspense>
+                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Check our FAQs</h2>
+                <FAQ /> {/* Render FAQ instead of ChatBot */}
               </div>
             </main>
           </div>
