@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
-import ApplicationForm from './components/public/ApplicationForm';
-import ChatBot from './components/public/ChatBot';
+const ApplicationForm = React.lazy(() => import('./components/public/ApplicationForm'));
+const ChatBot = React.lazy(() => import('./components/public/ChatBot'));
 import Footer from './components/Footer';
-import Dashboard from './components/admin/Dashboard';
+const Dashboard = React.lazy(() => import('./components/admin/Dashboard'));
 import AdminLogin from './components/admin/AdminLogin';
-import ForgotPassword from './components/admin/ForgotPassword';
-import Imprint from './components/public/Imprint';
-import PrivacyPolicy from './components/public/PrivacyPolicy';
+const ForgotPassword = React.lazy(() => import('./components/admin/ForgotPassword')); // Also lazy load ForgotPassword
+const Imprint = React.lazy(() => import('./components/public/Imprint'));
+const PrivacyPolicy = React.lazy(() => import('./components/public/PrivacyPolicy'));
+const LegalPage = React.lazy(() => import('./components/public/LegalPage')); // Import LegalPage
 
-type ViewType = 'public' | 'admin' | 'imprint' | 'privacy';
+type ViewType = 'public' | 'admin' | 'imprint' | 'privacy' | 'legal'; // Add 'legal' to ViewType
 type AdminSubView = 'login' | 'forgot' | 'dashboard';
 
 const App: React.FC = () => {
@@ -72,32 +73,34 @@ const App: React.FC = () => {
         return <ForgotPassword onBackToLogin={() => setAdminSubView('login')} />;
       case 'dashboard':
         return (
-          <div className="animate-[fadeIn_0.5s_ease-out]">
-            <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-300 dark:border-slate-800 pb-10 mb-10 relative z-10 gap-6">
-              <div>
-                <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">Take A Shot Hub</h1>
-                <p className="text-gray-500 text-sm mt-1">
-                  {isDemoMode ? (
-                    <span className="inline-flex items-center px-3 py-1 bg-orange-500/10 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20 animate-pulse">Demo Mode Enabled</span>
-                  ) : (
-                    <>Logged in as: <span className="text-primary-600 font-bold">{session?.user.email}</span></>
-                  )}
-                </p>
-              </div>
-              <div className="flex items-center space-x-6">
-                <div className="hidden md:block text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] bg-primary-50 dark:bg-primary-900/40 px-6 py-2 rounded-full border border-primary-100 dark:border-primary-800">Recruiter Access</div>
-                <button 
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg"
-                >
-                  Logout
-                </button>
-              </div>
-            </header>
-            <main className="relative z-10">
-              <Dashboard />
-            </main>
-          </div>
+          <React.Suspense fallback={<div>Loading Dashboard...</div>}> {/* Add Suspense */}
+            <div className="animate-[fadeIn_0.5s_ease-out]">
+              <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-300 dark:border-slate-800 pb-10 mb-10 relative z-10 gap-6">
+                <div>
+                  <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter">Take A Shot Hub</h1>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {isDemoMode ? (
+                      <span className="inline-flex items-center px-3 py-1 bg-orange-500/10 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-orange-500/20 animate-pulse">Demo Mode Enabled</span>
+                    ) : (
+                      <>Logged in as: <span className="text-primary-600 font-bold">{session?.user.email}</span></>
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center space-x-6">
+                  <div className="hidden md:block text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] bg-primary-50 dark:bg-primary-900/40 px-6 py-2 rounded-full border border-primary-100 dark:border-primary-800">Recruiter Access</div>
+                  <button 
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </header>
+              <main className="relative z-10">
+                <Dashboard />
+              </main>
+            </div>
+          </React.Suspense>
         );
       case 'login':
       default:
@@ -135,10 +138,14 @@ const App: React.FC = () => {
           <div className="max-w-5xl mx-auto space-y-20">
             <Header />
             <main className="space-y-20">
-              <ApplicationForm />
+              <React.Suspense fallback={<div>Loading Application Form...</div>}>
+                <ApplicationForm />
+              </React.Suspense>
               <div className="space-y-6">
                 <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Ask our AI Guide</h2>
-                <ChatBot />
+                <React.Suspense fallback={<div>Loading Chatbot...</div>}>
+                  <ChatBot />
+                </React.Suspense>
               </div>
             </main>
           </div>
@@ -146,14 +153,29 @@ const App: React.FC = () => {
 
         {view === 'admin' && (
           <div className="space-y-8">
-            {renderAdminView()}
+            <React.Suspense fallback={<div>Loading Admin View...</div>}>
+              {renderAdminView()}
+            </React.Suspense>
           </div>
         )}
 
-        {view === 'imprint' && <Imprint onBack={() => setView('public')} />}
-        {view === 'privacy' && <PrivacyPolicy onBack={() => setView('public')} />}
+        {view === 'imprint' && (
+          <React.Suspense fallback={<div>Loading Imprint...</div>}>
+            <Imprint onBack={() => setView('public')} />
+          </React.Suspense>
+        )}
+        {view === 'privacy' && (
+          <React.Suspense fallback={<div>Loading Privacy Policy...</div>}>
+            <PrivacyPolicy onBack={() => setView('public')} />
+          </React.Suspense>
+        )}
+        {view === 'legal' && (
+          <React.Suspense fallback={<div>Loading Legal Page...</div>}>
+            <LegalPage onBack={() => setView('public')} />
+          </React.Suspense>
+        )}
         
-        <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} />
+        <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} onNavLegal={() => setView('legal')} />
       </div>
     </div>
   );

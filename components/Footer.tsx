@@ -4,9 +4,10 @@ import React from 'react';
 interface FooterProps {
   onNavImprint?: () => void;
   onNavPrivacy?: () => void;
+  onNavLegal?: () => void; // Add onNavLegal prop
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavImprint, onNavPrivacy }) => {
+const Footer: React.FC<FooterProps> = ({ onNavImprint, onNavPrivacy, onNavLegal }) => {
   return (
     <footer className="text-center mt-24 py-12 border-t border-white/10">
       <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
@@ -25,6 +26,13 @@ const Footer: React.FC<FooterProps> = ({ onNavImprint, onNavPrivacy }) => {
           className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors"
         >
           Imprint
+        </button>
+        <span className="text-gray-200 dark:text-slate-800">|</span>
+        <button 
+          onClick={onNavLegal}
+          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors"
+        >
+          Legal
         </button>
       </div>
     </footer>

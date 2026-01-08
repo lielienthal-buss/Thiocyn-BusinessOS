@@ -3,11 +3,12 @@ import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
 import InsightsView from './InsightsView'; // Import the new InsightsView
+import EmailTemplateManager from './EmailTemplateManager'; // Import EmailTemplateManager
 import { getSettings } from '../../lib/actions';
 import type { RecruiterSettings } from '../../types';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
-type Tab = 'applications' | 'settings' | 'insights'; // Add 'insights' to the Tab type
+type Tab = 'applications' | 'settings' | 'insights' | 'emailTemplates'; // Add 'insights' to the Tab type
 
 const Dashboard: React.FC = () => {
   const [tab, setTab] = useState<Tab>('applications');
@@ -52,6 +53,10 @@ const Dashboard: React.FC = () => {
       }
       return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
     }
+
+    if (tab === 'emailTemplates') { // New case for EmailTemplateManager
+      return <EmailTemplateManager />;
+    }
     
     return null;
   };
@@ -63,6 +68,7 @@ const Dashboard: React.FC = () => {
           { id: 'applications', label: 'Applications' },
           { id: 'insights', label: 'Insights' }, // Add Insights tab button
           { id: 'settings', label: 'Settings' },
+          { id: 'emailTemplates', label: 'Email Templates' }, // Add Email Templates tab button
         ].map(t => (
           <button 
             key={t.id}

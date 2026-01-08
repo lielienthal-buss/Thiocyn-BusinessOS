@@ -87,6 +87,41 @@ export async function updateSettings(changes: Partial<RecruiterSettings>): Promi
 }
 
 /**
+ * Fetches all email templates.
+ */
+export async function getEmailTemplates(): Promise<EmailTemplate[]> {
+  const { data, error } = await supabase
+    .from('email_templates')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching email templates:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Updates an email template.
+ * @param id The ID of the email template to update.
+ * @param changes A partial object of the email template to update.
+ */
+export async function updateEmailTemplate(id: string, changes: Partial<EmailTemplate>): Promise<boolean> {
+  const { error } = await supabase
+    .from('email_templates')
+    .update(changes)
+    .eq('id', id);
+
+  if (error) {
+    console.error(`Error updating email template ${id}:`, error);
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * Fetches a paginated list of applications.
  */
 export async function getApplications(page: number, pageSize: number): Promise<{ data: Application[], count: number }> {

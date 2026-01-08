@@ -81,3 +81,12 @@ export interface ApplicationFormData {
   recruiter_id?: string | null;
   captcha_verified?: boolean;
 }
+
+export interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+  created_at?: string;
+  updated_at?: string;
+}
