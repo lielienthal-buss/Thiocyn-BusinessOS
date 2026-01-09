@@ -14,8 +14,6 @@ CREATE TABLE "public"."applications" (
     "recruiter_id" uuid,
     "available_from" timestamptz,
     "available_until" timestamptz,
-    "availability_start_date" timestamptz,
-    "availability_end_date" timestamptz,
     "availability_hours_per_week" integer,
     "timezone" text,
     "captcha_verified" boolean,

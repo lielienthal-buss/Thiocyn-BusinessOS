@@ -25,8 +25,6 @@ export async function submitApplication(formData: ApplicationFormData) {
         recruiter_id: formData.recruiter_id || null,
         available_from: formData.available_from || null,
         available_until: formData.available_until || null,
-        availability_start_date: formData.availability_start_date || null,
-        availability_end_date: formData.availability_end_date || null,
         availability_hours_per_week: formData.availability_hours_per_week || null,
         timezone: formData.timezone || null,
         captcha_verified: formData.captcha_verified || false,

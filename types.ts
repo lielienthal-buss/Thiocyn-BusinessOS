@@ -8,8 +8,6 @@ export interface Application {
   cover_letter?: string; // Added
   timezone?: string;
   availability_hours_per_week?: number;
-  availability_start_date?: string;
-  availability_end_date?: string;
   project_interest?: string[];
   disc_q1?: string;
   disc_q2?: string;
@@ -70,8 +68,6 @@ export interface ApplicationFormData {
   requirements_handling_text: string;
   remote_work_text: string;
   project_interest: string[];
-  availability_start_date: string;
-  availability_end_date: string;
 
   // Step 3
   disc_answers: Record<string, string>;

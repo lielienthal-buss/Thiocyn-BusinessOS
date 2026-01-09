@@ -110,30 +110,6 @@ const Step2Experience: React.FC<Props> = ({ formData, handleChange }) => {
             ))}
           </div>
         </QuestionCard>
-        
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Availability Start Date */}
-          <QuestionCard title="Availability Start Date">
-            <input
-              type="date"
-              name="availability_start_date"
-              value={formData.availability_start_date}
-              onChange={handleTextChange}
-              className="input-field"
-            />
-          </QuestionCard>
-
-          {/* Availability End Date */}
-          <QuestionCard title="Availability End Date">
-            <input
-              type="date"
-              name="availability_end_date"
-              value={formData.availability_end_date}
-              onChange={handleTextChange}
-              className="input-field"
-            />
-          </QuestionCard>
-        </div>
       </div>
     </div>
   );
