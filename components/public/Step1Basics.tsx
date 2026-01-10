@@ -3,7 +3,7 @@ import { ApplicationFormData } from '../../types';
 
 // Re-usable Card component for consistent styling
 const QuestionCard: React.FC<{ title: string; children: React.ReactNode; className?: string }> = ({ title, children, className }) => (
-  <div className={`p-6 rounded-xl flex flex-col gap-3 bg-slate-800/60 backdrop-blur-lg border border-white/10 ${className}`}>
+  <div className={`p-4 sm:p-6 rounded-xl flex flex-col gap-2 sm:gap-3 bg-slate-800/60 backdrop-blur-lg border border-white/10 ${className}`}> {/* Reduced padding and gap for mobile */}
     <h3 className="text-white font-bold text-sm">{title}</h3>
     {children}
   </div>
@@ -27,7 +27,7 @@ const Step1Basics: React.FC<Props> = ({ formData, handleChange }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6"> {/* Reduced space-y for mobile */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-white">Step 1: Who are you & why are you applying?</h2>
         <p className="text-gray-400">Let's start with the basics.</p>

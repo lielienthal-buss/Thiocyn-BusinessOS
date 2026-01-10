@@ -126,14 +126,14 @@ const ApplicationForm: React.FC = () => {
     <div className="w-full max-w-4xl mx-auto">
       <Stepper currentStep={step} />
       
-      <form onSubmit={handleSubmit} className="p-8 rounded-2xl shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20">
-        <div className="animate-[fadeIn_0.5s_ease-out]">
+      <form onSubmit={handleSubmit} className="p-4 sm:p-8 rounded-2xl shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20"> {/* Reduced padding for mobile */}
+        <div className="animate-[fadeIn_0.5s_ease-out] space-y-4 sm:space-y-6"> {/* Reduced space-y for mobile */}
           {step === 1 && <Step1Basics formData={formData} handleChange={handleChange} />}
           {step === 2 && <Step2Experience formData={formData} handleChange={handleChange} />}
           {step === 3 && <Step3Personality formData={formData} handleChange={handleChange} handleCaptchaVerify={handleCaptchaVerify} />}
         </div>
 
-        <div className="flex justify-between items-center mt-12 pt-6 border-t border-white/10">
+        <div className="flex justify-between items-center mt-8 sm:mt-12 pt-4 sm:pt-6 border-t border-white/10"> {/* Reduced margin-top and padding-top for mobile */}
           <div>
             {step > 1 && (
               <button type="button" onClick={handleBack} className="text-sm font-bold text-gray-500 hover:text-white transition">

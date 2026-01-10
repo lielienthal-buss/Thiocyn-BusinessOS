@@ -135,9 +135,9 @@ const App: React.FC = () => {
         </nav>
 
         {view === 'public' && (
-          <div className="max-w-5xl mx-auto space-y-20">
+          <div className="max-w-5xl mx-auto space-y-10 md:space-y-20"> {/* Adjusted spacing for mobile */}
             <Header />
-            <main className="space-y-20">
+            <main className="space-y-10 md:space-y-20"> {/* Adjusted spacing for mobile */}
               <React.Suspense fallback={<div>Loading Application Form...</div>}>
                 <ApplicationForm />
               </React.Suspense>
