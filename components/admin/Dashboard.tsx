@@ -10,7 +10,11 @@ import SpinnerIcon from '../icons/SpinnerIcon';
 
 type Tab = 'applications' | 'settings' | 'insights' | 'emailTemplates'; // Add 'insights' to the Tab type
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  isDemoMode: boolean;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ isDemoMode }) => {
   const [tab, setTab] = useState<Tab>('applications');
   const [settings, setSettings] = useState<RecruiterSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +37,7 @@ const Dashboard: React.FC = () => {
     }
 
     if (tab === 'settings') {
-      return <SettingsView />;
+      return <SettingsView isDemoMode={isDemoMode} />;
     }
 
     if (tab === 'insights') { // New case for InsightsView

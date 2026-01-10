@@ -4,7 +4,7 @@ import Header from './components/Header';
 const ApplicationForm = React.lazy(() => import('./components/public/ApplicationForm'));
 import Footer from './components/Footer';
 import FAQ from './components/FAQ'; // Import FAQ
-const Dashboard = React.lazy(() => import('./components/admin/Dashboard'));
+const Dashboard = React.lazy(() => import('./components/admin/Dashboard')) as React.LazyExoticComponent<React.FC<{ isDemoMode: boolean }>>;
 import AdminLogin from './components/admin/AdminLogin';
 const ForgotPassword = React.lazy(() => import('./components/admin/ForgotPassword')); // Also lazy load ForgotPassword
 const Imprint = React.lazy(() => import('./components/public/Imprint'));
@@ -97,7 +97,7 @@ const App: React.FC = () => {
                 </div>
               </header>
               <main className="relative z-10">
-                <Dashboard />
+                <Dashboard isDemoMode={isDemoMode} /> {/* Pass isDemoMode prop */}
               </main>
             </div>
           </React.Suspense>

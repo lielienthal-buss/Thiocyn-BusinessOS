@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useSettings } from '../../lib/useSettings';
 import SpinnerIcon from '../icons/SpinnerIcon';
 
-const SettingsView: React.FC = () => {
+interface SettingsViewProps {
+  isDemoMode: boolean;
+}
+
+const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
   const { settings, loading, error, save, refreshing } = useSettings();
   
   const [companyName, setCompanyName] = useState('');
@@ -14,11 +18,11 @@ const SettingsView: React.FC = () => {
 
   useEffect(() => {
     if (settings) {
-      setCompanyName(settings.company_name ?? '');
-      setCalendlyUrl(settings.calendly_url ?? '');
-      setAiInstruction(settings.ai_instruction ?? '');
+      setCompanyName(isDemoMode ? 'Demo Company' : (settings.company_name ?? ''));
+      setCalendlyUrl(isDemoMode ? 'https://calendly.com/demo' : (settings.calendly_url ?? ''));
+      setAiInstruction(settings.ai_instruction ?? ''); // AI instruction can remain as is or be made generic if sensitive
     }
-  }, [settings]);
+  }, [settings, isDemoMode]); // Added isDemoMode to dependency array
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,10 +61,11 @@ const SettingsView: React.FC = () => {
             <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Default Calendly URL</label>
             <input 
               type="url" 
-              value={calendlyUrl} 
+              value={isDemoMode ? 'https://calendly.com/demo' : calendlyUrl} 
               onChange={e => setCalendlyUrl(e.target.value)}
               className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20 text-black"
-              placeholder="https://calendly.com/your-team/interview"
+              placeholder={isDemoMode ? 'https://calendly.com/demo' : "https://calendly.com/your-team/interview"}
+              disabled={isDemoMode} // Disable editing in demo mode
             />
           </div>
 
@@ -68,9 +73,10 @@ const SettingsView: React.FC = () => {
             <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Company Display Name</label>
             <input 
               type="text" 
-              value={companyName} 
+              value={isDemoMode ? 'Demo Company' : companyName} 
               onChange={e => setCompanyName(e.target.value)}
               className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20 text-black"
+              disabled={isDemoMode} // Disable editing in demo mode
             />
           </div>
 
