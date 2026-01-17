@@ -72,6 +72,25 @@ export async function getApplications(
 }
 
 /**
+ * Fetches all applications (non-paginated).
+ * Useful for insights/KPIs where all data is needed.
+ */
+export async function getAllApplications(): Promise<Application[]> {
+    const V2_COLUMNS = 'id, created_at, full_name, email, linkedin_url, psychometrics, stage, access_token';
+    const { data, error } = await supabase
+        .from('applications')
+        .select(V2_COLUMNS)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching all applications:', error);
+        return [];
+    }
+
+    return data || [];
+}
+
+/**
  * Fetches a single application by its ID with V2 fields, including notes and work sample.
  */
 export async function getApplicant(id: string): Promise<Application | null> {
