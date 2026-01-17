@@ -75,9 +75,11 @@ const ApplicantDetailView: React.FC<Props> = ({ application }) => {
       {/* --- Header --- */}
       <div className="flex items-center gap-4">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">{application.full_name}</h2>
-        <a href={application.linkedin_url} target="_blank" rel="noopener noreferrer" title="View LinkedIn Profile">
-          <LinkedInIcon />
-        </a>
+        {application.linkedin_url && (
+          <a href={application.linkedin_url} target="_blank" rel="noopener noreferrer" title="View Profile">
+            <LinkedInIcon />
+          </a>
+        )}
       </div>
       <p className="text-sm text-gray-500 -mt-5">{application.email}</p>
 
