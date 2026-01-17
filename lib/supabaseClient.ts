@@ -1,42 +1,21 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-/**
- * Supabase Client Configuration
- * 
- * IMPORTANT: For the 'Admin Login' to work, you MUST provide 
- * VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY 
- * in your environment variables.
- */
+// Supabase Client Configuration
+// Directly using import.meta.env for VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+// as per user's instruction.
 
-const getEnv = (key: string) => {
-  // Vite client-side
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    const vite = import.meta.env[`VITE_${key}`];
-    if (vite) return vite;
-  }
-
-  // Next.js client/server or Node server
-  try {
-    const nextPublic = (globalThis as any)?.process?.env?.[`NEXT_PUBLIC_${key}`];
-    if (nextPublic) return nextPublic;
-    const plain = (globalThis as any)?.process?.env?.[key];
-    if (plain) return plain;
-  } catch (e) { /* ignore */ }
-
-  return null;
-};
-
-const supabaseUrl = getEnv('SUPABASE_URL') || 'https://placeholder-project.supabase.co';
-const supabaseAnonKey = getEnv('SUPABASE_ANON_KEY') || 'placeholder-anon-key';
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 /**
  * Helper to check if the app is connected to a real Supabase instance.
- * Useful for toggling between "Demo Mode" and "Live Mode" in the UI.
+ * This function will now rely directly on the presence of the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+ * being correctly set in the environment.
  */
 export const isSupabaseConfigured = () => {
-  const url = getEnv('SUPABASE_URL');
-  const key = getEnv('SUPABASE_ANON_KEY');
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
   return !!url && !url.includes('placeholder') && !!key && !key.includes('placeholder');
 };
