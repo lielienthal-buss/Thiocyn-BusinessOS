@@ -111,3 +111,19 @@ This section details the significant refactoring, performance improvements, and 
 - Resolved build errors encountered during the process:
   - Recreated `components/icons/EmailIcon.tsx` (with a placeholder SVG) as it was found to be in use after initial deletion.
   - Implemented placeholder `getEmailTemplates` and `updateEmailTemplate` functions and updated `EmailTemplate` type to resolve dependencies for `EmailTemplateManager.tsx`.
+
+## 10. Project Overhaul to V2: Lean, Evidence-Based Hiring
+*Date: January 2026*
+
+**Status: Commenced**
+
+The project is undergoing a significant refactoring to V2, pivoting to a lean, evidence-based hiring process. This overhaul supersedes many previously planned features in favor of a more focused, 2-stage workflow.
+
+**Key Changes:**
+- **Process:** Moving from a single form to a 3-stage process: Apply -> Invite -> Work Sample.
+- **Data:** Replacing CV uploads and DISC tests with a LinkedIn/Portfolio URL and a BFI-10 Big Five assessment.
+- **Technology:** Introducing a secure RPC function for work sample submissions.
+
+All documentation (`README.md`, `architecture-decisions.md`, `BACKEND_OPERATIONS.md`, `idea-inbox-mvp-roadmap.md`) has been updated to reflect this new direction.
+
+**Next Step:** Begin V2 implementation, starting with the SQL migration script and updated type definitions.

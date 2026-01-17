@@ -1,25 +1,49 @@
+# V2 Roadmap: Lean, Evidence-Based Hiring
+*Date: January 2026*
 
-# MVP Roadmap: Internal Hiring Tool
+**Vision**: Refactor the application to a 2-stage, evidence-based hiring process. The priority is to implement a lean, high-signal workflow over complex, nice-to-have features. The previous roadmap is superseded by this plan.
 
-## Vision
-An automated, high-end hiring pipeline designed for startups (50-200 applicants) that leverages Bento-Grid UI and AI analysis to streamline recruitment.
+---
+## V2 Implementation Plan
 
-## Current Status: Design System, Legal & Admin Hub Finalized
-- [x] **Bento UI Concept**: All portal components converted to a modular tile system.
-- [x] **Glassmorphism Styling**: Unified semi-transparent cards with deep blurs and subtle borders.
-- [x] **Legal Compliance**: Imprint and Privacy Policy integrated with explicit 30-day retention notice.
-- [x] **AI Scoring**: Automated Gemini 3 Pro screening on submission.
-- [x] **Kanban Dashboard**: Drag & Drop status transitions for admins.
-- [x] **Email Template System**: Dynamic templates stored in DB, editable via Admin UI.
-- [x] **KPI Dashboard**: Read-only module for admins to track funnel conversion and AI distribution.
+### Task 1: Backend & Type Safety
+- [ ] **SQL Migration**: Write and apply the script to modify the `applications` table (add `linkedin_url`, `psychometrics`, `stage`, `access_token`, `work_sample_text`).
+- [ ] **RPC Function**: Create and test the `submit_task_response` PostgreSQL function for secure work sample submissions.
+- [ ] **Type Definitions**: Update `types.ts` to reflect the new database schema (`ApplicationFormData`, etc.).
 
-## Phase 2: Collaboration & Storage (Next 4 Weeks)
-1. **Supabase Storage Linking**: Wire up actual CV/Task uploads to private buckets with RLS.
-2. **Resend Live Integration**: Connect the email action logic to the Resend API for transactional mail.
-3. **Admin Invitations**: Move from open signup to an invite-only system for security.
-4. **Interview Scheduling**: Basic Calendly integration or internal availability picker.
-5. **Feedback Loops**: Simple rating system (1-5 stars) for multiple team members per candidate.
+### Task 2: Stage 1 - Application Form Refactoring
+- [ ] **Step 2 (Experience)**: Refactor `Step2Experience.tsx` to include only two inputs:
+    - A required URL input for the "Professional Profile" (LinkedIn/GitHub).
+    - A textarea for the "Project Highlight".
+- [ ] **Step 3 (Personality)**: Refactor `Step3Personality.tsx`:
+    - Replace the DISC test with the BFI-10 Likert scale UI.
+    - Implement the client-side calculation logic to generate the `psychometrics` JSON object before submission.
 
-## Phase 3: Scale
-- Vercel Deployment with Edge Config.
-- Multi-tenant support (Multiple "Projects" or "Job Postings" per company).
+### Task 3: Stage 3 - Work Sample Submission Page
+- [ ] **New Route**: Create a new page and route at `/task/:token`.
+- [ ] **Component `TaskSubmissionPage.tsx`**:
+    - Fetch candidate data using the token.
+    - Display the static case study text.
+    - Include a textarea for the answer and a submit button that calls the `submit_task_response` RPC function.
+
+### Task 4: Admin Dashboard Update
+- [ ] **Applicant Detail View**:
+    - Display the candidate's Big Five scores (e.g., with progress bars).
+    - Show a clickable icon/link for the `linkedin_url`.
+- [ ] **Workflow Actions**:
+    - If `stage === 'applied'`, show a "Copy Task Link" button.
+    - If `stage === 'task_submitted'`, display the `work_sample_text` for review.
+
+---
+## Legacy V1/V1.5 Roadmap (Superseded)
+*The following features were part of the previous vision but are now on hold or deprecated in favor of the lean V2 workflow.*
+
+- **AI Scoring**: Automated Gemini 3 Pro screening on submission.
+- **Kanban Dashboard**: Drag & Drop status transitions for admins.
+- **Email Template System**: Dynamic templates stored in DB, editable via Admin UI.
+- **KPI Dashboard**: Read-only module for admins to track funnel conversion.
+- **Supabase Storage Linking**: For CV/Task uploads.
+- **Resend Live Integration**: For transactional mail.
+- **Interview Scheduling**: Calendly integration.
+- **Feedback Loops**: Simple rating system (1-5 stars).
+- **Multi-tenancy**.

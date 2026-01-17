@@ -3,18 +3,20 @@ import { supabase } from './lib/supabaseClient';
 import Header from './components/Header';
 const ApplicationForm = React.lazy(() => import('./components/public/ApplicationForm'));
 import Footer from './components/Footer';
-import FAQ from './components/FAQ'; // Import FAQ
+import FAQ from './components/FAQ';
 const Dashboard = React.lazy(() => import('./components/admin/Dashboard')) as React.LazyExoticComponent<React.FC<{ isDemoMode: boolean }>>;
 import AdminLogin from './components/admin/AdminLogin';
-const ForgotPassword = React.lazy(() => import('./components/admin/ForgotPassword')); // Also lazy load ForgotPassword
+const ForgotPassword = React.lazy(() => import('./components/admin/ForgotPassword'));
 const Imprint = React.lazy(() => import('./components/public/Imprint'));
 const PrivacyPolicy = React.lazy(() => import('./components/public/PrivacyPolicy'));
-const LegalPage = React.lazy(() => import('./components/public/LegalPage')); // Import LegalPage
+const LegalPage = React.lazy(() => import('./components/public/LegalPage'));
+const TaskSubmissionPage = React.lazy(() => import('./components/public/TaskSubmissionPage')); // V2 Import
 
-type ViewType = 'public' | 'admin' | 'imprint' | 'privacy' | 'legal'; // Add 'legal' to ViewType
+type ViewType = 'public' | 'admin' | 'imprint' | 'privacy' | 'legal';
 type AdminSubView = 'login' | 'forgot' | 'dashboard';
 
 const App: React.FC = () => {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [view, setView] = useState<ViewType>('public');
   const [adminSubView, setAdminSubView] = useState<AdminSubView>('login');
   const [session, setSession] = useState<any>(null);
@@ -43,9 +45,14 @@ const App: React.FC = () => {
     };
     window.addEventListener('start-demo-mode', handleDemoStart);
 
+    // Simple popstate listener for browser back/forward navigation
+    const handlePopState = () => setCurrentPath(window.location.pathname);
+    window.addEventListener('popstate', handlePopState);
+
     return () => {
       subscription.unsubscribe();
       window.removeEventListener('start-demo-mode', handleDemoStart);
+      window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
@@ -73,7 +80,7 @@ const App: React.FC = () => {
         return <ForgotPassword onBackToLogin={() => setAdminSubView('login')} />;
       case 'dashboard':
         return (
-          <React.Suspense fallback={<div>Loading Dashboard...</div>}> {/* Add Suspense */}
+          <React.Suspense fallback={<div>Loading Dashboard...</div>}>
             <div className="animate-[fadeIn_0.5s_ease-out]">
               <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-300 dark:border-slate-800 pb-10 mb-10 relative z-10 gap-6">
                 <div>
@@ -97,7 +104,7 @@ const App: React.FC = () => {
                 </div>
               </header>
               <main className="relative z-10">
-                <Dashboard isDemoMode={isDemoMode} /> {/* Pass isDemoMode prop */}
+                <Dashboard isDemoMode={isDemoMode} />
               </main>
             </div>
           </React.Suspense>
@@ -108,74 +115,90 @@ const App: React.FC = () => {
     }
   };
 
-  return (
+  // --- V2 ROUTER LOGIC ---
+  const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="min-h-screen relative py-12 px-4 transition-colors duration-500 selection:bg-primary-100">
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-[150px] animate-blob"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/20 dark:bg-indigo-600/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
         <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-teal-300/20 dark:bg-teal-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
       </div>
-
       <div className="w-full max-w-7xl mx-auto relative z-10">
-        <nav className="flex justify-center mb-16">
-          <div className="p-1.5 rounded-full shadow-2xl flex space-x-1 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
-            <button 
-              onClick={() => setView('public')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'public' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
-            >
-              Portal
-            </button>
-            <button 
-              onClick={() => setView('admin')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'admin' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
-            >
-              Admin Hub
-            </button>
-          </div>
-        </nav>
-
-        {view === 'public' && (
-          <div className="max-w-5xl mx-auto space-y-10 md:space-y-20"> {/* Adjusted spacing for mobile */}
-            <Header />
-            <main className="space-y-10 md:space-y-20"> {/* Adjusted spacing for mobile */}
-              <React.Suspense fallback={<div>Loading Application Form...</div>}>
-                <ApplicationForm />
-              </React.Suspense>
-              <div className="space-y-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Check our FAQs</h2>
-                <FAQ /> {/* Render FAQ instead of ChatBot */}
-              </div>
-            </main>
-          </div>
-        )}
-
-        {view === 'admin' && (
-          <div className="space-y-8">
-            <React.Suspense fallback={<div>Loading Admin View...</div>}>
-              {renderAdminView()}
-            </React.Suspense>
-          </div>
-        )}
-
-        {view === 'imprint' && (
-          <React.Suspense fallback={<div>Loading Imprint...</div>}>
-            <Imprint onBack={() => setView('public')} />
-          </React.Suspense>
-        )}
-        {view === 'privacy' && (
-          <React.Suspense fallback={<div>Loading Privacy Policy...</div>}>
-            <PrivacyPolicy onBack={() => setView('public')} />
-          </React.Suspense>
-        )}
-        {view === 'legal' && (
-          <React.Suspense fallback={<div>Loading Legal Page...</div>}>
-            <LegalPage onBack={() => setView('public')} />
-          </React.Suspense>
-        )}
-        
-        <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} onNavLegal={() => setView('legal')} />
+        {children}
       </div>
     </div>
+  );
+
+  if (currentPath.startsWith('/task/')) {
+    return (
+      <AppLayout>
+        <React.Suspense fallback={<div>Loading Task...</div>}>
+          <TaskSubmissionPage />
+        </React.Suspense>
+      </AppLayout>
+    );
+  }
+
+  return (
+    <AppLayout>
+      <nav className="flex justify-center mb-16">
+        <div className="p-1.5 rounded-full shadow-2xl flex space-x-1 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
+          <button 
+            onClick={() => setView('public')}
+            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'public' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
+          >
+            Portal
+          </button>
+          <button 
+            onClick={() => setView('admin')}
+            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${view === 'admin' ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30' : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'}`}
+          >
+            Admin Hub
+          </button>
+        </div>
+      </nav>
+
+      {view === 'public' && (
+        <div className="max-w-5xl mx-auto space-y-10 md:space-y-20">
+          <Header />
+          <main className="space-y-10 md:space-y-20">
+            <React.Suspense fallback={<div>Loading Application Form...</div>}>
+              <ApplicationForm />
+            </React.Suspense>
+            <div className="space-y-6">
+              <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">Got Questions? Check our FAQs</h2>
+              <FAQ />
+            </div>
+          </main>
+        </div>
+      )}
+
+      {view === 'admin' && (
+        <div className="space-y-8">
+          <React.Suspense fallback={<div>Loading Admin View...</div>}>
+            {renderAdminView()}
+          </React.Suspense>
+        </div>
+      )}
+
+      {view === 'imprint' && (
+        <React.Suspense fallback={<div>Loading Imprint...</div>}>
+          <Imprint onBack={() => setView('public')} />
+        </React.Suspense>
+      )}
+      {view === 'privacy' && (
+        <React.Suspense fallback={<div>Loading Privacy Policy...</div>}>
+          <PrivacyPolicy onBack={() => setView('public')} />
+        </React.Suspense>
+      )}
+      {view === 'legal' && (
+        <React.Suspense fallback={<div>Loading Legal Page...</div>}>
+          <LegalPage onBack={() => setView('public')} />
+        </React.Suspense>
+      )}
+      
+      <Footer onNavImprint={() => setView('imprint')} onNavPrivacy={() => setView('privacy')} onNavLegal={() => setView('legal')} />
+    </AppLayout>
   );
 };
 
