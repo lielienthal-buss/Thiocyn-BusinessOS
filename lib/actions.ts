@@ -1,4 +1,4 @@
-// lib/actions.ts - V2 Refactor
+// lib/actions.ts - V2 Refactor (Revision 2)
 import { supabase } from './supabaseClient';
 import { Application, ApplicationFormData, RecruiterSettings, EmailTemplate } from '../types';
 
@@ -44,7 +44,8 @@ export async function getApplications(
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const V2_COLUMNS = 'id, created_at, full_name, email, linkedin_url, psychometrics, stage, access_token';
+  // Ensure all V2 columns are explicitly selected
+  const V2_COLUMNS = 'id, created_at, full_name, email, linkedin_url, project_highlight, psychometrics, stage, access_token, work_sample_text';
 
   let query = supabase
     .from('applications')
@@ -72,11 +73,12 @@ export async function getApplications(
 }
 
 /**
- * Fetches all applications (non-paginated).
+ * Fetches all applications (non-paginated) with V2 fields.
  * Useful for insights/KPIs where all data is needed.
  */
 export async function getAllApplications(): Promise<Application[]> {
-    const V2_COLUMNS = 'id, created_at, full_name, email, linkedin_url, psychometrics, stage, access_token';
+    // Ensure all V2 columns are explicitly selected
+    const V2_COLUMNS = 'id, created_at, full_name, email, linkedin_url, project_highlight, psychometrics, stage, access_token, work_sample_text';
     const { data, error } = await supabase
         .from('applications')
         .select(V2_COLUMNS)
@@ -94,7 +96,8 @@ export async function getAllApplications(): Promise<Application[]> {
  * Fetches a single application by its ID with V2 fields, including notes and work sample.
  */
 export async function getApplicant(id: string): Promise<Application | null> {
-    const V2_COLUMNS_DETAILED = '*, application_notes(*)';
+    // Explicitly select all V2 columns and notes
+    const V2_COLUMNS_DETAILED = 'id, created_at, full_name, email, linkedin_url, project_highlight, psychometrics, stage, access_token, work_sample_text, application_notes(*)';
     const { data, error } = await supabase
         .from('applications')
         .select(V2_COLUMNS_DETAILED)
