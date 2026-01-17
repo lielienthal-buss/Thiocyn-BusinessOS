@@ -43,4 +43,44 @@ GRANT EXECUTE ON FUNCTION public.submit_task_response(UUID, TEXT) TO authenticat
 -- 3. (Optional) Create an index on the access_token for faster lookups
 CREATE INDEX IF NOT EXISTS idx_applications_access_token ON public.applications(access_token);
 
--- End of migration script.
+-- 4. Row Level Security (RLS) Policies for V2 Congruence
+-- These policies ensure that authenticated users (recruiters) can manage applications
+-- and anonymous users can submit new applications.
+
+-- Enable RLS on the applications table if not already enabled
+ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
+
+-- Policy for anonymous users to insert new applications (Stage 1)
+-- This policy was already in supabase_update_prompt.txt, ensuring it's present.
+DROP POLICY IF EXISTS "Allow anon users to insert applications" ON public.applications;
+CREATE POLICY "Allow anon users to insert applications"
+ON public.applications
+FOR INSERT
+TO anon
+WITH CHECK (true);
+
+-- Policy for authenticated users (recruiters) to view all applications
+DROP POLICY IF EXISTS "Recruiters can view all applications" ON public.applications;
+CREATE POLICY "Recruiters can view all applications"
+ON public.applications
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- Policy for authenticated users (recruiters) to update applications
+-- This allows recruiters to change the 'stage' and other fields.
+DROP POLICY IF EXISTS "Recruiters can update applications" ON public.applications;
+CREATE POLICY "Recruiters can update applications"
+ON public.applications
+FOR UPDATE
+TO authenticated
+USING (true)
+WITH CHECK (true);
+
+-- Policy for authenticated users (recruiters) to delete applications
+DROP POLICY IF EXISTS "Recruiters can delete applications" ON public.applications;
+CREATE POLICY "Recruiters can delete applications"
+ON public.applications
+FOR DELETE
+TO authenticated
+USING (true);

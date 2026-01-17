@@ -1,6 +1,7 @@
+// components/admin/ApplicationListView.tsx - V2 Refactor
 import React, { useState, useEffect } from 'react';
 import { getApplications, deleteApplication, getSettings } from '../../lib/actions';
-import type { Application, RecruiterSettings } from '../../types';
+import type { Application, RecruiterSettings, ApplicationStage } from '../../types'; // Import ApplicationStage
 import SpinnerIcon from '../icons/SpinnerIcon';
 
 interface Props {
@@ -8,20 +9,6 @@ interface Props {
 }
 
 const PAGE_SIZE = 15;
-
-// Mapping of DISC questions to their types (D, I, S, C)
-const DISC_QUESTION_MAP: { [key: string]: 'D' | 'I' | 'S' | 'C' } = {
-  disc_q1: 'D', disc_q5: 'D', disc_q9: 'D',
-  disc_q2: 'I', disc_q6: 'I', disc_q10: 'I',
-  disc_q3: 'S', disc_q7: 'S',
-  disc_q4: 'C', disc_q8: 'C',
-};
-
-// Scoring for answers
-const DISC_SCORE_MAP: { [key: string]: number } = {
-  'Agree': 1,
-  'Strongly Agree': 2,
-};
 
 const PaginationControls: React.FC<{ currentPage: number; totalCount: number; pageSize: number; onPageChange: (page: number) => void; }> = ({ currentPage, totalCount, pageSize, onPageChange }) => {
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -61,21 +48,21 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [filterStatus, setFilterStatus] = useState<string>('all'); // New state for status filter
-  const [filterNameEmail, setFilterNameEmail] = useState<string>(''); // New state for name/email filter
-  const [recruiterSettings, setRecruiterSettings] = useState<RecruiterSettings | null>(null); // For email templates
+  const [filterStage, setFilterStage] = useState<string>('all'); // Changed from filterStatus to filterStage
+  const [filterNameEmail, setFilterNameEmail] = useState<string>('');
+  const [recruiterSettings, setRecruiterSettings] = useState<RecruiterSettings | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       // Pass filters to getApplications
-      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStatus, filterNameEmail);
+      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStage, filterNameEmail); // Pass filterStage
       setApps(data);
       setTotalCount(count);
       setLoading(false);
     };
     fetchData();
-  }, [currentPage, filterStatus, filterNameEmail]); // Add filters to dependency array
+  }, [currentPage, filterStage, filterNameEmail]); // Add filters to dependency array
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -85,31 +72,12 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
     loadSettings();
   }, []);
 
-  const getDiscCounts = (app: Application) => {
-    const counts = { D: 0, I: 0, S: 0, C: 0 };
-    if (!app.disc_answers) return counts;
-
-    for (const [questionId, answer] of Object.entries(app.disc_answers)) {
-      const questionType = DISC_QUESTION_MAP[questionId];
-      const score = DISC_SCORE_MAP[answer] || 0;
-      if (questionType && score > 0) {
-        counts[questionType] += score;
-      }
-    }
-    return counts;
-  };
-
-  const getDiscPrimary = (counts: { D: number; I: number; S: number; C: number }) => {
-    const sorted = Object.entries(counts).sort(([, a], [, b]) => b - a);
-    return sorted[0] ? sorted[0][0] : 'N/A';
-  };
-
   const handleDelete = async (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete the application for ${name}?`)) {
       setLoading(true);
       await deleteApplication(id);
       // After deletion, refetch data for the current page
-      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStatus, filterNameEmail);
+      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStage, filterNameEmail); // Pass filterStage
       setApps(data);
       setTotalCount(count);
       setLoading(false);
@@ -140,17 +108,14 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           className="input-field flex-grow max-w-xs"
         />
         <select
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
+          value={filterStage} // Changed from filterStatus to filterStage
+          onChange={(e) => setFilterStage(e.target.value as ApplicationStage | 'all')} // Cast to ApplicationStage | 'all'
           className="input-field max-w-[150px]"
         >
-          <option value="all">All Statuses</option>
+          <option value="all">All Stages</option>
           <option value="applied">Applied</option>
-          <option value="review">Review</option>
-          <option value="task_sent">Task Sent</option>
+          <option value="task_requested">Task Requested</option>
           <option value="task_submitted">Task Submitted</option>
-          <option value="interview">Interview</option>
-          <option value="accepted">Accepted</option>
           <option value="rejected">Rejected</option>
         </select>
       </div>
@@ -159,10 +124,8 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           <thead className="bg-white/50 dark:bg-slate-900/50">
             <tr>
               <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Name</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Status</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">DISC (D/I/S/C)</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Availability</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Project Interest</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Stage</th> {/* Changed from Status to Stage */}
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Project Highlight</th> {/* New column */}
               <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Actions</th>
             </tr>
           </thead>
@@ -173,21 +136,15 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                 </div>
             )}
             {apps.map(app => {
-              const discCounts = getDiscCounts(app);
-              const discPrimary = getDiscPrimary(discCounts);
               return (
                 <tr key={app.id} className="hover:bg-white/30 dark:hover:bg-slate-800/30 transition-colors">
                   <td className="px-6 py-4 font-semibold">{app.full_name}</td>
                   <td className="px-6 py-4">
                     <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">
-                      {app.status}
+                      {app.stage} {/* Changed from app.status to app.stage */}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-semibold">
-                    {discPrimary} ({discCounts.D}/{discCounts.I}/{discCounts.S}/{discCounts.C})
-                  </td>
-                  <td className="px-6 py-4">{app.availability_hours_per_week} hrs/week</td>
-                  <td className="px-6 py-4">{app.project_interest?.join(', ')}</td>
+                  <td className="px-6 py-4">{app.project_highlight || 'N/A'}</td> {/* Display Project Highlight */}
                   <td className="px-6 py-4 text-right">
                     <div className="flex gap-2 justify-end">
                       <button

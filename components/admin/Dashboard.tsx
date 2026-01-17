@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
-import InsightsView from './InsightsView'; // Import the new InsightsView
-import EmailTemplateManager from './EmailTemplateManager'; // Import EmailTemplateManager
-import { getSettings } from '../../lib/actions';
-import type { RecruiterSettings } from '../../types';
+import InsightsView from './InsightsView';
+import EmailTemplateManager from './EmailTemplateManager';
+import { getSettings, getApplicant } from '../../lib/actions'; // Import getApplicant
+import type { RecruiterSettings, Application } from '../../types'; // Import Application
 import SpinnerIcon from '../icons/SpinnerIcon';
 
-type Tab = 'applications' | 'settings' | 'insights' | 'emailTemplates'; // Add 'insights' to the Tab type
+type Tab = 'applications' | 'settings' | 'insights' | 'emailTemplates';
 
 interface DashboardProps {
   isDemoMode: boolean;
@@ -19,6 +19,8 @@ const Dashboard: React.FC<DashboardProps> = ({ isDemoMode }) => {
   const [settings, setSettings] = useState<RecruiterSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  const [selectedApplicationData, setSelectedApplicationData] = useState<Application | null>(null); // New state for fetched applicant data
+  const [loadingApplicant, setLoadingApplicant] = useState(false); // New state for loading applicant details
 
   const loadData = async () => {
     setLoading(true);
@@ -31,6 +33,21 @@ const Dashboard: React.FC<DashboardProps> = ({ isDemoMode }) => {
     loadData();
   }, []);
 
+  // Effect to fetch selected applicant data when selectedAppId changes
+  useEffect(() => {
+    const fetchApplicant = async () => {
+      if (selectedAppId) {
+        setLoadingApplicant(true);
+        const applicant = await getApplicant(selectedAppId);
+        setSelectedApplicationData(applicant);
+        setLoadingApplicant(false);
+      } else {
+        setSelectedApplicationData(null); // Clear data if no applicant is selected
+      }
+    };
+    fetchApplicant();
+  }, [selectedAppId]);
+
   const renderContent = () => {
     if (loading) {
       return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
@@ -40,25 +57,28 @@ const Dashboard: React.FC<DashboardProps> = ({ isDemoMode }) => {
       return <SettingsView isDemoMode={isDemoMode} />;
     }
 
-    if (tab === 'insights') { // New case for InsightsView
+    if (tab === 'insights') {
       return <InsightsView />;
     }
 
     if (tab === 'applications') {
       if (selectedAppId) {
+        if (loadingApplicant) {
+          return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
+        }
         return (
           <ApplicantDetailView
-            applicationId={selectedAppId}
-            settings={settings}
-            onBack={() => setSelectedAppId(null)}
-            onNoteAdded={loadData}
+            application={selectedApplicationData} // Pass the fetched application data
+            // settings={settings} // Not needed by ApplicantDetailView anymore
+            // onBack={() => setSelectedAppId(null)} // Not needed by ApplicantDetailView anymore
+            // onNoteAdded={loadData} // Not needed by ApplicantDetailView anymore
           />
         );
       }
       return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
     }
 
-    if (tab === 'emailTemplates') { // New case for EmailTemplateManager
+    if (tab === 'emailTemplates') {
       return <EmailTemplateManager />;
     }
     
@@ -70,9 +90,9 @@ const Dashboard: React.FC<DashboardProps> = ({ isDemoMode }) => {
       <nav className="flex items-center gap-10 border-b border-gray-100 dark:border-slate-800 pb-2">
         {[
           { id: 'applications', label: 'Applications' },
-          { id: 'insights', label: 'Insights' }, // Add Insights tab button
+          { id: 'insights', label: 'Insights' },
           { id: 'settings', label: 'Settings' },
-          { id: 'emailTemplates', label: 'Email Templates' }, // Add Email Templates tab button
+          { id: 'emailTemplates', label: 'Email Templates' },
         ].map(t => (
           <button 
             key={t.id}
