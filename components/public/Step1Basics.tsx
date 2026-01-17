@@ -1,18 +1,12 @@
+// components/public/Step1Basics.tsx - V2 Refactor
 import React from 'react';
 import { ApplicationFormData } from '../../types';
 
 // Re-usable Card component for consistent styling
 const QuestionCard: React.FC<{ title: string; children: React.ReactNode; className?: string }> = ({ title, children, className }) => (
-  <div className={`p-4 sm:p-6 rounded-xl flex flex-col gap-2 sm:gap-3 bg-slate-800/60 backdrop-blur-lg border border-white/10 ${className}`}> {/* Reduced padding and gap for mobile */}
+  <div className={`p-4 sm:p-6 rounded-xl flex flex-col gap-3 bg-slate-800/60 backdrop-blur-lg border border-white/10 ${className}`}>
     <h3 className="text-white font-bold text-sm">{title}</h3>
     {children}
-  </div>
-);
-
-// Character counter component
-const CharCounter: React.FC<{ text: string; maxLength: number }> = ({ text, maxLength }) => (
-  <div className="text-right text-xs font-mono text-gray-400">
-    {text.length} / {maxLength}
   </div>
 );
 
@@ -22,15 +16,15 @@ interface Props {
 }
 
 const Step1Basics: React.FC<Props> = ({ formData, handleChange }) => {
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleChange(e.target.name as keyof ApplicationFormData, e.target.value);
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6"> {/* Reduced space-y for mobile */}
+    <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white">Step 1: Who are you & why are you applying?</h2>
-        <p className="text-gray-400">Let's start with the basics.</p>
+        <h2 className="text-2xl font-bold text-white">Step 1: The Basics</h2>
+        <p className="text-gray-400">Let's start with your contact information.</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,78 +51,6 @@ const Step1Basics: React.FC<Props> = ({ formData, handleChange }) => {
             onChange={handleTextChange}
             className="input-field"
             required
-          />
-        </QuestionCard>
-
-        {/* Motivation */}
-        <QuestionCard title="Motivation (max. 200 chars)" className="md:col-span-2">
-          <textarea
-            name="motivation_text"
-            placeholder="What excites you about this opportunity?"
-            value={formData.motivation_text}
-            onChange={handleTextChange}
-            className="input-field h-24 resize-none"
-            maxLength={200}
-          />
-          <CharCounter text={formData.motivation_text} maxLength={200} />
-        </QuestionCard>
-
-        {/* Cover Letter */}
-        <QuestionCard title="Cover Letter (optional, max. 200 chars)" className="md:col-span-2">
-          <textarea
-            name="cover_letter"
-            placeholder="Anything else you'd like to share?"
-            value={formData.cover_letter}
-            onChange={handleTextChange}
-            className="input-field h-24 resize-none"
-            maxLength={200}
-          />
-          <CharCounter text={formData.cover_letter} maxLength={200} />
-        </QuestionCard>
-
-        {/* Timezone */}
-        <QuestionCard title="Your Timezone">
-          <input
-            type="text"
-            name="timezone"
-            placeholder="e.g., CET, PST"
-            value={formData.timezone}
-            onChange={handleTextChange}
-            className="input-field"
-          />
-        </QuestionCard>
-
-        {/* Availability (Hours) */}
-        <QuestionCard title="Available Hours per Week">
-          <input
-            type="number"
-            name="availability_hours_per_week"
-            placeholder="e.g., 20"
-            value={formData.availability_hours_per_week || ''}
-            onChange={(e) => handleChange('availability_hours_per_week', e.target.value ? parseInt(e.target.value, 10) : null)}
-            className="input-field"
-          />
-        </QuestionCard>
-
-        {/* Available From */}
-        <QuestionCard title="Available From">
-          <input
-            type="date"
-            name="available_from"
-            value={formData.available_from}
-            onChange={handleTextChange}
-            className="input-field block appearance-none"
-          />
-        </QuestionCard>
-
-        {/* Available Until */}
-        <QuestionCard title="Available Until">
-          <input
-            type="date"
-            name="available_until"
-            value={formData.available_until}
-            onChange={handleTextChange}
-            className="input-field block appearance-none"
           />
         </QuestionCard>
       </div>
