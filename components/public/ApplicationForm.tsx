@@ -7,31 +7,12 @@ import Step2Experience from './Step2Experience';
 import Step3Personality from './Step3Personality';
 
 const initialFormData: ApplicationFormData = {
-  // Step 1
   full_name: '',
   email: '',
-  timezone: '',
-  availability_hours_per_week: null,
-  available_from: '',
-  available_until: '',
-  motivation_text: '',
-  cover_letter: '',
-
-  // Step 2
-  project_example_text: '',
-  requirements_handling_text: '',
-  remote_work_text: '',
-  project_interest: [],
-  availability_start_date: '',
-  availability_end_date: '',
-
-  // Step 3
-  disc_answers: {},
+  linkedin_url: '',
+  project_highlight: '',
+  psychometrics: {},
   captcha_token: null,
-
-  // Meta
-  recruiter_id: null,
-  captcha_verified: false,
 };
 
 const Stepper: React.FC<{ currentStep: number }> = ({ currentStep }) => (
@@ -73,7 +54,7 @@ const ApplicationForm: React.FC = () => {
   const [formData, setFormData] = useState<ApplicationFormData>(initialFormData);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: keyof ApplicationFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
   
