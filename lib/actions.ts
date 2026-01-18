@@ -5,22 +5,17 @@ import type { ApplicationFormData, RecruiterSettings, EmailTemplate, Application
 
 export async function submitApplicationAction(formData: ApplicationFormData) {
   try {
-    const payload = {
-      full_name: formData.full_name,
-      email: formData.email,
-      linkedin_url: formData.linkedin_url,
-      project_highlight: formData.project_highlight,
-      psychometrics: formData.psychometrics,
-      stage: 'applied'
-    };
+    console.log('Submitting via RPC...');
 
-    console.log('Submitting payload:', payload);
-
-    const { data, error } = await supabase
-      .from('applications')
-      .insert([payload])
-      .select()
-      .single();
+    // Wir rufen jetzt die sichere SQL-Funktion auf
+    const { data, error } = await supabase.rpc('submit_application', {
+      p_full_name: formData.full_name,
+      p_email: formData.email,
+      p_linkedin_url: formData.linkedin_url,
+      p_project_highlight: formData.project_highlight,
+      p_psychometrics: formData.psychometrics,
+      p_stage: 'applied'
+    });
 
     if (error) throw error;
 
@@ -32,127 +27,57 @@ export async function submitApplicationAction(formData: ApplicationFormData) {
 }
 
 // --- ADMIN ACTIONS (Protected) ---
+// (Hier kopieren wir den Rest von vorhin rein, damit nichts fehlt)
 
-// 1. Settings
 export async function getSettings(): Promise<RecruiterSettings | null> {
-  const { data, error } = await supabase
-    .from('recruiter_settings')
-    .select('*')
-    .single();
-  
-  if (error) {
-    console.error('Error fetching settings:', error);
-    return null;
-  }
+  const { data, error } = await supabase.from('recruiter_settings').select('*').single();
+  if (error) { console.error('Error fetching settings:', error); return null; }
   return data;
 }
 
 export async function updateSettings(settings: Partial<RecruiterSettings>) {
-  const { error } = await supabase
-    .from('recruiter_settings')
-    .update(settings)
-    .eq('id', 1);
-
-  if (error) {
-    console.error('Error updating settings:', error);
-    return false;
-  }
+  const { error } = await supabase.from('recruiter_settings').update(settings).eq('id', 1);
+  if (error) { console.error('Error updating settings:', error); return false; }
   return true;
 }
 
-// 2. Applications (List & Detail)
 export async function getApplications(page: number, pageSize: number, filterStage: string = 'all', search: string = '') {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-
-  let query = supabase
-    .from('applications')
-    .select('*', { count: 'exact' });
-
-  if (filterStage !== 'all') {
-    query = query.eq('stage', filterStage);
-  }
-
-  if (search) {
-    query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
-  }
-
-  const { data, error, count } = await query
-    .order('created_at', { ascending: false })
-    .range(from, to);
-
-  if (error) {
-    console.error('Error fetching applications:', error);
-    return { data: [], count: 0 };
-  }
-
+  let query = supabase.from('applications').select('*', { count: 'exact' });
+  if (filterStage !== 'all') query = query.eq('stage', filterStage);
+  if (search) query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+  const { data, error, count } = await query.order('created_at', { ascending: false }).range(from, to);
+  if (error) { console.error('Error fetching applications:', error); return { data: [], count: 0 }; }
   return { data: data || [], count: count || 0 };
 }
 
 export async function getAllApplications() {
-  const { data, error } = await supabase
-    .from('applications')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching all applications:', error);
-    return [];
-  }
+  const { data, error } = await supabase.from('applications').select('*').order('created_at', { ascending: false });
+  if (error) { console.error('Error fetching all applications:', error); return []; }
   return data || [];
 }
 
-// *** NEU: FEHLENDE FUNKTION ***
 export async function getApplicant(id: string): Promise<Application | null> {
-  // Wir joinen auch die Notes, falls die Tabelle existiert
-  const { data, error } = await supabase
-    .from('applications')
-    .select('*, application_notes(*)')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    console.error(`Error fetching applicant ${id}:`, error);
-    return null;
-  }
+  const { data, error } = await supabase.from('applications').select('*, application_notes(*)').eq('id', id).single();
+  if (error) { console.error(`Error fetching applicant ${id}:`, error); return null; }
   return data;
 }
 
 export async function deleteApplication(id: string) {
-  const { error } = await supabase
-    .from('applications')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
-    console.error('Error deleting application:', error);
-    return false;
-  }
+  const { error } = await supabase.from('applications').delete().eq('id', id);
+  if (error) { console.error('Error deleting application:', error); return false; }
   return true;
 }
 
-// 3. Email Templates
 export async function getEmailTemplates() {
-  const { data, error } = await supabase
-    .from('email_templates')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching templates:', error);
-    return [];
-  }
+  const { data, error } = await supabase.from('email_templates').select('*');
+  if (error) { console.error('Error fetching templates:', error); return []; }
   return data || [];
 }
 
 export async function updateEmailTemplate(id: string, updates: Partial<EmailTemplate>) {
-  const { error } = await supabase
-    .from('email_templates')
-    .update(updates)
-    .eq('id', id);
-
-  if (error) {
-    console.error('Error updating template:', error);
-    return false;
-  }
+  const { error } = await supabase.from('email_templates').update(updates).eq('id', id);
+  if (error) { console.error('Error updating template:', error); return false; }
   return true;
 }
