@@ -47,40 +47,66 @@ CREATE INDEX IF NOT EXISTS idx_applications_access_token ON public.applications(
 -- These policies ensure that authenticated users (recruiters) can manage applications
 -- and anonymous users can submit new applications.
 
--- Enable RLS on the applications table if not already enabled
+-- Ensure RLS is enabled on public.applications
 ALTER TABLE public.applications ENABLE ROW LEVEL SECURITY;
 
--- Policy for anonymous users to insert new applications (Stage 1)
--- This policy was already in supabase_update_prompt.txt, ensuring it's present.
+-- Revoke any generic rights from PUBLIC for clarity (non-destructive)
+REVOKE ALL ON TABLE public.applications FROM PUBLIC;
+
+-- Drop ALL existing policies on 'applications' to prevent any conflicts
+-- This is a more aggressive reset to ensure a clean slate.
 DROP POLICY IF EXISTS "Allow anon users to insert applications" ON public.applications;
-CREATE POLICY "Allow anon users to insert applications"
-ON public.applications
-FOR INSERT
-TO anon
-WITH CHECK (true);
-
--- Policy for authenticated users (recruiters) to view all applications
 DROP POLICY IF EXISTS "Recruiters can view all applications" ON public.applications;
-CREATE POLICY "Recruiters can view all applications"
-ON public.applications
-FOR SELECT
-TO authenticated
-USING (true);
-
--- Policy for authenticated users (recruiters) to update applications
--- This allows recruiters to change the 'stage' and other fields.
 DROP POLICY IF EXISTS "Recruiters can update applications" ON public.applications;
-CREATE POLICY "Recruiters can update applications"
-ON public.applications
-FOR UPDATE
-TO authenticated
-USING (true)
-WITH CHECK (true);
-
--- Policy for authenticated users (recruiters) to delete applications
 DROP POLICY IF EXISTS "Recruiters can delete applications" ON public.applications;
-CREATE POLICY "Recruiters can delete applications"
-ON public.applications
-FOR DELETE
-TO authenticated
-USING (true);
+-- Add any other V1 policies here if they exist and need to be dropped
+-- For example: DROP POLICY IF EXISTS "some_old_policy_name" ON public.applications;
+
+
+-- 3. Policy: allow anon role to INSERT ONLY when captcha_verified = true
+--    and stage is 'applied' (or omitted/default). This prevents anonymous writes
+--    without captcha verification.
+CREATE POLICY public_applications_anon_insert
+  ON public.applications
+  FOR INSERT
+  TO anon
+  WITH CHECK (
+    COALESCE(captcha_verified, false) = true
+    AND (stage IS NULL OR stage = 'applied')
+  );
+
+-- 4. Policy: allow authenticated users (recruiters) to SELECT all rows
+CREATE POLICY public_applications_authenticated_select
+  ON public.applications
+  FOR SELECT
+  TO authenticated
+  USING (true);
+
+-- 5. Policy: allow authenticated users to INSERT (if you want recruiters to create entries)
+CREATE POLICY public_applications_authenticated_insert
+  ON public.applications
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+-- 6. Policy: allow authenticated users to UPDATE any row
+CREATE POLICY public_applications_authenticated_update
+  ON public.applications
+  FOR UPDATE
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
+
+-- 7. Policy: allow authenticated users to DELETE any row
+CREATE POLICY public_applications_authenticated_delete
+  ON public.applications
+  FOR DELETE
+  TO authenticated
+  USING (true);
+
+-- 8. Optional: Prevent anon from updating/deleting (explicit deny via absence of policy is enough).
+--    But to be explicit, ensure there is NO policy granting anon UPDATE/DELETE.
+--    (No SQL required here — we keep no anon UPDATE/DELETE policy.)
+
+-- 9. Grants for convenience (non-privileged): ensure authenticated role can use table (not strictly required)
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.applications TO authenticated;
