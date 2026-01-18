@@ -11,21 +11,23 @@ export async function submitApplication(formData: ApplicationFormData) {
   const payload = {
     full_name: formData.full_name,
     email: formData.email,
-    linkedin_url: formData.linkedin_url,
-    project_highlight: formData.project_highlight,
-    psychometrics: formData.psychometrics,
+    linkedin_url: formData.linkedin_url || null, // Convert empty string to null
+    project_highlight: formData.project_highlight || null,
+    psychometrics: formData.psychometrics ? formData.psychometrics : {}, // Ensure object
     captcha_verified: !!(formData.captcha_verified === true || formData.captcha_verified === 'true'), // Boolean erzwingen
-    stage: formData.stage ?? 'applied', // Default explizit setzen
+    stage: 'applied' // Force hardcoded stage
   };
+
+  console.log('Final Payload sending to Supabase:', payload); // DEBUG
 
   const { data, error } = await supabase
     .from('applications')
-    .insert([payload]) // Use the payload variable
+    .insert([payload])
     .select()
     .single();
 
   if (error) {
-    console.error('Submit application error:', error.message, error.details || '');
+    console.error('Submit application error:', error.message); // Simplified error log
     return { success: false, error };
   }
 
