@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -7,7 +7,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 console.log('Supabase Config Check:', {
   hasUrl: !!supabaseUrl,
   hasKey: !!supabaseAnonKey,
-  mode: import.meta.env.MODE
+  mode: import.meta.env.MODE,
 });
 
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -24,5 +24,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const isSupabaseConfigured = () => {
   const url = import.meta.env.VITE_SUPABASE_URL;
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  return !!url && !url.includes('placeholder') && !!key && !key.includes('placeholder');
+  return (
+    !!url &&
+    !url.includes('placeholder') &&
+    !!key &&
+    !key.includes('placeholder')
+  );
 };

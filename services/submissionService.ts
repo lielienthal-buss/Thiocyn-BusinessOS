@@ -1,4 +1,3 @@
-
 import type { ApplicationData } from '../types';
 
 /**
@@ -10,21 +9,22 @@ import type { ApplicationData } from '../types';
 export const submitApplication = (data: ApplicationData): Promise<void> => {
   return new Promise((resolve, reject) => {
     console.log('Submitting application data:', {
-        fullName: data.fullName,
-        email: data.email,
-        linkedinUrl: data.linkedinUrl,
-        coverLetter: data.coverLetter,
-        resume: {
-            name: data.resume?.name,
-            size: data.resume?.size,
-            type: data.resume?.type,
-        }
+      fullName: data.fullName,
+      email: data.email,
+      linkedinUrl: data.linkedinUrl,
+      coverLetter: data.coverLetter,
+      resume: {
+        name: data.resume?.name,
+        size: data.resume?.size,
+        type: data.resume?.type,
+      },
     });
 
     // Simulate network delay
     setTimeout(() => {
       // Simulate a potential random failure
-      if (Math.random() > 0.95) { // 5% chance of failure
+      if (Math.random() > 0.95) {
+        // 5% chance of failure
         console.error('Simulated submission error.');
         reject(new Error('Failed to submit application.'));
       } else {
@@ -34,4 +34,3 @@ export const submitApplication = (data: ApplicationData): Promise<void> => {
     }, 2000);
   });
 };
-   

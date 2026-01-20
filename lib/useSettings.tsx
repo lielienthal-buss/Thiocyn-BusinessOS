@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import type { RecruiterSettings } from '../types';
 import { getSettings, updateSettings } from './actions';
@@ -23,7 +22,7 @@ export function useSettings(): UseSettingsReturn {
     try {
       const res = await getSettings();
       setSettings(res);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('useSettings load error', err);
       setError('Failed to load settings');
     } finally {
@@ -54,7 +53,7 @@ export function useSettings(): UseSettingsReturn {
           setError('Failed to save settings');
           return false;
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('useSettings save error', err);
         setError('Failed to save settings');
         return false;

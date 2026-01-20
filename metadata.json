@@ -1,8 +1,5 @@
 {
   "name": "Take A Shot - Hiring Tool",
   "description": "Automated recruiting platform with AI-driven scoring, Kanban pipeline, and Big Five personality assessment.",
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
-  ]
+  "requestFramePermissions": ["camera", "microphone"]
 }

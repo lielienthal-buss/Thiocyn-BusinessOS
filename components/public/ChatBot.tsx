@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
-import SpinnerIcon from '../icons/SpinnerIcon';
+import { GoogleGenAI } from '@google/genai';
+import Spinner from '../ui/Spinner';
 
 interface Message {
   role: 'user' | 'model';
@@ -10,7 +9,10 @@ interface Message {
 
 const ChatBot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: "Hey! I'm the Take A Shot assistant. Ask me anything about our culture, our 100% remote setup, or how we 'take the shot' every day." }
+    {
+      role: 'model',
+      text: "Hey! I'm the Take A Shot assistant. Ask me anything about our culture, our 100% remote setup, or how we 'take the shot' every day.",
+    },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -28,11 +30,15 @@ const ChatBot: React.FC = () => {
 
     const userMessage = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
     setIsTyping(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: (process.env as any).API_KEY });
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+      if (!apiKey) {
+        throw new Error('Missing Google API Key');
+      }
+      const ai = new GoogleGenAI({ apiKey });
       const chat = ai.chats.create({
         model: 'gemini-3-pro-preview',
         config: {
@@ -66,10 +72,23 @@ const ChatBot: React.FC = () => {
       const response = await chat.sendMessage({ message: userMessage });
       const text = response.text;
 
-      setMessages(prev => [...prev, { role: 'model', text: text || "I'm having a brief moment of silence. Please try again!" }]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, { role: 'model', text: "Sorry, I encountered an error. Please try again." }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text:
+            text || "I'm having a brief moment of silence. Please try again!",
+        },
+      ]);
+    } catch (error: unknown) {
+      console.error('Chat error:', error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text: 'Sorry, I encountered an error. Please try again.',
+        },
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -81,30 +100,53 @@ const ChatBot: React.FC = () => {
       <div className="p-8 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between bg-white/30 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/20">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+              ></path>
+            </svg>
           </div>
           <div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">Culture Guide</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary-600 mt-1">AI-Powered Insights</p>
+            <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
+              Culture Guide
+            </h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-primary-600 mt-1">
+              AI-Powered Insights
+            </p>
           </div>
         </div>
         <div className="hidden md:block">
-           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-slate-800 px-4 py-2 rounded-full border border-white/10">100% Remote DNA</span>
+          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-slate-800 px-4 py-2 rounded-full border border-white/10">
+            100% Remote DNA
+          </span>
         </div>
       </div>
 
       {/* Messages area */}
-      <div 
+      <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide bg-gradient-to-b from-transparent to-primary-500/5"
       >
         {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
-            <div className={`max-w-[80%] p-5 rounded-[2rem] text-sm font-medium leading-relaxed shadow-sm ${
-              msg.role === 'user' 
-                ? 'bg-primary-600 text-white rounded-tr-none' 
-                : 'glass-card text-gray-800 dark:text-gray-200 rounded-tl-none border-white/20'
-            }`}>
+          <div
+            key={i}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
+          >
+            <div
+              className={`max-w-[80%] p-5 rounded-[2rem] text-sm font-medium leading-relaxed shadow-sm ${
+                msg.role === 'user'
+                  ? 'bg-primary-600 text-white rounded-tr-none'
+                  : 'glass-card text-gray-800 dark:text-gray-200 rounded-tl-none border-white/20'
+              }`}
+            >
               {msg.text}
             </div>
           </div>
@@ -112,8 +154,10 @@ const ChatBot: React.FC = () => {
         {isTyping && (
           <div className="flex justify-start animate-pulse">
             <div className="glass-card p-5 rounded-[2rem] rounded-tl-none flex items-center gap-3">
-              <SpinnerIcon className="w-4 h-4 animate-spin text-primary-600" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Processing culture match...</span>
+              <Spinner className="w-4 h-4 text-primary-600" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                Processing culture match...
+              </span>
             </div>
           </div>
         )}
@@ -122,19 +166,31 @@ const ChatBot: React.FC = () => {
       {/* Input area */}
       <div className="p-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border-t border-white/20">
         <form onSubmit={handleSend} className="relative flex items-center">
-          <input 
+          <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about our values, remote setup, or tech..."
             className="w-full pl-8 pr-16 py-5 bg-white/80 dark:bg-slate-800/80 border border-white/20 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-primary-500/10 outline-none transition-all text-sm font-medium shadow-inner"
           />
-          <button 
+          <button
             type="submit"
             disabled={!input.trim() || isTyping}
             className="absolute right-3 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 shadow-lg shadow-primary-500/30"
           >
-            <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+            <svg
+              className="w-5 h-5 transform rotate-90"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="3"
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              ></path>
+            </svg>
           </button>
         </form>
         <p className="text-center mt-4 text-[9px] font-black uppercase tracking-widest text-gray-400 opacity-60">

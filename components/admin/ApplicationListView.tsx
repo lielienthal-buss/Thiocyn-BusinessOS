@@ -1,8 +1,16 @@
 // components/admin/ApplicationListView.tsx - V2 Refactor
 import React, { useState, useEffect } from 'react';
-import { getApplications, deleteApplication, getSettings } from '../../lib/actions';
-import type { Application, RecruiterSettings, ApplicationStage } from '../../types'; // Import ApplicationStage
-import SpinnerIcon from '../icons/SpinnerIcon';
+import {
+  getApplications,
+  deleteApplication,
+  getSettings,
+} from '../../lib/actions';
+import type {
+  Application,
+  RecruiterSettings,
+  ApplicationStage,
+} from '../../types'; // Import ApplicationStage
+import Spinner from '../ui/Spinner';
 
 interface Props {
   onSelectApplicant: (id: string) => void;
@@ -10,7 +18,12 @@ interface Props {
 
 const PAGE_SIZE = 15;
 
-const PaginationControls: React.FC<{ currentPage: number; totalCount: number; pageSize: number; onPageChange: (page: number) => void; }> = ({ currentPage, totalCount, pageSize, onPageChange }) => {
+const PaginationControls: React.FC<{
+  currentPage: number;
+  totalCount: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+}> = ({ currentPage, totalCount, pageSize, onPageChange }) => {
   const totalPages = Math.ceil(totalCount / pageSize);
   const from = (currentPage - 1) * pageSize + 1;
   const to = Math.min(currentPage * pageSize, totalCount);
@@ -20,7 +33,9 @@ const PaginationControls: React.FC<{ currentPage: number; totalCount: number; pa
   return (
     <div className="flex justify-between items-center px-6 py-3 bg-white/30 dark:bg-slate-900/30 border-t border-gray-100 dark:border-slate-800">
       <p className="text-xs text-gray-600 dark:text-gray-400">
-        Showing <span className="font-bold">{from}</span> to <span className="font-bold">{to}</span> of <span className="font-bold">{totalCount}</span> results
+        Showing <span className="font-bold">{from}</span> to{' '}
+        <span className="font-bold">{to}</span> of{' '}
+        <span className="font-bold">{totalCount}</span> results
       </p>
       <div className="flex gap-2">
         <button
@@ -42,7 +57,6 @@ const PaginationControls: React.FC<{ currentPage: number; totalCount: number; pa
   );
 };
 
-
 const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,13 +64,19 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   const [totalCount, setTotalCount] = useState(0);
   const [filterStage, setFilterStage] = useState<string>('all'); // Changed from filterStatus to filterStage
   const [filterNameEmail, setFilterNameEmail] = useState<string>('');
-  const [recruiterSettings, setRecruiterSettings] = useState<RecruiterSettings | null>(null);
+  const [recruiterSettings, setRecruiterSettings] =
+    useState<RecruiterSettings | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       // Pass filters to getApplications
-      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStage, filterNameEmail); // Pass filterStage
+      const { data, count } = await getApplications(
+        currentPage,
+        PAGE_SIZE,
+        filterStage,
+        filterNameEmail
+      ); // Pass filterStage
       setApps(data);
       setTotalCount(count);
       setLoading(false);
@@ -73,11 +93,20 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   }, []);
 
   const handleDelete = async (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete the application for ${name}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete the application for ${name}?`
+      )
+    ) {
       setLoading(true);
       await deleteApplication(id);
       // After deletion, refetch data for the current page
-      const { data, count } = await getApplications(currentPage, PAGE_SIZE, filterStage, filterNameEmail); // Pass filterStage
+      const { data, count } = await getApplications(
+        currentPage,
+        PAGE_SIZE,
+        filterStage,
+        filterNameEmail
+      ); // Pass filterStage
       setApps(data);
       setTotalCount(count);
       setLoading(false);
@@ -93,7 +122,11 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   };
 
   if (loading && apps.length === 0) {
-    return <div className="flex justify-center py-20"><SpinnerIcon className="w-10 h-10 animate-spin text-primary-600" /></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner className="w-10 h-10 text-primary-600" />
+      </div>
+    );
   }
 
   return (
@@ -109,7 +142,9 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         />
         <select
           value={filterStage} // Changed from filterStatus to filterStage
-          onChange={(e) => setFilterStage(e.target.value as ApplicationStage | 'all')} // Cast to ApplicationStage | 'all'
+          onChange={(e) =>
+            setFilterStage(e.target.value as ApplicationStage | 'all')
+          } // Cast to ApplicationStage | 'all'
           className="input-field max-w-[150px]"
         >
           <option value="all">All Stages</option>
@@ -123,28 +158,44 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         <table className="w-full text-left border-collapse">
           <thead className="bg-white/50 dark:bg-slate-900/50">
             <tr>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Name</th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Stage</th> {/* Changed from Status to Stage */}
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Project Highlight</th> {/* New column */}
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">Actions</th>
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+                Name
+              </th>
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+                Stage
+              </th>{' '}
+              {/* Changed from Status to Stage */}
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+                Project Highlight
+              </th>{' '}
+              {/* New column */}
+              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-800 relative">
             {loading && (
-                <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center">
-                    <SpinnerIcon className="w-8 h-8 animate-spin text-primary-500" />
-                </div>
+              <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center">
+                <Spinner className="w-8 h-8 text-primary-500" />
+              </div>
             )}
-            {apps.map(app => {
+            {apps.map((app) => {
               return (
-                <tr key={app.id} className="hover:bg-white/30 dark:hover:bg-slate-800/30 transition-colors">
+                <tr
+                  key={app.id}
+                  className="hover:bg-white/30 dark:hover:bg-slate-800/30 transition-colors"
+                >
                   <td className="px-6 py-4 font-semibold">{app.full_name}</td>
                   <td className="px-6 py-4">
                     <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">
                       {app.stage} {/* Changed from app.status to app.stage */}
                     </span>
                   </td>
-                  <td className="px-6 py-4">{app.project_highlight || 'N/A'}</td> {/* Display Project Highlight */}
+                  <td className="px-6 py-4">
+                    {app.project_highlight || 'N/A'}
+                  </td>{' '}
+                  {/* Display Project Highlight */}
                   <td className="px-6 py-4 text-right">
                     <div className="flex gap-2 justify-end">
                       <button
@@ -160,7 +211,12 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                         Email
                       </button>
                       <button
-                        onClick={() => handleDelete(app.id, app.full_name || 'this applicant')}
+                        onClick={() =>
+                          handleDelete(
+                            app.id,
+                            app.full_name || 'this applicant'
+                          )
+                        }
                         className="btn-danger"
                       >
                         Delete
@@ -175,10 +231,12 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
       </div>
       {apps.length === 0 && !loading && (
         <div className="py-20 text-center">
-          <p className="text-xs font-bold uppercase text-gray-400">No applications yet.</p>
+          <p className="text-xs font-bold uppercase text-gray-400">
+            No applications yet.
+          </p>
         </div>
       )}
-      <PaginationControls 
+      <PaginationControls
         currentPage={currentPage}
         totalCount={totalCount}
         pageSize={PAGE_SIZE}

@@ -1,4 +1,4 @@
-import Turnstile from "react-turnstile";
+import Turnstile from 'react-turnstile';
 
 export function CaptchaComponent({
   onVerify,
@@ -9,9 +9,9 @@ export function CaptchaComponent({
     <Turnstile
       sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
       onSuccess={(token) => {
-    console.log("Captcha success:", token);
-    onVerify(token);
-  }}
+        console.log('Captcha success:', token);
+        onVerify(token);
+      }}
     />
   );
 }

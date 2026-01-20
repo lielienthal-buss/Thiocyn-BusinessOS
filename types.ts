@@ -1,4 +1,8 @@
-export type ApplicationStage = 'applied' | 'task_requested' | 'task_submitted' | 'rejected';
+export type ApplicationStage =
+  | 'applied'
+  | 'task_requested'
+  | 'task_submitted'
+  | 'rejected';
 
 export interface ApplicationFormData {
   full_name: string;

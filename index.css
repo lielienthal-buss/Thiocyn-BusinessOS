@@ -10,13 +10,18 @@
 
 body {
   font-family: var(--font-primary);
-  background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(30,30,30,0.9));
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7),
+    rgba(30, 30, 30, 0.9)
+  );
   min-height: 100vh;
   padding: 1rem; /* Default for mobile */
   color: white;
 }
 
-@media (min-width: 768px) { /* md breakpoint */
+@media (min-width: 768px) {
+  /* md breakpoint */
   body {
     padding: 2rem; /* Restore for larger screens */
   }
