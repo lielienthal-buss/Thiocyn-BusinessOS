@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { submitApplicationAction } from '../lib/actions';
 import { BFI_QUESTIONS, calculateBigFive } from '../utils/bigFive';
-import Spinner from '../ui/Spinner';
-import Card from '../ui/Card';
-import ThankYouMessage from '../ui/ThankYouMessage';
+import Spinner from './ui/Spinner';
+import Card from './ui/Card';
+import ThankYouMessage from './ui/ThankYouMessage';
 
 // --- MAIN FORM COMPONENT ---
 
@@ -184,7 +184,7 @@ const ApplicationForm: React.FC = () => {
         <div className="space-y-8 animate-fadeIn">
           <div className="bg-blue-50 p-4 rounded-xl text-blue-800 text-sm">
             <strong>Quick Check:</strong> Rate how well these statements
-            describe you. (1 = Not at all, 5 = Absolutely)
+            describe you. (1 = Not at all, 7 = Absolutely)
           </div>
 
           <div className="space-y-6">
@@ -197,7 +197,7 @@ const ApplicationForm: React.FC = () => {
                   {q.text}
                 </p>
                 <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((val) => (
+                  {[1, 2, 3, 4, 5, 6, 7].map((val) => (
                     <button
                       key={val}
                       onClick={() =>
@@ -230,7 +230,7 @@ const ApplicationForm: React.FC = () => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={Object.keys(bfiAnswers).length < 10 || loading}
+              disabled={Object.keys(bfiAnswers).length < 15 || loading}
               className="flex-1 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all disabled:opacity-50 shadow-lg hover:shadow-green-500/30"
             >
               {loading ? <Spinner /> : 'Submit Application'}
