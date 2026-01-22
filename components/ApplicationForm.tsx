@@ -63,7 +63,7 @@ const ApplicationForm: React.FC = () => {
     <Card className="w-full max-w-3xl mx-auto my-10">
       {/* Header & Steps */}
       <div className="mb-8">
-        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">
+        <h2 className="text-3xl font-black text-white tracking-tight mb-2">
           {step === 1 && 'Let’s start with the basics.'}
           {step === 2 && 'Show us your work.'}
           {step === 3 && 'How do you tick?'}
@@ -88,7 +88,7 @@ const ApplicationForm: React.FC = () => {
       {step === 1 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
               Full Name
             </label>
             <input
@@ -102,7 +102,7 @@ const ApplicationForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
               Email Address
             </label>
             <input
@@ -127,7 +127,7 @@ const ApplicationForm: React.FC = () => {
       {step === 2 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
               LinkedIn / Portfolio
             </label>
             <input
@@ -141,10 +141,10 @@ const ApplicationForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
               Project Highlight
             </label>
-            <p className="text-black text-sm mb-3">
+            <p className="text-white text-sm mb-3">
               Tell us about one project you are proud of. Keep it short.
             </p>
             <textarea
@@ -193,7 +193,7 @@ const ApplicationForm: React.FC = () => {
                 key={q.id}
                 className="pb-6 border-b border-gray-100 last:border-0"
               >
-                <p className="font-semibold text-lg text-black mb-3">
+                <p className="font-semibold text-lg text-white mb-3">
                   {q.text}
                 </p>
                 <div className="flex gap-2">

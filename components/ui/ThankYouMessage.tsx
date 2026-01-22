@@ -6,7 +6,7 @@ const ThankYouMessage: React.FC = () => (
     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
       <span className="text-4xl">🚀</span>
     </div>
-    <h2 className="text-3xl font-black text-gray-900 mb-4">
+    <h2 className="text-3xl font-black text-white mb-4">
       Application Received!
     </h2>
     <p className="text-lg text-gray-600 mb-8">
