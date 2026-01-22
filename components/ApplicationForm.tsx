@@ -88,12 +88,12 @@ const ApplicationForm: React.FC = () => {
       {step === 1 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
               Full Name
             </label>
             <input
               type="text"
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg"
+              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg text-black"
               placeholder="e.g. John Doe"
               value={basics.full_name}
               onChange={(e) =>
@@ -102,12 +102,12 @@ const ApplicationForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
               Email Address
             </label>
             <input
               type="email"
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg"
+              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg text-black"
               placeholder="john@example.com"
               value={basics.email}
               onChange={(e) => setBasics({ ...basics, email: e.target.value })}
@@ -127,12 +127,12 @@ const ApplicationForm: React.FC = () => {
       {step === 2 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
               LinkedIn / Portfolio
             </label>
             <input
               type="url"
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg"
+              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg text-black"
               placeholder="https://linkedin.com/in/..."
               value={experience.linkedin_url}
               onChange={(e) =>
@@ -141,14 +141,14 @@ const ApplicationForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
               Project Highlight
             </label>
-            <p className="text-gray-500 text-sm mb-3">
+            <p className="text-black text-sm mb-3">
               Tell us about one project you are proud of. Keep it short.
             </p>
             <textarea
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg min-h-[150px]"
+              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg min-h-[150px] text-black"
               placeholder="I built a..."
               value={experience.project_highlight}
               onChange={(e) =>
@@ -162,7 +162,7 @@ const ApplicationForm: React.FC = () => {
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => setStep(1)}
-              className="px-6 py-4 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all"
+              className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
               Back
             </button>
@@ -182,7 +182,7 @@ const ApplicationForm: React.FC = () => {
       {/* STEP 3: PERSONALITY */}
       {step === 3 && (
         <div className="space-y-8 animate-fadeIn">
-          <div className="bg-blue-50 p-4 rounded-xl text-blue-800 text-sm">
+          <div className="bg-blue-50 p-4 rounded-xl text-black text-sm">
             <strong>Quick Check:</strong> Rate how well these statements
             describe you. (1 = Not at all, 7 = Absolutely)
           </div>
@@ -193,7 +193,7 @@ const ApplicationForm: React.FC = () => {
                 key={q.id}
                 className="pb-6 border-b border-gray-100 last:border-0"
               >
-                <p className="font-semibold text-lg text-gray-800 mb-3">
+                <p className="font-semibold text-lg text-black mb-3">
                   {q.text}
                 </p>
                 <div className="flex gap-2">
@@ -206,14 +206,14 @@ const ApplicationForm: React.FC = () => {
                       className={`h-12 flex-1 rounded-lg font-bold text-lg transition-all duration-200 border-2 ${
                         bfiAnswers[q.id] === val
                           ? 'bg-blue-600 border-blue-600 text-white shadow-lg transform scale-105'
-                          : 'bg-white border-gray-100 text-gray-400 hover:border-blue-200 hover:text-blue-500'
+                          : 'bg-white border-gray-100 text-black hover:border-blue-200 hover:text-blue-500'
                       }`}
                     >
                       {val}
                     </button>
                   ))}
                 </div>
-                <div className="flex justify-between text-xs text-gray-700 mt-2 px-1 uppercase tracking-wider font-bold">
+                <div className="flex justify-between text-xs text-black mt-2 px-1 uppercase tracking-wider font-bold">
                   <span>Disagree</span>
                   <span>Agree</span>
                 </div>
@@ -224,7 +224,7 @@ const ApplicationForm: React.FC = () => {
           <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
             <button
               onClick={() => setStep(2)}
-              className="px-6 py-4 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all"
+              className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
               Back
             </button>
