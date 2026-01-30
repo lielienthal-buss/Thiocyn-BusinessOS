@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
 import InsightsView from './InsightsView';
 import EmailTemplateManager from './EmailTemplateManager';
+import KanbanBoard from './KanbanBoard'; // Import the Kanban board
 import { getApplicant } from '../../lib/actions'; // Import getApplicant
 import type { Application } from '../../types'; // Import Application
 import Spinner from '../ui/Spinner';
@@ -11,7 +12,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
-type Tab = 'applications' | 'settings' | 'insights' | 'emailTemplates';
+type Tab = 'applications' | 'kanban' | 'settings' | 'insights' | 'emailTemplates';
 
 interface OutletContext {
   session: Session | null;
@@ -70,6 +71,10 @@ const Dashboard: React.FC = () => {
       return <InsightsView />;
     }
 
+    if (tab === 'kanban') {
+      return <KanbanBoard />;
+    }
+
     if (tab === 'applications') {
       if (selectedAppId) {
         if (loadingApplicant) {
@@ -82,6 +87,7 @@ const Dashboard: React.FC = () => {
         return (
           <ApplicantDetailView
             application={selectedApplicationData} // Pass the fetched application data
+            onReturn={() => setSelectedAppId(null)}
           />
         );
       }
@@ -133,6 +139,7 @@ const Dashboard: React.FC = () => {
         <nav className="flex items-center gap-10 border-b border-gray-100 dark:border-slate-800 pb-2">
           {[
             { id: 'applications', label: 'Applications' },
+            { id: 'kanban', label: 'Kanban' },
             { id: 'insights', label: 'Insights' },
             { id: 'settings', label: 'Settings' },
             { id: 'emailTemplates', label: 'Email Templates' },

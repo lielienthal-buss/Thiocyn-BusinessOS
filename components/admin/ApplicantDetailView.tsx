@@ -1,5 +1,5 @@
 // components/admin/ApplicantDetailView.tsx - V2 Refactor
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Application } from '../../types'; // V2 Application type
 import Card from '../ui/Card';
 import BigFiveVisualizer from './BigFiveVisualizer';
@@ -9,9 +9,35 @@ import LinkedInIcon from '../icons/LinkedInIcon';
 
 interface Props {
   application: Application | null;
+  onReturn: () => void; // Function to return to the list
 }
 
-const ApplicantDetailView: React.FC<Props> = ({ application }) => {
+const ApplicantDetailView: React.FC<Props> = ({ application, onReturn }) => {
+  const [taskUrl, setTaskUrl] = useState('');
+
+  // Pre-fill the task URL from localStorage when the component mounts
+  useEffect(() => {
+    const savedUrl = localStorage.getItem('savedTaskUrl');
+    if (savedUrl) {
+      setTaskUrl(savedUrl);
+    }
+  }, []);
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value;
+    setTaskUrl(newUrl);
+    localStorage.setItem('savedTaskUrl', newUrl); // Save to localStorage on change
+  };
+
+  const handleCopyLink = () => {
+    if (taskUrl) {
+      navigator.clipboard.writeText(taskUrl);
+      alert('Link copied to clipboard!');
+    } else {
+      alert('Please paste a link first.');
+    }
+  };
+
   if (!application) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
@@ -20,30 +46,31 @@ const ApplicantDetailView: React.FC<Props> = ({ application }) => {
     );
   }
 
-  const handleCopyLink = () => {
-    const taskUrl = `${window.location.origin}/task/${application.access_token}`;
-    navigator.clipboard.writeText(taskUrl).then(() => {
-      alert('Task link copied to clipboard!');
-    });
-  };
-
   return (
     <div className="p-4 space-y-6 animate-[fadeIn_0.3s_ease-out]">
       {/* --- Header --- */}
-      <div className="flex items-center gap-4">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {application.full_name}
-        </h2>
-        {application.linkedin_url && (
-          <a
-            href={application.linkedin_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="View Profile"
-          >
-            <LinkedInIcon />
-          </a>
-        )}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+            {application.full_name}
+          </h2>
+          {application.linkedin_url && (
+            <a
+              href={application.linkedin_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="View Profile"
+            >
+              <LinkedInIcon />
+            </a>
+          )}
+        </div>
+        <button
+          onClick={onReturn}
+          className="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
+        >
+          &larr; Back to Applications
+        </button>
       </div>
       <p className="text-sm text-gray-500 -mt-5">{application.email}</p>
 
@@ -55,12 +82,26 @@ const ApplicantDetailView: React.FC<Props> = ({ application }) => {
           </Card>
           <Card title="Workflow Actions">
             {application.stage === 'applied' && (
-              <button
-                onClick={handleCopyLink}
-                className="w-full px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all"
-              >
-                Copy Task Link
-              </button>
+              <div className="space-y-3">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                  Task Link to Send
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste task link here..."
+                    value={taskUrl}
+                    onChange={handleUrlChange}
+                    className="flex-grow px-3 py-2 text-sm bg-white dark:bg-slate-800 rounded-md outline-none focus:ring-2 focus:ring-primary-500 border border-gray-200 dark:border-slate-700"
+                  />
+                  <button
+                    onClick={handleCopyLink}
+                    className="px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all text-sm"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
             )}
             {application.stage === 'task_requested' && (
               <p className="text-sm text-gray-500">

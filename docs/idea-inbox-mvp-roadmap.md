@@ -55,3 +55,32 @@ _The following features were part of the previous vision but are now on hold or 
 - **Interview Scheduling**: Calendly integration.
 - **Feedback Loops**: Simple rating system (1-5 stars).
 - **Multi-tenancy**.
+
+---
+
+## V2.1 Enhancements (February 2026)
+
+This section outlines the next set of features and fixes planned for the V2 application.
+
+### Task 1: UI Fixes & Core Workflow
+
+- [ ] **Add "Return to Hub" Button**: Implement a back button in the `ApplicantDetailView` to allow users to easily navigate back to the main application list.
+- [ ] **Fix "Copy Task Link"**: The current implementation is unclear. The plan is to replace it with a static, configurable link (e.g., to a Notion or Google Drive document) that can be copied by the recruiter.
+
+### Task 2: Feature - Internal Notes
+
+- [ ] **Database**: Create a new `application_notes` table with columns for `application_id`, `user_id`, `note`, and `created_at`.
+- [ ] **Backend**: Add RLS policies and `getNotesForApplication` / `addNote` functions in `lib/actions.ts`.
+- [ ] **Frontend**: Update `ApplicantDetailView` to display existing notes and include a form for adding new ones.
+
+### Task 3: Feature - Ideal BFI-10 Profile
+
+- [ ] **Frontend**: Modify `BigFiveVisualizer.tsx` to display a hardcoded "ideal" personality profile alongside the candidate's scores for easy comparison.
+
+### Task 4: Feature - Kanban Board
+
+- [ ] **Component**: Create a new `KanbanBoard.tsx` component.
+- [ ] **Columns**: The board will display columns representing the application `stage` (e.g., 'applied', 'task_submitted').
+- [ ] **Drag-and-Drop**: Integrate a library (e.g., `react-beautiful-dnd`) to allow dragging applicant cards between columns.
+- [ ] **Backend**: On drop, trigger an action to update the applicant's `stage` in the database.
+- [ ] **Integration**: Add a navigation link to the Kanban board in the main `Dashboard`.
