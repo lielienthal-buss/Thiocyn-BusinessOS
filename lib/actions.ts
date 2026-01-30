@@ -140,3 +140,58 @@ export async function updateEmailTemplate(
   }
   return true;
 }
+
+/**
+ * Updates the stage of a specific application.
+ * Used for the Kanban board click-to-update functionality.
+ */
+export async function updateApplicationStage(
+  id: string,
+  stage: ApplicationStage
+) {
+  const { data, error } = await supabase
+    .from('applications')
+    .update({ stage: stage })
+    .eq('id', id)
+    .select();
+
+  if (error) {
+    console.error('Error updating application stage:', error);
+    return null;
+  }
+  return data;
+}
+
+/**
+ * Adds a new note to a specific application.
+ * It automatically captures the logged-in user's email as the author.
+ */
+export async function addNoteForApplication(
+  applicationId: string,
+  noteText: string
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || !user.email) {
+    console.error('No user or user email found to add a note.');
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('application_notes')
+    .insert([
+      {
+        application_id: applicationId,
+        note_text: noteText,
+        author_email: user.email, // Using author_email as specified
+      },
+    ])
+    .select();
+
+  if (error) {
+    console.error('Error adding note:', error);
+    return null;
+  }
+  return data;
+}

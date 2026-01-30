@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAllApplications } from '../../lib/actions';
+import { getAllApplications, updateApplicationStage } from '../../lib/actions';
 import type { Application, ApplicationStage } from '../../types';
 import Spinner from '../ui/Spinner';
 
@@ -9,14 +9,17 @@ const columns: { id: ApplicationStage; title: string }[] = [
   { id: 'task_requested', title: 'Task Sent' },
   { id: 'task_submitted', title: 'Task Submitted' },
   { id: 'rejected', title: 'Rejected' },
-  // We can add more stages like 'Interview' or 'Hired' later
 ];
 
-const KanbanCard: React.FC<{ application: Application }> = ({
-  application,
-}) => {
+const KanbanCard: React.FC<{
+  application: Application;
+  onClick: () => void;
+}> = ({ application, onClick }) => {
   return (
-    <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow border border-gray-200 dark:border-slate-700 mb-4">
+    <div
+      onClick={onClick}
+      className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow border border-gray-200 dark:border-slate-700 mb-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700"
+    >
       <h4 className="font-bold text-sm text-gray-900 dark:text-white">
         {application.full_name}
       </h4>
@@ -25,19 +28,97 @@ const KanbanCard: React.FC<{ application: Application }> = ({
   );
 };
 
+const UpdateStageModal: React.FC<{
+  application: Application;
+  onClose: () => void;
+  onUpdate: (newStage: ApplicationStage) => void;
+}> = ({ application, onClose, onUpdate }) => {
+  const [newStage, setNewStage] = useState(application.stage);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const success = await updateApplicationStage(application.id, newStage);
+    if (success) {
+      onUpdate(newStage);
+    } else {
+      alert('Failed to update stage. Please try again.');
+    }
+    setIsSaving(false);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-8 w-full max-w-md">
+        <h2 className="text-xl font-bold mb-4">
+          Update Stage for {application.full_name}
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              New Stage
+            </label>
+            <select
+              value={newStage}
+              onChange={(e) => setNewStage(e.target.value as ApplicationStage)}
+              className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md"
+            >
+              {columns.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="mt-6 flex justify-end gap-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-white rounded-md"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center"
+          >
+            {isSaving && <Spinner className="w-4 h-4 mr-2" />}
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const KanbanBoard: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
   useEffect(() => {
-    const fetchApps = async () => {
-      setLoading(true);
-      const apps = await getAllApplications();
-      setApplications(apps);
-      setLoading(false);
-    };
     fetchApps();
   }, []);
+
+  const fetchApps = async () => {
+    setLoading(true);
+    const apps = await getAllApplications();
+    setApplications(apps);
+    setLoading(false);
+  };
+
+  const handleUpdateStage = (newStage: ApplicationStage) => {
+    if (selectedApp) {
+      // Update the local state to reflect the change immediately
+      setApplications((prevApps) =>
+        prevApps.map((app) =>
+          app.id === selectedApp.id ? { ...app, stage: newStage } : app
+        )
+      );
+      setSelectedApp(null); // Close the modal
+    }
+  };
 
   if (loading) {
     return (
@@ -48,27 +129,40 @@ const KanbanBoard: React.FC = () => {
   }
 
   return (
-    <div className="flex gap-6 p-4 overflow-x-auto">
-      {columns.map((column) => (
-        <div
-          key={column.id}
-          className="w-72 bg-gray-100 dark:bg-slate-900/50 rounded-xl flex-shrink-0"
-        >
-          <div className="p-4 border-b border-gray-200 dark:border-slate-700">
-            <h3 className="font-bold text-gray-900 dark:text-white">
-              {column.title}
-            </h3>
+    <>
+      <div className="flex gap-6 p-4 overflow-x-auto">
+        {columns.map((column) => (
+          <div
+            key={column.id}
+            className="w-72 bg-gray-100 dark:bg-slate-900/50 rounded-xl flex-shrink-0"
+          >
+            <div className="p-4 border-b border-gray-200 dark:border-slate-700">
+              <h3 className="font-bold text-gray-900 dark:text-white">
+                {column.title}
+              </h3>
+            </div>
+            <div className="p-4">
+              {applications
+                .filter((app) => app.stage === column.id)
+                .map((app) => (
+                  <KanbanCard
+                    key={app.id}
+                    application={app}
+                    onClick={() => setSelectedApp(app)}
+                  />
+                ))}
+            </div>
           </div>
-          <div className="p-4">
-            {applications
-              .filter((app) => app.stage === column.id)
-              .map((app) => (
-                <KanbanCard key={app.id} application={app} />
-              ))}
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      {selectedApp && (
+        <UpdateStageModal
+          application={selectedApp}
+          onClose={() => setSelectedApp(null)}
+          onUpdate={handleUpdateStage}
+        />
+      )}
+    </>
   );
 };
 

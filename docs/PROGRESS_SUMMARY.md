@@ -145,3 +145,15 @@ The project is undergoing a significant refactoring to V2, pivoting to a lean, e
 All documentation (`README.md`, `architecture-decisions.md`, `BACKEND_OPERATIONS.md`, `idea-inbox-mvp-roadmap.md`) has been updated to reflect this new direction.
 
 **Next Step:** Begin V2 implementation, starting with the SQL migration script and updated type definitions.
+
+## 11. Recent Enhancements and Fixes (February 2026)
+
+This section summarizes the latest work performed to enhance the "Take A Shot Hiring Tool" project.
+
+- **Resolved Submission Error:** The critical "column `project_highlight` of relation `applications` does not exist" error was resolved by ensuring the `project_highlight` column (TEXT type) was correctly added to the `public.applications` table in the Supabase database.
+- **Personality Assessment Upgrade (BFI-S):** The personality assessment was upgraded from the 10-item Big Five Inventory (BFI-10) to the more robust 15-item Big Five Inventory-Short (BFI-S). This involved:
+    - Updating `utils/bigFive.ts` with the 15 BFI-S questions and the corresponding 7-point Likert scale scoring logic, including specific reverse-scored items.
+    - Modifying `components/ApplicationForm.tsx` to reflect the new BFI-S assessment, including updating the Likert scale to 7 points, adjusting submission validation to require all 15 questions, and updating instructional text.
+- **Application Form Readability:** Improved the contrast and readability of the application form by changing various text elements in `components/ApplicationForm.tsx` and the "Application Received!" message in `components/ui/ThankYouMessage.tsx` to white.
+- **Application Form Language:** The BFI-S personality assessment questions in `utils/bigFive.ts` were translated from German to English to support international applications.
+- **RBAC Setup:** The `public.profiles` table and its associated Row Level Security (RLS) policies were created in the Supabase database. This establishes the foundation for Role-Based Access Control (RBAC), enabling manual creation and assignment of `admin` or `recruiter` roles to users.

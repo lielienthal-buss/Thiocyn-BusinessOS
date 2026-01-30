@@ -19,8 +19,7 @@ export interface Application extends ApplicationFormData {
   created_at: string;
   access_token: string;
   work_sample_text: string | null;
-  // Legacy support, falls Code darauf zugreift
-  notes?: ApplicationNote[];
+  application_notes: ApplicationNote[];
 }
 
 export interface ApplicationNote {
