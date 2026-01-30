@@ -212,13 +212,17 @@ export async function addProjectArea(name: string, description: string): Promise
   const { data, error } = await supabase
     .from('project_areas')
     .insert([{ name, description }])
-    .select()
-    .single();
+    .select(); // Removed .single()
+
   if (error) {
     console.error('Error adding project area:', error);
     return null;
   }
-  return data;
+  if (!data || data.length === 0) {
+    console.warn('No project area added — likely due to RLS restrictions.');
+    return null;
+  }
+  return data[0];
 }
 
 export async function updateProjectArea(id: string, name: string, description: string): Promise<ProjectArea | null> {
@@ -226,19 +230,27 @@ export async function updateProjectArea(id: string, name: string, description: s
     .from('project_areas')
     .update({ name, description })
     .eq('id', id)
-    .select()
-    .single();
+    .select(); // Removed .single()
+
   if (error) {
     console.error('Error updating project area:', error);
     return null;
   }
-  return data;
+  if (!data || data.length === 0) {
+    console.warn('No project area updated — likely due to RLS restrictions or item not found.');
+    return null;
+  }
+  return data[0];
 }
 
 export async function deleteProjectArea(id: string): Promise<boolean> {
-  const { error } = await supabase.from('project_areas').delete().eq('id', id);
+  const { error, count } = await supabase.from('project_areas').delete().eq('id', id);
   if (error) {
     console.error('Error deleting project area:', error);
+    return false;
+  }
+  if (count === 0) {
+    console.warn('No project area deleted — likely due to RLS restrictions or item not found.');
     return false;
   }
   return true;
