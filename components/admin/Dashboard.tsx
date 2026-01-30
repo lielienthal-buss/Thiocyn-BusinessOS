@@ -5,6 +5,7 @@ import ApplicantDetailView from './ApplicantDetailView';
 import InsightsView from './InsightsView';
 import EmailTemplateManager from './EmailTemplateManager';
 import KanbanBoard from './KanbanBoard'; // Import the Kanban board
+import ProjectAreaManager from './ProjectAreaManager'; // Import the new ProjectAreaManager
 import { getApplicant } from '../../lib/actions'; // Import getApplicant
 import type { Application } from '../../types'; // Import Application
 import Spinner from '../ui/Spinner';
@@ -12,7 +13,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
-type Tab = 'applications' | 'kanban' | 'settings' | 'insights' | 'emailTemplates';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates';
 
 interface OutletContext {
   session: Session | null;
@@ -73,6 +74,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'kanban') {
       return <KanbanBoard />;
+    }
+
+    if (tab === 'projectAreas') {
+      return <ProjectAreaManager />;
     }
 
     if (tab === 'applications') {
@@ -140,6 +145,7 @@ const Dashboard: React.FC = () => {
           {[
             { id: 'applications', label: 'Applications' },
             { id: 'kanban', label: 'Kanban' },
+            { id: 'projectAreas', label: 'Project Areas' }, // New tab
             { id: 'insights', label: 'Insights' },
             { id: 'settings', label: 'Settings' },
             { id: 'emailTemplates', label: 'Email Templates' },

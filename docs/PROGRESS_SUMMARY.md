@@ -157,3 +157,74 @@ This section summarizes the latest work performed to enhance the "Take A Shot Hi
 - **Application Form Readability:** Improved the contrast and readability of the application form by changing various text elements in `components/ApplicationForm.tsx` and the "Application Received!" message in `components/ui/ThankYouMessage.tsx` to white.
 - **Application Form Language:** The BFI-S personality assessment questions in `utils/bigFive.ts` were translated from German to English to support international applications.
 - **RBAC Setup:** The `public.profiles` table and its associated Row Level Security (RLS) policies were created in the Supabase database. This establishes the foundation for Role-Based Access Control (RBAC), enabling manual creation and assignment of `admin` or `recruiter` roles to users.
+
+## 12. Recent Feature Implementations (Current Session)
+
+This section summarizes the features implemented during the current development session.
+
+### 12.1. Admin UI Enhancements & Visual Kanban Board
+
+*   **`components/admin/Dashboard.tsx`**:
+    *   Modified `Tab` type to include `'kanban'`.
+    *   Added a new tab for "Kanban" in the navigation.
+    *   Added `KanbanBoard` component rendering logic.
+*   **`components/admin/ApplicantDetailView.tsx`**:
+    *   Added an `onReturn` prop to allow navigation back to the application list.
+    *   Added a "Back to Applications" button.
+    *   Modified the "Copy Task Link" functionality to use a persistent input field and `localStorage` for saving the last-used link.
+*   **`components/admin/BigFiveVisualizer.tsx`**:
+    *   Added a hardcoded `idealProfile` constant.
+    *   Modified rendering to display a marker for the ideal score alongside the applicant's score.
+*   **`components/admin/KanbanBoard.tsx` (New File)**:
+    *   Created a new component to display applications in a Kanban-style board.
+    *   Fetches all applications and groups them by `stage`.
+    *   Renders `KanbanCard` components for each application.
+    *   **Initially visual-only.**
+*   **`docs/idea-inbox-mvp-roadmap.md`**:
+    *   Added a new section "V2.1 Enhancements (February 2026)" outlining the plan for these features.
+
+### 12.2. Interactive Kanban Board & Internal Notes
+
+*   **Database (SQL executed by you):**
+    *   Created the `public.application_notes` table (`id`, `created_at`, `application_id`, `author_email`, `note_text`).
+    *   Enabled RLS on `application_notes` and added policies for `SELECT` and `INSERT` for authenticated users.
+    *   Updated RLS policy on `public.applications` to allow `UPDATE` operations for `recruiter`/`admin` roles (essential for Kanban stage changes).
+*   **`lib/actions.ts`**:
+    *   Added `updateApplicationStage(id, stage)` function to update an application's stage in the database.
+    *   Added `addNoteForApplication(applicationId, noteText)` function to add a new note.
+*   **`types.ts`**:
+    *   Updated `Application` interface to include `application_notes: ApplicationNote[]`.
+    *   Added `ApplicationNote` interface.
+*   **`components/admin/KanbanBoard.tsx`**:
+    *   Modified `KanbanCard` to be clickable.
+    *   Implemented an `UpdateStageModal` (within `KanbanBoard.tsx`) to allow changing an applicant's stage.
+    *   Integrated `updateApplicationStage` to persist changes.
+    *   Updated local state to reflect stage changes immediately.
+*   **`components/admin/ApplicantDetailView.tsx`**:
+    *   Added a `NotesSection` (within `ApplicantDetailView.tsx`) to display existing notes and provide a form to add new ones.
+    *   Integrated `addNoteForApplication` to save new notes.
+    *   Updated the component's state to reflect newly added notes.
+
+### 12.3. Project Areas/Roles Feature
+
+*   **Database (SQL executed by you):**
+    *   Created the `public.project_areas` table (`id`, `created_at`, `name`, `description`).
+    *   Enabled RLS on `project_areas` and added policies for `SELECT` (authenticated and anon), `INSERT`, `UPDATE`, `DELETE` (admin only).
+    *   Added the `preferred_project_areas` (JSONB NULL) column to the `public.applications` table.
+    *   Updated the `public.submit_application` RPC function to accept and store the `p_preferred_project_areas` parameter.
+*   **`types.ts`**:
+    *   Added `ProjectArea` interface.
+    *   Updated `ApplicationFormData` and `Application` interfaces to include `preferred_project_areas: string[] | null`.
+*   **`lib/actions.ts`**:
+    *   Added `getProjectAreas()`: To fetch all project areas.
+    *   Added `addProjectArea(name, description)`: To create a project area.
+    *   Added `updateProjectArea(id, name, description)`: To update a project area.
+    *   Added `deleteProjectArea(id)`: To delete a project area.
+    *   Modified `submitApplicationAction` to pass the `formData.preferred_project_areas`.
+*   **`components/admin/ProjectAreaManager.tsx` (New File)**: Created a new component for admins to manage project areas (list, add, edit, delete).
+*   **`components/admin/Dashboard.tsx`**: Added a new "Project Areas" tab to the navigation and integrated the `ProjectAreaManager` component.
+*   **`components/ApplicationForm.tsx`**:
+    *   Added a new Step 3 for "Project Preferences" (shifting "Personality" to Step 4).
+    *   Fetches available `project_areas` and displays them as selectable checkboxes.
+    *   Includes tooltips to show the description for each project area.
+    *   Manages selected preferences in its state and passes them to `submitApplicationAction`.

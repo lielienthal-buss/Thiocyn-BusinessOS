@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { submitApplicationAction } from '../lib/actions';
+import React, { useState, useEffect } from 'react';
+import { submitApplicationAction, getProjectAreas } from '../lib/actions';
 import { BFI_QUESTIONS, calculateBigFive } from '../utils/bigFive';
 import Spinner from './ui/Spinner';
 import Card from './ui/Card';
 import ThankYouMessage from './ui/ThankYouMessage';
+import type { ProjectArea } from '../types';
 
 // --- MAIN FORM COMPONENT ---
 
@@ -19,7 +20,29 @@ const ApplicationForm: React.FC = () => {
     linkedin_url: '',
     project_highlight: '',
   });
+  const [selectedProjectAreas, setSelectedProjectAreas] = useState<string[]>([]);
   const [bfiAnswers, setBfiAnswers] = useState<Record<number, number>>({});
+
+  // Project Areas State
+  const [availableProjectAreas, setAvailableProjectAreas] = useState<ProjectArea[]>([]);
+  const [fetchingProjectAreas, setFetchingProjectAreas] = useState(false);
+
+  useEffect(() => {
+    if (step === 3 && availableProjectAreas.length === 0) {
+      const fetchAreas = async () => {
+        setFetchingProjectAreas(true);
+        const areas = await getProjectAreas();
+        if (areas) {
+          setAvailableProjectAreas(areas);
+        } else {
+          setError('Failed to load project areas.');
+        }
+        setFetchingProjectAreas(false);
+      };
+      fetchAreas();
+    }
+  }, [step, availableProjectAreas.length]);
+
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -36,6 +59,7 @@ const ApplicationForm: React.FC = () => {
         linkedin_url: experience.linkedin_url,
         project_highlight: experience.project_highlight,
         psychometrics,
+        preferred_project_areas: selectedProjectAreas, // Include selected project areas
       };
 
       // 3. Send
@@ -59,6 +83,8 @@ const ApplicationForm: React.FC = () => {
 
   if (submitted) return <ThankYouMessage />;
 
+  const totalSteps = 4; // Basics, Experience, Project Preferences, Personality
+
   return (
     <Card className="w-full max-w-3xl mx-auto my-10">
       {/* Header & Steps */}
@@ -66,13 +92,14 @@ const ApplicationForm: React.FC = () => {
         <h2 className="text-3xl font-black text-white tracking-tight mb-2">
           {step === 1 && 'Let’s start with the basics.'}
           {step === 2 && 'Show us your work.'}
-          {step === 3 && 'How do you tick?'}
+          {step === 3 && 'What excites you?'}
+          {step === 4 && 'How do you tick?'}
         </h2>
         <div className="flex gap-2 mt-4">
-          {[1, 2, 3].map((s) => (
+          {Array.from({ length: totalSteps }).map((_, index) => (
             <div
-              key={s}
-              className={`h-1 flex-1 rounded-full transition-all duration-500 ${s <= step ? 'bg-blue-600' : 'bg-gray-200'}`}
+              key={index + 1}
+              className={`h-1 flex-1 rounded-full transition-all duration-500 ${index + 1 <= step ? 'bg-blue-600' : 'bg-gray-200'}`}
             />
           ))}
         </div>
@@ -179,8 +206,89 @@ const ApplicationForm: React.FC = () => {
         </div>
       )}
 
-      {/* STEP 3: PERSONALITY */}
+      {/* STEP 3: PROJECT PREFERENCES */}
       {step === 3 && (
+        <div className="space-y-5 animate-fadeIn">
+          <p className="text-white text-sm mb-3">
+            Which project areas are you most interested in? Select all that apply.
+          </p>
+          {fetchingProjectAreas ? (
+            <div className="flex justify-center py-4">
+              <Spinner />
+            </div>
+          ) : availableProjectAreas.length === 0 ? (
+            <p className="text-gray-400">No project areas defined by the company yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {availableProjectAreas.map((area) => (
+                <label
+                  key={area.id}
+                  className="flex items-center p-4 bg-gray-50 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-blue-500 transition-all"
+                >
+                  <input
+                    type="checkbox"
+                    value={area.name}
+                    checked={selectedProjectAreas.includes(area.name)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedProjectAreas((prev) => [...prev, area.name]);
+                      } else {
+                        setSelectedProjectAreas((prev) =>
+                          prev.filter((name) => name !== area.name)
+                        );
+                      }
+                    }}
+                    className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                  />
+                  <span className="ml-3 text-lg font-medium text-black">
+                    {area.name}
+                  </span>
+                  {area.description && (
+                    <span
+                      className="ml-2 text-gray-500 cursor-help relative group"
+                      title={area.description} // Tooltip for description
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5L7 11h2v3a1 1 0 102 0v-3h2l-.133-.5A1 1 0 0010 7zm0 10a1 1 0 100-2 1 1 0 000 2z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden w-64 rounded-md bg-gray-800 p-2 text-white text-xs text-center group-hover:block">
+                        {area.description}
+                      </span>
+                    </span>
+                  )}
+                </label>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={() => setStep(2)}
+              className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
+            >
+              Back
+            </button>
+            <button
+              onClick={() => setStep(4)}
+              className="flex-1 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all disabled:opacity-50"
+            >
+              Next Step →
+            </button>
+          </div>
+        </div>
+      )}
+
+
+      {/* STEP 4: PERSONALITY */}
+      {step === 4 && (
         <div className="space-y-8 animate-fadeIn">
           <div className="bg-blue-50 p-4 rounded-xl text-black text-sm">
             <strong>Quick Check:</strong> Rate how well these statements
@@ -223,7 +331,7 @@ const ApplicationForm: React.FC = () => {
 
           <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
             <button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(3)}
               className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
               Back

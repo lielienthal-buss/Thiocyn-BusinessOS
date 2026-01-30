@@ -19,6 +19,7 @@ export async function submitApplicationAction(formData: ApplicationFormData) {
       p_linkedin_url: formData.linkedin_url,
       p_project_highlight: formData.project_highlight,
       p_psychometrics: formData.psychometrics,
+      p_preferred_project_areas: formData.preferred_project_areas || [], // Pass new field
       p_stage: 'applied',
     });
 
@@ -194,4 +195,51 @@ export async function addNoteForApplication(
     return null;
   }
   return data;
+}
+
+// --- PROJECT AREA ACTIONS (Protected - Admin Only) ---
+
+export async function getProjectAreas(): Promise<ProjectArea[]> {
+  const { data, error } = await supabase.from('project_areas').select('*').order('name', { ascending: true });
+  if (error) {
+    console.error('Error fetching project areas:', error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function addProjectArea(name: string, description: string): Promise<ProjectArea | null> {
+  const { data, error } = await supabase
+    .from('project_areas')
+    .insert([{ name, description }])
+    .select()
+    .single();
+  if (error) {
+    console.error('Error adding project area:', error);
+    return null;
+  }
+  return data;
+}
+
+export async function updateProjectArea(id: string, name: string, description: string): Promise<ProjectArea | null> {
+  const { data, error } = await supabase
+    .from('project_areas')
+    .update({ name, description })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) {
+    console.error('Error updating project area:', error);
+    return null;
+  }
+  return data;
+}
+
+export async function deleteProjectArea(id: string): Promise<boolean> {
+  const { error } = await supabase.from('project_areas').delete().eq('id', id);
+  if (error) {
+    console.error('Error deleting project area:', error);
+    return false;
+  }
+  return true;
 }

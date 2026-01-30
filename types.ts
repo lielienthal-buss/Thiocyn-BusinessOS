@@ -10,6 +10,7 @@ export interface ApplicationFormData {
   linkedin_url: string;
   project_highlight: string;
   psychometrics: { [key: string]: number };
+  preferred_project_areas?: string[]; // New field for applicant preferences
   // Optional: Stage ist technisch nicht im Formular, aber gut für Types
   stage?: ApplicationStage;
 }
@@ -20,6 +21,7 @@ export interface Application extends ApplicationFormData {
   access_token: string;
   work_sample_text: string | null;
   application_notes: ApplicationNote[];
+  preferred_project_areas: string[] | null; // Ensure it's explicitly defined here
 }
 
 export interface ApplicationNote {
@@ -43,4 +45,11 @@ export interface EmailTemplate {
   subject: string;
   body: string;
   description: string;
+}
+
+export interface ProjectArea {
+  id: string;
+  created_at: string;
+  name: string;
+  description: string | null;
 }
