@@ -5,6 +5,7 @@ import Spinner from './ui/Spinner';
 import Card from './ui/Card';
 import ThankYouMessage from './ui/ThankYouMessage';
 import type { ProjectArea } from '../types';
+import Turnstile from 'react-turnstile';
 
 // --- MAIN FORM COMPONENT ---
 
@@ -22,8 +23,7 @@ const ApplicationForm: React.FC = () => {
   });
   const [selectedProjectAreas, setSelectedProjectAreas] = useState<string[]>([]);
   const [bfiAnswers, setBfiAnswers] = useState<Record<number, number>>({});
-
-  // Project Areas State
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [availableProjectAreas, setAvailableProjectAreas] = useState<ProjectArea[]>([]);
   const [fetchingProjectAreas, setFetchingProjectAreas] = useState(false);
 
@@ -60,6 +60,7 @@ const ApplicationForm: React.FC = () => {
         project_highlight: experience.project_highlight,
         psychometrics,
         preferred_project_areas: selectedProjectAreas, // Include selected project areas
+        turnstileToken, // Added Turnstile token
       };
 
       // 3. Send
@@ -329,7 +330,12 @@ const ApplicationForm: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
+          <div className="flex flex-col gap-3 mt-8 pt-4 border-t border-gray-100"> {/* Changed to flex-col */}
+            <Turnstile
+              sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onVerify={setTurnstileToken}
+              options={{ theme: 'dark' }}
+            />
             <button
               onClick={() => setStep(3)}
               className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
@@ -338,7 +344,7 @@ const ApplicationForm: React.FC = () => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={Object.keys(bfiAnswers).length < 15 || loading}
+              disabled={Object.keys(bfiAnswers).length < 15 || loading || !turnstileToken} // Disabled if no token
               className="flex-1 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all disabled:opacity-50 shadow-lg hover:shadow-green-500/30"
             >
               {loading ? <Spinner /> : 'Submit Application'}

@@ -11,6 +11,7 @@ export interface ApplicationFormData {
   project_highlight: string;
   psychometrics: { [key: string]: number };
   preferred_project_areas?: string[]; // New field for applicant preferences
+  turnstileToken?: string | null; // Added for captcha verification
   // Optional: Stage ist technisch nicht im Formular, aber gut für Types
   stage?: ApplicationStage;
 }

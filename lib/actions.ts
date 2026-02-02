@@ -21,6 +21,7 @@ export async function submitApplicationAction(formData: ApplicationFormData) {
       p_psychometrics: formData.psychometrics,
       p_preferred_project_areas: formData.preferred_project_areas || [], // Pass new field
       p_stage: 'applied',
+      p_captcha_token: formData.turnstileToken, // Pass Turnstile token
     });
 
     if (error) throw error;
