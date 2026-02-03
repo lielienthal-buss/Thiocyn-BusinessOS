@@ -100,11 +100,11 @@ export async function getAllApplications() {
 export async function getApplicant(id: string): Promise<Application | null> {
   const { data, error } = await supabase
     .from('applications')
-    .select('*, application_notes(*), project_interest as preferred_project_areas')
+    .select('*, application_notes(*), project_interest')
     .eq('id', id)
     .single();
   if (error) {
-    console.error(`Error fetching applicant ${id}:`, error);
+    console.error(`Error fetching applicant ${id}:`, error.message); // More detailed error
     return null;
   }
   return data;

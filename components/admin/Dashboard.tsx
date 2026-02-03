@@ -54,8 +54,25 @@ const Dashboard: React.FC = () => {
       if (selectedAppId) {
         setLoadingApplicant(true);
         const applicant = await getApplicant(selectedAppId);
-        setSelectedApplicationData(applicant);
+        
+        // --- START: Frontend-only data adaptation ---
+        let adaptedApplicant: Application | null = null;
+        if (applicant) {
+          adaptedApplicant = {
+            ...applicant,
+            // Map DB 'project_interest' to frontend 'preferred_project_areas'
+            preferred_project_areas: (applicant as any).project_interest || null,
+            // Map DB 'status' to frontend 'stage'
+            stage: (applicant as any).status || applicant.stage,
+            // Ensure aiScore is present if it comes from the DB
+            aiScore: (applicant as any).aiScore || undefined,
+          };
+        }
+        // --- END: Frontend-only data adaptation ---
+
+        setSelectedApplicationData(adaptedApplicant);
         setLoadingApplicant(false);
+        console.log("Dashboard: Fetched and adapted applicant data:", adaptedApplicant); // Diagnostic log
       } else {
         setSelectedApplicationData(null); // Clear data if no applicant is selected
       }

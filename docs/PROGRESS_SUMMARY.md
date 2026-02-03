@@ -241,3 +241,5 @@ This section summarizes the features implemented during the current development 
     *   Integrated the new `Logo` component into the main application header (`App.tsx`) and the Admin login page (`components/admin/AdminLogin.tsx`).
     *   Updated the favicon in `index.html` to a custom SVG displaying "TAS".
     *   Corrected an accidental title change in `index.html`, reverting it to `Join the Team | Take A Shot Hiring Portal`.
+*   **Fix: Project Preferences Display:**
+    *   Resolved an issue where "Preferred Project Areas" were not visible in `ApplicantDetailView.tsx` by correcting the `getApplicant` function in `lib/actions.ts` to properly alias `project_interest` as `preferred_project_areas` during data fetching.
