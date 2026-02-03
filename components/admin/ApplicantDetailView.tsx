@@ -81,6 +81,27 @@ const NotesSection: React.FC<{
   );
 };
 
+// --- Helper: Status Badge ---
+const StatusBadge: React.FC<{ stage: string | null }> = ({ stage }) => {
+  const stageStyles: { [key: string]: string } = {
+    applied: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
+    task_requested: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
+    task_submitted: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
+    rejected: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
+    hired: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
+  };
+
+  const style = stage ? stageStyles[stage] || 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-800';
+  const text = stage ? stage.replace('_', ' ').toUpperCase() : 'UNKNOWN';
+
+  return (
+    <span className={`px-3 py-1 text-xs font-black rounded-full ${style}`}>
+      {text}
+    </span>
+  );
+};
+
+
 // --- Main Component ---
 
 interface Props {
@@ -119,16 +140,6 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             {application.full_name}
           </h2>
-          {application.linkedin_url && (
-            <a
-              href={application.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="View Profile"
-            >
-              <LinkedInIcon />
-            </a>
-          )}
         </div>
         <button
           onClick={onReturn}
@@ -137,7 +148,45 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           &larr; Back to Applications
         </button>
       </div>
-      <p className="text-sm text-gray-500 -mt-5">{application.email}</p>
+      
+      {/* --- At-a-Glance Summary --- */}
+      <Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <p className="text-gray-500 dark:text-gray-400 font-bold">Status</p>
+            <StatusBadge stage={application.stage} />
+          </div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400 font-bold">Applied On</p>
+            <p className="text-gray-900 dark:text-white font-semibold">
+              {new Date(application.created_at).toLocaleDateString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400 font-bold">Email</p>
+            <a href={`mailto:${application.email}`} className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
+              {application.email}
+            </a>
+          </div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400 font-bold">Profile</p>
+            {application.linkedin_url ? (
+              <a
+                href={application.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View Profile"
+                className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold hover:underline"
+              >
+                <LinkedInIcon />
+                View Profile
+              </a>
+            ) : (
+              <p className="text-gray-500">Not provided</p>
+            )}
+          </div>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* --- Left Column --- */}
@@ -147,6 +196,21 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               {application.project_highlight}
             </p>
           </Card>
+
+          {application.project_interest && application.project_interest.length > 0 && (
+            <Card title="Preferred Project Areas">
+              <div className="flex flex-wrap gap-2">
+                {application.project_interest.map((area, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200 text-xs font-semibold rounded-full"
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </Card>
+          )}
 
           {application.stage === 'task_submitted' &&
             application.work_sample_text && (

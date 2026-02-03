@@ -18,6 +18,7 @@ import Imprint from './components/legal/Imprint';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import LegalPage from './components/legal/LegalPage';
 import TaskSubmissionPage from './components/public/TaskSubmissionPage';
+import Logo from './components/icons/Logo';
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {
@@ -61,27 +62,30 @@ const AppLayout: React.FC = () => {
       </div>
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <nav className="flex justify-center mb-16">
-          <div className="p-1.5 rounded-full shadow-2xl flex space-x-1 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
-            <button
-              onClick={() => navigate('/')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-                location.pathname === '/'
-                  ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
-              }`}
-            >
-              Portal
-            </button>
-            <button
-              onClick={() => navigate('/admin')}
-              className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-                location.pathname.startsWith('/admin')
-                  ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                  : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
-              }`}
-            >
-              Admin Hub
-            </button>
+          <div className="p-1.5 rounded-full shadow-2xl flex items-center space-x-4 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
+            <Logo className="h-10 w-auto" />
+            <div className="flex space-x-1">
+              <button
+                onClick={() => navigate('/')}
+                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                  location.pathname === '/'
+                    ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
+                }`}
+              >
+                Portal
+              </button>
+              <button
+                onClick={() => navigate('/admin')}
+                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+                  location.pathname.startsWith('/admin')
+                    ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
+                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
+                }`}
+              >
+                Admin Hub
+              </button>
+            </div>
           </div>
         </nav>
         <Outlet context={{ session, isDemoMode, setIsDemoMode }} />

@@ -100,7 +100,7 @@ export async function getAllApplications() {
 export async function getApplicant(id: string): Promise<Application | null> {
   const { data, error } = await supabase
     .from('applications')
-    .select('*, application_notes(*)')
+    .select('*, application_notes(*), project_interest')
     .eq('id', id)
     .single();
   if (error) {

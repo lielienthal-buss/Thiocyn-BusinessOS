@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
 import Spinner from '../ui/Spinner';
 import EmailIcon from '../icons/EmailIcon';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../icons/Logo';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -39,20 +40,8 @@ const AdminLogin: React.FC = () => {
   return (
     <div className="max-w-md mx-auto mt-20 p-10 rounded-[3rem] shadow-2xl animate-[fadeIn_0.5s_ease-out] bg-gray-900/30 backdrop-blur-2xl border border-white/20">
       <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-[2.5rem] bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-2xl shadow-primary-500/40 mb-6 transform -rotate-6">
-          <svg
-            className="w-10 h-10"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2.5"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            ></path>
-          </svg>
+        <div className="inline-block mb-6">
+          <Logo className="h-16 w-auto" />
         </div>
         <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
           Admin Hub
