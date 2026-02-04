@@ -114,6 +114,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
   useEffect(() => {
     setApplication(initialApplication);
+    console.log("ApplicantDetailView: preferred_project_areas:", initialApplication?.preferred_project_areas); // Diagnostic log
   }, [initialApplication]);
 
   const handleNoteAdded = (newNote: ApplicationNote) => {

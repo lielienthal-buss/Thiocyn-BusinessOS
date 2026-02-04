@@ -243,3 +243,5 @@ This section summarizes the features implemented during the current development 
     *   Corrected an accidental title change in `index.html`, reverting it to `Join the Team | Take A Shot Hiring Portal`.
 *   **Fix: Project Preferences Display:**
     *   Resolved an issue where "Preferred Project Areas" were not visible in `ApplicantDetailView.tsx` by correcting the `getApplicant` function in `lib/actions.ts` to properly alias `project_interest` as `preferred_project_areas` during data fetching.
+*   **Fix: Applicant Detail View Display (Frontend Data Adaptation):**
+    *   Implemented frontend-only data adaptation in `components/admin/Dashboard.tsx` to correctly map `project_interest` (from DB) to `preferred_project_areas` (frontend type), `status` (from DB) to `stage` (frontend type), and include `aiScore` in the `selectedApplicationData` object. This ensures the `ApplicantDetailView` receives data in the expected format without backend changes.
