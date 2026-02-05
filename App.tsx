@@ -19,6 +19,7 @@ import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import LegalPage from './components/legal/LegalPage';
 import TaskSubmissionPage from './components/public/TaskSubmissionPage';
 import Logo from './components/icons/Logo';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {
@@ -171,7 +172,12 @@ const App: React.FC = () => {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <SpeedInsights />
+    </>
+  );
 };
 
 export default App;
