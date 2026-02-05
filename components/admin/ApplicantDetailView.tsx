@@ -114,7 +114,6 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
   useEffect(() => {
     setApplication(initialApplication);
-    console.log("ApplicantDetailView: preferred_project_areas:", initialApplication?.preferred_project_areas); // Diagnostic log
   }, [initialApplication]);
 
   const handleNoteAdded = (newNote: ApplicationNote) => {
@@ -186,6 +185,27 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               <p className="text-gray-500">Not provided</p>
             )}
           </div>
+          {application.preferred_project_areas && application.preferred_project_areas.length > 0 && (
+            <div className="col-span-full mt-4">
+              <p className="text-gray-500 dark:text-gray-400 font-bold mb-2">Preferred Project Areas</p>
+              <div className="flex flex-wrap gap-2">
+                {application.preferred_project_areas.map((area, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200 text-xs font-semibold rounded-full"
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {(!application.preferred_project_areas || application.preferred_project_areas.length === 0) && (
+            <div className="col-span-full mt-4">
+              <p className="text-gray-500 dark:text-gray-400 font-bold mb-2">Preferred Project Areas</p>
+              <p className="text-gray-500">Not filled out</p>
+            </div>
+          )}
         </div>
       </Card>
 
@@ -197,21 +217,6 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               {application.project_highlight}
             </p>
           </Card>
-
-          {application.project_interest && application.project_interest.length > 0 && (
-            <Card title="Preferred Project Areas">
-              <div className="flex flex-wrap gap-2">
-                {application.project_interest.map((area, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200 text-xs font-semibold rounded-full"
-                  >
-                    {area}
-                  </span>
-                ))}
-              </div>
-            </Card>
-          )}
 
           {application.stage === 'task_submitted' &&
             application.work_sample_text && (
