@@ -101,21 +101,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
               disabled={isDemoMode} // Disable editing in demo mode
             />
           </div>
-
-          <div>
-            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">
-              AI Recruiting Persona (Instruction)
-            </label>
-            <textarea
-              rows={4}
-              value={aiInstruction}
-              onChange={(e) => setAiInstruction(e.target.value)}
-              className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium leading-relaxed border-white/20 text-black"
-            />
-            <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">
-              This prompt guides the Gemini AI in analyzing applications.
-            </p>
-          </div>
         </div>
 
         {message && (

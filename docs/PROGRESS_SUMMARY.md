@@ -245,3 +245,5 @@ This section summarizes the features implemented during the current development 
     *   Resolved an issue where "Preferred Project Areas" were not visible in `ApplicantDetailView.tsx` by correcting the `getApplicant` function in `lib/actions.ts` to properly alias `project_interest` as `preferred_project_areas` during data fetching.
 *   **Fix: Applicant Detail View Display (Frontend Data Adaptation):**
     *   Implemented frontend-only data adaptation in `components/admin/Dashboard.tsx` to correctly map `project_interest` (from DB) to `preferred_project_areas` (frontend type), `status` (from DB) to `stage` (frontend type), and include `aiScore` in the `selectedApplicationData` object. This ensures the `ApplicantDetailView` receives data in the expected format without backend changes.
+*   **Enhancement: Preferred Project Areas in Summary Card:**
+    *   Moved the display of "Preferred Project Areas" into the "At-a-Glance Summary" card in `components/admin/ApplicantDetailView.tsx`. It now gracefully handles `null` or empty data by displaying "Not filled out".
