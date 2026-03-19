@@ -149,8 +149,10 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         >
           <option value="all">All Stages</option>
           <option value="applied">Applied</option>
-          <option value="task_requested">Task Requested</option>
+          <option value="task_requested">Task Sent</option>
           <option value="task_submitted">Task Submitted</option>
+          <option value="interview">Interview</option>
+          <option value="hired">Hired</option>
           <option value="rejected">Rejected</option>
         </select>
       </div>

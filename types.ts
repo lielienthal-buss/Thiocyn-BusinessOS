@@ -2,6 +2,8 @@ export type ApplicationStage =
   | 'applied'
   | 'task_requested'
   | 'task_submitted'
+  | 'interview'
+  | 'hired'
   | 'rejected';
 
 export interface ApplicationFormData {

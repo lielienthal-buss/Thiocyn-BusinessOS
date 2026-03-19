@@ -39,8 +39,21 @@ const BigFiveVisualizer: React.FC<BigFiveVisualizerProps> = ({ scores }) => {
     'neuroticism',
   ];
 
+  const neuroticismScore = scores['neuroticism'];
+  const highNeuroticism = neuroticismScore !== undefined && neuroticismScore >= 80;
+
   return (
     <div className="space-y-4">
+      {highNeuroticism && (
+        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-xs font-black text-red-600 dark:text-red-400 uppercase tracking-wide">
+            ⚠️ High Neuroticism ({neuroticismScore}%) — Do not send task
+          </p>
+          <p className="text-xs text-red-500 mt-1">
+            Per hiring SOP: candidates scoring ≥80% on neuroticism should not advance.
+          </p>
+        </div>
+      )}
       {traitOrder.map((trait) => {
         const score = scores[trait];
         const idealScore = idealProfile[trait];

@@ -8,6 +8,8 @@ const columns: { id: ApplicationStage; title: string }[] = [
   { id: 'applied', title: 'Applied' },
   { id: 'task_requested', title: 'Task Sent' },
   { id: 'task_submitted', title: 'Task Submitted' },
+  { id: 'interview', title: 'Interview' },
+  { id: 'hired', title: '🎉 Hired' },
   { id: 'rejected', title: 'Rejected' },
 ];
 

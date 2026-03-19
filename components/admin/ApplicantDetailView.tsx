@@ -189,7 +189,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           </div>
           <div>
             <p className="text-gray-500 dark:text-gray-400 font-bold">Profile</p>
-            {application.linkedin_url ? (
+            {application.linkedin_url && application.linkedin_url.startsWith('http') ? (
               <a
                 href={application.linkedin_url}
                 target="_blank"
