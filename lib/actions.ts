@@ -1,9 +1,11 @@
 import { supabase } from './supabaseClient';
 import type {
   ApplicationFormData,
+  ApplicationStage,
   RecruiterSettings,
   EmailTemplate,
   Application,
+  ProjectArea,
 } from '../types';
 
 // --- APPLICANT ACTIONS (Public) ---

@@ -3,7 +3,7 @@ import { Application, ApplicationNote } from '../../types';
 import Card from '../ui/Card';
 import BigFiveVisualizer from './BigFiveVisualizer';
 import LinkedInIcon from '../icons/LinkedInIcon';
-import { addNoteForApplication } from '../../lib/actions';
+import { addNoteForApplication, updateApplicationStage } from '../../lib/actions';
 import Spinner from '../ui/Spinner';
 
 // --- Notes Component ---
@@ -124,6 +124,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
     });
   };
 
+  const handleCopyTaskLink = async () => {
+    if (!application) return;
+    const taskUrl = `${window.location.origin}/task/${application.access_token}`;
+    await navigator.clipboard.writeText(taskUrl);
+    await updateApplicationStage(application.id, 'task_requested');
+    setApplication((prev) => prev ? { ...prev, stage: 'task_requested' } : null);
+    alert(`Task link copied to clipboard!\n\n${taskUrl}`);
+  };
+
   if (!application) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
@@ -141,12 +150,22 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
             {application.full_name}
           </h2>
         </div>
-        <button
-          onClick={onReturn}
-          className="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
-        >
-          &larr; Back to Applications
-        </button>
+        <div className="flex items-center gap-3">
+          {application.stage === 'applied' && (
+            <button
+              onClick={handleCopyTaskLink}
+              className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              📋 Copy Task Link
+            </button>
+          )}
+          <button
+            onClick={onReturn}
+            className="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-white text-xs font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
+          >
+            &larr; Back to Applications
+          </button>
+        </div>
       </div>
       
       {/* --- At-a-Glance Summary --- */}
