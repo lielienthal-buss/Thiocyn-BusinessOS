@@ -4,7 +4,14 @@ export type ApplicationStage =
   | 'task_submitted'
   | 'interview'
   | 'hired'
+  | 'onboarding'
   | 'rejected';
+
+export interface OnboardingTask {
+  id: string;
+  label: string;
+  completed: boolean;
+}
 
 export interface ApplicationFormData {
   full_name: string;
@@ -24,7 +31,9 @@ export interface Application extends ApplicationFormData {
   access_token: string;
   work_sample_text: string | null;
   application_notes: ApplicationNote[];
-  preferred_project_areas: string[] | null; // Ensure it's explicitly defined here
+  preferred_project_areas: string[] | null;
+  ai_analysis: string | null;
+  aiScore: number | null;
 }
 
 export interface ApplicationNote {

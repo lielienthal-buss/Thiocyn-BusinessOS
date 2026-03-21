@@ -9,11 +9,16 @@ import Turnstile from 'react-turnstile';
 
 // --- MAIN FORM COMPONENT ---
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LINKEDIN_PREFIXES = ['https://linkedin.com', 'https://www.linkedin.com'];
+const PROJECT_HIGHLIGHT_MAX = 500;
+
 const ApplicationForm: React.FC = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; linkedin_url?: string }>({});
 
   // Form State
   const [basics, setBasics] = useState({ full_name: '', email: '' });
@@ -135,14 +140,31 @@ const ApplicationForm: React.FC = () => {
             </label>
             <input
               type="email"
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg text-black"
+              className={`w-full p-4 bg-gray-50 border-2 rounded-xl focus:bg-white focus:outline-none transition-all text-lg text-black ${
+                fieldErrors.email ? 'border-red-400 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'
+              }`}
               placeholder="john@example.com"
               value={basics.email}
-              onChange={(e) => setBasics({ ...basics, email: e.target.value })}
+              onChange={(e) => {
+                setBasics({ ...basics, email: e.target.value });
+                if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
+              }}
+              onBlur={(e) => {
+                if (e.target.value && !EMAIL_REGEX.test(e.target.value)) {
+                  setFieldErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+                }
+              }}
             />
+            {fieldErrors.email && (
+              <p className="mt-1 text-xs text-red-400">{fieldErrors.email}</p>
+            )}
           </div>
           <button
-            onClick={() => setStep(2)}
+            onClick={() => {
+              const emailError = !EMAIL_REGEX.test(basics.email) ? 'Please enter a valid email address.' : undefined;
+              if (emailError) { setFieldErrors(prev => ({ ...prev, email: emailError })); return; }
+              setStep(2);
+            }}
             disabled={!basics.full_name || !basics.email}
             className="w-full mt-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -160,13 +182,25 @@ const ApplicationForm: React.FC = () => {
             </label>
             <input
               type="url"
-              className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg text-black"
+              className={`w-full p-4 bg-gray-50 border-2 rounded-xl focus:bg-white focus:outline-none transition-all text-lg text-black ${
+                fieldErrors.linkedin_url ? 'border-red-400 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'
+              }`}
               placeholder="https://linkedin.com/in/..."
               value={experience.linkedin_url}
-              onChange={(e) =>
-                setExperience({ ...experience, linkedin_url: e.target.value })
-              }
+              onChange={(e) => {
+                setExperience({ ...experience, linkedin_url: e.target.value });
+                if (fieldErrors.linkedin_url) setFieldErrors(prev => ({ ...prev, linkedin_url: undefined }));
+              }}
+              onBlur={(e) => {
+                const val = e.target.value;
+                if (val && !LINKEDIN_PREFIXES.some(p => val.startsWith(p))) {
+                  setFieldErrors(prev => ({ ...prev, linkedin_url: 'Must be a LinkedIn URL (https://linkedin.com/...)' }));
+                }
+              }}
             />
+            {fieldErrors.linkedin_url && (
+              <p className="mt-1 text-xs text-red-400">{fieldErrors.linkedin_url}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
@@ -178,6 +212,7 @@ const ApplicationForm: React.FC = () => {
             <textarea
               className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg min-h-[150px] text-black"
               placeholder="I built a..."
+              maxLength={PROJECT_HIGHLIGHT_MAX}
               value={experience.project_highlight}
               onChange={(e) =>
                 setExperience({
@@ -186,6 +221,11 @@ const ApplicationForm: React.FC = () => {
                 })
               }
             />
+            <p className={`text-xs mt-1 text-right ${
+              experience.project_highlight.length > PROJECT_HIGHLIGHT_MAX * 0.9 ? 'text-orange-400' : 'text-gray-400'
+            }`}>
+              {experience.project_highlight.length}/{PROJECT_HIGHLIGHT_MAX}
+            </p>
           </div>
           <div className="flex gap-3 mt-6">
             <button
@@ -195,7 +235,13 @@ const ApplicationForm: React.FC = () => {
               Back
             </button>
             <button
-              onClick={() => setStep(3)}
+              onClick={() => {
+                const linkedinError = experience.linkedin_url && !LINKEDIN_PREFIXES.some(p => experience.linkedin_url.startsWith(p))
+                  ? 'Must be a LinkedIn URL (https://linkedin.com/...)'
+                  : undefined;
+                if (linkedinError) { setFieldErrors(prev => ({ ...prev, linkedin_url: linkedinError })); return; }
+                setStep(3);
+              }}
               disabled={
                 !experience.linkedin_url || !experience.project_highlight
               }

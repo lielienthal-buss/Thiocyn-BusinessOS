@@ -6,6 +6,7 @@ import InsightsView from './InsightsView';
 import EmailTemplateManager from './EmailTemplateManager';
 import KanbanBoard from './KanbanBoard'; // Import the Kanban board
 import ProjectAreaManager from './ProjectAreaManager'; // Import the new ProjectAreaManager
+import OnboardingView from './OnboardingView';
 import { getApplicant } from '../../lib/actions'; // Import getApplicant
 import type { Application } from '../../types'; // Import Application
 import Spinner from '../ui/Spinner';
@@ -13,7 +14,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding';
 
 interface OutletContext {
   session: Session | null;
@@ -72,8 +73,7 @@ const Dashboard: React.FC = () => {
 
         setSelectedApplicationData(adaptedApplicant);
         setLoadingApplicant(false);
-        console.log("Dashboard: Fetched and adapted applicant data:", adaptedApplicant); // Diagnostic log
-      } else {
+          } else {
         setSelectedApplicationData(null); // Clear data if no applicant is selected
       }
     };
@@ -118,6 +118,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'emailTemplates') {
       return <EmailTemplateManager />;
+    }
+
+    if (tab === 'onboarding') {
+      return <OnboardingView />;
     }
 
     return null;
@@ -166,6 +170,7 @@ const Dashboard: React.FC = () => {
             { id: 'insights', label: 'Insights' },
             { id: 'settings', label: 'Settings' },
             { id: 'emailTemplates', label: 'Email Templates' },
+            { id: 'onboarding', label: '🚀 Onboarding' },
           ].map((t) => (
             <button
               key={t.id}

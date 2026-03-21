@@ -11,6 +11,7 @@ import type {
   ApplicationStage,
 } from '../../types'; // Import ApplicationStage
 import Spinner from '../ui/Spinner';
+import { ConfirmModal } from '../ui/ConfirmModal';
 
 interface Props {
   onSelectApplicant: (id: string) => void;
@@ -66,6 +67,12 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   const [filterNameEmail, setFilterNameEmail] = useState<string>('');
   const [recruiterSettings, setRecruiterSettings] =
     useState<RecruiterSettings | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,25 +99,25 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
     loadSettings();
   }, []);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the application for ${name}?`
-      )
-    ) {
-      setLoading(true);
-      await deleteApplication(id);
-      // After deletion, refetch data for the current page
-      const { data, count } = await getApplications(
-        currentPage,
-        PAGE_SIZE,
-        filterStage,
-        filterNameEmail
-      ); // Pass filterStage
-      setApps(data);
-      setTotalCount(count);
-      setLoading(false);
-    }
+  const handleDelete = (id: string, name: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Application',
+      message: `Are you sure you want to delete the application for ${name}?`,
+      onConfirm: async () => {
+        setLoading(true);
+        await deleteApplication(id);
+        const { data, count } = await getApplications(
+          currentPage,
+          PAGE_SIZE,
+          filterStage,
+          filterNameEmail
+        );
+        setApps(data);
+        setTotalCount(count);
+        setLoading(false);
+      },
+    });
   };
 
   const handleEmail = (app: Application) => {
@@ -130,6 +137,17 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
   }
 
   return (
+    <>
+    {confirmModal && (
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
+        onCancel={() => setConfirmModal(null)}
+        variant="danger"
+      />
+    )}
     <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20 animate-[fadeIn_0.5s_ease-out]">
       {/* Filter Controls */}
       <div className="p-6 flex flex-wrap gap-4 items-center border-b border-white/10">
@@ -245,6 +263,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         onPageChange={setCurrentPage}
       />
     </div>
+    </>
   );
 };
 

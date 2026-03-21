@@ -12,7 +12,6 @@ import type {
 
 export async function submitApplicationAction(formData: ApplicationFormData) {
   try {
-    console.log('Submitting via RPC...');
 
     // Wir rufen jetzt die sichere SQL-Funktion auf
     const { data, error } = await supabase.rpc('submit_application', {

@@ -3,6 +3,8 @@ import { getProjectAreas, addProjectArea, updateProjectArea, deleteProjectArea }
 import type { ProjectArea } from '../../types';
 import Spinner from '../ui/Spinner';
 import Card from '../ui/Card';
+import { toast } from 'sonner';
+import { ConfirmModal } from '../ui/ConfirmModal';
 
 const ProjectAreaManager: React.FC = () => {
   const [projectAreas, setProjectAreas] = useState<ProjectArea[]>([]);
@@ -12,6 +14,12 @@ const ProjectAreaManager: React.FC = () => {
   const [newAreaDescription, setNewAreaDescription] = useState('');
   const [editingArea, setEditingArea] = useState<ProjectArea | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   useEffect(() => {
     fetchProjectAreas();
@@ -31,7 +39,7 @@ const ProjectAreaManager: React.FC = () => {
 
   const handleAddOrUpdateArea = async () => {
     if (!newAreaName.trim()) {
-      alert('Project area name cannot be empty.');
+      toast.error('Project area name cannot be empty.');
       return;
     }
     setIsSaving(true);
@@ -55,16 +63,21 @@ const ProjectAreaManager: React.FC = () => {
     setIsSaving(false);
   };
 
-  const handleDeleteArea = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this project area?')) {
-      setError(null);
-      const success = await deleteProjectArea(id);
-      if (success) {
-        fetchProjectAreas(); // Refresh the list
-      } else {
-        setError('Failed to delete project area.');
-      }
-    }
+  const handleDeleteArea = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Project Area',
+      message: 'Are you sure you want to delete this project area?',
+      onConfirm: async () => {
+        setError(null);
+        const success = await deleteProjectArea(id);
+        if (success) {
+          fetchProjectAreas();
+        } else {
+          setError('Failed to delete project area.');
+        }
+      },
+    });
   };
 
   if (loading) {
@@ -80,6 +93,17 @@ const ProjectAreaManager: React.FC = () => {
   }
 
   return (
+    <>
+    {confirmModal && (
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
+        onCancel={() => setConfirmModal(null)}
+        variant="danger"
+      />
+    )}
     <div className="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
       <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-6">
         Manage Project Areas
@@ -180,6 +204,7 @@ const ProjectAreaManager: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

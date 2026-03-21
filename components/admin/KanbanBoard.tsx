@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAllApplications, updateApplicationStage } from '../../lib/actions';
 import type { Application, ApplicationStage } from '../../types';
 import Spinner from '../ui/Spinner';
+import { toast } from 'sonner';
 
 // Define the columns for the Kanban board
 const columns: { id: ApplicationStage; title: string }[] = [
@@ -10,6 +11,7 @@ const columns: { id: ApplicationStage; title: string }[] = [
   { id: 'task_submitted', title: 'Task Submitted' },
   { id: 'interview', title: 'Interview' },
   { id: 'hired', title: '🎉 Hired' },
+  { id: 'onboarding', title: '🚀 Onboarding' },
   { id: 'rejected', title: 'Rejected' },
 ];
 
@@ -44,7 +46,7 @@ const UpdateStageModal: React.FC<{
     if (success) {
       onUpdate(newStage);
     } else {
-      alert('Failed to update stage. Please try again.');
+      toast.error('Failed to update stage. Please try again.');
     }
     setIsSaving(false);
   };
