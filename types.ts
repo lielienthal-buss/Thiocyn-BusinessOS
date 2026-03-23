@@ -5,7 +5,53 @@ export type ApplicationStage =
   | 'interview'
   | 'hired'
   | 'onboarding'
+  | 'active'       // actively interning
+  | 'completed'    // internship done
   | 'rejected';
+
+// Academy types
+export interface WeeklyReview {
+  id: string;
+  application_id: string;
+  week_number: number;
+  highlight: string | null;
+  challenge: string | null;
+  learning: string | null;
+  next_goal: string | null;
+  mood_score: number | null;
+  admin_feedback: string | null;
+  created_at: string;
+}
+
+export interface LearningLogEntry {
+  id: string;
+  application_id: string;
+  type: 'task' | 'learning' | 'resource' | 'achievement';
+  title: string;
+  body: string | null;
+  completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export interface FinalReview {
+  id: string;
+  application_id: string;
+  overall_rating: number | null;
+  key_contributions: string | null;
+  growth_areas: string | null;
+  recommend_for_hire: boolean | null;
+  admin_notes: string | null;
+  ai_summary: string | null;
+  certificate_issued_at: string | null;
+  created_at: string;
+}
+
+export interface OnboardingChecklist {
+  application_id: string;
+  items: Record<string, boolean>;
+  updated_at: string;
+}
 
 export interface OnboardingTask {
   id: string;

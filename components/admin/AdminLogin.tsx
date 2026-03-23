@@ -38,12 +38,12 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-10 rounded-[3rem] shadow-2xl animate-[fadeIn_0.5s_ease-out] bg-gray-900/30 backdrop-blur-2xl border border-white/20">
+    <div className="max-w-md mx-auto mt-20 p-10 rounded-[3rem] shadow-2xl animate-[fadeIn_0.5s_ease-out] bg-white border border-gray-200">
       <div className="text-center mb-10">
         <div className="inline-block mb-6">
           <Logo className="h-16 w-auto" />
         </div>
-        <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter">
+        <h2 className="text-3xl font-black text-gray-900 tracking-tighter">
           Admin Hub
         </h2>
         <p className="text-gray-500 text-xs mt-2 font-bold uppercase tracking-widest opacity-60">
@@ -74,7 +74,7 @@ const AdminLogin: React.FC = () => {
       ) : (
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 ml-2 text-gray-400">
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-2 ml-2 text-gray-700">
               Email Address
             </label>
             <div className="relative group">
@@ -86,7 +86,7 @@ const AdminLogin: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white/50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
+                className="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
                 placeholder="recruiter@takeashot.de"
               />
             </div>
@@ -94,7 +94,7 @@ const AdminLogin: React.FC = () => {
 
           <div>
             <div className="flex justify-between items-center mb-2 ml-2">
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+              <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-700">
                 Password
               </label>
               <button
@@ -110,7 +110,7 @@ const AdminLogin: React.FC = () => {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-4 bg-white/50 dark:bg-slate-900/50 border border-gray-100 dark:border-slate-800 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
+              className="w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition-all placeholder:text-gray-400"
               placeholder="••••••••"
             />
           </div>
@@ -133,7 +133,7 @@ const AdminLogin: React.FC = () => {
             <button
               type="button"
               onClick={startDemo}
-              className="text-[10px] font-black text-gray-400 hover:text-primary-600 uppercase tracking-widest"
+              className="text-[10px] font-black text-gray-500 hover:text-primary-600 uppercase tracking-widest"
             >
               Or enter via Demo Mode
             </button>

@@ -245,7 +245,7 @@ const AccountView: React.FC<Props> = ({ session }) => {
       </div>
 
       <p className="text-center text-xs text-gray-400 pb-4">
-        Business OS · Hartlimes GmbH
+        Business OS
       </p>
     </div>
   );

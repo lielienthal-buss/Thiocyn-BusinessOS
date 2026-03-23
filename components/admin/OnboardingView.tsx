@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
 const DEFAULT_CHECKLIST = [
@@ -19,38 +19,65 @@ const OnboardingView: React.FC = () => {
   const [candidates, setCandidates] = useState<any[]>([]);
   const [checklists, setChecklists] = useState<{ [candidateId: string]: ChecklistState }>({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      const { data } = await supabase
-        .from('applications')
-        .select('*')
-        .in('stage', ['hired', 'onboarding'])
-        .order('created_at', { ascending: false });
-      setCandidates(data || []);
+  const load = useCallback(async () => {
+    const { data: apps } = await supabase
+      .from('applications')
+      .select('id, full_name, email, status, project_interest')
+      .in('status', ['hired', 'onboarding'])
+      .order('created_at', { ascending: false });
+
+    setCandidates(apps || []);
+
+    if (apps && apps.length > 0) {
+      const ids = apps.map((a: any) => a.id);
+      const { data: dbChecklists } = await supabase
+        .from('intern_onboarding_checklist')
+        .select('application_id, items')
+        .in('application_id', ids);
+
       const saved: { [id: string]: ChecklistState } = {};
-      (data || []).forEach((c: any) => {
-        const stored = localStorage.getItem(`onboarding-checklist-${c.id}`);
-        saved[c.id] = stored ? JSON.parse(stored) : {};
+      apps.forEach((c: any) => {
+        const found = dbChecklists?.find((d: any) => d.application_id === c.id);
+        if (found) {
+          saved[c.id] = found.items;
+        } else {
+          // fallback: migrate from localStorage if exists
+          const stored = localStorage.getItem(`onboarding-checklist-${c.id}`);
+          saved[c.id] = stored ? JSON.parse(stored) : {};
+        }
       });
       setChecklists(saved);
-      setLoading(false);
     }
-    load();
+    setLoading(false);
   }, []);
 
-  function toggleItem(candidateId: string, itemId: string) {
-    setChecklists(prev => {
-      const updated = {
-        ...prev,
-        [candidateId]: {
-          ...prev[candidateId],
-          [itemId]: !prev[candidateId]?.[itemId],
-        },
-      };
-      localStorage.setItem(`onboarding-checklist-${candidateId}`, JSON.stringify(updated[candidateId]));
-      return updated;
-    });
+  useEffect(() => { load(); }, [load]);
+
+  async function toggleItem(candidateId: string, itemId: string) {
+    const updated = {
+      ...checklists,
+      [candidateId]: {
+        ...checklists[candidateId],
+        [itemId]: !checklists[candidateId]?.[itemId],
+      },
+    };
+    setChecklists(updated);
+
+    // Persist to Supabase
+    setSaving(candidateId);
+    await supabase.from('intern_onboarding_checklist').upsert({
+      application_id: candidateId,
+      items: updated[candidateId],
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'application_id' });
+    setSaving(null);
+  }
+
+  async function promoteToActive(candidateId: string) {
+    await supabase.from('applications').update({ status: 'active' }).eq('id', candidateId);
+    await load();
   }
 
   function getProgress(candidateId: string) {
@@ -78,27 +105,32 @@ const OnboardingView: React.FC = () => {
         {candidates.map(candidate => {
           const progress = getProgress(candidate.id);
           const cl = checklists[candidate.id] || {};
+          const isComplete = progress === 100;
+
           return (
             <div key={candidate.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
               <div className="mb-3">
                 <h3 className="font-semibold text-gray-900 dark:text-white">{candidate.full_name}</h3>
                 <p className="text-sm text-gray-500">{candidate.email}</p>
-                {candidate.preferred_project_areas && candidate.preferred_project_areas.length > 0 && (
+                {candidate.project_interest && candidate.project_interest.length > 0 && (
                   <p className="text-xs text-gray-400 mt-1">
-                    {Array.isArray(candidate.preferred_project_areas)
-                      ? candidate.preferred_project_areas.join(', ')
-                      : candidate.preferred_project_areas}
+                    {Array.isArray(candidate.project_interest)
+                      ? candidate.project_interest.join(', ')
+                      : candidate.project_interest}
                   </p>
                 )}
               </div>
               <div className="mb-4">
                 <div className="flex justify-between text-xs text-gray-500 mb-1">
                   <span>Progress</span>
-                  <span>{progress}%</span>
+                  <span className="flex items-center gap-1">
+                    {saving === candidate.id && <span className="text-primary-500">saving…</span>}
+                    {progress}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
                   <div
-                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                    className={`h-2 rounded-full transition-all duration-300 ${isComplete ? 'bg-green-500' : 'bg-primary-500'}`}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -127,6 +159,15 @@ const OnboardingView: React.FC = () => {
                   </li>
                 ))}
               </ul>
+
+              {isComplete && (
+                <button
+                  onClick={() => promoteToActive(candidate.id)}
+                  className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                >
+                  ✓ Onboarding Complete — Move to Active
+                </button>
+              )}
             </div>
           );
         })}

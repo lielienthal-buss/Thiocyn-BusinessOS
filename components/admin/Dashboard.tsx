@@ -148,6 +148,17 @@ const Dashboard: React.FC = () => {
   const [loadingApplicant, setLoadingApplicant] = useState(false); // New state for loading applicant details
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInitialPrompt, setChatInitialPrompt] = useState<string | undefined>();
+  const [companyName, setCompanyName] = useState<string>('Business OS');
+
+  useEffect(() => {
+    supabase
+      .from('recruiter_settings')
+      .select('company_name')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.company_name) setCompanyName(data.company_name);
+      });
+  }, []);
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -334,7 +345,7 @@ const Dashboard: React.FC = () => {
       <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 pb-6 mb-0 relative z-10 gap-4">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tighter">
-            {t.dashboard.title}
+            {companyName} — {t.dashboard.title}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
             {isDemoMode ? (

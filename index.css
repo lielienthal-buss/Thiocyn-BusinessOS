@@ -8,16 +8,23 @@
   --font-primary: 'Inter', sans-serif;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-primary);
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.7),
-    rgba(30, 30, 30, 0.9)
-  );
+  background: #ffffff;
   min-height: 100vh;
-  padding: 1rem; /* Default for mobile */
-  color: white;
+  padding: 1rem;
+  color: #111111;
+  overflow-x: hidden;
+}
+
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
 }
 
 @media (min-width: 768px) {
@@ -28,7 +35,7 @@ body {
 }
 
 .input-field {
-  @apply w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 transition;
+  @apply w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition;
 }
 
 /* Base button styles */

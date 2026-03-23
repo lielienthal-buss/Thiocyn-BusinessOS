@@ -18,8 +18,10 @@ import Imprint from './components/legal/Imprint';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import LegalPage from './components/legal/LegalPage';
 import TaskSubmissionPage from './components/public/TaskSubmissionPage';
+import InternPortalPage from './components/public/InternPortalPage';
 import Logo from './components/icons/Logo';
 import { Toaster } from 'sonner';
+import { LangProvider } from './lib/i18n';
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {
@@ -57,13 +59,13 @@ const AppLayout: React.FC = () => {
   return (
     <div className="min-h-screen relative py-12 px-4 transition-colors duration-500 selection:bg-primary-100">
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-[150px] animate-blob"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-400/20 dark:bg-indigo-600/10 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
-        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-teal-300/20 dark:bg-teal-600/10 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-100/60 rounded-full blur-[150px] animate-blob"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-100/60 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
+        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-primary-50/80 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
       </div>
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <nav className="flex justify-center mb-16">
-          <div className="p-1.5 rounded-full shadow-2xl flex items-center space-x-4 bg-gray-900/30 backdrop-blur-2xl border border-white/20">
+          <div className="p-1.5 rounded-full flex items-center space-x-4 bg-white border border-gray-200 shadow-sm">
             <Logo className="h-10 w-auto" />
             <div className="flex space-x-1">
               <button
@@ -71,7 +73,7 @@ const AppLayout: React.FC = () => {
                 className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                   location.pathname === '/'
                     ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
+                    : 'text-gray-500 hover:text-gray-800'
                 }`}
               >
                 Portal
@@ -81,7 +83,7 @@ const AppLayout: React.FC = () => {
                 className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                   location.pathname.startsWith('/admin')
                     ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-white'
+                    : 'text-gray-500 hover:text-gray-800'
                 }`}
               >
                 Admin Hub
@@ -145,6 +147,14 @@ const App: React.FC = () => {
           ),
         },
         {
+          path: 'intern/:internId',
+          element: (
+            <React.Suspense fallback={<div>Loading Intern Portal...</div>}>
+              <InternPortalPage />
+            </React.Suspense>
+          ),
+        },
+        {
           path: 'imprint',
           element: (
             <React.Suspense fallback={<div>Loading Imprint...</div>}>
@@ -173,10 +183,10 @@ const App: React.FC = () => {
   ]);
 
   return (
-    <>
+    <LangProvider>
       <RouterProvider router={router} />
       <Toaster position="top-right" richColors />
-    </>
+    </LangProvider>
   );
 };
 

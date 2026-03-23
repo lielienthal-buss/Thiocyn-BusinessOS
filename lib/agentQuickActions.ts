@@ -22,7 +22,7 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       emoji: '🎯',
       label: 'Interview questions',
       prompt:
-        'Suggest 5 strong interview questions for a marketing intern position at Hartlimes GmbH.',
+        'Suggest 5 strong interview questions for a marketing intern position at Hart Limes GmbH.',
     },
   ],
   marketing: [

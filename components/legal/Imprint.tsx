@@ -12,10 +12,10 @@ const Imprint: React.FC = () => {
           </h2>
           <div className="space-y-1">
             <p className="font-black text-gray-900 dark:text-white">
-              TAKE A SHOT GmbH
+              Thiocyn GmbH
             </p>
-            <p>Kieselstr. 6</p>
-            <p>51371 Leverkusen</p>
+            <p>Lilienstr. 11</p>
+            <p>20095 Hamburg</p>
             <p>Germany</p>
           </div>
         </div>
@@ -25,16 +25,16 @@ const Imprint: React.FC = () => {
             Commercial Register
           </h2>
           <p>Registered in the Commercial Register</p>
-          <p>Register Court: Amtsgericht Leipzig</p>
-          <p>Registration Number: HRB 37943</p>
+          <p>Register Court: Amtsgericht Hamburg</p>
+          <p>Registration Number: HRB 197608</p>
         </div>
 
         <div>
           <h2 className="text-xs font-black uppercase tracking-widest text-gray-700 mb-4">
             VAT Identification Number
           </h2>
-          <p>VAT ID (Germany): DE338019133</p>
-          <p>VAT ID (Austria): ATU76511856</p>
+          <p>Tax Number (Steuernummer): 230/5718/4651</p>
+          <p>VAT ID (Germany): DE302352697</p>
         </div>
 
         <div>
@@ -48,8 +48,9 @@ const Imprint: React.FC = () => {
           <h2 className="text-xs font-black uppercase tracking-widest text-gray-700 mb-4">
             Contact
           </h2>
-          <p>Phone: +49 341 98994423</p>
-          <p>Email: info@takeashot.de</p>
+          <p>Service Hotline: Mon–Fri, 9:00–17:00</p>
+          <p>Email: service@thiocyn.com</p>
+          <p>Web: www.thiocyn.com</p>
         </div>
 
         <div>
@@ -57,8 +58,8 @@ const Imprint: React.FC = () => {
             Person responsible for content according to §55 RStV
           </h2>
           <p>Peter Hart</p>
-          <p>Kieselstr. 6</p>
-          <p>51371 Leverkusen</p>
+          <p>Lilienstr. 11</p>
+          <p>20095 Hamburg</p>
           <p>Germany</p>
         </div>
 

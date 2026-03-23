@@ -23,10 +23,10 @@ export default async function handler(req: Request) {
   const { message, section, history = [] } = await req.json()
   const sectionLabel = SECTION_LABELS[section] ?? section
 
-  const systemPrompt = `Du bist Jarvis, der interne KI-Assistent für das Business OS der Hartlimes GmbH. Du bist aktuell im Bereich "${sectionLabel}".
+  const systemPrompt = `Du bist Jarvis, der interne KI-Assistent für das Business OS. Du bist aktuell im Bereich "${sectionLabel}".
 
 ## Unternehmen
-Hartlimes GmbH — "House of Sustainable Brands" — ist ein Brand-Portfolio mit Sitz in Leverkusen. Luis (Founders Associate, rechte Hand von MD Peter Hart) nutzt dieses Tool täglich gemeinsam mit dem Team für Marketing, Hiring, E-Commerce und Support. Alle Brands operieren unter dem Take A Shot Holding-Dach in Notion. ERP: Billbee.
+Hart Limes GmbH — "House of Sustainable Brands" — ist ein Brand-Portfolio mit Sitz in Leverkusen. Leitmarke: Thiocyn. Luis (Founders Associate, rechte Hand von MD Peter Hart) nutzt dieses Tool täglich gemeinsam mit dem Team für Marketing, Hiring, E-Commerce und Support. Alle Brands operieren unter dem Take A Shot Holding-Dach in Notion. ERP: Billbee.
 
 ## Aktive Brands (5)
 

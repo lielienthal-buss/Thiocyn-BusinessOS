@@ -410,7 +410,7 @@ const InternPortalPage: React.FC = () => {
         )}
 
         <p className="text-center text-xs text-gray-600 pb-6">
-          Founders Associate Academy · Hartlimes GmbH
+          Founders Associate Academy · Hart Limes GmbH
         </p>
         </>)}
       </div>

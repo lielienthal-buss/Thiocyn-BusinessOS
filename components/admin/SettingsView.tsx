@@ -122,6 +122,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
             )}
           </button>
         </div>
+
+        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-2xl text-xs text-gray-500 text-center">
+          Team management has moved to <span className="font-bold text-gray-700">Admin → Team</span> tab.
+        </div>
       </form>
     </div>
   );

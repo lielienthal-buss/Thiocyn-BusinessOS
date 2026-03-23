@@ -14,7 +14,7 @@ const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="text-center mt-24 py-12 border-t border-white/10">
       <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-        &copy; {new Date().getFullYear()} Take A Shot GmbH. All rights reserved.
+        &copy; {new Date().getFullYear()} Thiocyn GmbH. All rights reserved.
       </p>
       <div className="mt-4 flex justify-center space-x-6">
         <button

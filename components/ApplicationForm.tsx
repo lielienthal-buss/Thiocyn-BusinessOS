@@ -10,7 +10,6 @@ import Turnstile from 'react-turnstile';
 // --- MAIN FORM COMPONENT ---
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const LINKEDIN_PREFIXES = ['https://linkedin.com', 'https://www.linkedin.com'];
 const PROJECT_HIGHLIGHT_MAX = 500;
 
 const ApplicationForm: React.FC = () => {
@@ -95,7 +94,7 @@ const ApplicationForm: React.FC = () => {
     <Card className="w-full max-w-3xl mx-auto my-10">
       {/* Header & Steps */}
       <div className="mb-8">
-        <h2 className="text-3xl font-black text-white tracking-tight mb-2">
+        <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">
           {step === 1 && 'Let’s start with the basics.'}
           {step === 2 && 'Show us your work.'}
           {step === 3 && 'What excites you?'}
@@ -105,7 +104,7 @@ const ApplicationForm: React.FC = () => {
           {Array.from({ length: totalSteps }).map((_, index) => (
             <div
               key={index + 1}
-              className={`h-1 flex-1 rounded-full transition-all duration-500 ${index + 1 <= step ? 'bg-blue-600' : 'bg-gray-200'}`}
+              className={`h-1 flex-1 rounded-full transition-all duration-500 ${index + 1 <= step ? 'bg-primary-600' : 'bg-gray-200'}`}
             />
           ))}
         </div>
@@ -121,7 +120,7 @@ const ApplicationForm: React.FC = () => {
       {step === 1 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
               Full Name
             </label>
             <input
@@ -135,7 +134,7 @@ const ApplicationForm: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
+            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
               Email Address
             </label>
             <input
@@ -166,7 +165,7 @@ const ApplicationForm: React.FC = () => {
               setStep(2);
             }}
             disabled={!basics.full_name || !basics.email}
-            className="w-full mt-6 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next Step →
           </button>
@@ -177,15 +176,16 @@ const ApplicationForm: React.FC = () => {
       {step === 2 && (
         <div className="space-y-5 animate-fadeIn">
           <div>
-            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
-              LinkedIn / Portfolio
+            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+              LinkedIn / Portfolio / Social
             </label>
+            <p className="text-gray-500 text-xs mb-2">Optional — LinkedIn, portfolio, Instagram, anything that shows your work.</p>
             <input
               type="url"
               className={`w-full p-4 bg-gray-50 border-2 rounded-xl focus:bg-white focus:outline-none transition-all text-lg text-black ${
                 fieldErrors.linkedin_url ? 'border-red-400 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'
               }`}
-              placeholder="https://linkedin.com/in/..."
+              placeholder="https://linkedin.com/in/... or any portfolio link"
               value={experience.linkedin_url}
               onChange={(e) => {
                 setExperience({ ...experience, linkedin_url: e.target.value });
@@ -193,8 +193,8 @@ const ApplicationForm: React.FC = () => {
               }}
               onBlur={(e) => {
                 const val = e.target.value;
-                if (val && !LINKEDIN_PREFIXES.some(p => val.startsWith(p))) {
-                  setFieldErrors(prev => ({ ...prev, linkedin_url: 'Must be a LinkedIn URL (https://linkedin.com/...)' }));
+                if (val && !val.startsWith('http')) {
+                  setFieldErrors(prev => ({ ...prev, linkedin_url: 'Please enter a valid URL (https://...)' }));
                 }
               }}
             />
@@ -203,15 +203,15 @@ const ApplicationForm: React.FC = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide">
-              Project Highlight
+            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+              Tell us something
             </label>
-            <p className="text-white text-sm mb-3">
+            <p className="text-gray-600 text-sm mb-3">
               Tell us about one project you are proud of. Keep it short.
             </p>
             <textarea
               className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg min-h-[150px] text-black"
-              placeholder="I built a..."
+              placeholder="A project, a result, a thing you're proud of. Optional."
               maxLength={PROJECT_HIGHLIGHT_MAX}
               value={experience.project_highlight}
               onChange={(e) =>
@@ -236,16 +236,14 @@ const ApplicationForm: React.FC = () => {
             </button>
             <button
               onClick={() => {
-                const linkedinError = experience.linkedin_url && !LINKEDIN_PREFIXES.some(p => experience.linkedin_url.startsWith(p))
-                  ? 'Must be a LinkedIn URL (https://linkedin.com/...)'
+                const linkedinError = experience.linkedin_url && !experience.linkedin_url.startsWith('http')
+                  ? 'Please enter a valid URL (https://...)'
                   : undefined;
                 if (linkedinError) { setFieldErrors(prev => ({ ...prev, linkedin_url: linkedinError })); return; }
                 setStep(3);
               }}
-              disabled={
-                !experience.linkedin_url || !experience.project_highlight
-              }
-              className="flex-1 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all disabled:opacity-50"
+              disabled={false}
+              className="flex-1 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50"
             >
               Next Step →
             </button>
@@ -256,7 +254,7 @@ const ApplicationForm: React.FC = () => {
       {/* STEP 3: PROJECT PREFERENCES */}
       {step === 3 && (
         <div className="space-y-5 animate-fadeIn">
-          <p className="text-white text-sm mb-3">
+          <p className="text-gray-600 text-sm mb-3">
             Which project areas are you most interested in? Select all that apply.
           </p>
           {fetchingProjectAreas ? (
@@ -307,7 +305,7 @@ const ApplicationForm: React.FC = () => {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden w-64 rounded-md bg-gray-800 p-2 text-white text-xs text-center group-hover:block">
+                      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden w-64 rounded-md bg-gray-700 p-2 text-white text-xs text-center group-hover:block">
                         {area.description}
                       </span>
                     </span>
@@ -325,7 +323,7 @@ const ApplicationForm: React.FC = () => {
             </button>
             <button
               onClick={() => setStep(4)}
-              className="flex-1 py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all disabled:opacity-50"
+              className="flex-1 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50"
             >
               Next Step →
             </button>
@@ -348,7 +346,7 @@ const ApplicationForm: React.FC = () => {
                 key={q.id}
                 className="pb-6 border-b border-gray-100 last:border-0"
               >
-                <p className="font-semibold text-lg text-white mb-3">
+                <p className="font-semibold text-lg text-gray-900 mb-3">
                   {q.text}
                 </p>
                 <div className="flex gap-2">
@@ -380,7 +378,7 @@ const ApplicationForm: React.FC = () => {
             <Turnstile
               sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
               onVerify={setTurnstileToken}
-              options={{ theme: 'dark' }}
+              options={{ theme: 'light' }}
             />
             <button
               onClick={() => setStep(3)}

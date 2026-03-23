@@ -148,9 +148,9 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         variant="danger"
       />
     )}
-    <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-gray-900/30 backdrop-blur-2xl border border-white/20 animate-[fadeIn_0.5s_ease-out]">
+    <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-gray-200 animate-[fadeIn_0.5s_ease-out]">
       {/* Filter Controls */}
-      <div className="p-6 flex flex-wrap gap-4 items-center border-b border-white/10">
+      <div className="p-6 flex flex-wrap gap-4 items-center border-b border-gray-200">
         <input
           type="text"
           placeholder="Filter by Name or Email"
@@ -174,7 +174,8 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           <option value="rejected">Rejected</option>
         </select>
       </div>
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead className="bg-white/50 dark:bg-slate-900/50">
             <tr>
@@ -208,7 +209,16 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                 >
                   <td className="px-6 py-4 font-semibold">{app.full_name}</td>
                   <td className="px-6 py-4">
-                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-200 text-gray-800">
+                    <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                      app.stage === 'applied' ? 'bg-blue-100 text-blue-700' :
+                      app.stage === 'task_requested' ? 'bg-amber-100 text-amber-700' :
+                      app.stage === 'task_submitted' ? 'bg-green-100 text-green-700' :
+                      app.stage === 'interview' ? 'bg-indigo-100 text-indigo-700' :
+                      app.stage === 'hired' ? 'bg-purple-100 text-purple-700' :
+                      app.stage === 'onboarding' ? 'bg-teal-100 text-teal-700' :
+                      app.stage === 'rejected' ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
                       {app.stage} {/* Changed from app.status to app.stage */}
                     </span>
                   </td>
@@ -249,6 +259,43 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Mobile cards */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {loading && apps.length > 0 && (
+          <div className="flex justify-center py-4">
+            <Spinner className="w-6 h-6 text-primary-500" />
+          </div>
+        )}
+        {apps.map((app) => (
+          <div key={app.id} className="p-4 space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <p className="font-semibold text-gray-900 text-sm">{app.full_name}</p>
+              <span className={`shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full ${
+                app.stage === 'applied' ? 'bg-blue-100 text-blue-700' :
+                app.stage === 'task_requested' ? 'bg-amber-100 text-amber-700' :
+                app.stage === 'task_submitted' ? 'bg-green-100 text-green-700' :
+                app.stage === 'interview' ? 'bg-indigo-100 text-indigo-700' :
+                app.stage === 'hired' ? 'bg-purple-100 text-purple-700' :
+                app.stage === 'onboarding' ? 'bg-teal-100 text-teal-700' :
+                app.stage === 'rejected' ? 'bg-red-100 text-red-700' :
+                'bg-gray-100 text-gray-700'
+              }`}>
+                {app.stage}
+              </span>
+            </div>
+            {app.project_highlight && (
+              <p className="text-xs text-gray-500">{app.project_highlight}</p>
+            )}
+            <div className="flex gap-2">
+              <button onClick={() => onSelectApplicant(app.id)} className="btn-primary text-xs">View</button>
+              <button onClick={() => handleEmail(app)} className="btn-primary text-xs">Email</button>
+              <button onClick={() => handleDelete(app.id, app.full_name || 'this applicant')} className="btn-danger text-xs">Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {apps.length === 0 && !loading && (
         <div className="py-20 text-center">
           <p className="text-xs font-bold uppercase text-gray-400">

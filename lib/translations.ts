@@ -2,7 +2,7 @@ export type Lang = 'en' | 'de';
 
 const en = {
   dashboard: {
-    title: 'Hartlimes GmbH — Business OS',
+    title: 'Business OS',
     loggedInAs: 'Logged in as:',
     demoMode: 'Demo Mode',
     adminBadge: 'Admin',
@@ -38,7 +38,7 @@ const en = {
   } as Record<string, string>,
   brandStatus: {
     title: 'Brand Command Center',
-    subtitle: '2026 Status — All 6 Hartlimes Brands',
+    subtitle: '2026 Status — All 6 Brands',
     kpiReminder: 'KPI Priority: Watch Time > Completion Rate > Saves — not Views, not Followers.',
     engagementAlertTitle: (n: number) => `${n} Brand${n > 1 ? 's' : ''} with critical engagement`,
     engagementAlertDesc: 'Take A Shot (<0.03%) and Wristr (0.06%) have critically low engagement rates. Prioritise a Reels-First strategy.',
@@ -183,7 +183,7 @@ const en = {
 
 const de: typeof en = {
   dashboard: {
-    title: 'Hartlimes GmbH — Business OS',
+    title: 'Business OS',
     loggedInAs: 'Eingeloggt als:',
     demoMode: 'Demo Modus',
     adminBadge: 'Admin',
@@ -219,7 +219,7 @@ const de: typeof en = {
   },
   brandStatus: {
     title: 'Brand Command Center',
-    subtitle: '2026 Status — alle 6 Hartlimes Brands',
+    subtitle: '2026 Status — alle 6 Brands',
     kpiReminder: 'KPI-Priorität: Watch Time > Completion Rate > Saves — nicht Views, nicht Follower.',
     engagementAlertTitle: (n: number) => `${n} Brand${n > 1 ? 's' : ''} mit kritischem Engagement`,
     engagementAlertDesc: 'Take A Shot (<0.03%) und Wristr (0.06%) haben kritisch niedrige Engagement-Raten. Reels-First-Strategie priorisieren.',

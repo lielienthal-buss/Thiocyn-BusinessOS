@@ -3,12 +3,12 @@ import React from 'react';
 const FAQ: React.FC = () => {
   const faqs = [
     {
-      question: 'What is Take A Shot GmbH?',
+      question: 'What is Take A Shot?',
       answer:
-        'We are a company that combines entrepreneurial excellence with genuine human proximity, focusing on innovative solutions.',
+        'Take A Shot is a fast-growing D2C brand, part of Hart Limes GmbH — an e-commerce aggregator building and scaling multiple consumer brands. You work at the brand level with real ownership and impact.',
     },
     {
-      question: 'Is Take A Shot GmbH 100% remote?',
+      question: 'Is the team remote?',
       answer:
         'Yes, we are a fully remote company, allowing our team members to work from anywhere.',
     },
