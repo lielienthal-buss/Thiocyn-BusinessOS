@@ -4,7 +4,8 @@ import { supabase } from '../../lib/supabaseClient';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type TaskStatus = 'todo' | 'in_progress' | 'blocked' | 'done' | 'cancelled';
-type ViewMode = 'board' | 'list' | 'my';
+type TaskScope = 'private' | 'team';
+type ViewMode = 'all' | 'my_desk' | 'board' | 'list';
 type SortKey = 'title' | 'brand' | 'assigned_to_email' | 'priority' | 'due_date' | 'status' | 'created_at';
 
 interface TeamTask {
@@ -16,6 +17,7 @@ interface TeamTask {
   priority: number;
   due_date: string | null;
   status: TaskStatus;
+  scope: TaskScope;
   created_by_email: string | null;
   created_at: string;
   updated_at: string;
@@ -28,13 +30,7 @@ interface Props {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const BRANDS = [
-  'thiocyn',
-  'take-a-shot',
-  'dr-severin',
-  'paigh',
-  'wristr',
-  'timber-john',
-  'cross-brand',
+  'thiocyn', 'take-a-shot', 'dr-severin', 'paigh', 'wristr', 'timber-john', 'cross-brand',
 ] as const;
 
 const STATUS_COLUMNS: { id: TaskStatus; label: string }[] = [
@@ -53,19 +49,11 @@ const STATUS_COLORS: Record<TaskStatus, string> = {
 };
 
 const PRIORITY_DOT: Record<number, string> = {
-  1: 'bg-gray-400',
-  2: 'bg-blue-500',
-  3: 'bg-amber-500',
-  4: 'bg-orange-500',
-  5: 'bg-red-600',
+  1: 'bg-gray-400', 2: 'bg-blue-500', 3: 'bg-amber-500', 4: 'bg-orange-500', 5: 'bg-red-600',
 };
 
 const PRIORITY_LABEL: Record<number, string> = {
-  1: 'Low',
-  2: 'Normal',
-  3: 'Medium',
-  4: 'High',
-  5: 'Critical',
+  1: 'Low', 2: 'Normal', 3: 'Medium', 4: 'High', 5: 'Critical',
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -109,26 +97,66 @@ const StatusBadge: React.FC<{ status: TaskStatus }> = ({ status }) => (
   </span>
 );
 
+const ScopeBadge: React.FC<{ scope: TaskScope }> = ({ scope }) =>
+  scope === 'private' ? (
+    <span className="px-1.5 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-full border border-amber-200 uppercase tracking-wide">
+      🔒 Private
+    </span>
+  ) : null;
+
+// ─── Scope Selector ───────────────────────────────────────────────────────────
+
+const ScopeSelector: React.FC<{
+  value: TaskScope;
+  onChange: (v: TaskScope) => void;
+}> = ({ value, onChange }) => (
+  <div>
+    <label className="block text-xs font-bold text-gray-600 mb-1">Scope</label>
+    <div className="flex gap-2">
+      <button
+        type="button"
+        onClick={() => onChange('private')}
+        className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
+          value === 'private'
+            ? 'border-amber-400 bg-amber-50 text-amber-700'
+            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+        }`}
+      >
+        🔒 Only Me
+        <span className="text-[9px] opacity-60 font-normal">(Finance, PayPal, Admin)</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('team')}
+        className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
+          value === 'team'
+            ? 'border-blue-400 bg-blue-50 text-blue-700'
+            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+        }`}
+      >
+        👥 Team / Intern
+        <span className="text-[9px] opacity-60 font-normal">(Marketing, Content, etc.)</span>
+      </button>
+    </div>
+  </div>
+);
+
 // ─── Add Task Panel ───────────────────────────────────────────────────────────
 
 interface AddTaskPanelProps {
   onClose: () => void;
   onSaved: () => void;
   userEmail?: string;
+  defaultScope?: TaskScope;
 }
 
 const EMPTY_FORM = {
-  title: '',
-  description: '',
-  assigned_to_email: '',
-  brand: '',
-  priority: 3,
-  due_date: '',
-  status: 'todo' as TaskStatus,
+  title: '', description: '', assigned_to_email: '', brand: '',
+  priority: 3, due_date: '', status: 'todo' as TaskStatus, scope: 'team' as TaskScope,
 };
 
-const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail }) => {
-  const [form, setForm] = useState({ ...EMPTY_FORM });
+const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail, defaultScope }) => {
+  const [form, setForm] = useState({ ...EMPTY_FORM, scope: defaultScope ?? 'team' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -140,11 +168,12 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
     const { error: err } = await supabase.from('team_tasks').insert({
       title: form.title.trim(),
       description: form.description.trim() || null,
-      assigned_to_email: form.assigned_to_email.trim() || null,
+      assigned_to_email: form.scope === 'private' ? (userEmail ?? null) : (form.assigned_to_email.trim() || null),
       brand: form.brand || null,
       priority: form.priority,
       due_date: form.due_date || null,
       status: form.status,
+      scope: form.scope,
       created_by_email: userEmail ?? null,
     });
     setSaving(false);
@@ -156,16 +185,24 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
   return (
     <div className="fixed inset-0 z-40 flex justify-end" onClick={onClose}>
       <div
-        className="w-full max-w-md bg-white h-full shadow-2xl border-l border-gray-200 flex flex-col overflow-y-auto"
+        className={`w-full max-w-md bg-white h-full shadow-2xl border-l flex flex-col overflow-y-auto ${
+          form.scope === 'private' ? 'border-amber-200' : 'border-blue-200'
+        }`}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-black text-gray-900">New Task</h2>
+        <div className={`flex items-center justify-between px-6 py-4 border-b ${
+          form.scope === 'private' ? 'border-amber-100 bg-amber-50' : 'border-blue-100 bg-blue-50'
+        }`}>
+          <h2 className="text-base font-black text-gray-900">
+            {form.scope === 'private' ? '🔒 New Private Task' : '👥 New Team Task'}
+          </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl font-bold">×</button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col gap-4 px-6 py-4">
           {error && <p className="text-red-600 text-xs font-semibold bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+
+          <ScopeSelector value={form.scope} onChange={v => setForm(f => ({ ...f, scope: v }))} />
 
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-1">Title <span className="text-red-500">*</span></label>
@@ -189,16 +226,18 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-gray-600 mb-1">Assign to (email)</label>
-            <input
-              type="email"
-              value={form.assigned_to_email}
-              onChange={e => setForm(f => ({ ...f, assigned_to_email: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300"
-              placeholder="team@example.com"
-            />
-          </div>
+          {form.scope === 'team' && (
+            <div>
+              <label className="block text-xs font-bold text-gray-600 mb-1">Assign to (email)</label>
+              <input
+                type="email"
+                value={form.assigned_to_email}
+                onChange={e => setForm(f => ({ ...f, assigned_to_email: e.target.value }))}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-300"
+                placeholder="intern@example.com"
+              />
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -233,8 +272,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(p => (
                 <button
-                  key={p}
-                  type="button"
+                  key={p} type="button"
                   onClick={() => setForm(f => ({ ...f, priority: p }))}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                     form.priority === p
@@ -262,11 +300,14 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
 
           <div className="pt-2 mt-auto">
             <button
-              type="submit"
-              disabled={saving}
-              className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-lg transition-all disabled:opacity-60"
+              type="submit" disabled={saving}
+              className={`w-full py-2.5 text-white text-sm font-bold rounded-lg transition-all disabled:opacity-60 ${
+                form.scope === 'private'
+                  ? 'bg-amber-500 hover:bg-amber-600'
+                  : 'bg-primary-600 hover:bg-primary-700'
+              }`}
             >
-              {saving ? 'Saving…' : 'Create Task'}
+              {saving ? 'Saving…' : form.scope === 'private' ? '🔒 Add to My Desk' : '👥 Create Team Task'}
             </button>
           </div>
         </form>
@@ -292,6 +333,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
     priority: task.priority,
     due_date: task.due_date ?? '',
     status: task.status,
+    scope: task.scope ?? 'team',
   });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -302,19 +344,17 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
     if (!form.title.trim()) { setError('Title is required.'); return; }
     setSaving(true);
     setError(null);
-    const { error: err } = await supabase
-      .from('team_tasks')
-      .update({
-        title: form.title.trim(),
-        description: form.description.trim() || null,
-        assigned_to_email: form.assigned_to_email.trim() || null,
-        brand: form.brand || null,
-        priority: form.priority,
-        due_date: form.due_date || null,
-        status: form.status,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', task.id);
+    const { error: err } = await supabase.from('team_tasks').update({
+      title: form.title.trim(),
+      description: form.description.trim() || null,
+      assigned_to_email: form.assigned_to_email.trim() || null,
+      brand: form.brand || null,
+      priority: form.priority,
+      due_date: form.due_date || null,
+      status: form.status,
+      scope: form.scope,
+      updated_at: new Date().toISOString(),
+    }).eq('id', task.id);
     setSaving(false);
     if (err) { setError(err.message); return; }
     onUpdated();
@@ -338,8 +378,12 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
   };
 
   return (
-    <div className="mt-2 mb-4 mx-2 bg-gray-50 border border-gray-200 rounded-xl p-4 flex flex-col gap-3">
+    <div className={`mt-2 mb-4 mx-2 border rounded-xl p-4 flex flex-col gap-3 ${
+      form.scope === 'private' ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'
+    }`}>
       {error && <p className="text-red-600 text-xs font-semibold bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
+
+      <ScopeSelector value={form.scope as TaskScope} onChange={v => setForm(f => ({ ...f, scope: v }))} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
@@ -407,8 +451,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(p => (
               <button
-                key={p}
-                type="button"
+                key={p} type="button"
                 onClick={() => setForm(f => ({ ...f, priority: p }))}
                 className={`flex-1 py-1 rounded-lg text-xs font-bold border transition-all ${
                   form.priority === p
@@ -426,16 +469,14 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
 
       <div className="flex items-center gap-2 pt-1 flex-wrap">
         <button
-          onClick={handleSave}
-          disabled={saving}
+          onClick={handleSave} disabled={saving}
           className="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition-all disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
         {task.status !== 'done' && (
           <button
-            onClick={handleMarkDone}
-            disabled={saving}
+            onClick={handleMarkDone} disabled={saving}
             className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all"
           >
             Mark Done
@@ -450,13 +491,12 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
           </button>
         ) : (
           <div className="flex items-center gap-1">
-            <span className="text-xs text-red-600 font-semibold">Confirm delete?</span>
+            <span className="text-xs text-red-600 font-semibold">Confirm?</span>
             <button
-              onClick={handleDelete}
-              disabled={deleting}
+              onClick={handleDelete} disabled={deleting}
               className="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-lg"
             >
-              {deleting ? '…' : 'Yes, delete'}
+              {deleting ? '…' : 'Yes'}
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
@@ -466,10 +506,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
             </button>
           </div>
         )}
-        <button
-          onClick={onClose}
-          className="ml-auto px-3 py-1.5 text-gray-400 hover:text-gray-700 text-xs font-semibold"
-        >
+        <button onClick={onClose} className="ml-auto px-3 py-1.5 text-gray-400 hover:text-gray-700 text-xs font-semibold">
           Close
         </button>
       </div>
@@ -481,7 +518,6 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
 
 const BoardView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tasks, onRefresh }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
   const toggle = (id: string) => setExpandedId(prev => (prev === id ? null : id));
 
   return (
@@ -504,15 +540,20 @@ const BoardView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tas
                 <div key={task.id}>
                   <div
                     onClick={() => toggle(task.id)}
-                    className={`bg-white border rounded-xl p-3 cursor-pointer hover:border-primary-300 hover:shadow-sm transition-all ${
-                      expandedId === task.id ? 'border-primary-400 shadow-sm' : 'border-gray-200'
-                    }`}
+                    className={`border rounded-xl p-3 cursor-pointer hover:shadow-sm transition-all ${
+                      task.scope === 'private'
+                        ? 'bg-amber-50 border-amber-200 hover:border-amber-400'
+                        : 'bg-white border-gray-200 hover:border-primary-300'
+                    } ${expandedId === task.id ? (task.scope === 'private' ? 'border-amber-400' : 'border-primary-400 shadow-sm') : ''}`}
                   >
                     <div className="flex items-start gap-2">
                       <PriorityDot priority={task.priority} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-800 leading-tight truncate">{task.title}</p>
                         <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                          {task.scope === 'private' && (
+                            <span className="text-[9px] text-amber-600 font-bold uppercase">🔒</span>
+                          )}
                           {task.brand && <BrandBadge brand={task.brand} />}
                           <span className="text-[10px] text-gray-400 font-medium">
                             {shortEmail(task.assigned_to_email)}
@@ -527,11 +568,7 @@ const BoardView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tas
                     </div>
                   </div>
                   {expandedId === task.id && (
-                    <TaskDetail
-                      task={task}
-                      onClose={() => setExpandedId(null)}
-                      onUpdated={onRefresh}
-                    />
+                    <TaskDetail task={task} onClose={() => setExpandedId(null)} onUpdated={onRefresh} />
                   )}
                 </div>
               ))}
@@ -542,6 +579,92 @@ const BoardView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tas
           </div>
         );
       })}
+    </div>
+  );
+};
+
+// ─── My Desk View (private tasks only, grouped by priority) ──────────────────
+
+const MyDeskView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tasks, onRefresh }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const toggle = (id: string) => setExpandedId(prev => (prev === id ? null : id));
+
+  const open = tasks.filter(t => t.status !== 'done' && t.status !== 'cancelled');
+  const done = tasks.filter(t => t.status === 'done');
+
+  const renderTask = (task: TeamTask) => (
+    <div key={task.id}>
+      <div
+        onClick={() => toggle(task.id)}
+        className={`border rounded-xl px-4 py-3 cursor-pointer transition-all flex items-start gap-3 ${
+          expandedId === task.id
+            ? 'border-amber-400 bg-amber-50 shadow-sm'
+            : 'border-amber-100 bg-white hover:border-amber-300 hover:bg-amber-50/50'
+        }`}
+      >
+        <div className="flex flex-col items-center gap-1 pt-0.5">
+          <PriorityDot priority={task.priority} />
+          <span className={`w-1.5 h-1.5 rounded-full ${
+            task.status === 'in_progress' ? 'bg-blue-400' :
+            task.status === 'blocked' ? 'bg-red-400' : 'bg-gray-300'
+          }`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-semibold leading-tight ${task.status === 'done' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+            {task.title}
+          </p>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            {task.brand && <BrandBadge brand={task.brand} />}
+            <StatusBadge status={task.status} />
+            {task.due_date && (
+              <span className={`text-[10px] font-semibold ${isOverdue(task.due_date) ? 'text-red-500' : 'text-gray-400'}`}>
+                {isOverdue(task.due_date) ? '⚠ ' : '📅 '}{formatDate(task.due_date)}
+              </span>
+            )}
+          </div>
+          {task.description && (
+            <p className="text-xs text-gray-400 mt-1 line-clamp-1">{task.description}</p>
+          )}
+        </div>
+      </div>
+      {expandedId === task.id && (
+        <TaskDetail task={task} onClose={() => setExpandedId(null)} onUpdated={onRefresh} />
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-lg">🔒</span>
+          <h3 className="text-sm font-black text-amber-800 uppercase tracking-wider">My Desk — Private Tasks</h3>
+          <span className="ml-auto text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">
+            {open.length} open
+          </span>
+        </div>
+        {open.length === 0 ? (
+          <p className="text-sm text-amber-600/60 italic text-center py-4">All clear 🎉</p>
+        ) : (
+          <div className="space-y-2">
+            {open
+              .sort((a, b) => b.priority - a.priority || (a.due_date ?? '').localeCompare(b.due_date ?? ''))
+              .map(renderTask)}
+          </div>
+        )}
+      </div>
+
+      {done.length > 0 && (
+        <details className="group">
+          <summary className="text-xs font-bold text-gray-400 cursor-pointer hover:text-gray-600 flex items-center gap-1">
+            <span className="group-open:rotate-90 transition-transform inline-block">▶</span>
+            {done.length} completed
+          </summary>
+          <div className="mt-2 space-y-2 opacity-60">
+            {done.map(renderTask)}
+          </div>
+        </details>
+      )}
     </div>
   );
 };
@@ -570,10 +693,7 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
       onClick={() => handleSort(k)}
       className="flex items-center gap-0.5 font-black uppercase text-[10px] tracking-wider text-gray-500 hover:text-gray-800 transition-colors"
     >
-      {label}
-      {sortKey === k && (
-        <span className="text-primary-500">{sortAsc ? ' ↑' : ' ↓'}</span>
-      )}
+      {label}{sortKey === k && <span className="text-primary-500">{sortAsc ? ' ↑' : ' ↓'}</span>}
     </button>
   );
 
@@ -582,13 +702,13 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="border-b border-gray-200">
+            <th className="text-left pb-2 pr-2 pl-1 w-6"></th>
             <th className="text-left pb-2 pr-4 pl-1"><SortBtn k="title" label="Title" /></th>
             <th className="text-left pb-2 pr-4"><SortBtn k="brand" label="Brand" /></th>
             <th className="text-left pb-2 pr-4"><SortBtn k="assigned_to_email" label="Assignee" /></th>
             <th className="text-left pb-2 pr-4"><SortBtn k="priority" label="P" /></th>
             <th className="text-left pb-2 pr-4"><SortBtn k="due_date" label="Due" /></th>
             <th className="text-left pb-2 pr-4"><SortBtn k="status" label="Status" /></th>
-            <th className="text-left pb-2"><SortBtn k="created_at" label="Created" /></th>
           </tr>
         </thead>
         <tbody>
@@ -597,18 +717,20 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
               <tr
                 onClick={() => setExpandedId(prev => (prev === task.id ? null : task.id))}
                 className={`border-b border-gray-100 cursor-pointer transition-colors ${
-                  expandedId === task.id ? 'bg-primary-50' : 'hover:bg-gray-50'
+                  expandedId === task.id ? 'bg-primary-50' :
+                  task.scope === 'private' ? 'hover:bg-amber-50/60' : 'hover:bg-gray-50'
                 }`}
               >
+                <td className="py-2.5 pl-1 pr-1">
+                  {task.scope === 'private' && <span className="text-amber-500 text-xs">🔒</span>}
+                </td>
                 <td className="py-2.5 pr-4 pl-1">
                   <div className="flex items-center gap-2">
                     <PriorityDot priority={task.priority} />
                     <span className="font-semibold text-gray-800">{task.title}</span>
                   </div>
                 </td>
-                <td className="py-2.5 pr-4">
-                  <BrandBadge brand={task.brand} />
-                </td>
+                <td className="py-2.5 pr-4"><BrandBadge brand={task.brand} /></td>
                 <td className="py-2.5 pr-4 text-gray-500 text-xs">{shortEmail(task.assigned_to_email)}</td>
                 <td className="py-2.5 pr-4">
                   <span className={`inline-block w-2 h-2 rounded-full ${PRIORITY_DOT[task.priority] ?? 'bg-gray-300'}`} />
@@ -616,19 +738,12 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
                 <td className={`py-2.5 pr-4 text-xs font-medium ${isOverdue(task.due_date) ? 'text-red-500 font-bold' : 'text-gray-500'}`}>
                   {formatDate(task.due_date)}
                 </td>
-                <td className="py-2.5 pr-4">
-                  <StatusBadge status={task.status} />
-                </td>
-                <td className="py-2.5 text-xs text-gray-400">{formatDate(task.created_at)}</td>
+                <td className="py-2.5 pr-4"><StatusBadge status={task.status} /></td>
               </tr>
               {expandedId === task.id && (
                 <tr>
                   <td colSpan={7} className="p-0">
-                    <TaskDetail
-                      task={task}
-                      onClose={() => setExpandedId(null)}
-                      onUpdated={onRefresh}
-                    />
+                    <TaskDetail task={task} onClose={() => setExpandedId(null)} onUpdated={onRefresh} />
                   </td>
                 </tr>
               )}
@@ -650,67 +765,95 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
 const TeamTasksView: React.FC<Props> = ({ userEmail }) => {
   const [tasks, setTasks] = useState<TeamTask[]>([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<ViewMode>('board');
+  const [view, setView] = useState<ViewMode>('my_desk');
   const [addOpen, setAddOpen] = useState(false);
+  const [addDefaultScope, setAddDefaultScope] = useState<TaskScope>('team');
 
   const fetchTasks = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('team_tasks')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const { data } = await supabase.from('team_tasks').select('*').order('priority', { ascending: false });
     setTasks((data as TeamTask[]) ?? []);
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
-  const visibleTasks =
-    view === 'my' && userEmail
-      ? tasks.filter(t => t.assigned_to_email === userEmail)
-      : tasks;
+  const myDeskTasks = tasks.filter(t => t.scope === 'private');
+  const teamTasks = tasks.filter(t => t.scope === 'team');
 
-  const viewButtons: { id: ViewMode; label: string }[] = [
-    { id: 'board', label: 'Board' },
-    { id: 'list', label: 'List' },
-    { id: 'my', label: 'My Tasks' },
-  ];
+  const visibleTasks =
+    view === 'my_desk' ? myDeskTasks :
+    view === 'board' ? teamTasks :
+    view === 'list' ? teamTasks :
+    tasks;
+
+  const openPrivate = myDeskTasks.filter(t => t.status !== 'done' && t.status !== 'cancelled').length;
+  const openTeam = teamTasks.filter(t => t.status !== 'done' && t.status !== 'cancelled').length;
+
+  const handleAddPrivate = () => { setAddDefaultScope('private'); setAddOpen(true); };
+  const handleAddTeam = () => { setAddDefaultScope('team'); setAddOpen(true); };
 
   return (
     <div className="flex flex-col gap-4">
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
+        {/* View Tabs */}
         <div className="flex items-center gap-1 bg-gray-100 rounded-full p-0.5">
-          {viewButtons.map(v => (
-            <button
-              key={v.id}
-              onClick={() => setView(v.id)}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                view === v.id
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {v.label}
-            </button>
-          ))}
+          <button
+            onClick={() => setView('my_desk')}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+              view === 'my_desk' ? 'bg-amber-100 text-amber-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            🔒 My Desk
+            {openPrivate > 0 && (
+              <span className="bg-amber-500 text-white text-[9px] font-black rounded-full px-1.5 py-0.5 min-w-[16px] text-center">
+                {openPrivate}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setView('board')}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+              view === 'board' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            👥 Team Board
+            {openTeam > 0 && (
+              <span className="bg-blue-500 text-white text-[9px] font-black rounded-full px-1.5 py-0.5 min-w-[16px] text-center">
+                {openTeam}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+              view === 'list' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            List
+          </button>
         </div>
-        <span className="text-xs text-gray-400 font-medium">
-          {visibleTasks.length} task{visibleTasks.length !== 1 ? 's' : ''}
-        </span>
-        <button
-          onClick={fetchTasks}
-          className="text-xs text-gray-400 hover:text-primary-600 font-semibold transition-colors"
-          title="Refresh"
-        >
+
+        <button onClick={fetchTasks} className="text-xs text-gray-400 hover:text-primary-600 font-semibold transition-colors" title="Refresh">
           ↻
         </button>
-        <button
-          onClick={() => setAddOpen(true)}
-          className="ml-auto flex items-center gap-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition-all shadow-sm"
-        >
-          + New Task
-        </button>
+
+        {/* Add Buttons */}
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={handleAddPrivate}
+            className="flex items-center gap-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-all"
+          >
+            🔒 + My Task
+          </button>
+          <button
+            onClick={handleAddTeam}
+            className="flex items-center gap-1 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold rounded-lg transition-all"
+          >
+            👥 + Delegate
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -718,18 +861,20 @@ const TeamTasksView: React.FC<Props> = ({ userEmail }) => {
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
         </div>
+      ) : view === 'my_desk' ? (
+        <MyDeskView tasks={myDeskTasks} onRefresh={fetchTasks} />
       ) : view === 'board' ? (
         <BoardView tasks={visibleTasks} onRefresh={fetchTasks} />
       ) : (
         <ListView tasks={visibleTasks} onRefresh={fetchTasks} />
       )}
 
-      {/* Add Panel */}
       {addOpen && (
         <AddTaskPanel
           onClose={() => setAddOpen(false)}
           onSaved={fetchTasks}
           userEmail={userEmail}
+          defaultScope={addDefaultScope}
         />
       )}
     </div>

@@ -117,6 +117,11 @@ BEGIN
   END IF;
 END $$;
 
+-- 7. Add scope column to team_tasks (private = Luis-only, team = delegatable)
+ALTER TABLE public.team_tasks
+  ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'team'
+  CHECK (scope IN ('private', 'team'));
+
 -- ============================================================
 -- Done. Verify by running:
 --   SELECT column_name FROM information_schema.columns
