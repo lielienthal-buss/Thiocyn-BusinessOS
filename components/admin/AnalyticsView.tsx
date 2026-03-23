@@ -119,7 +119,15 @@ const BrandKPIsTab: React.FC = () => {
       .from('brand_metrics')
       .select('id, brand_id, followers, engagement_rate, roas, ad_spend, sop_phase, notes, updated_at')
       .order('brand_id');
-    setMetrics((data as BrandMetric[]) ?? []);
+    // Coerce TEXT columns from brand_metrics to numbers
+    const parsed = (data ?? []).map((m: any) => ({
+      ...m,
+      followers: m.followers != null ? Number(m.followers) : null,
+      engagement_rate: m.engagement_rate != null ? parseFloat(m.engagement_rate) : null,
+      roas: m.roas != null ? Number(m.roas) : null,
+      ad_spend: m.ad_spend != null ? Number(m.ad_spend) : null,
+    }));
+    setMetrics(parsed as BrandMetric[]);
     setLoading(false);
   }, []);
 
