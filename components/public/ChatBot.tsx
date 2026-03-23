@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import Spinner from '../ui/Spinner';
 
 interface Message {
@@ -34,64 +33,29 @@ const ChatBot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-      if (!apiKey) {
-        throw new Error('Missing Google API Key');
-      }
-      const ai = new GoogleGenAI({ apiKey });
-      const chat = ai.chats.create({
-        model: 'gemini-3-pro-preview',
-        config: {
-          systemInstruction: `You are the official recruitment assistant for Take A Shot by Thiocyn (legal entity: Thiocyn GmbH).
-          Your goal is to help potential applicants understand the company's DNA and process.
+      const history = messages.map((m) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }));
 
-          CORE IDENTITY:
-          "We combine entrepreneurial excellence with genuine human proximity and a bias for action."
-
-          ABOUT TAKE A SHOT BY THIOCYN:
-          Take A Shot is a D2C brand operated by Hart Limes GmbH — an e-commerce aggregator that builds and scales multiple consumer brands under the Thiocyn umbrella. The team moves fast, decisions are made by people, not committees.
-
-          COMPANY VALUES:
-          1. Ownership over Excuses: We take responsibility for decisions, results, and mistakes. We don't wait; we act, reflect, and improve.
-          2. Clarity over Complexity: We make things understandable for customers and the team. Clarity creates trust.
-          3. Courage to Decide: Standstill is the greatest risk. We prefer a well-thought-out step forward over perfect hesitation.
-          4. Performance with Substance: We don't chase hype. We care about sustainable quality and measurable results.
-          5. Humanity in Business: Ambitious but respectful. Direct but fair. Humor and interest in people are part of our culture.
-
-          FACTS:
-          - Brand: Take A Shot by Thiocyn (Company: Thiocyn GmbH)
-          - Location: 100% Remote.
-          - Tech Stack: Freedom of choice. We prioritize working with AI and driving innovation.
-          - Hiring Process: Extremely lean. After submitting through this portal, there is usually only ONE round (Interview/Phone/Video Call).
-          - Uniqueness: We use our values as a decision-making basis for everything—customers, projects, and hiring.
-
-          TONE:
-          - Bold, energetic, and professional.
-          - Concise and direct.
-          - Use "we" and "us".
-          - If you don't know something specific, invite them to submit their application so the team can discuss it in the call.`,
-        },
+      const res = await fetch('/api/jarvis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage, section: 'recruiting', history }),
       });
 
-      const response = await chat.sendMessage({ message: userMessage });
-      const text = response.text;
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const data = await res.json();
 
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'model',
-          text:
-            text || "I'm having a brief moment of silence. Please try again!",
-        },
+        { role: 'model', text: data.reply || "I'm having a brief moment of silence. Please try again!" },
       ]);
     } catch (error: unknown) {
       console.error('Chat error:', error);
       setMessages((prev) => [
         ...prev,
-        {
-          role: 'model',
-          text: 'Sorry, I encountered an error. Please try again.',
-        },
+        { role: 'model', text: 'Sorry, I encountered an error. Please try again.' },
       ]);
     } finally {
       setIsTyping(false);
@@ -119,36 +83,31 @@ const ChatBot: React.FC = () => {
             </svg>
           </div>
           <div>
-            <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tighter leading-none">
-              Culture Guide
-            </h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary-600 mt-1">
-              AI-Powered Insights
-            </p>
+            <h3 className="font-black text-gray-900 text-lg">Ask Jarvis</h3>
+            <p className="text-xs text-gray-400 font-medium">Recruiting Assistant · Take A Shot</p>
           </div>
         </div>
-        <div className="hidden md:block">
-          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-slate-800 px-4 py-2 rounded-full border border-white/10">
-            100% Remote DNA
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+          <span className="text-xs text-gray-400 font-semibold">Online</span>
         </div>
       </div>
 
-      {/* Messages area */}
+      {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-hide bg-gradient-to-b from-transparent to-primary-500/5"
+        className="flex-1 overflow-y-auto p-6 space-y-4 bg-white/10 backdrop-blur-sm"
       >
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] p-5 rounded-[2rem] text-sm font-medium leading-relaxed shadow-sm ${
+              className={`max-w-[80%] px-5 py-3.5 rounded-3xl text-sm font-medium leading-relaxed shadow-sm ${
                 msg.role === 'user'
-                  ? 'bg-primary-600 text-white rounded-tr-none'
-                  : 'glass-card text-gray-800 dark:text-gray-200 rounded-tl-none border-white/20'
+                  ? 'bg-primary-600 text-white rounded-br-md'
+                  : 'bg-white text-gray-800 rounded-bl-md border border-gray-100'
               }`}
             >
               {msg.text}
@@ -156,51 +115,43 @@ const ChatBot: React.FC = () => {
           </div>
         ))}
         {isTyping && (
-          <div className="flex justify-start animate-pulse">
-            <div className="glass-card p-5 rounded-[2rem] rounded-tl-none flex items-center gap-3">
-              <Spinner className="w-4 h-4 text-primary-600" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Processing culture match...
-              </span>
+          <div className="flex justify-start">
+            <div className="bg-white border border-gray-100 rounded-3xl rounded-bl-md px-5 py-3.5 shadow-sm">
+              <div className="flex gap-1.5 items-center">
+                <div className="w-2 h-2 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Input area */}
-      <div className="p-6 bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border-t border-white/20">
-        <form onSubmit={handleSend} className="relative flex items-center">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about our values, remote setup, or tech..."
-            className="w-full pl-8 pr-16 py-5 bg-white/80 dark:bg-slate-800/80 border border-white/20 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-primary-500/10 outline-none transition-all text-sm font-medium shadow-inner"
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || isTyping}
-            className="absolute right-3 w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 shadow-lg shadow-primary-500/30"
-          >
-            <svg
-              className="w-5 h-5 transform rotate-90"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="3"
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-              ></path>
+      {/* Input */}
+      <form
+        onSubmit={handleSend}
+        className="p-6 border-t border-gray-100 bg-white/50 backdrop-blur-xl flex gap-3"
+      >
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask about the role, culture, process..."
+          className="flex-1 px-5 py-3.5 bg-gray-50 border-2 border-gray-100 rounded-2xl text-sm focus:outline-none focus:border-primary-400 focus:bg-white transition-all text-gray-900 placeholder-gray-400"
+          disabled={isTyping}
+        />
+        <button
+          type="submit"
+          disabled={!input.trim() || isTyping}
+          className="px-6 py-3.5 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary-500/20 flex items-center gap-2"
+        >
+          {isTyping ? <Spinner /> : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
-          </button>
-        </form>
-        <p className="text-center mt-4 text-[9px] font-black uppercase tracking-widest text-gray-400 opacity-60">
-          We combine entrepreneurial excellence with genuine human proximity.
-        </p>
-      </div>
+          )}
+        </button>
+      </form>
     </div>
   );
 };

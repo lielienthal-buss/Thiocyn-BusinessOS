@@ -376,7 +376,7 @@ const ApplicationForm: React.FC = () => {
 
           <div className="flex flex-col gap-3 mt-8 pt-4 border-t border-gray-100"> {/* Changed to flex-col */}
             <Turnstile
-              sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
               onVerify={setTurnstileToken}
               options={{ theme: 'light' }}
             />

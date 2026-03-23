@@ -8,6 +8,7 @@ const SECTION_LABELS: Record<string, string> = {
   finance: 'Finance',
   analytics: 'Analytics',
   admin: 'Admin',
+  recruiting: 'Recruiting (Public Applicant Assistant)',
 }
 
 export default async function handler(req: Request) {

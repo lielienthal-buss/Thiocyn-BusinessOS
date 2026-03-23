@@ -12,6 +12,7 @@ ALTER TABLE public.applications
   ADD COLUMN IF NOT EXISTS stage TEXT NOT NULL DEFAULT 'applied',
   ADD COLUMN IF NOT EXISTS access_token UUID NOT NULL DEFAULT gen_random_uuid(),
   ADD COLUMN IF NOT EXISTS work_sample_text TEXT,
+  ADD COLUMN IF NOT EXISTS captcha_token TEXT,
   ADD COLUMN IF NOT EXISTS captcha_verified BOOLEAN DEFAULT FALSE,
   ADD COLUMN IF NOT EXISTS "aiScore" REAL;
 
