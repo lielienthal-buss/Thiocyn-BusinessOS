@@ -14,13 +14,13 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
         <p className="text-sm text-gray-500 mt-0.5">Quick-access resources for the support team</p>
       </div>
 
-      {/* Transition notice */}
-      <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm">
-        <span className="text-lg mt-0.5">⚠️</span>
+      {/* Seasonal notice */}
+      <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm">
+        <span className="text-lg mt-0.5">ℹ️</span>
         <div>
-          <p className="font-bold text-amber-900">Timber &amp; John Support — Transition Notice</p>
-          <p className="text-amber-700 mt-0.5 text-xs leading-relaxed">
-            T&amp;J support is being wound down. Shift focus to Paigh platform. Telephone support for Take A Shot remains active via external agency (~300€/month).
+          <p className="font-bold text-blue-900">Timber &amp; John Support — Seasonal Pause</p>
+          <p className="text-blue-700 mt-0.5 text-xs leading-relaxed">
+            T&amp;J support is currently on seasonal hold (off-season). Will resume when sales pick up again. Telephone support for Take A Shot remains active via external agency (~300€/month).
           </p>
         </div>
       </div>

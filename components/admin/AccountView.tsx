@@ -28,6 +28,24 @@ interface Props {
 }
 
 const AccountView: React.FC<Props> = ({ session }) => {
+  const NOTIF_DEFAULTS: Record<string, boolean> = {
+    'Task completed by intern': true,
+    'New check-in submitted': true,
+    'New application received': false,
+    'Slack notifications': false,
+    'WhatsApp notifications': false,
+  };
+  const [notifPrefs, setNotifPrefs] = useState<Record<string, boolean>>(() => {
+    try { return { ...NOTIF_DEFAULTS, ...JSON.parse(localStorage.getItem('notif_prefs') ?? '{}') }; }
+    catch { return NOTIF_DEFAULTS; }
+  });
+  const toggleNotif = (label: string) => {
+    setNotifPrefs(p => {
+      const next = { ...p, [label]: !p[label] };
+      localStorage.setItem('notif_prefs', JSON.stringify(next));
+      return next;
+    });
+  };
   const [member, setMember] = useState<TeamMember | null>(null);
   const [loading, setLoading] = useState(true);
   const [editName, setEditName] = useState('');
@@ -60,10 +78,20 @@ const AccountView: React.FC<Props> = ({ session }) => {
     .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   const handleSaveName = async () => {
-    if (!member) return;
+    if (!session?.user?.email) return;
     setSaving(true);
-    await supabase.from('team_members').update({ full_name: editName }).eq('id', member.id);
-    setMember(m => m ? { ...m, full_name: editName } : m);
+    if (member) {
+      await supabase.from('team_members').update({ full_name: editName }).eq('id', member.id);
+      setMember(m => m ? { ...m, full_name: editName } : m);
+    } else {
+      // First save: create a team_members row for this auth user
+      const { data } = await supabase
+        .from('team_members')
+        .upsert({ email: session.user.email, full_name: editName, role: 'admin', status: 'active', allowed_sections: [] }, { onConflict: 'email' })
+        .select()
+        .maybeSingle();
+      if (data) setMember(data);
+    }
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -123,7 +151,7 @@ const AccountView: React.FC<Props> = ({ session }) => {
             />
             <button
               onClick={handleSaveName}
-              disabled={saving || editName === (member?.full_name ?? '')}
+              disabled={saving || editName === (member?.full_name ?? '') || !editName.trim()}
               className="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-all"
             >
               {saving ? '...' : saved ? '✓ Saved' : 'Save'}
@@ -220,25 +248,21 @@ const AccountView: React.FC<Props> = ({ session }) => {
         </div>
       </div>
 
-      {/* Notification Preferences — scaffold, wire up with Valentin */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm opacity-60">
+      {/* Notification Preferences */}
+      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-black text-gray-900 uppercase tracking-widest">Notification Preferences</h2>
-          <span className="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-1 rounded-full uppercase tracking-wider">Coming soon</span>
         </div>
         <div className="space-y-3">
-          {[
-            { label: 'Task completed by intern', defaultOn: true },
-            { label: 'New check-in submitted', defaultOn: true },
-            { label: 'New application received', defaultOn: false },
-            { label: 'Slack notifications', defaultOn: false },
-            { label: 'WhatsApp notifications', defaultOn: false },
-          ].map(pref => (
-            <div key={pref.label} className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">{pref.label}</span>
-              <div className={`w-9 h-5 rounded-full relative cursor-not-allowed ${pref.defaultOn ? 'bg-primary-500' : 'bg-gray-200'}`}>
-                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${pref.defaultOn ? 'left-4' : 'left-0.5'}`} />
-              </div>
+          {Object.keys(NOTIF_DEFAULTS).map(label => (
+            <div key={label} className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">{label}</span>
+              <button
+                onClick={() => toggleNotif(label)}
+                className={`w-9 h-5 rounded-full relative transition-colors ${notifPrefs[label] ? 'bg-primary-500' : 'bg-gray-200'}`}
+              >
+                <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${notifPrefs[label] ? 'left-4' : 'left-0.5'}`} />
+              </button>
             </div>
           ))}
         </div>
