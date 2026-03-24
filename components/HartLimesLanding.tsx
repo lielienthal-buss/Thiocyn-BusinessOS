@@ -212,14 +212,14 @@ export default function HartLimesLanding({ forceMode }: { forceMode?: LandingCon
       </header>
 
       {/* Hero */}
-      <section className="relative px-6 md:px-16 pt-32 pb-36 max-w-5xl mx-auto">
+      <section className="relative px-6 md:px-16 pt-20 md:pt-32 pb-20 md:pb-36 max-w-5xl mx-auto">
 
         <div className="relative">
-          <p className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 mb-10">
+          <p className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 mb-8 md:mb-10">
             <span className="w-5 h-px bg-gray-700" />
             {isInfluencer ? 'Creator Program' : 'House of Sustainable Brands'}
           </p>
-          <h1 className="text-6xl md:text-[82px] font-black tracking-[-0.03em] text-white leading-[0.88] mb-10">
+          <h1 className="text-[44px] md:text-[82px] font-black tracking-[-0.03em] text-white leading-[0.9] mb-8 md:mb-10">
             {cfg.hero_tagline}
           </h1>
           <p className="text-base text-gray-500 max-w-xl mb-14 leading-relaxed">
@@ -344,7 +344,7 @@ export default function HartLimesLanding({ forceMode }: { forceMode?: LandingCon
               Jeder startet als Affiliate. Wer liefert, steigt auf. Provision wächst mit dir.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {TIERS.map(tier => (
                 <div
                   key={tier.id}
@@ -507,14 +507,14 @@ export default function HartLimesLanding({ forceMode }: { forceMode?: LandingCon
       {/* CTA — inverted white card on dark page */}
       <section className="px-6 md:px-16 py-20">
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-3xl bg-white px-10 md:px-20 py-20 text-center">
+          <div className="rounded-3xl bg-white px-6 md:px-20 py-12 md:py-20 text-center">
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-6">
               {isInfluencer ? 'Bereit?' : 'Zusammenarbeit'}
             </p>
-            <h2 className="text-4xl md:text-6xl font-black tracking-[-0.03em] text-gray-900 leading-[0.9] mb-6">
+            <h2 className="text-3xl md:text-6xl font-black tracking-[-0.03em] text-gray-900 leading-[0.9] mb-6">
               {isInfluencer ? 'Werde Teil der Crew.' : 'Lass uns reden.'}
             </h2>
-            <p className="text-gray-500 text-base mb-12 leading-relaxed max-w-md mx-auto">
+            <p className="text-gray-500 text-sm md:text-base mb-10 md:mb-12 leading-relaxed max-w-md mx-auto">
               {isInfluencer
                 ? 'Bewirb dich jetzt — wir melden uns innerhalb von 48 Stunden.'
                 : 'Ob Kooperation, Akquisition oder Karriere — wir antworten innerhalb von 24 Stunden.'}
