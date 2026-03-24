@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import type { WeeklyReview, LearningLogEntry, FinalReview } from '../../types';
-import AddInternModal from './AddInternModal';
 
 const STAGE_LABELS: Record<string, string> = {
   onboarding: 'Onboarding',
@@ -19,23 +18,50 @@ const MOOD_EMOJI: Record<number, string> = {
   1: '😔', 2: '😕', 3: '😐', 4: '🙂', 5: '😄',
 };
 
+const DEPARTMENT_LABELS: Record<string, string> = {
+  marketing: 'Marketing',
+  ecommerce: 'E-Commerce',
+  support: 'Support',
+  analytics: 'Analytics',
+  finance: 'Finance',
+  recruiting: 'Recruiting',
+};
+
 interface InternWithData {
   id: string;
+  auth_user_id: string | null;
   full_name: string;
   email: string;
-  stage: string;
+  department: string;
+  assigned_brand: string | null;
+  model: string;
+  budget_tokens_monthly: number;
+  is_active: boolean;
   created_at: string;
+  cohort: string | null;
+  stage: 'onboarding' | 'active' | 'completed';
   weeks: WeeklyReview[];
   tasks: LearningLogEntry[];
   finalReview: FinalReview | null;
+  usage?: {
+    tokens_input: number;
+    tokens_output: number;
+    cost_usd: number;
+  };
+}
+
+function deriveStage(intern: { is_active: boolean; auth_user_id: string | null }): 'onboarding' | 'active' | 'completed' {
+  if (!intern.is_active) return 'completed';
+  if (intern.auth_user_id != null) return 'active';
+  return 'onboarding';
 }
 
 // ─── Weekly Review Form ────────────────────────────────────────────────────
 const WeeklyReviewForm: React.FC<{
-  applicationId: string;
+  internId: string;
   weekNumber: number;
   onSaved: () => void;
-}> = ({ applicationId, weekNumber, onSaved }) => {
+}> = ({ internId, weekNumber, onSaved }) => {
   const [form, setForm] = useState({
     highlight: '', challenge: '', learning: '', next_goal: '', mood_score: 3,
   });
@@ -44,7 +70,7 @@ const WeeklyReviewForm: React.FC<{
   async function save() {
     setSaving(true);
     await supabase.from('intern_weekly_reviews').insert({
-      application_id: applicationId,
+      intern_id: internId,
       week_number: weekNumber,
       ...form,
     });
@@ -98,10 +124,10 @@ const WeeklyReviewForm: React.FC<{
 
 // ─── Final Review Form ─────────────────────────────────────────────────────
 const FinalReviewForm: React.FC<{
-  applicationId: string;
+  internId: string;
   existing: FinalReview | null;
   onSaved: () => void;
-}> = ({ applicationId, existing, onSaved }) => {
+}> = ({ internId, existing, onSaved }) => {
   const [form, setForm] = useState({
     overall_rating: existing?.overall_rating ?? 3,
     key_contributions: existing?.key_contributions ?? '',
@@ -114,12 +140,12 @@ const FinalReviewForm: React.FC<{
   async function save() {
     setSaving(true);
     if (existing) {
-      await supabase.from('intern_final_review').update(form).eq('application_id', applicationId);
+      await supabase.from('intern_final_review').update(form).eq('intern_id', internId);
     } else {
-      await supabase.from('intern_final_review').insert({ application_id: applicationId, ...form });
+      await supabase.from('intern_final_review').insert({ intern_id: internId, ...form });
     }
     // Mark internship as completed
-    await supabase.from('applications').update({ status: 'completed' }).eq('id', applicationId);
+    await supabase.from('intern_accounts').update({ is_active: false }).eq('id', internId);
     setSaving(false);
     onSaved();
   }
@@ -194,11 +220,13 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   const completedTasks = intern.tasks.filter(t => t.completed).length;
   const nextWeek = (intern.weeks.length > 0 ? Math.max(...intern.weeks.map(w => w.week_number)) + 1 : 1);
 
+  const inviteAccepted = intern.auth_user_id != null;
+
   async function addTask() {
     if (!newTask.trim()) return;
     setAddingTask(true);
     await supabase.from('intern_learning_log').insert({
-      application_id: intern.id,
+      intern_id: intern.id,
       type: 'task',
       title: newTask.trim(),
     });
@@ -215,7 +243,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
     onRefresh();
   }
 
-  const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
+  const internPortalUrl = `${window.location.origin}/intern-portal?id=${intern.id}`;
 
   return (
     <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
@@ -234,11 +262,18 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+            inviteAccepted
+              ? 'bg-green-100 text-green-700'
+              : 'bg-yellow-100 text-yellow-700'
+          }`}>
+            {inviteAccepted ? 'Accepted' : 'Pending'}
+          </span>
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STAGE_COLORS[intern.stage] ?? 'bg-gray-100 text-gray-600'}`}>
             {STAGE_LABELS[intern.stage] ?? intern.stage}
           </span>
           <span className="text-xs text-gray-400">
-            W{intern.weeks.length} • {completedTasks}/{intern.tasks.length} tasks
+            W{intern.weeks.length} · {completedTasks}/{intern.tasks.length} tasks
           </span>
           <span className="text-gray-400 text-sm">{expanded ? '▲' : '▼'}</span>
         </div>
@@ -278,7 +313,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
             )}
             {showWeeklyForm && (
               <WeeklyReviewForm
-                applicationId={intern.id}
+                internId={intern.id}
                 weekNumber={nextWeek}
                 onSaved={() => { setShowWeeklyForm(false); onRefresh(); }}
               />
@@ -357,7 +392,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               )}
               {showFinalForm && (
                 <FinalReviewForm
-                  applicationId={intern.id}
+                  internId={intern.id}
                   existing={intern.finalReview}
                   onSaved={() => { setShowFinalForm(false); onRefresh(); }}
                 />
@@ -388,110 +423,68 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   );
 };
 
-interface InternAccountRow {
-  id: string;
-  full_name: string;
-  email: string;
-  department: string;
-  assigned_brand: string | null;
-  model: string;
-  budget_tokens_monthly: number;
-  is_active: boolean;
-  usage?: {
-    tokens_input: number;
-    tokens_output: number;
-    cost_usd: number;
-  };
-}
-
-const DEPARTMENT_LABELS: Record<string, string> = {
-  marketing: 'Marketing',
-  ecommerce: 'E-Commerce',
-  support: 'Support',
-  analytics: 'Analytics',
-  finance: 'Finance',
-  recruiting: 'Recruiting',
-};
-
 // ─── Main AcademyView ─────────────────────────────────────────────────────
 const AcademyView: React.FC = () => {
   const [interns, setInterns] = useState<InternWithData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'onboarding' | 'active' | 'completed'>('all');
-  const [internAccounts, setInternAccounts] = useState<InternAccountRow[]>([]);
-  const [accountsLoading, setAccountsLoading] = useState(true);
-  const [showAddInternModal, setShowAddInternModal] = useState(false);
 
   async function load() {
     setLoading(true);
-    const { data: apps } = await supabase
-      .from('applications')
-      .select('id, full_name, email, status, created_at')
-      .in('status', ['onboarding', 'active', 'completed'])
+
+    const { data: accounts } = await supabase
+      .from('intern_accounts')
+      .select('id, auth_user_id, full_name, email, department, assigned_brand, model, budget_tokens_monthly, is_active, created_at, cohort')
       .order('created_at', { ascending: false });
 
-    if (!apps || apps.length === 0) {
+    if (!accounts || accounts.length === 0) {
       setInterns([]);
       setLoading(false);
       return;
     }
 
-    const ids = apps.map((a: any) => a.id);
+    const ids = accounts.map((a: any) => a.id);
+    const month = new Date().toISOString().slice(0, 7);
 
-    const [weeksRes, tasksRes, finalRes] = await Promise.all([
-      supabase.from('intern_weekly_reviews').select('*').in('application_id', ids).order('week_number'),
-      supabase.from('intern_learning_log').select('*').in('application_id', ids).order('created_at'),
-      supabase.from('intern_final_review').select('*').in('application_id', ids),
+    const [weeksRes, tasksRes, finalRes, usageRes] = await Promise.all([
+      supabase.from('intern_weekly_reviews').select('*').in('intern_id', ids).order('week_number'),
+      supabase.from('intern_learning_log').select('*').in('intern_id', ids).order('created_at'),
+      supabase.from('intern_final_review').select('*').in('intern_id', ids),
+      supabase.from('intern_token_usage').select('intern_id, tokens_input, tokens_output, cost_usd').in('intern_id', ids).eq('month', month),
     ]);
 
     const weeks = weeksRes.data ?? [];
     const tasks = tasksRes.data ?? [];
     const finals = finalRes.data ?? [];
 
-    setInterns(apps.map((a: any) => ({
-      id: a.id,
-      full_name: a.full_name,
-      email: a.email,
-      stage: a.status,
-      created_at: a.created_at,
-      weeks: weeks.filter((w: any) => w.application_id === a.id),
-      tasks: tasks.filter((t: any) => t.application_id === a.id),
-      finalReview: finals.find((f: any) => f.application_id === a.id) ?? null,
-    })));
-    setLoading(false);
-  }
-
-  async function loadInternAccounts() {
-    setAccountsLoading(true);
-    const { data: accounts } = await supabase
-      .from('intern_accounts')
-      .select('id, full_name, email, department, assigned_brand, model, budget_tokens_monthly, is_active')
-      .order('created_at', { ascending: false });
-
-    if (!accounts || accounts.length === 0) {
-      setInternAccounts([]);
-      setAccountsLoading(false);
-      return;
-    }
-
-    const month = new Date().toISOString().slice(0, 7);
-    const ids = accounts.map((a: any) => a.id);
-    const { data: usageData } = await supabase
-      .from('intern_token_usage')
-      .select('intern_id, tokens_input, tokens_output, cost_usd')
-      .in('intern_id', ids)
-      .eq('month', month);
-
     const usageMap: Record<string, { tokens_input: number; tokens_output: number; cost_usd: number }> = {};
-    (usageData ?? []).forEach((u: any) => {
+    (usageRes.data ?? []).forEach((u: any) => {
       usageMap[u.intern_id] = { tokens_input: u.tokens_input, tokens_output: u.tokens_output, cost_usd: u.cost_usd };
     });
 
-    setInternAccounts(accounts.map((a: any) => ({ ...a, usage: usageMap[a.id] })));
-    setAccountsLoading(false);
+    setInterns(accounts.map((a: any) => ({
+      id: a.id,
+      auth_user_id: a.auth_user_id,
+      full_name: a.full_name,
+      email: a.email,
+      department: a.department,
+      assigned_brand: a.assigned_brand,
+      model: a.model,
+      budget_tokens_monthly: a.budget_tokens_monthly,
+      is_active: a.is_active,
+      created_at: a.created_at,
+      cohort: a.cohort,
+      stage: deriveStage(a),
+      weeks: weeks.filter((w: any) => w.intern_id === a.id),
+      tasks: tasks.filter((t: any) => t.intern_id === a.id),
+      finalReview: finals.find((f: any) => f.intern_id === a.id) ?? null,
+      usage: usageMap[a.id],
+    })));
+
+    setLoading(false);
   }
 
-  useEffect(() => { load(); loadInternAccounts(); }, []);
+  useEffect(() => { load(); }, []);
 
   const displayed = filter === 'all' ? interns : interns.filter(i => i.stage === filter);
 
@@ -502,21 +495,53 @@ const AcademyView: React.FC = () => {
     completed: interns.filter(i => i.stage === 'completed').length,
   };
 
+  const pendingInvites = interns.filter(i => i.auth_user_id === null);
+
+  function copyAllPendingEmails() {
+    const emails = pendingInvites.map(i => i.email).join(', ');
+    navigator.clipboard.writeText(emails);
+  }
+
   return (
     <div className="space-y-6">
-      {showAddInternModal && (
-        <AddInternModal
-          onClose={() => setShowAddInternModal(false)}
-          onCreated={() => loadInternAccounts()}
-        />
-      )}
-
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-gray-900">Founders Associate Academy</h2>
           <p className="text-sm text-gray-500 mt-1">Full intern lifecycle — onboarding → active → completed</p>
         </div>
       </div>
+
+      {/* Pending Invites Banner */}
+      {pendingInvites.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-sm font-bold text-yellow-800">
+                Pending Invites ({pendingInvites.length})
+              </p>
+              <p className="text-xs text-yellow-600 mt-0.5">
+                These interns have not yet accepted their Supabase invite.
+              </p>
+            </div>
+            <button
+              onClick={copyAllPendingEmails}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+            >
+              Copy All Emails
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {pendingInvites.map(i => (
+              <span
+                key={i.id}
+                className="text-xs bg-yellow-100 text-yellow-800 border border-yellow-200 px-2.5 py-1 rounded-full font-medium"
+              >
+                {i.email}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
@@ -556,25 +581,19 @@ const AcademyView: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-800">Token-Verbrauch · AI Senior</h3>
             <p className="text-xs text-gray-500">Monat: {new Date().toISOString().slice(0, 7)}</p>
           </div>
-          <button
-            onClick={() => setShowAddInternModal(true)}
-            className="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
-          >
-            + Intern hinzufügen
-          </button>
         </div>
-        {accountsLoading ? (
+        {loading ? (
           <div className="text-center py-8 text-gray-400 text-sm">Lade Accounts…</div>
-        ) : internAccounts.length === 0 ? (
+        ) : interns.length === 0 ? (
           <div className="text-center py-8 text-gray-400 text-sm">
-            Noch keine AI-Senior-Accounts. Erstelle den ersten Intern-Account.
+            Noch keine Intern-Accounts vorhanden.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
-                  {['Intern', 'Department', 'Modell', 'Tokens (Monat)', 'Kosten', 'Budget', 'Status'].map(h => (
+                  {['Intern', 'Department', 'Invite', 'Modell', 'Tokens (Monat)', 'Kosten', 'Budget', 'Status'].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       {h}
                     </th>
@@ -582,7 +601,7 @@ const AcademyView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {internAccounts.map(acc => {
+                {interns.map(acc => {
                   const totalTokens = (acc.usage?.tokens_input ?? 0) + (acc.usage?.tokens_output ?? 0);
                   const budgetPct = Math.min(100, Math.round((totalTokens / acc.budget_tokens_monthly) * 100));
                   return (
@@ -594,6 +613,15 @@ const AcademyView: React.FC = () => {
                       <td className="px-4 py-3">
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
                           {DEPARTMENT_LABELS[acc.department] ?? acc.department}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                          acc.auth_user_id != null
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {acc.auth_user_id != null ? 'Accepted' : 'Pending'}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">
@@ -615,12 +643,8 @@ const AcademyView: React.FC = () => {
                         {acc.budget_tokens_monthly.toLocaleString()} · {budgetPct}%
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                          acc.is_active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-500'
-                        }`}>
-                          {acc.is_active ? 'Aktiv' : 'Inaktiv'}
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${STAGE_COLORS[acc.stage] ?? 'bg-gray-100 text-gray-500'}`}>
+                          {STAGE_LABELS[acc.stage] ?? acc.stage}
                         </span>
                       </td>
                     </tr>
@@ -632,14 +656,14 @@ const AcademyView: React.FC = () => {
         )}
       </div>
 
-      {/* Intern list */}
+      {/* Intern lifecycle cards */}
       {loading ? (
         <div className="text-center py-12 text-gray-400">Loading…</div>
       ) : displayed.length === 0 ? (
         <div className="text-center py-12 text-gray-400">
           <p className="text-4xl mb-3">🎓</p>
           <p className="font-medium">No interns in this stage yet.</p>
-          <p className="text-sm mt-1">Move candidates to "Onboarding" or "Active" in the Kanban board.</p>
+          <p className="text-sm mt-1">Interns are managed via SQL in intern_accounts.</p>
         </div>
       ) : (
         <div className="space-y-3">
