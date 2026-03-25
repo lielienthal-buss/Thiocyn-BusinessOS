@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Spinner from '../ui/Spinner';
+import Spinner from '@/components/ui/Spinner';
 
 interface Message {
   role: 'user' | 'model';

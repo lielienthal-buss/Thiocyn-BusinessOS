@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { submitApplicationAction, getProjectAreas } from '../lib/actions';
-import { BFI_QUESTIONS, calculateBigFive } from '../utils/bigFive';
-import { trackStep, trackStepCompleted, trackSubmission } from '../lib/analytics';
+import { submitApplicationAction, getProjectAreas } from '@/lib/actions';
+import { BFI_QUESTIONS, calculateBigFive } from '@/utils/bigFive';
+import { trackStep, trackStepCompleted, trackSubmission } from '@/lib/analytics';
 import Spinner from './ui/Spinner';
 import Card from './ui/Card';
 import ThankYouMessage from './ui/ThankYouMessage';
-import type { ProjectArea } from '../types';
+import type { ProjectArea } from '@/types';
 import Turnstile from 'react-turnstile';
-import { useLang } from '../lib/i18n';
-import { translations } from '../lib/translations';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
 
 // --- MAIN FORM COMPONENT ---
 

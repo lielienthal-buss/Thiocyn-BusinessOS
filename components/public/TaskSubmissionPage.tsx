@@ -1,6 +1,6 @@
 // components/public/TaskSubmissionPage.tsx - V2 Feature
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 // --- Helper Components ---
 const QuestionCard: React.FC<{

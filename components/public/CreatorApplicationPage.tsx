@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
-import Logo from '../icons/Logo';
-import { useLang } from '../../lib/i18n';
-import { translations } from '../../lib/translations';
+import { supabase } from '@/lib/supabaseClient';
+import Logo from '@/components/icons/Logo';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
 
 const BRANDS = ['Paigh', 'Take A Shot', 'Wristr', 'Thiocyn', 'Dr. Severin', 'Timber & John'];
 const FOLLOWER_RANGES = ['1k–10k', '10k–50k', '50k–200k', '200k+'];

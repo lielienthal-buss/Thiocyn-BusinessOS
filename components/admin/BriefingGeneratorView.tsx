@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import Spinner from '../ui/Spinner';
+import { supabase } from '@/lib/supabaseClient';
+import Spinner from '@/components/ui/Spinner';
 
 const BRANDS = ['Thiocyn', 'Take A Shot', 'Dr. Severin', 'Paigh', 'Wristr', 'Timber & John'] as const;
 type Brand = typeof BRANDS[number];

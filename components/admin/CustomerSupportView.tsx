@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ResourceCardList from './ResourceCardList';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Props {
   isAdmin: boolean;

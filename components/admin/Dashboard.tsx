@@ -22,16 +22,16 @@ import FinanceView from './FinanceView';
 import ToolStackView from './ToolStackView';
 import EcommerceView from './EcommerceView';
 import AnalyticsView from './AnalyticsView';
-import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '../../lib/agentQuickActions';
-import { getApplicant } from '../../lib/actions'; // Import getApplicant
-import type { Application } from '../../types'; // Import Application
-import Spinner from '../ui/Spinner';
+import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '@/lib/agentQuickActions';
+import { getApplicant } from '@/lib/actions'; // Import getApplicant
+import type { Application } from '@/types'; // Import Application
+import Spinner from '@/components/ui/Spinner';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
-import { useLang } from '../../lib/i18n';
-import { translations } from '../../lib/translations';
-import BrandSwitcher from '../ui/BrandSwitcher';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
+import BrandSwitcher from '@/components/ui/BrandSwitcher';
 const ISOComplianceView = lazy(() => import('./ISOComplianceView'));
 const CreatorView = React.lazy(() => import('./CreatorView'));
 const KnowledgeBaseView = lazy(() => import('./KnowledgeBaseView'));

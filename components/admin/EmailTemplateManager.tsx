@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getEmailTemplates, updateEmailTemplate } from '../../lib/actions';
-import type { EmailTemplate } from '../../types';
-import Spinner from '../ui/Spinner';
+import { getEmailTemplates, updateEmailTemplate } from '@/lib/actions';
+import type { EmailTemplate } from '@/types';
+import Spinner from '@/components/ui/Spinner';
 
 const EmailTemplateManager: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);

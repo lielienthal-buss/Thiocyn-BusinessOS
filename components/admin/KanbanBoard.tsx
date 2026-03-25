@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getAllApplications, updateApplicationStage } from '../../lib/actions';
-import type { Application, ApplicationStage } from '../../types';
-import Spinner from '../ui/Spinner';
+import { getAllApplications, updateApplicationStage } from '@/lib/actions';
+import type { Application, ApplicationStage } from '@/types';
+import Spinner from '@/components/ui/Spinner';
 import { toast } from 'sonner';
 
 // Stage badge color map

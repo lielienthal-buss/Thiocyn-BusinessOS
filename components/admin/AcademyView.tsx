@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import type { WeeklyReview, LearningLogEntry, FinalReview } from '../../types';
+import { supabase } from '@/lib/supabaseClient';
+import type { WeeklyReview, LearningLogEntry, FinalReview } from '@/types';
 
 const STAGE_LABELS: Record<string, string> = {
   onboarding: 'Onboarding',

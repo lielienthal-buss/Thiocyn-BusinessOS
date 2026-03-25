@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import { useBrand } from '../../lib/BrandContext';
+import { supabase } from '@/lib/supabaseClient';
+import { useBrand } from '@/lib/BrandContext';
 
 type ISOTab = 'risks' | 'incidents' | 'bizRisks' | 'nonconf';
 

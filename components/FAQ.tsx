@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useLang } from '../lib/i18n';
-import { translations } from '../lib/translations';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
 
 const FAQ: React.FC = () => {
   const [open, setOpen] = useState<number | null>(null);

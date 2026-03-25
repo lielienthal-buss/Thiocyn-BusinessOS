@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLang } from '../lib/i18n';
-import { translations } from '../lib/translations';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
 
 function useCounter(target: number, duration = 1400) {
   const [count, setCount] = useState(0);

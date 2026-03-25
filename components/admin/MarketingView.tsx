@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ResourceCardList from './ResourceCardList';
-import { useLang } from '../../lib/i18n';
-import { translations } from '../../lib/translations';
-import { supabase } from '../../lib/supabaseClient';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
+import { supabase } from '@/lib/supabaseClient';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

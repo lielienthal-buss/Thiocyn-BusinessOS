@@ -4,14 +4,14 @@ import {
   getApplications,
   deleteApplication,
   getSettings,
-} from '../../lib/actions';
+} from '@/lib/actions';
 import type {
   Application,
   RecruiterSettings,
   ApplicationStage,
-} from '../../types'; // Import ApplicationStage
-import Spinner from '../ui/Spinner';
-import { ConfirmModal } from '../ui/ConfirmModal';
+} from '@/types'; // Import ApplicationStage
+import Spinner from '@/components/ui/Spinner';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 interface Props {
   onSelectApplicant: (id: string) => void;

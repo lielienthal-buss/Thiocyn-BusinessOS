@@ -1,6 +1,6 @@
 import React from 'react';
-import { useBrand } from '../../lib/BrandContext';
-import type { Brand } from '../../lib/BrandContext';
+import { useBrand } from '@/lib/BrandContext';
+import type { Brand } from '@/lib/BrandContext';
 
 interface BrandSwitcherProps {
   showAllOption?: boolean;    // default: true

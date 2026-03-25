@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { supabase, isSupabaseConfigured } from '../../lib/supabaseClient';
-import Spinner from '../ui/Spinner';
-import EmailIcon from '../icons/EmailIcon';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import Spinner from '@/components/ui/Spinner';
+import EmailIcon from '@/components/icons/EmailIcon';
 import { useNavigate } from 'react-router-dom';
-import Logo from '../icons/Logo';
+import Logo from '@/components/icons/Logo';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();

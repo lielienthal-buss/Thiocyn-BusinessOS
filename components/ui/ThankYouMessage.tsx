@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../ui/Card';
+import Card from '@/components/ui/Card';
 
 const ThankYouMessage: React.FC = () => (
   <Card className="text-center max-w-2xl mx-auto mt-10">

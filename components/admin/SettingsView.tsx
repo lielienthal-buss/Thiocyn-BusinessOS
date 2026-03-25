@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useSettings } from '../../lib/useSettings';
-import Spinner from '../ui/Spinner';
-import type { LandingConfig } from '../../types';
+import { useSettings } from '@/lib/useSettings';
+import Spinner from '@/components/ui/Spinner';
+import type { LandingConfig } from '@/types';
 
 interface SettingsViewProps {
   isDemoMode: boolean;

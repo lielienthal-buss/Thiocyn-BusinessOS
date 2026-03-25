@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
-import type { LandingConfig } from '../types';
+import { supabase } from '@/lib/supabaseClient';
+import type { LandingConfig } from '@/types';
 import TopNav from './TopNav';
 
 const DEFAULT_CONFIG: LandingConfig = {

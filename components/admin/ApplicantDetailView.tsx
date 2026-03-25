@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Application, ApplicationNote } from '../../types';
-import Card from '../ui/Card';
+import { Application, ApplicationNote } from '@/types';
+import Card from '@/components/ui/Card';
 import BigFiveVisualizer from './BigFiveVisualizer';
-import LinkedInIcon from '../icons/LinkedInIcon';
-import { addNoteForApplication, updateApplicationStage } from '../../lib/actions';
-import Spinner from '../ui/Spinner';
+import LinkedInIcon from '@/components/icons/LinkedInIcon';
+import { addNoteForApplication, updateApplicationStage } from '@/lib/actions';
+import Spinner from '@/components/ui/Spinner';
 import { createClient } from '@supabase/supabase-js';
 import { toast } from 'sonner';
-import { ConfirmModal } from '../ui/ConfirmModal';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,

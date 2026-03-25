@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import type { WeeklyReview, LearningLogEntry, FinalReview } from '../../types';
-import InternChat from '../academy/InternChat';
+import { supabase } from '@/lib/supabaseClient';
+import type { WeeklyReview, LearningLogEntry, FinalReview } from '@/types';
+import InternChat from '@/components/academy/InternChat';
 
 const STAGE_STEPS = ['applied', 'task_requested', 'interview', 'hired', 'onboarding', 'active', 'completed'];
 const STAGE_LABELS: Record<string, string> = {

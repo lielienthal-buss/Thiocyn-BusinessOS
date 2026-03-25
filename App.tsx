@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
-import Header from './components/Header';
+import Header from '@/components/Header';
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
   useNavigate,
 } from 'react-router-dom';
-import ApplicationForm from './components/ApplicationForm';
-import Footer from './components/Footer';
-import FAQ from './components/FAQ';
-import Dashboard from './components/admin/Dashboard';
-import AdminLogin from './components/admin/AdminLogin';
+import ApplicationForm from '@/components/ApplicationForm';
+import Footer from '@/components/Footer';
+import FAQ from '@/components/FAQ';
+import Dashboard from '@/components/admin/Dashboard';
+import AdminLogin from '@/components/admin/AdminLogin';
 const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
 const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
-import ForgotPassword from './components/admin/ForgotPassword';
-import Imprint from './components/legal/Imprint';
-import PrivacyPolicy from './components/legal/PrivacyPolicy';
-import LegalPage from './components/legal/LegalPage';
-import TaskSubmissionPage from './components/public/TaskSubmissionPage';
-import InternPortalPage from './components/public/InternPortalPage';
-import TopNav from './components/TopNav';
+import ForgotPassword from '@/components/admin/ForgotPassword';
+import Imprint from '@/components/legal/Imprint';
+import PrivacyPolicy from '@/components/legal/PrivacyPolicy';
+import LegalPage from '@/components/legal/LegalPage';
+import TaskSubmissionPage from '@/components/public/TaskSubmissionPage';
+import InternPortalPage from '@/components/public/InternPortalPage';
+import TopNav from '@/components/TopNav';
 import { Toaster } from 'sonner';
-import { LangProvider } from './lib/i18n';
-import { BrandProvider } from './lib/BrandContext';
-import CookieBanner from './components/CookieBanner';
+import { LangProvider } from '@/lib/i18n';
+import { BrandProvider } from '@/lib/BrandContext';
+import CookieBanner from '@/components/CookieBanner';
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {

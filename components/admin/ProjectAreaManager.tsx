@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getProjectAreas, addProjectArea, updateProjectArea, deleteProjectArea } from '../../lib/actions';
-import type { ProjectArea } from '../../types';
-import Spinner from '../ui/Spinner';
-import Card from '../ui/Card';
+import { getProjectAreas, addProjectArea, updateProjectArea, deleteProjectArea } from '@/lib/actions';
+import type { ProjectArea } from '@/types';
+import Spinner from '@/components/ui/Spinner';
+import Card from '@/components/ui/Card';
 import { toast } from 'sonner';
-import { ConfirmModal } from '../ui/ConfirmModal';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
 const ProjectAreaManager: React.FC = () => {
   const [projectAreas, setProjectAreas] = useState<ProjectArea[]>([]);

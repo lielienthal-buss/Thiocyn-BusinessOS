@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import Spinner from '../ui/Spinner';
+import { supabase } from '@/lib/supabaseClient';
+import Spinner from '@/components/ui/Spinner';
 
 interface ContentPost {
   id: string;

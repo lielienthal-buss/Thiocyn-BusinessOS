@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import Spinner from '../ui/Spinner';
+import { supabase } from '@/lib/supabaseClient';
+import Spinner from '@/components/ui/Spinner';
 import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword: React.FC = () => {

@@ -57,25 +57,53 @@ Ich würde das gerne **gemeinsam mit dir** durchgehen:
 
 ## Was ich von dir brauche
 
-Für die nächste Ausbaustufe (Ad Performance, Email-Triage, Kalender-Sync) brauche ich folgende Credentials / Zugänge:
+Für die nächste Ausbaustufe brauche ich folgende Credentials. Dahinter steht jeweils, **wofür genau**:
 
-### Google
-- [ ] Google Ads: Developer Token, OAuth Client ID/Secret, Refresh Token
-- [ ] Google Ads Customer IDs (Take A Shot, Thiocyn, Paigh)
-- [ ] Google Calendar API OAuth (für Buchungs-App)
-- [ ] Gmail API OAuth (für automatische Email-Triage)
+### Google Ads
+| Credential | Wozu |
+|---|---|
+| Developer Token | Ermöglicht API-Zugriff auf Google Ads überhaupt |
+| OAuth Client ID + Secret | Authentifizierung für den n8n-Workflow |
+| Refresh Token | Damit n8n sich dauerhaft selbst erneuert (kein manuelles Re-Login) |
+| Customer IDs (TAS, Thiocyn, Paigh) | Welche Ad-Accounts wir pullen — ohne das fragen wir ins Leere |
 
-### Meta
-- [ ] Meta App ID + App Secret
-- [ ] Long-lived User Access Token
-- [ ] Ad Account IDs (Take A Shot, Thiocyn, Paigh)
+→ **Ergebnis:** Täglicher Auto-Snapshot aller Kampagnen im Analytics-Dashboard
+
+### Google Calendar
+| Credential | Wozu |
+|---|---|
+| OAuth Client ID + Secret | Damit unser Buchungs-Tool (SetTime) Termine direkt in deinen/meinen Kalender einträgt |
+| Refresh Token | Dauerhafter Zugriff ohne manuelle Bestätigung |
+
+→ **Ergebnis:** Jemand bucht einen Slot → Termin landet automatisch im Google Calendar
+
+### Gmail
+| Credential | Wozu |
+|---|---|
+| OAuth Client ID + Secret | Damit n8n eingehende Mails lesen und automatisch vorsortieren kann |
+| Refresh Token | Dauerhafter Zugriff |
+
+→ **Ergebnis:** Automatische Inbox-Triage — Mails werden nach Dringlichkeit geclustert, bevor ich sie öffne
+
+### Meta Ads
+| Credential | Wozu |
+|---|---|
+| App ID + App Secret | Basis-Auth für die Meta Marketing API |
+| Long-lived Access Token | Langfristiger Zugriff (60 Tage, danach einmal erneuern) |
+| Ad Account IDs (TAS, Thiocyn, Paigh) | Welche Accounts wir abfragen |
+
+→ **Ergebnis:** Täglicher ROAS/Spend/CPM-Snapshot im Analytics-Dashboard (Ansh baut den Ingest)
 
 ### Shopify
-- [ ] Admin API Access Token — Take A Shot
-- [ ] Admin API Access Token — Thiocyn
-- [ ] Admin API Access Token — Paigh
+| Credential | Wozu |
+|---|---|
+| Admin API Token — Take A Shot | Revenue, Orders, Returns in Supabase syncen |
+| Admin API Token — Thiocyn | Gleich |
+| Admin API Token — Paigh | Gleich |
 
-> Alle Tokens werden **ausschließlich server-side** verwendet (n8n / Supabase Edge Functions). Nie im Frontend.
+→ **Ergebnis:** Echte Revenue-Zahlen im Business OS — Basis für P&L pro Brand
+
+> **Security:** Alle Tokens leben ausschließlich in n8n / Supabase Vault — nie im Frontend-Code, nie in Git.
 
 ---
 

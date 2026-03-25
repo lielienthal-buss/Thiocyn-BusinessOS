@@ -6,7 +6,7 @@ import type {
   EmailTemplate,
   Application,
   ProjectArea,
-} from '../types';
+} from '@/types';
 
 // --- APPLICANT ACTIONS (Public) ---
 

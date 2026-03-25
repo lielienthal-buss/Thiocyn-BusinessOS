@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { hasConsent, hasDenied, giveConsent, denyConsent, initPostHog } from '../lib/analytics';
+import { hasConsent, hasDenied, giveConsent, denyConsent, initPostHog } from '@/lib/analytics';
 
 const CookieBanner: React.FC = () => {
   const [visible, setVisible] = useState(false);

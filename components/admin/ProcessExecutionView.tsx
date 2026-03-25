@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
-import { useBrand } from '../../lib/BrandContext';
+import { supabase } from '@/lib/supabaseClient';
+import { useBrand } from '@/lib/BrandContext';
 
 type Process = {
   id: string;

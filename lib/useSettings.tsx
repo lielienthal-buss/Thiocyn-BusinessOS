@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { RecruiterSettings } from '../types';
+import type { RecruiterSettings } from '@/types';
 import { getSettings, updateSettings } from './actions';
 
 type UseSettingsReturn = {

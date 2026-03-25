@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 type Role = 'owner' | 'admin' | 'marketing' | 'hiring' | 'support' | 'viewer';
 type MemberStatus = 'pending' | 'active' | 'deactivated';

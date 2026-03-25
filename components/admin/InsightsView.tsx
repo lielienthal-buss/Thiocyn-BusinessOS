@@ -1,8 +1,8 @@
 // components/admin/InsightsView.tsx - V2 Refactor
 import React, { useState, useEffect } from 'react';
-import type { Application } from '../../types';
-import { getAllApplications } from '../../lib/actions';
-import Spinner from '../ui/Spinner';
+import type { Application } from '@/types';
+import { getAllApplications } from '@/lib/actions';
+import Spinner from '@/components/ui/Spinner';
 
 const InsightsView: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Logo from './icons/Logo';
-import { useLang } from '../lib/i18n';
-import { translations } from '../lib/translations';
+import { useLang } from '@/lib/i18n';
+import { translations } from '@/lib/translations';
 
 const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
   const navigate = useNavigate();
