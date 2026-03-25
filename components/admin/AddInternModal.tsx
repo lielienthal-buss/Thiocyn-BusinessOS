@@ -34,7 +34,6 @@ const AddInternModal: React.FC<AddInternModalProps> = ({ onClose, onCreated }) =
   const [form, setForm] = useState({
     full_name: '',
     email: '',
-    password: '',
     department: 'marketing',
     assigned_brand: '',
     budget_tokens_monthly: 0,
@@ -48,8 +47,8 @@ const AddInternModal: React.FC<AddInternModalProps> = ({ onClose, onCreated }) =
   }
 
   async function submit() {
-    if (!form.full_name.trim() || !form.email.trim() || !form.password.trim()) {
-      setError('Name, E-Mail und Passwort sind Pflichtfelder.');
+    if (!form.full_name.trim() || !form.email.trim()) {
+      setError('Name und E-Mail sind Pflichtfelder.');
       return;
     }
     setLoading(true);
@@ -60,7 +59,6 @@ const AddInternModal: React.FC<AddInternModalProps> = ({ onClose, onCreated }) =
         body: {
           full_name: form.full_name.trim(),
           email: form.email.trim().toLowerCase(),
-          password: form.password,
           department: form.department,
           assigned_brand: form.assigned_brand || null,
           budget_tokens_monthly: form.budget_tokens_monthly,
@@ -99,7 +97,6 @@ const AddInternModal: React.FC<AddInternModalProps> = ({ onClose, onCreated }) =
           {[
             { key: 'full_name', label: 'Vollständiger Name', type: 'text', placeholder: 'Max Mustermann' },
             { key: 'email', label: 'E-Mail Adresse', type: 'email', placeholder: 'max@hartlimes.de' },
-            { key: 'password', label: 'Temporäres Passwort', type: 'password', placeholder: 'Mindestens 8 Zeichen' },
           ].map(({ key, label, type, placeholder }) => (
             <div key={key}>
               <label className="block text-xs text-gray-400 mb-1">{label}</label>
@@ -192,7 +189,7 @@ const AddInternModal: React.FC<AddInternModalProps> = ({ onClose, onCreated }) =
             disabled={loading}
             className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors"
           >
-            {loading ? 'Erstelle Account…' : 'Intern erstellen'}
+            {loading ? 'Sende Einladung…' : 'Einladung senden'}
           </button>
         </div>
       </div>

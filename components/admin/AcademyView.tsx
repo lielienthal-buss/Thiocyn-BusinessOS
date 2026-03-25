@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import type { WeeklyReview, LearningLogEntry, FinalReview } from '@/types';
+import AddInternModal from './AddInternModal';
 
 const STAGE_LABELS: Record<string, string> = {
   onboarding: 'Onboarding',
@@ -243,7 +244,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
     onRefresh();
   }
 
-  const internPortalUrl = `${window.location.origin}/intern-portal?id=${intern.id}`;
+  const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
 
   return (
     <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
@@ -417,6 +418,21 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               </button>
             </div>
           </div>
+
+          {/* Deactivate button */}
+          {intern.is_active && (
+            <div className="pt-2 border-t">
+              <button
+                onClick={async () => {
+                  await supabase.from('intern_accounts').update({ is_active: false }).eq('id', intern.id);
+                  onRefresh();
+                }}
+                className="text-xs text-red-500 hover:text-red-700 transition-colors"
+              >
+                Intern deaktivieren
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -428,6 +444,8 @@ const AcademyView: React.FC = () => {
   const [interns, setInterns] = useState<InternWithData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'onboarding' | 'active' | 'completed'>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [sendingBatch, setSendingBatch] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -509,7 +527,20 @@ const AcademyView: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900">Founders Associate Academy</h2>
           <p className="text-sm text-gray-500 mt-1">Full intern lifecycle — onboarding → active → completed</p>
         </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+        >
+          ＋ Intern hinzufügen
+        </button>
       </div>
+
+      {showAddModal && (
+        <AddInternModal
+          onClose={() => setShowAddModal(false)}
+          onCreated={() => { setShowAddModal(false); load(); }}
+        />
+      )}
 
       {/* Pending Invites Banner */}
       {pendingInvites.length > 0 && (
@@ -520,15 +551,33 @@ const AcademyView: React.FC = () => {
                 Pending Invites ({pendingInvites.length})
               </p>
               <p className="text-xs text-yellow-600 mt-0.5">
-                These interns have not yet accepted their Supabase invite.
+                Diese Interns haben ihre Einladungs-Mail noch nicht geöffnet / Zugang noch nicht aktiviert.
               </p>
             </div>
-            <button
-              onClick={copyAllPendingEmails}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
-            >
-              Copy All Emails
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={copyAllPendingEmails}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+              >
+                Copy All Emails
+              </button>
+              <button
+                disabled={sendingBatch}
+                onClick={async () => {
+                  if (!window.confirm(`Alle ${pendingInvites.length} ausstehenden Interns erhalten jetzt ihre Magic Link Einladung. Fortfahren?`)) return;
+                  setSendingBatch(true);
+                  for (const i of pendingInvites) {
+                    await supabase.functions.invoke('resend-intern-invite', { body: { intern_id: i.id } });
+                  }
+                  setSendingBatch(false);
+                  // toast placeholder — replace with your toast implementation
+                  alert(`${pendingInvites.length} Einladungen verschickt! 🚀`);
+                }}
+                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+              >
+                {sendingBatch ? 'Sende…' : '🚀 Alle einladen'}
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             {pendingInvites.map(i => (
