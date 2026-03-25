@@ -62,11 +62,7 @@ const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen relative py-12 px-4 transition-colors duration-500 selection:bg-primary-100">
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary-100/60 rounded-full blur-[150px] animate-blob"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-100/60 rounded-full blur-[150px] animate-blob animation-delay-2000"></div>
-        <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-primary-50/80 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
-      </div>
+      <div className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-gray-50 to-white" />
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <div className="mb-16">
           <TopNav />

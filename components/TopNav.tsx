@@ -4,7 +4,7 @@ import Logo from './icons/Logo';
 import { useLang } from '../lib/i18n';
 import { translations } from '../lib/translations';
 
-const TopNav: React.FC = () => {
+const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { lang, setLang } = useLang();
@@ -16,6 +16,64 @@ const TopNav: React.FC = () => {
     { label: t.aboutUs, path: '/company' },
     { label: t.login, path: '/admin' },
   ];
+
+  if (variant === 'dark') {
+    return (
+      <nav className="w-full">
+        {/* Desktop — dark variant */}
+        <div className="hidden md:flex justify-center">
+          <div className="flex justify-between items-center w-full max-w-5xl mx-auto px-6">
+            <Logo className="h-8 w-auto brightness-0 invert opacity-90" />
+            <div className="flex items-center gap-1">
+              {LINKS.map(({ label, path }) => {
+                const active = path === '/' ? pathname === '/' : pathname.startsWith(path);
+                return (
+                  <button
+                    key={path}
+                    onClick={() => navigate(path)}
+                    className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
+                      active ? 'text-white' : 'text-gray-600 hover:text-gray-300'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+              <button
+                onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
+                className="ml-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-gray-600 hover:text-gray-300 transition-all duration-200"
+              >
+                {lang === 'de' ? 'DE | EN' : 'EN | DE'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile — dark variant */}
+        <div className="md:hidden overflow-x-auto">
+          <div className="flex justify-between items-center px-6">
+            <Logo className="h-7 w-auto brightness-0 invert opacity-90" />
+            <div className="flex items-center gap-0.5">
+              {LINKS.map(({ label, path }) => {
+                const active = path === '/' ? pathname === '/' : pathname.startsWith(path);
+                return (
+                  <button
+                    key={path}
+                    onClick={() => navigate(path)}
+                    className={`px-3 py-2 rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all duration-200 ${
+                      active ? 'text-white' : 'text-gray-600 hover:text-gray-300'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <nav className="w-full">

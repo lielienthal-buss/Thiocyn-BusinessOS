@@ -200,15 +200,9 @@ export default function HartLimesLanding({ forceMode }: { forceMode?: LandingCon
 
   return (
     <div className="min-h-screen w-full bg-[#080808] text-white font-sans overflow-x-hidden">
-      {/* Full-width ambient glow */}
-      <div className="fixed inset-0 pointer-events-none -z-0">
-        <div className="absolute -top-10 left-[5%] w-[700px] h-[500px] bg-indigo-900/20 rounded-full blur-[140px]" />
-        <div className="absolute top-20 right-[5%] w-[400px] h-[400px] bg-violet-900/15 rounded-full blur-[120px]" />
-      </div>
-
       {/* Nav */}
       <header className="sticky top-0 z-20 bg-[#080808]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4">
-        <TopNav />
+        <TopNav variant="dark" />
       </header>
 
       {/* Hero */}

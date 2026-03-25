@@ -19,6 +19,7 @@ import TeamTasksView from './TeamTasksView';
 import PerformanceView from './PerformanceView';
 import HomeView from './HomeView';
 import FinanceView from './FinanceView';
+import ToolStackView from './ToolStackView';
 import EcommerceView from './EcommerceView';
 import AnalyticsView from './AnalyticsView';
 import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '../../lib/agentQuickActions';
@@ -40,12 +41,18 @@ const NotificationFeedView = lazy(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazy(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazy(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator';
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance';
+type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
 const ADMIN_EMAIL = 'luis@mail.hartlimesgmbh.de';
 
-const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean; tabs: { id: Tab; label: string }[] }[] = [
+// Role hierarchy: owner > admin > staff > intern_lead > viewer
+const ROLE_LEVEL: Record<UserRole, number> = { owner: 4, admin: 3, staff: 2, intern_lead: 1, viewer: 0 };
+const hasRole = (userRole: string, minRole: UserRole) =>
+  (ROLE_LEVEL[userRole as UserRole] ?? 0) >= ROLE_LEVEL[minRole];
+
+const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole; tabs: { id: Tab; label: string }[] }[] = [
   {
     id: 'home',
     label: 'Home',
@@ -71,6 +78,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     id: 'marketing',
     label: 'Marketing',
     emoji: '📣',
+    minRole: 'staff',
     tabs: [
       { id: 'marketingBrands', label: 'Brand Status' },
       { id: 'marketingSOPTracker', label: 'Ads SOP Tracker' },
@@ -94,15 +102,18 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     id: 'finance',
     label: 'Finance',
     emoji: '💰',
+    minRole: 'admin',
     tabs: [
       { id: 'financeOverview', label: 'Overview' },
       { id: 'financeDisputesTab', label: 'Disputes' },
+      { id: 'toolStack', label: '🔧 Tool Stack' },
     ],
   },
   {
     id: 'ecommerce',
     label: 'E-Commerce',
     emoji: '🛒',
+    minRole: 'staff',
     tabs: [
       { id: 'ecomOverview', label: 'Overview' },
       { id: 'ecomOrders', label: 'Orders' },
@@ -112,6 +123,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     id: 'analytics',
     label: 'Analytics',
     emoji: '📊',
+    minRole: 'staff',
     tabs: [
       { id: 'analyticsKpis', label: 'Brand KPIs' },
       { id: 'analyticsAds', label: 'Ad Performance' },
@@ -121,7 +133,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     id: 'admin',
     label: 'Admin',
     emoji: '⚙️',
-    adminOnly: true,
+    minRole: 'admin',
     tabs: [
       { id: 'teamManagement', label: 'Team' },
       { id: 'performance', label: '📈 Performance' },
@@ -135,7 +147,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     id: 'compliance' as Section,
     label: 'Compliance',
     emoji: '🛡️',
-    adminOnly: true,
+    minRole: 'admin',
     tabs: [
       { id: 'isoCompliance', label: '⚠️ Risk & ISO' },
       { id: 'knowledgeBase', label: '📚 Knowledge Base' },
@@ -173,7 +185,7 @@ const Dashboard: React.FC = () => {
   const t = translations[lang];
 
   const [section, setSection] = useState<Section>('home');
-  const [userRole, setUserRole] = useState<string>('viewer');
+  const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [tab, setTab] = useState<Tab>('home');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [selectedApplicationData, setSelectedApplicationData] =
@@ -194,40 +206,38 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (session?.user?.email) {
-      supabase
-        .from('team_members')
-        .select('role, allowed_sections, status')
-        .eq('email', session.user.email)
-        .eq('status', 'active')
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data) setUserRole(data.role);
-        });
-    }
-  }, [session]);
+    if (!session?.user?.email) return;
+    // Check team_members first (staff/admin)
+    supabase
+      .from('team_members')
+      .select('role, status')
+      .eq('email', session.user.email)
+      .eq('status', 'active')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.role) { setUserRole(data.role as UserRole); return; }
+        // Fallback: check intern_accounts for intern_lead
+        supabase
+          .from('intern_accounts')
+          .select('id, department')
+          .eq('auth_user_id', session.user.id)
+          .maybeSingle()
+          .then(({ data: intern }) => {
+            if (!intern) return;
+            if (intern.department === 'lead') {
+              setUserRole('intern_lead');
+            } else if (intern.department !== 'recruiting') {
+              navigate('/intern/' + intern.id);
+            }
+          });
+      });
+  }, [session, navigate]);
 
   const isAdmin = isDemoMode || userRole === 'owner' || userRole === 'admin' || session?.user?.email === ADMIN_EMAIL;
 
   useEffect(() => {
     if (!authReady) return;
-    if (!session && !isDemoMode) {
-      navigate('/admin');
-      return;
-    }
-    // Non-recruiting interns get redirected to their portal
-    if (session) {
-      supabase
-        .from('intern_accounts')
-        .select('id, department')
-        .eq('auth_user_id', session.user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data && data.department !== 'recruiting') {
-            navigate('/intern/' + data.id);
-          }
-        });
-    }
+    if (!session && !isDemoMode) navigate('/admin');
   }, [session, isDemoMode, navigate, authReady]);
 
   const handleLogout = async () => {
@@ -282,6 +292,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'financeOverview' || tab === 'financeDisputesTab') {
       return <FinanceView activeTab={tab === 'financeDisputesTab' ? 'disputes' : 'overview'} />;
+    }
+
+    if (tab === 'toolStack') {
+      return <ToolStackView isAdmin={isAdmin} />;
     }
 
     if (tab === 'ecomOverview' || tab === 'ecomOrders') {
@@ -398,7 +412,9 @@ const Dashboard: React.FC = () => {
     return null;
   };
 
-  const visibleSections = SECTIONS.filter(s => !s.adminOnly || isAdmin);
+  const [previewRole, setPreviewRole] = useState<UserRole | null>(null);
+  const effectiveRole: UserRole = previewRole ?? (isDemoMode ? 'owner' : userRole);
+  const visibleSections = SECTIONS.filter(s => !s.minRole || hasRole(effectiveRole, s.minRole));
   const activeSection = SECTIONS.find(s => s.id === section) ?? SECTIONS[0];
   const activeTabs = activeSection.tabs;
 
@@ -448,9 +464,32 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
           {isAdmin && (
-            <span className="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em] bg-primary-50 px-4 py-2 rounded-full border border-primary-100">
-              {t.dashboard.adminBadge}
-            </span>
+            <div className="flex items-center gap-1.5">
+              {previewRole && (
+                <span className="text-[9px] font-black text-orange-600 uppercase tracking-wider bg-orange-50 px-2 py-1 rounded-full border border-orange-200">
+                  Preview: {previewRole}
+                </span>
+              )}
+              <select
+                value={previewRole ?? '__real__'}
+                onChange={e => {
+                  const v = e.target.value;
+                  if (v === '__real__') { setPreviewRole(null); }
+                  else {
+                    setPreviewRole(v as UserRole);
+                    const first = visibleSections[0];
+                    if (first) handleSectionChange(first.id);
+                  }
+                }}
+                className="text-[10px] font-black uppercase tracking-wider bg-gray-100 border-0 rounded-lg px-3 py-2 text-gray-600 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-300"
+              >
+                <option value="__real__">View as: Owner</option>
+                <option value="admin">View as: Admin</option>
+                <option value="staff">View as: Staff</option>
+                <option value="intern_lead">View as: Intern Lead</option>
+                <option value="viewer">View as: Viewer</option>
+              </select>
+            </div>
           )}
           <button onClick={handleLogout} className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 text-xs font-bold rounded-lg transition-colors">
             {t.dashboard.logout}

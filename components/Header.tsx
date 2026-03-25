@@ -47,9 +47,9 @@ const Header: React.FC = () => {
     <header className="relative overflow-hidden rounded-[2.5rem] bg-[#0d0d0d] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.5)]">
       {/* Ambient glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-600/20 rounded-full blur-[120px] animate-blob" />
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px] animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/8 rounded-full blur-[80px] animate-blob animation-delay-4000" />
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-600/20 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/8 rounded-full blur-[80px]" />
         {/* Dot grid */}
         <div
           className="absolute inset-0 opacity-[0.035]"
@@ -62,18 +62,16 @@ const Header: React.FC = () => {
       <div className="relative z-10 px-6 py-12 md:px-20 md:py-24 flex flex-col items-center text-center gap-10">
 
         {/* Live badge */}
-        <div className="animate-slide-up">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-[10px] font-black uppercase tracking-[0.25em]">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-glow-pulse inline-block" />
-            {t.badge}
-          </div>
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-[10px] font-black uppercase tracking-[0.25em]">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-400 inline-block" />
+          {t.badge}
         </div>
 
         {/* Headline */}
-        <div className="space-y-4 animate-slide-up-1">
+        <div className="space-y-4">
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-[-0.04em] leading-[0.88]">
             {t.headlinePart1}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-primary-300 to-primary-400 bg-[length:200%] animate-shimmer-text">
+            <span className="text-primary-400">
               {t.headlinePart2}
             </span>
           </h1>
@@ -83,11 +81,9 @@ const Header: React.FC = () => {
         </div>
 
         {/* Body */}
-        <div className="animate-slide-up-2">
-          <p className="text-gray-500 text-sm md:text-base max-w-xl leading-relaxed">
-            {t.body}
-          </p>
-        </div>
+        <p className="text-gray-500 text-sm md:text-base max-w-xl leading-relaxed">
+          {t.body}
+        </p>
 
         {/* Stats */}
         <div className="animate-slide-up-3 flex flex-wrap items-center justify-center gap-4 md:gap-3">
