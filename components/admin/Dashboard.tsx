@@ -16,6 +16,7 @@ import NotificationBell from './NotificationBell';
 import AccountView from './AccountView';
 import TeamManagementView from './TeamManagementView';
 import TeamTasksView from './TeamTasksView';
+import PerformanceView from './PerformanceView';
 import HomeView from './HomeView';
 import FinanceView from './FinanceView';
 import EcommerceView from './EcommerceView';
@@ -24,20 +25,23 @@ import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '../../lib/agentQuickAction
 import { getApplicant } from '../../lib/actions'; // Import getApplicant
 import type { Application } from '../../types'; // Import Application
 import Spinner from '../ui/Spinner';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 import { useLang } from '../../lib/i18n';
 import { translations } from '../../lib/translations';
+import BrandSwitcher from '../ui/BrandSwitcher';
+const ISOComplianceView = lazy(() => import('./ISOComplianceView'));
+const CreatorView = React.lazy(() => import('./CreatorView'));
+const KnowledgeBaseView = lazy(() => import('./KnowledgeBaseView'));
+const BrandConfigView = lazy(() => import('./BrandConfigView'));
+const ProcessExecutionView = lazy(() => import('./ProcessExecutionView'));
+const NotificationFeedView = lazy(() => import('./NotificationFeedView'));
+const VideoGenerationView = lazy(() => import('./VideoGenerationView'));
+const BriefingGeneratorView = lazy(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds';
-type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account';
-
-interface OutletContext {
-  session: Session | null;
-  isDemoMode: boolean;
-  setIsDemoMode: React.Dispatch<React.SetStateAction<boolean>>;
-}
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator';
+type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance';
 
 const ADMIN_EMAIL = 'luis@mail.hartlimesgmbh.de';
 
@@ -73,6 +77,9 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
       { id: 'marketingContentPlaybook', label: 'Content Playbook' },
       { id: 'postsTracker', label: 'Posts Tracker' },
       { id: 'marketingResources', label: 'Resources' },
+      { id: 'creatorPipeline', label: '🤳 Creators' },
+      { id: 'videoGeneration', label: '🎬 Video Gen' },
+      { id: 'briefingGenerator', label: '⚡ Briefings' },
     ],
   },
   {
@@ -117,9 +124,23 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
     adminOnly: true,
     tabs: [
       { id: 'teamManagement', label: 'Team' },
+      { id: 'performance', label: '📈 Performance' },
       { id: 'academy', label: '🎓 Academy' },
       { id: 'insights', label: 'Insights' },
+      { id: 'brandConfig', label: '🏷️ Brand Config' },
       { id: 'settings', label: 'Settings' },
+    ],
+  },
+  {
+    id: 'compliance' as Section,
+    label: 'Compliance',
+    emoji: '🛡️',
+    adminOnly: true,
+    tabs: [
+      { id: 'isoCompliance', label: '⚠️ Risk & ISO' },
+      { id: 'knowledgeBase', label: '📚 Knowledge Base' },
+      { id: 'processExecution', label: '▶ SOPs' },
+      { id: 'notificationFeed', label: '🔔 Feed' },
     ],
   },
   {
@@ -133,9 +154,21 @@ const SECTIONS: { id: Section; label: string; emoji: string; adminOnly?: boolean
 ];
 
 const Dashboard: React.FC = () => {
-  const { session, isDemoMode, setIsDemoMode } =
-    useOutletContext<OutletContext>();
+  const [session, setSession] = useState<Session | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthReady(true);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    const handleDemo = () => { setIsDemoMode(true); setAuthReady(true); };
+    window.addEventListener('start-demo-mode', handleDemo);
+    return () => { subscription.unsubscribe(); window.removeEventListener('start-demo-mode', handleDemo); };
+  }, []);
   const { lang, setLang } = useLang();
   const t = translations[lang];
 
@@ -177,6 +210,7 @@ const Dashboard: React.FC = () => {
   const isAdmin = isDemoMode || userRole === 'owner' || userRole === 'admin' || session?.user?.email === ADMIN_EMAIL;
 
   useEffect(() => {
+    if (!authReady) return;
     if (!session && !isDemoMode) {
       navigate('/admin');
       return;
@@ -194,7 +228,7 @@ const Dashboard: React.FC = () => {
           }
         });
     }
-  }, [session, isDemoMode, navigate]);
+  }, [session, isDemoMode, navigate, authReady]);
 
   const handleLogout = async () => {
     if (isDemoMode) {
@@ -317,12 +351,48 @@ const Dashboard: React.FC = () => {
       return <PostsTrackerView />;
     }
 
+    if (tab === 'creatorPipeline') {
+      return <React.Suspense fallback={<div>Loading...</div>}><CreatorView /></React.Suspense>;
+    }
+
+    if (tab === 'videoGeneration') {
+      return <React.Suspense fallback={<div>Loading...</div>}><VideoGenerationView /></React.Suspense>;
+    }
+
+    if (tab === 'briefingGenerator') {
+      return <React.Suspense fallback={<div>Loading...</div>}><BriefingGeneratorView /></React.Suspense>;
+    }
+
     if (tab === 'teamManagement') {
       return <TeamManagementView />;
     }
 
+    if (tab === 'performance') {
+      return <PerformanceView />;
+    }
+
     if (tab === 'accountProfile') {
       return <AccountView session={session} />;
+    }
+
+    if (tab === 'isoCompliance') {
+      return <ISOComplianceView />;
+    }
+
+    if (tab === 'knowledgeBase') {
+      return <KnowledgeBaseView />;
+    }
+
+    if (tab === 'brandConfig') {
+      return <BrandConfigView />;
+    }
+
+    if (tab === 'processExecution') {
+      return <ProcessExecutionView />;
+    }
+
+    if (tab === 'notificationFeed') {
+      return <NotificationFeedView />;
     }
 
     return null;
@@ -340,12 +410,12 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="animate-[fadeIn_0.5s_ease-out]">
+    <div className="animate-[fadeIn_0.5s_ease-out] bg-gradient-to-br from-slate-50 via-white to-amber-50/30 min-h-screen pb-20 md:pb-0">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between border-b border-gray-200 pb-6 mb-0 relative z-10 gap-4">
+      <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200/60 py-3 md:py-4 px-4 md:px-8 gap-2 md:gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tighter">
-            {companyName} — {t.dashboard.title}
+          <h1 className="text-lg md:text-2xl font-black text-gray-900 tracking-tighter">
+            {companyName} <span className="hidden md:inline">— {t.dashboard.title}</span>
           </h1>
           <p className="text-gray-500 text-sm mt-1">
             {isDemoMode ? (
@@ -358,6 +428,8 @@ const Dashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {/* Brand Switcher — visible when in a brand-aware section */}
+          {section !== 'account' && section !== 'home' && <BrandSwitcher />}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
           {/* Language Toggle */}
@@ -380,22 +452,22 @@ const Dashboard: React.FC = () => {
               {t.dashboard.adminBadge}
             </span>
           )}
-          <button onClick={handleLogout} className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg">
+          <button onClick={handleLogout} className="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 text-xs font-bold rounded-lg transition-colors">
             {t.dashboard.logout}
           </button>
         </div>
       </header>
 
-      {/* Top Section Nav */}
-      <nav className="flex items-center gap-1 border-b border-gray-200 mt-0 mb-0 overflow-x-auto">
+      {/* Top Section Nav — desktop only */}
+      <nav className="hidden md:flex items-center gap-1 border-b border-gray-200 px-4 md:px-8 overflow-x-auto">
         {visibleSections.map(s => (
           <button
             key={s.id}
             onClick={() => handleSectionChange(s.id)}
-            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all border-b-2 ${
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all rounded-lg mx-0.5 ${
               section === s.id
-                ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-400 hover:text-gray-700'
+                ? 'bg-gradient-to-r from-primary-500/15 to-amber-400/10 text-primary-700 shadow-sm'
+                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100/70'
             } ${s.tabs.length === 0 ? 'opacity-40 cursor-not-allowed' : ''}`}
             disabled={s.tabs.length === 0}
             title={s.tabs.length === 0 ? t.dashboard.comingSoon : undefined}
@@ -407,7 +479,7 @@ const Dashboard: React.FC = () => {
       </nav>
 
       {/* Quick Actions Bar */}
-      <div className="flex items-center gap-2 py-3 overflow-x-auto border-b border-gray-100 mb-0">
+      <div className="flex items-center gap-2 py-3 px-4 md:px-8 overflow-x-auto border-b border-gray-100 mb-0">
         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 whitespace-nowrap">Jarvis:</span>
         {(QUICK_ACTIONS[section] ?? DEFAULT_QUICK_ACTIONS).map(action => (
           <button
@@ -421,7 +493,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Body: Sidebar + Content */}
-      <div className="flex flex-col md:flex-row gap-0 mt-0">
+      <div className="flex flex-col md:flex-row gap-0 mt-0 px-4 md:px-8 pt-4">
         {/* Left Sidebar (desktop) / Horizontal pill-nav (mobile) */}
         {activeTabs.length > 0 && (
           <>
@@ -472,10 +544,45 @@ const Dashboard: React.FC = () => {
               <p className="text-gray-400 text-sm mt-1">{t.dashboard.comingSoonDesc}</p>
             </div>
           ) : (
-            renderContent()
+            <Suspense fallback={<div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}>
+              <div key={tab} className="animate-[fadeIn_0.2s_ease-out]">
+                {renderContent()}
+              </div>
+            </Suspense>
           )}
         </main>
       </div>
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-md border-t border-gray-200/60 flex items-center justify-around px-2 py-2 safe-area-pb">
+        {[
+          { id: 'home' as Section, emoji: '🏠', label: 'Home' },
+          { id: 'hiring' as Section, emoji: '🎯', label: 'Hiring' },
+          { id: 'marketing' as Section, emoji: '📣', label: 'Marketing' },
+          { id: 'finance' as Section, emoji: '💰', label: 'Finance' },
+          { id: 'admin' as Section, emoji: '⚙️', label: 'Admin' },
+        ].filter(s => visibleSections.find(vs => vs.id === s.id)).map(s => (
+          <button
+            key={s.id}
+            onClick={() => handleSectionChange(s.id)}
+            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] ${
+              section === s.id
+                ? 'bg-primary-50 text-primary-700'
+                : 'text-gray-400 hover:text-gray-700'
+            }`}
+          >
+            <span className="text-xl leading-none">{s.emoji}</span>
+            <span className="text-[10px] font-semibold">{s.label}</span>
+          </button>
+        ))}
+        <button
+          onClick={() => setChatOpen(true)}
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] text-gray-400 hover:text-primary-700"
+        >
+          <span className="text-xl leading-none">✨</span>
+          <span className="text-[10px] font-semibold">Jarvis</span>
+        </button>
+      </nav>
+
       <AgentChatDrawer
         activeSection={section}
         isOpen={chatOpen}

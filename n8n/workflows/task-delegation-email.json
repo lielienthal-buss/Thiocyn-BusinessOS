@@ -1,0 +1,102 @@
+{
+  "name": "Tasks — Delegation Email",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "task-assigned",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000001",
+      "name": "Supabase Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "_comment": "Supabase: Database → Webhooks → team_tasks UPDATE (when assigned_to_email changes)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rec = $input.first().json.record;\nconst old = $input.first().json.old_record || {};\n\n// Only fire if assignment changed and assignee exists\nif (!rec.assigned_to_email || rec.assigned_to_email === old.assigned_to_email) {\n  return [];\n}\n\nreturn [{\n  json: {\n    task_id:    rec.id,\n    title:      rec.title,\n    description: rec.description || '',\n    brand:      rec.brand || 'Cross-brand',\n    priority:   rec.priority || 3,\n    due_date:   rec.due_date,\n    assignee_email: rec.assigned_to_email,\n    scope:      rec.scope || 'team'\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000002",
+      "name": "Parse Task Assignment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.scope }}",
+              "rightValue": "team",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000003",
+      "name": "Only Team Tasks",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "from":    "Business OS <tasks@mail.hartlimesgmbh.de>",
+          "to":      "={{ $json.assignee_email }}",
+          "subject": "=New task assigned: {{ $json.title }}",
+          "html":    "=<div style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px'><h2 style='color:#1e293b'>📋 New Task Assigned</h2><table style='width:100%;border-collapse:collapse'><tr><td style='padding:8px 0;color:#64748b'>Task</td><td style='padding:8px 0;font-weight:600'>{{ $json.title }}</td></tr><tr><td style='padding:8px 0;color:#64748b'>Brand</td><td style='padding:8px 0'>{{ $json.brand }}</td></tr><tr><td style='padding:8px 0;color:#64748b'>Priority</td><td style='padding:8px 0'>{{ $json.priority <= 1 ? '🔴 Urgent' : $json.priority <= 2 ? '🟡 High' : '🟢 Normal' }}</td></tr><tr><td style='padding:8px 0;color:#64748b'>Due Date</td><td style='padding:8px 0'>{{ $json.due_date || 'No deadline set' }}</td></tr></table>{% if $json.description %}<p style='margin-top:16px;padding:12px;background:#f8fafc;border-left:3px solid #6366f1;border-radius:4px'>{{ $json.description }}</p>{% endif %}<p style='margin-top:24px;color:#64748b'>Log into the Business OS to see details and update progress.</p></div>"
+        }
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000004",
+      "name": "Send Email via Resend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }"
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000005",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Supabase Webhook":     { "main": [[{ "node": "Parse Task Assignment", "type": "main", "index": 0 }]] },
+    "Parse Task Assignment":{ "main": [[{ "node": "Only Team Tasks",       "type": "main", "index": 0 }]] },
+    "Only Team Tasks":      {
+      "main": [
+        [{ "node": "Send Email via Resend", "type": "main", "index": 0 }],
+        [{ "node": "Webhook Response",      "type": "main", "index": 0 }]
+      ]
+    },
+    "Send Email via Resend":{ "main": [[{ "node": "Webhook Response",      "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "tasks" }],
+  "_comment": "SETUP: (1) Copy webhook URL. (2) Supabase → Webhooks → team_tasks UPDATE → POST here. (3) Set RESEND_API_KEY env var. (4) Verify sender domain in Resend: mail.hartlimesgmbh.de."
+}

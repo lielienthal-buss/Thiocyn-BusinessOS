@@ -73,18 +73,20 @@ Nach Setzen der Env-Vars: **Deployments → Redeploy** (ohne Cache-Reset).
 
 ---
 
-## 6. Supabase — Ersten Admin-User anlegen
+## 6. Supabase — Admin-User anlegen
 
 Dashboard → **Authentication → Users → Invite User**
 
-E-Mail: `luis@mail.hartlimesgmbh.de` (oder die gewünschte Admin-Mail)
+Einladungen schicken an:
+- `luis@mail.hartlimesgmbh.de`
+- `peter@mail.hartlimesgmbh.de`
+- `valentin@mail.hartlimesgmbh.de`
 
-Dann in **SQL Editor**:
+Dann `supabase_team_members.sql` im SQL Editor ausführen — seeds Luis (owner), Peter Hart (admin), Valentin (admin) automatisch.
+
+Oder manuell:
 ```sql
--- Admin in team_members eintragen
-INSERT INTO team_members (email, full_name, role, allowed_sections, status)
-VALUES ('luis@mail.hartlimesgmbh.de', 'Luis Lielienthal', 'owner', ARRAY['home','hiring','marketing','support','ecommerce','finance','analytics','admin'], 'active')
-ON CONFLICT (email) DO NOTHING;
+-- Bereits in supabase_team_members.sql enthalten — einfach die Datei ausführen
 ```
 
 ---
@@ -110,6 +112,43 @@ Dashboard → Cloudflare Turnstile → Site → **Secret Key** → als `TURNSTIL
 
 ---
 
+## 9. Supabase — Brand + Process Layer
+
+Run these SQL scripts in Supabase SQL Editor (in order):
+
+| # | File | Inhalt |
+|---|---|---|
+| 6 | `supabase_brand_layer.sql` | brands (6 Brands), brand_configs, agent_logs |
+| 7 | `supabase_process_layer.sql` | processes (8 SOPs), process_steps, knowledge_entries (Brand Briefs + Guidelines) |
+| 8 | `supabase_iso_layer.sql` | ISO 9001/27001/31000/14001/45001/50001 — 12 Compliance-Tabellen, Risk Register (10 Seeds) |
+| 9 | `supabase_team_members.sql` | team_members seeds: Luis (owner), Peter Hart (admin), Valentin (admin) |
+
+> After running: verify in Table Editor that all 6 brands appear in `brands` table.
+
+---
+
+## 10. n8n — Automation Setup
+
+Full instructions in `docs/N8N_HANDOFF.md`. Quick summary:
+
+1. Create n8n Cloud account (n8n.io/cloud)
+2. Import all 8 workflows from `n8n/workflows/`
+3. Set env vars:
+
+| Variable | Value |
+|---|---|
+| `SUPABASE_URL` | `https://dfzrkzvsdiiihoejfozn.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Settings → API → service_role |
+| `RESEND_API_KEY` | Resend → API Keys |
+| `ANTHROPIC_API_KEY` | console.anthropic.com |
+| `META_ACCESS_TOKEN` | Meta Business → System User |
+
+4. Configure credentials per N8N_HANDOFF.md Step 3
+5. Register webhooks in Supabase, PayPal, Stripe, GetMyInvoices
+6. Activate workflows in order (see N8N_HANDOFF.md Step 11)
+
+---
+
 ## Status
 
 - [ ] SQL Scripts ausgeführt (Schritt 1–5)
@@ -120,3 +159,8 @@ Dashboard → Cloudflare Turnstile → Site → **Secret Key** → als `TURNSTIL
 - [ ] Vercel Redeploy (Schritt 5)
 - [ ] Admin User angelegt (Schritt 6)
 - [ ] Company Name in Settings (Schritt 7)
+- [ ] Brand Layer SQL ausgeführt (Schritt 9)
+- [ ] Process Layer SQL ausgeführt (Schritt 9)
+- [ ] n8n Account erstellt (Schritt 10)
+- [ ] n8n Workflows importiert (Schritt 10)
+- [ ] Webhooks konfiguriert (Schritt 10)

@@ -90,11 +90,26 @@ export interface ApplicationNote {
   created_at: string;
 }
 
+export interface LandingConfig {
+  mode: 'influencer' | 'partner' | 'both';
+  hero_tagline: string;
+  hero_subtitle: string;
+  cta_primary_text: string;
+  cta_primary_url: string;
+  cta_secondary_text: string;
+  cta_secondary_url: string;
+  show_portfolio: boolean;
+  show_approach: boolean;
+  show_jobs_link: boolean;
+  show_faq: boolean;
+}
+
 export interface RecruiterSettings {
   id: number;
   company_name: string;
   calendly_url: string | null;
   ai_instruction: string | null;
+  landing_config: LandingConfig | null;
 }
 
 export interface EmailTemplate {

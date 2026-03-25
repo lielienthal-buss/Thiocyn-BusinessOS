@@ -1,0 +1,105 @@
+{
+  "name": "Weekly Standup Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "50 10 * * 1" }]
+        }
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000001",
+      "name": "Monday 10:50",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/team_tasks?status=eq.done&updated_at=gte.{{ $now.minus({days:7}).toISO() }}&scope=eq.team&select=title,assigned_to_email,brand,quality_score,impact_score,updated_at",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000002",
+      "name": "Fetch Completed Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 240]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/team_tasks?status=in.(todo,in_progress,blocked)&scope=eq.team&assigned_to_email=not.is.null&select=title,assigned_to_email,brand,status,due_date,priority",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000003",
+      "name": "Fetch Open Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build standup summary\nconst completed = $('Fetch Completed Tasks').first().json || [];\nconst open      = $('Fetch Open Tasks').first().json || [];\n\nconst kw = Math.ceil((new Date() - new Date(new Date().getFullYear(), 0, 1)) / 604800000);\nconst today = new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' });\n\n// Group completed by intern\nconst byIntern = {};\nfor (const t of completed) {\n  const key = t.assigned_to_email;\n  if (!byIntern[key]) byIntern[key] = { done: [], open: [] };\n  byIntern[key].done.push(t);\n}\nfor (const t of open) {\n  const key = t.assigned_to_email;\n  if (!byIntern[key]) byIntern[key] = { done: [], open: [] };\n  byIntern[key].open.push(t);\n}\n\nconst overdue = open.filter(t => t.due_date && t.due_date < new Date().toISOString().split('T')[0]);\n\nconst content = `# Intern Standup — KW${kw} | ${today}\\n\\n` +\n  `**Uhrzeit:** 11:00 | **Dauer:** 15–20 Min\\n\\n` +\n  `---\\n\\n` +\n  `## ✅ Letzte Woche abgeschlossen (${completed.length} Tasks)\\n\\n` +\n  Object.entries(byIntern).map(([email, data]) => {\n    const name = email.split('@')[0];\n    return `**${name}:** ${data.done.map(t => t.title).join(', ') || '—'}`;\n  }).join('\\n') +\n  `\\n\\n---\\n\\n` +\n  `## 📋 Diese Woche offen (${open.length} Tasks)\\n\\n` +\n  Object.entries(byIntern).map(([email, data]) => {\n    const name = email.split('@')[0];\n    if (!data.open.length) return null;\n    return `**${name}:**\\n` + data.open.map(t => `  - [ ] ${t.title} _(${t.brand || 'Cross-brand'}, P${t.priority})_`).join('\\n');\n  }).filter(Boolean).join('\\n\\n') +\n  (overdue.length ? `\\n\\n---\\n\\n## ⚠️ Überfällig (${overdue.length})\\n\\n` +\n    overdue.map(t => `- ${t.title} — ${t.assigned_to_email.split('@')[0]} (seit ${t.due_date})`).join('\\n') : '') +\n  `\\n\\n---\\n\\n## 📝 Standup Notizen\\n\\n> _Luis füllt während des Meetings aus_\\n\\n` +\n  `**Blockers:**\\n\\n**Feedback letzte Woche:**\\n\\n**Nächste Prioritäten:**`;\n\nreturn [{ json: { content, week: kw, date: today } }];"
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000004",
+      "name": "Build Standup Doc",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "from":    "Business OS <ops@mail.hartlimesgmbh.de>",
+          "to":      "luis@mail.hartlimesgmbh.de",
+          "subject": "=📋 Standup Vorlage KW{{ $json.week }} — fertig für 11:00",
+          "html":    "=<div style='font-family:monospace;white-space:pre-wrap;max-width:700px;margin:0 auto;padding:24px;background:#f8fafc;border-radius:8px'>{{ $json.content }}</div>"
+        }
+      },
+      "id": "a1b2c3d4-0007-0007-0007-000000000005",
+      "name": "Email to Luis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [920, 300]
+    }
+  ],
+  "connections": {
+    "Monday 10:50":         { "main": [[{ "node": "Fetch Completed Tasks", "type": "main", "index": 0 }, { "node": "Fetch Open Tasks", "type": "main", "index": 0 }]] },
+    "Fetch Completed Tasks":{ "main": [[{ "node": "Build Standup Doc",     "type": "main", "index": 0 }]] },
+    "Fetch Open Tasks":     { "main": [[{ "node": "Build Standup Doc",     "type": "main", "index": 0 }]] },
+    "Build Standup Doc":    { "main": [[{ "node": "Email to Luis",         "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "ops" }, { "name": "interns" }],
+  "_comment": "SETUP: (1) Set env vars: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY. (2) Activate. Runs automatically every Monday 10:50 CET."
+}

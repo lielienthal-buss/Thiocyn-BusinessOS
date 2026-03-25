@@ -1,0 +1,117 @@
+{
+  "name": "Shopify — Daily Sync (all brands)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 2 * * *" }]
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "Daily at 02:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Brand configs — fill in actual Shopify store URLs and credential names\nconst brands = [\n  { slug: 'thiocyn',      storeUrl: 'thiocyn.myshopify.com',      credName: 'Shopify — Thiocyn' },\n  { slug: 'take-a-shot',  storeUrl: 'take-a-shot.myshopify.com',  credName: 'Shopify — Take A Shot' },\n  { slug: 'dr-severin',  storeUrl: 'dr-severin.myshopify.com',   credName: 'Shopify — Dr. Severin' },\n  { slug: 'paigh',        storeUrl: 'paigh.myshopify.com',        credName: 'Shopify — Paigh' },\n  { slug: 'wristr',       storeUrl: 'wristr.myshopify.com',       credName: 'Shopify — Wristr' },\n  { slug: 'timber-john',  storeUrl: 'timber-john.myshopify.com',  credName: 'Shopify — Timber & John' }\n];\nreturn brands.map(b => ({ json: b }));"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000002",
+      "name": "Brand Config List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://{{ $json.storeUrl }}/admin/api/2024-01/orders.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "status", "value": "any" },
+            { "name": "limit", "value": "250" },
+            { "name": "created_at_min", "value": "={{ $now.minus({ days: 1 }).startOf('day').toISO() }}" },
+            { "name": "created_at_max", "value": "={{ $now.startOf('day').toISO() }}" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000003",
+      "name": "Fetch Shopify Orders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "={{ $json.credName }}"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Aggregate daily metrics from Shopify orders\nconst brandSlug = $('Brand Config List').first().json.slug;\nconst orders = $input.first().json.orders || [];\n\nconst totalRevenue = orders\n  .filter(o => o.financial_status === 'paid')\n  .reduce((sum, o) => sum + parseFloat(o.total_price || 0), 0);\n\nconst orderCount = orders.filter(o => o.financial_status === 'paid').length;\nconst refundCount = orders.filter(o => o.financial_status === 'refunded').length;\n\nconst today = new Date().toISOString().split('T')[0];\n\nreturn [{\n  json: {\n    brand_slug: brandSlug,\n    date: today,\n    revenue: Math.round(totalRevenue * 100) / 100,\n    order_count: orderCount,\n    refund_count: refundCount,\n    source: 'shopify',\n    updated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000004",
+      "name": "Aggregate Daily Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/ecom_metrics",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" },
+            { "name": "Prefer",        "value": "resolution=merge-duplicates" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "brand_slug",   "value": "={{ $json.brand_slug }}" },
+            { "name": "date",         "value": "={{ $json.date }}" },
+            { "name": "revenue",      "value": "={{ $json.revenue }}" },
+            { "name": "order_count",  "value": "={{ $json.order_count }}" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000005",
+      "name": "Upsert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log agent action\nreturn [{\n  json: {\n    agent_name: 'n8n',\n    action: 'shopify_daily_sync',\n    brand_slug: $('Aggregate Daily Metrics').first().json.brand_slug,\n    status: 'success',\n    source: 'scheduled',\n    output: { revenue: $('Aggregate Daily Metrics').first().json.revenue, orders: $('Aggregate Daily Metrics').first().json.order_count }\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000006",
+      "name": "Log to agent_logs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Daily at 02:00":        { "main": [[{ "node": "Brand Config List",       "type": "main", "index": 0 }]] },
+    "Brand Config List":     { "main": [[{ "node": "Fetch Shopify Orders",    "type": "main", "index": 0 }]] },
+    "Fetch Shopify Orders":  { "main": [[{ "node": "Aggregate Daily Metrics", "type": "main", "index": 0 }]] },
+    "Aggregate Daily Metrics":{ "main": [[{ "node": "Upsert to Supabase",    "type": "main", "index": 0 }]] },
+    "Upsert to Supabase":    { "main": [[{ "node": "Log to agent_logs",       "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "data-sync" }],
+  "_comment": "SETUP: (1) Create n8n credential 'Shopify — [Brand]' (HTTP Header Auth, X-Shopify-Access-Token) per brand. (2) Set env vars SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY. (3) Activate workflow."
+}

@@ -13,15 +13,19 @@ import Footer from './components/Footer';
 import FAQ from './components/FAQ';
 import Dashboard from './components/admin/Dashboard';
 import AdminLogin from './components/admin/AdminLogin';
+const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
+const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
 import ForgotPassword from './components/admin/ForgotPassword';
 import Imprint from './components/legal/Imprint';
 import PrivacyPolicy from './components/legal/PrivacyPolicy';
 import LegalPage from './components/legal/LegalPage';
 import TaskSubmissionPage from './components/public/TaskSubmissionPage';
 import InternPortalPage from './components/public/InternPortalPage';
-import Logo from './components/icons/Logo';
+import TopNav from './components/TopNav';
 import { Toaster } from 'sonner';
 import { LangProvider } from './lib/i18n';
+import { BrandProvider } from './lib/BrandContext';
+import CookieBanner from './components/CookieBanner';
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {
@@ -64,33 +68,9 @@ const AppLayout: React.FC = () => {
         <div className="absolute top-[30%] right-[10%] w-[40%] h-[40%] bg-primary-50/80 rounded-full blur-[120px] animate-blob animation-delay-4000"></div>
       </div>
       <div className="w-full max-w-7xl mx-auto relative z-10">
-        <nav className="flex justify-center mb-16">
-          <div className="p-1.5 rounded-full flex items-center space-x-4 bg-white border border-gray-200 shadow-sm">
-            <Logo className="h-10 w-auto" />
-            <div className="flex space-x-1">
-              <button
-                onClick={() => navigate('/')}
-                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-                  location.pathname === '/'
-                    ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                    : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                Portal
-              </button>
-              <button
-                onClick={() => navigate('/admin')}
-                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
-                  location.pathname.startsWith('/admin')
-                    ? 'bg-primary-600 text-white shadow-xl shadow-primary-500/30'
-                    : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                Admin Hub
-              </button>
-            </div>
-          </div>
-        </nav>
+        <div className="mb-16">
+          <TopNav />
+        </div>
         <Outlet context={{ session, isDemoMode, setIsDemoMode }} />
         <Footer />
       </div>
@@ -101,39 +81,72 @@ const AppLayout: React.FC = () => {
 // --- Main App Component ---
 const App: React.FC = () => {
   const router = createBrowserRouter([
+    // --- Standalone full-bleed pages (no AppLayout wrapper) ---
+    {
+      path: '/',
+      element: (
+        <div className="min-h-screen bg-white px-4 py-12">
+          <div className="max-w-5xl mx-auto space-y-10 md:space-y-20">
+            <TopNav />
+            <Header />
+            <main className="space-y-10 md:space-y-20">
+              <React.Suspense fallback={<div>Loading...</div>}>
+                <ApplicationForm />
+              </React.Suspense>
+              <div className="space-y-6">
+                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">
+                  Got Questions? Check our FAQs
+                </h2>
+                <FAQ />
+              </div>
+            </main>
+            <Footer />
+          </div>
+        </div>
+      ),
+    },
+    {
+      path: 'admin',
+      element: (
+        <div className="min-h-screen bg-[#080808] px-4 py-12">
+          <TopNav />
+          <AdminLogin />
+        </div>
+      ),
+    },
+    {
+      path: 'admin/dashboard',
+      element: <BrandProvider><Dashboard /></BrandProvider>,
+    },
+    {
+      path: 'company',
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <HartLimesLanding />
+        </React.Suspense>
+      ),
+    },
+    {
+      path: 'creators',
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <HartLimesLanding forceMode="influencer" />
+        </React.Suspense>
+      ),
+    },
+    {
+      path: 'apply/creator',
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <CreatorApplicationPage />
+        </React.Suspense>
+      ),
+    },
+    // --- Utility pages (AppLayout wrapper retained) ---
     {
       path: '/',
       element: <AppLayout />,
       children: [
-        {
-          index: true,
-          element: (
-            <div className="max-w-5xl mx-auto space-y-10 md:space-y-20">
-              <Header />
-              <main className="space-y-10 md:space-y-20">
-                <React.Suspense
-                  fallback={<div>Loading Application Form...</div>}
-                >
-                  <ApplicationForm />
-                </React.Suspense>
-                <div className="space-y-6">
-                  <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">
-                    Got Questions? Check our FAQs
-                  </h2>
-                  <FAQ />
-                </div>
-              </main>
-            </div>
-          ),
-        },
-        {
-          path: 'admin',
-          element: <AdminLogin />,
-        },
-        {
-          path: 'admin/dashboard',
-          element: <Dashboard />,
-        },
         {
           path: 'admin/forgot-password',
           element: <ForgotPassword />,
@@ -141,7 +154,7 @@ const App: React.FC = () => {
         {
           path: 'task/:accessToken',
           element: (
-            <React.Suspense fallback={<div>Loading Task Submission...</div>}>
+            <React.Suspense fallback={<div>Loading...</div>}>
               <TaskSubmissionPage />
             </React.Suspense>
           ),
@@ -149,7 +162,7 @@ const App: React.FC = () => {
         {
           path: 'intern/:internId',
           element: (
-            <React.Suspense fallback={<div>Loading Intern Portal...</div>}>
+            <React.Suspense fallback={<div>Loading...</div>}>
               <InternPortalPage />
             </React.Suspense>
           ),
@@ -157,7 +170,7 @@ const App: React.FC = () => {
         {
           path: 'imprint',
           element: (
-            <React.Suspense fallback={<div>Loading Imprint...</div>}>
+            <React.Suspense fallback={<div>Loading...</div>}>
               <Imprint />
             </React.Suspense>
           ),
@@ -165,7 +178,7 @@ const App: React.FC = () => {
         {
           path: 'privacy',
           element: (
-            <React.Suspense fallback={<div>Loading Privacy Policy...</div>}>
+            <React.Suspense fallback={<div>Loading...</div>}>
               <PrivacyPolicy />
             </React.Suspense>
           ),
@@ -173,7 +186,7 @@ const App: React.FC = () => {
         {
           path: 'legal',
           element: (
-            <React.Suspense fallback={<div>Loading Legal Page...</div>}>
+            <React.Suspense fallback={<div>Loading...</div>}>
               <LegalPage />
             </React.Suspense>
           ),
@@ -186,6 +199,7 @@ const App: React.FC = () => {
     <LangProvider>
       <RouterProvider router={router} />
       <Toaster position="top-right" richColors />
+      <CookieBanner />
     </LangProvider>
   );
 };

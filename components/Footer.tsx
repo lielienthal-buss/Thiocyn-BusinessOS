@@ -1,42 +1,21 @@
 import React from 'react';
 
-interface FooterProps {
-  onNavImprint?: () => void;
-  onNavPrivacy?: () => void;
-  onNavLegal?: () => void; // Add onNavLegal prop
-}
-
-const Footer: React.FC<FooterProps> = ({
-  onNavImprint,
-  onNavPrivacy,
-  onNavLegal,
-}) => {
+const Footer: React.FC = () => {
   return (
-    <footer className="text-center mt-24 py-12 border-t border-white/10">
-      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-        &copy; {new Date().getFullYear()} Thiocyn GmbH. All rights reserved.
+    <footer className="mt-24 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 text-xs text-gray-400">
+      <p className="font-medium">
+        &copy; {new Date().getFullYear()} Hart Limes GmbH. All rights reserved.
       </p>
-      <div className="mt-4 flex justify-center space-x-6">
-        <button
-          onClick={onNavPrivacy}
-          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors"
-        >
+      <div className="flex gap-6">
+        <a href="/privacy" className="font-black uppercase tracking-widest hover:text-gray-700 transition-colors">
           Privacy Policy
-        </button>
-        <span className="text-gray-200 dark:text-slate-800">|</span>
-        <button
-          onClick={onNavImprint}
-          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors"
-        >
+        </a>
+        <a href="/imprint" className="font-black uppercase tracking-widest hover:text-gray-700 transition-colors">
           Imprint
-        </button>
-        <span className="text-gray-200 dark:text-slate-800">|</span>
-        <button
-          onClick={onNavLegal}
-          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-primary-600 transition-colors"
-        >
+        </a>
+        <a href="/legal" className="font-black uppercase tracking-widest hover:text-gray-700 transition-colors">
           Legal
-        </button>
+        </a>
       </div>
     </footer>
   );

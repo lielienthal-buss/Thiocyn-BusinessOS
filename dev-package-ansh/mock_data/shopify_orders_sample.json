@@ -1,0 +1,49 @@
+{
+  "brand": "Thiocyn",
+  "orders": [
+    {
+      "id": 5501234567890,
+      "created_at": "2026-03-06T11:23:41+01:00",
+      "total_price": "79.90",
+      "financial_status": "paid",
+      "source_name": "web",
+      "line_items": [
+        {
+          "product_id": 8812345001,
+          "title": "Thiocyn Haarserum 50ml",
+          "quantity": 1,
+          "price": "59.90"
+        },
+        {
+          "product_id": 8812345002,
+          "title": "Thiocyn Kopfhaut-Aktivator Shampoo",
+          "quantity": 1,
+          "price": "20.00"
+        }
+      ],
+      "customer": {
+        "id": 7001234501,
+        "email": "c***7@gmail.com"
+      }
+    },
+    {
+      "id": 5501234567891,
+      "created_at": "2026-03-07T14:05:09+01:00",
+      "total_price": "59.90",
+      "financial_status": "paid",
+      "source_name": "instagram",
+      "line_items": [
+        {
+          "product_id": 8812345001,
+          "title": "Thiocyn Haarserum 50ml",
+          "quantity": 1,
+          "price": "59.90"
+        }
+      ],
+      "customer": {
+        "id": 7001234502,
+        "email": "m***r@icloud.com"
+      }
+    }
+  ]
+}

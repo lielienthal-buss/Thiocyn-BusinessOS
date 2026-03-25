@@ -1,0 +1,114 @@
+{
+  "name": "Finance — Dispute Triage",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dispute-received",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000001",
+      "name": "Dispute Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "_comment": "Register this URL in: PayPal → Webhooks, Stripe → Webhooks, Klarna → Notifications. Event: CUSTOMER.DISPUTE.CREATED"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize dispute payload across PayPal / Stripe / Klarna\nconst body = $input.first().json;\nconst headers = $input.first().headers || {};\n\nlet source = 'unknown';\nif (headers['paypal-transmission-id']) source = 'paypal';\nelse if (headers['stripe-signature']) source = 'stripe';\nelse if (body.dispute_id?.startsWith('DIS')) source = 'klarna';\n\nlet dispute = {};\n\nif (source === 'paypal') {\n  const d = body.resource || {};\n  dispute = {\n    source: 'paypal',\n    external_id: d.dispute_id,\n    amount: parseFloat(d.dispute_amount?.value || 0),\n    currency: d.dispute_amount?.currency_code || 'EUR',\n    reason: d.reason || 'UNSPECIFIED',\n    status: 'open',\n    deadline: d.due_date,\n    order_id: d.disputed_transactions?.[0]?.invoice_number || null,\n    customer_email: d.disputed_transactions?.[0]?.buyer?.email_address || null\n  };\n} else if (source === 'stripe') {\n  const d = body.data?.object || {};\n  dispute = {\n    source: 'stripe',\n    external_id: d.id,\n    amount: (d.amount || 0) / 100,\n    currency: (d.currency || 'eur').toUpperCase(),\n    reason: d.reason || 'unrecognized',\n    status: 'open',\n    deadline: d.evidence_details?.due_by ? new Date(d.evidence_details.due_by * 1000).toISOString() : null,\n    order_id: d.payment_intent || null,\n    customer_email: null\n  };\n} else {\n  // Generic fallback\n  dispute = {\n    source: source,\n    external_id: body.id || body.dispute_id,\n    amount: body.amount || 0,\n    currency: body.currency || 'EUR',\n    reason: body.reason || 'unknown',\n    status: 'open',\n    deadline: body.due_date || null,\n    order_id: body.order_id || null,\n    customer_email: body.customer_email || null\n  };\n}\n\nreturn [{ json: dispute }];"
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000002",
+      "name": "Normalize Dispute",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/disputes",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" },
+            { "name": "Prefer",        "value": "return=representation" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "platform":       "={{ $json.source }}",
+          "dispute_id":     "={{ $json.external_id }}",
+          "amount":         "={{ $json.amount }}",
+          "currency":       "={{ $json.currency }}",
+          "reason":         "={{ $json.reason }}",
+          "status":         "open",
+          "due_date":       "={{ $json.deadline }}",
+          "order_id":       "={{ $json.order_id }}",
+          "customer_email": "={{ $json.customer_email }}"
+        }
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000003",
+      "name": "Insert into Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "from":    "Business OS <finance@mail.hartlimesgmbh.de>",
+          "to":      "vanessa@mail.hartlimesgmbh.de",
+          "cc":      "luis@mail.hartlimesgmbh.de",
+          "subject": "=🔴 New Dispute: {{ $('Normalize Dispute').first().json.source.toUpperCase() }} {{ $('Normalize Dispute').first().json.amount }}{{ $('Normalize Dispute').first().json.currency }}",
+          "html":    "=<div style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px'><h2 style='color:#dc2626'>🔴 New Payment Dispute</h2><table style='width:100%;border-collapse:collapse'><tr><td style='padding:6px 0;color:#64748b'>Platform</td><td style='font-weight:600'>{{ $('Normalize Dispute').first().json.source.toUpperCase() }}</td></tr><tr><td style='padding:6px 0;color:#64748b'>Amount</td><td style='font-weight:600;color:#dc2626'>{{ $('Normalize Dispute').first().json.amount }} {{ $('Normalize Dispute').first().json.currency }}</td></tr><tr><td style='padding:6px 0;color:#64748b'>Reason</td><td>{{ $('Normalize Dispute').first().json.reason }}</td></tr><tr><td style='padding:6px 0;color:#64748b'>Order ID</td><td>{{ $('Normalize Dispute').first().json.order_id || '—' }}</td></tr><tr><td style='padding:6px 0;color:#64748b'>Deadline</td><td style='color:#f97316'>{{ $('Normalize Dispute').first().json.deadline || 'Check platform' }}</td></tr></table><p style='margin-top:16px'>Action required: Open Business OS → Finance → Disputes to triage.</p><p style='color:#64748b;font-size:12px'>Rule: Escalate to Luis if amount >150€ or customer claims fraud.</p></div>"
+        }
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000004",
+      "name": "Notify Vanessa + Luis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }"
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000005",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Dispute Webhook":    { "main": [[{ "node": "Normalize Dispute",     "type": "main", "index": 0 }]] },
+    "Normalize Dispute":  { "main": [[{ "node": "Insert into Supabase",  "type": "main", "index": 0 }]] },
+    "Insert into Supabase":{ "main": [[{ "node": "Notify Vanessa + Luis","type": "main", "index": 0 }]] },
+    "Notify Vanessa + Luis":{ "main": [[{ "node": "Webhook Response",    "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "finance" }],
+  "_comment": "SETUP: (1) Deploy, copy webhook URL. (2) Register URL in PayPal + Stripe + Klarna webhook settings. Event: dispute/chargeback created. (3) Set env vars: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY. (4) Update Vanessa's email address if different."
+}

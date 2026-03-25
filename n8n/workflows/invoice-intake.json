@@ -1,0 +1,167 @@
+{
+  "_comment": "SETUP: (1) Deploy, copy webhook URL. (2) GetMyInvoices → Einstellungen → Webhooks → add URL, event: new invoice. (3) Set env vars: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY.",
+  "name": "Finance — Invoice Intake (GetMyInvoices)",
+  "nodes": [
+    {
+      "id": "a1b2c3d4-0008-0008-0008-000000000001",
+      "name": "GMI Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoice-received",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-0008-0008-0008-000000000002",
+      "name": "Parse Invoice",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body ?? $input.first().json;\n\n// Normalize field names from GMI payload variants\nconst supplier_name =\n  body.supplier_name ??\n  body.creditor_name ??\n  body.vendor ??\n  body.supplier ??\n  'Unknown';\n\nconst amount =\n  body.total_amount ??\n  body.amount ??\n  body.gross_amount ??\n  null;\n\nconst currency =\n  body.currency ??\n  body.currency_code ??\n  'EUR';\n\nconst invoice_date =\n  body.invoice_date ??\n  body.date ??\n  null;\n\nconst due_date =\n  body.due_date ??\n  body.payment_due_date ??\n  null;\n\nconst invoice_number =\n  body.invoice_number ??\n  body.document_number ??\n  body.number ??\n  null;\n\n// Guess category from supplier name\nconst s = (supplier_name ?? '').toLowerCase();\nlet category = 'other';\nif (/saas|software|cloud|notion|slack|github|figma|linear|vercel|netlify|stripe|klaviyo|hubspot/.test(s)) {\n  category = 'software';\n} else if (/dhl|ups|fedex|dpd|hermes|gls|logistik|shipping|spedition|freight|transport/.test(s)) {\n  category = 'logistics';\n} else if (/meta|google|tiktok|ads|media|marketing|agency|agentur|influencer|creative|facebook/.test(s)) {\n  category = 'marketing';\n}\n\nreturn [\n  {\n    json: {\n      supplier_name,\n      amount,\n      currency,\n      invoice_date,\n      due_date,\n      invoice_number,\n      category,\n      raw_payload: body\n    }\n  }\n];\n"
+      }
+    },
+    {
+      "id": "a1b2c3d4-0008-0008-0008-000000000003",
+      "name": "Insert to Supabase invoices",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [680, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/invoices",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "mode": "raw",
+          "rawBody": "={\n  \"supplier_name\": \"{{ $json.supplier_name }}\",\n  \"amount\": {{ $json.amount }},\n  \"currency\": \"{{ $json.currency }}\",\n  \"invoice_date\": \"{{ $json.invoice_date }}\",\n  \"due_date\": \"{{ $json.due_date }}\",\n  \"invoice_number\": \"{{ $json.invoice_number }}\",\n  \"category\": \"{{ $json.category }}\",\n  \"raw_payload\": {{ JSON.stringify($json.raw_payload) }}\n}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-0008-0008-0008-000000000004",
+      "name": "Notify Luis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [900, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.RESEND_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "mode": "raw",
+          "rawBody": "={\n  \"from\": \"Business OS <finance@mail.hartlimesgmbh.de>\",\n  \"to\": [\"luis@mail.hartlimesgmbh.de\"],\n  \"subject\": \"🧾 New Invoice: {{ $('Parse Invoice').first().json.supplier_name }} {{ $('Parse Invoice').first().json.amount }}{{ $('Parse Invoice').first().json.currency }}\",\n  \"html\": \"<html><body style='font-family: sans-serif; color: #111; max-width: 600px; margin: 0 auto; padding: 24px;'><h2 style='margin-bottom: 4px;'>🧾 New Invoice Received</h2><p style='color: #666; margin-top: 0;'>Logged automatically via GetMyInvoices</p><table style='width: 100%; border-collapse: collapse; margin-top: 20px;'><tr style='background:#f4f4f5;'><th style='text-align:left; padding: 10px 12px; font-size: 13px; color: #555;'>Field</th><th style='text-align:left; padding: 10px 12px; font-size: 13px; color: #555;'>Value</th></tr><tr><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>Supplier</td><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-weight: 600;'>{{ $('Parse Invoice').first().json.supplier_name }}</td></tr><tr style='background:#fafafa;'><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>Amount</td><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7; font-weight: 600;'>{{ $('Parse Invoice').first().json.amount }} {{ $('Parse Invoice').first().json.currency }}</td></tr><tr><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>Invoice Number</td><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>{{ $('Parse Invoice').first().json.invoice_number }}</td></tr><tr style='background:#fafafa;'><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>Invoice Date</td><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>{{ $('Parse Invoice').first().json.invoice_date }}</td></tr><tr><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>Due Date</td><td style='padding: 10px 12px; border-bottom: 1px solid #e4e4e7;'>{{ $('Parse Invoice').first().json.due_date }}</td></tr><tr style='background:#fafafa;'><td style='padding: 10px 12px;'>Category</td><td style='padding: 10px 12px;'><span style='background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 13px;'>{{ $('Parse Invoice').first().json.category }}</span></td></tr></table><p style='margin-top: 24px; font-size: 13px; color: #999;'>Saved to Supabase · invoices table · Hart Limes Business OS</p></body></html>\"\n}"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-0008-0008-0008-000000000005",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }"
+      }
+    }
+  ],
+  "connections": {
+    "GMI Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Invoice": {
+      "main": [
+        [
+          {
+            "node": "Insert to Supabase invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert to Supabase invoices": {
+      "main": [
+        [
+          {
+            "node": "Notify Luis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Luis": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    { "name": "hart-limes" },
+    { "name": "finance" }
+  ],
+  "meta": {
+    "instanceId": "hart-limes-business-os"
+  }
+}

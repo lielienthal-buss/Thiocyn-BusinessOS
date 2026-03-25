@@ -1,4 +1,4 @@
-import type { ApplicationData } from '../types';
+import type { ApplicationFormData as ApplicationData } from '../types';
 
 /**
  * Simulates submitting application data to a backend service (e.g., an n8n webhook).
@@ -8,17 +8,7 @@ import type { ApplicationData } from '../types';
  */
 export const submitApplication = (data: ApplicationData): Promise<void> => {
   return new Promise((resolve, reject) => {
-    console.log('Submitting application data:', {
-      fullName: data.fullName,
-      email: data.email,
-      linkedinUrl: data.linkedinUrl,
-      coverLetter: data.coverLetter,
-      resume: {
-        name: data.resume?.name,
-        size: data.resume?.size,
-        type: data.resume?.type,
-      },
-    });
+    console.log('Submitting application data:', data);
 
     // Simulate network delay
     setTimeout(() => {

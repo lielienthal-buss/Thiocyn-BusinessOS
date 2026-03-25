@@ -1,52 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useLang } from '../lib/i18n';
+import { translations } from '../lib/translations';
 
 const FAQ: React.FC = () => {
-  const faqs = [
-    {
-      question: 'What is Take A Shot?',
-      answer:
-        'Take A Shot is a fast-growing D2C brand, part of Hart Limes GmbH — an e-commerce aggregator building and scaling multiple consumer brands. You work at the brand level with real ownership and impact.',
-    },
-    {
-      question: 'Is the team remote?',
-      answer:
-        'Yes, we are a fully remote company, allowing our team members to work from anywhere.',
-    },
-    {
-      question: 'What is your hiring process like?',
-      answer:
-        'Our hiring process is extremely lean. After submitting your application, there is usually only ONE round (Interview/Phone/Video Call).',
-    },
-    {
-      question: 'What is your company culture?',
-      answer:
-        "Our culture is built on values like Ownership over Excuses, Clarity over Complexity, Courage to Decide ('Take the Shot'), Performance with Substance, and Humanity in Business.",
-    },
-    {
-      question: 'What technologies do you use?',
-      answer:
-        'We have freedom of choice in our tech stack and prioritize working with AI and driving innovation.',
-    },
-  ];
+  const [open, setOpen] = useState<number | null>(null);
+  const { lang } = useLang();
+  const t = translations[lang].public.faq;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 p-8 glass-card rounded-[3rem] shadow-2xl border-white/20">
-      <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter text-center mb-10">
-        Frequently Asked Questions
+    <div className="max-w-3xl mx-auto">
+      <h2 className="text-xs font-black uppercase tracking-[0.4em] text-gray-400 text-center mb-10">
+        {t.title}
       </h2>
-      {faqs.map((faq, index) => (
-        <div
-          key={index}
-          className="border-b border-white/10 pb-6 last:border-b-0"
-        >
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            {faq.question}
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            {faq.answer}
-          </p>
-        </div>
-      ))}
+      <div className="space-y-2">
+        {t.items.map((faq, i) => (
+          <div
+            key={i}
+            className="border-b border-gray-100 last:border-0"
+          >
+            <button
+              onClick={() => setOpen(open === i ? null : i)}
+              className="w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50 transition-colors"
+            >
+              <span className="font-bold text-gray-900 text-sm pr-4">{faq.question}</span>
+              <span className="text-gray-400 text-xl font-light shrink-0 leading-none">
+                {open === i ? '−' : '+'}
+              </span>
+            </button>
+            {open === i && (
+              <div className="px-6 pb-5 pt-1 text-sm text-gray-500 leading-relaxed border-t border-gray-100">
+                {faq.answer}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

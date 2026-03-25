@@ -1,0 +1,103 @@
+{
+  "name": "Meta Ads — Daily Snapshot (all brands)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 6 * * *" }]
+        }
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000001",
+      "name": "Daily at 06:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Meta Ad Accounts per brand — fill in actual account IDs after setup\nconst accounts = [\n  { slug: 'thiocyn',     ad_account_id: 'act_REPLACE_THIOCYN_ID',     market: 'DE' },\n  { slug: 'thiocyn',     ad_account_id: 'act_REPLACE_THIOCYN_US_ID',  market: 'US' },\n  { slug: 'take-a-shot', ad_account_id: 'act_REPLACE_TAS_ID',         market: 'DE' },\n  { slug: 'dr-severin',  ad_account_id: 'act_REPLACE_DRSEV_ID',       market: 'DE' },\n  { slug: 'paigh',       ad_account_id: 'act_REPLACE_PAIGH_ID',       market: 'DE' },\n  { slug: 'wristr',      ad_account_id: 'act_REPLACE_WRISTR_ID',      market: 'DE' }\n];\nreturn accounts.map(a => ({ json: a }));"
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000002",
+      "name": "Ad Account List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://graph.facebook.com/v19.0/{{ $json.ad_account_id }}/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "access_token", "value": "={{ $env.META_ACCESS_TOKEN }}" },
+            { "name": "fields",       "value": "spend,impressions,clicks,actions,action_values,cpm,ctr,reach" },
+            { "name": "date_preset",  "value": "yesterday" },
+            { "name": "level",        "value": "account" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000003",
+      "name": "Fetch Meta Insights",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Meta Insights response and compute KPIs\nconst brand_slug = $('Ad Account List').first().json.slug;\nconst market     = $('Ad Account List').first().json.market;\nconst data       = $input.first().json.data?.[0] || {};\n\nconst spend       = parseFloat(data.spend || 0);\nconst impressions = parseInt(data.impressions || 0);\nconst clicks      = parseInt(data.clicks || 0);\nconst reach       = parseInt(data.reach || 0);\nconst cpm         = parseFloat(data.cpm || 0);\nconst ctr         = parseFloat(data.ctr || 0);\n\n// Extract purchases from actions\nconst actions       = data.actions || [];\nconst purchaseAction = actions.find(a => a.action_type === 'purchase');\nconst purchases     = purchaseAction ? parseInt(purchaseAction.value) : 0;\n\n// Extract revenue from action_values\nconst actionValues  = data.action_values || [];\nconst revenueAction = actionValues.find(a => a.action_type === 'purchase');\nconst revenue       = revenueAction ? parseFloat(revenueAction.value) : 0;\n\nconst roas = spend > 0 ? Math.round((revenue / spend) * 100) / 100 : 0;\n\nconst today = new Date().toISOString().split('T')[0];\nconst yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];\n\nreturn [{\n  json: {\n    brand_slug, market,\n    date: yesterday,\n    spend, impressions, clicks, reach, cpm, ctr, roas,\n    purchases, revenue,\n    platform: 'meta',\n    updated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000004",
+      "name": "Compute KPIs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/ad_campaigns",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" },
+            { "name": "Prefer",        "value": "resolution=merge-duplicates" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "brand_slug":  "={{ $json.brand_slug }}",
+          "platform":    "meta",
+          "date":        "={{ $json.date }}",
+          "spend":       "={{ $json.spend }}",
+          "impressions": "={{ $json.impressions }}",
+          "clicks":      "={{ $json.clicks }}",
+          "roas":        "={{ $json.roas }}",
+          "revenue":     "={{ $json.revenue }}"
+        }
+      },
+      "id": "a1b2c3d4-0006-0006-0006-000000000005",
+      "name": "Upsert to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "Daily at 06:00":   { "main": [[{ "node": "Ad Account List",     "type": "main", "index": 0 }]] },
+    "Ad Account List":  { "main": [[{ "node": "Fetch Meta Insights", "type": "main", "index": 0 }]] },
+    "Fetch Meta Insights":{ "main": [[{ "node": "Compute KPIs",      "type": "main", "index": 0 }]] },
+    "Compute KPIs":     { "main": [[{ "node": "Upsert to Supabase",  "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "marketing" }, { "name": "analytics" }],
+  "_comment": "SETUP: (1) Create Meta System User in Business Manager. (2) Generate long-lived access token with ads_read permission. (3) Set META_ACCESS_TOKEN env var. (4) Replace all act_REPLACE_* placeholders with actual ad account IDs. (5) Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY."
+}

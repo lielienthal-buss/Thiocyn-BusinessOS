@@ -40,3 +40,25 @@ VALUES (
   'active',
   'system'
 ) ON CONFLICT (email) DO NOTHING;
+
+-- Seed: Peter Hart as admin (MD)
+INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
+VALUES (
+  'peter@mail.hartlimesgmbh.de',
+  'Peter Hart',
+  'admin',
+  ARRAY['hiring','marketing','support','ecommerce','finance','analytics','admin'],
+  'active',
+  'system'
+) ON CONFLICT (email) DO NOTHING;
+
+-- Seed: Valentin as admin (Dev)
+INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
+VALUES (
+  'valentin@mail.hartlimesgmbh.de',
+  'Valentin',
+  'admin',
+  ARRAY['hiring','marketing','support','ecommerce','finance','analytics','admin'],
+  'active',
+  'system'
+) ON CONFLICT (email) DO NOTHING;

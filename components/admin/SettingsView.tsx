@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useSettings } from '../../lib/useSettings';
 import Spinner from '../ui/Spinner';
+import type { LandingConfig } from '../../types';
 
 interface SettingsViewProps {
   isDemoMode: boolean;
 }
+
+const DEFAULT_LANDING: LandingConfig = {
+  mode: 'influencer',
+  hero_tagline: 'Werde Teil unseres Creator-Netzwerks.',
+  hero_subtitle: 'Wir suchen authentische Creator für unsere nachhaltigen Brands. Keine Mindestfollower. Nur echte Persönlichkeiten.',
+  cta_primary_text: 'Jetzt bewerben →',
+  cta_primary_url: '/',
+  cta_secondary_text: 'Anfrage senden',
+  cta_secondary_url: 'mailto:info@hartlimesgmbh.de',
+  show_portfolio: true,
+  show_approach: false,
+  show_jobs_link: true,
+  show_faq: true,
+};
 
 const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
   const { settings, loading, error, save, refreshing } = useSettings();
@@ -12,20 +27,21 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
   const [companyName, setCompanyName] = useState('');
   const [calendlyUrl, setCalendlyUrl] = useState('');
   const [aiInstruction, setAiInstruction] = useState('');
+  const [landing, setLanding] = useState<LandingConfig>(DEFAULT_LANDING);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (settings) {
-      setCompanyName(
-        isDemoMode ? 'Demo Company' : (settings.company_name ?? '')
-      );
-      setCalendlyUrl(
-        isDemoMode ? 'https://calendly.com/demo' : (settings.calendly_url ?? '')
-      );
-      setAiInstruction(settings.ai_instruction ?? ''); // AI instruction can remain as is or be made generic if sensitive
+      setCompanyName(isDemoMode ? 'Demo Company' : (settings.company_name ?? ''));
+      setCalendlyUrl(isDemoMode ? 'https://calendly.com/demo' : (settings.calendly_url ?? ''));
+      setAiInstruction(settings.ai_instruction ?? '');
+      if (settings.landing_config) setLanding({ ...DEFAULT_LANDING, ...settings.landing_config });
     }
-  }, [settings, isDemoMode]); // Added isDemoMode to dependency array
+  }, [settings, isDemoMode]);
+
+  const setL = <K extends keyof LandingConfig>(key: K, val: LandingConfig[K]) =>
+    setLanding(p => ({ ...p, [key]: val }));
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +51,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
       company_name: companyName,
       calendly_url: calendlyUrl,
       ai_instruction: aiInstruction,
+      landing_config: landing,
     });
     if (ok) {
       setMessage('Settings updated successfully!');
@@ -100,6 +117,85 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode }) => {
               className="w-full px-6 py-5 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium border-white/20 text-black"
               disabled={isDemoMode} // Disable editing in demo mode
             />
+          </div>
+        </div>
+
+        {/* Landing Page Config */}
+        <div className="border-t border-gray-100 pt-8 space-y-6">
+          <div>
+            <h3 className="text-lg font-black text-gray-900 tracking-tighter">Landing Page</h3>
+            <p className="text-xs text-gray-400 mt-1">Konfiguriert die öffentliche Seite unter /company</p>
+          </div>
+
+          {/* Mode */}
+          <div>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Modus</label>
+            <div className="flex gap-2">
+              {(['influencer', 'partner', 'both'] as const).map(m => (
+                <button key={m} type="button"
+                  onClick={() => setL('mode', m)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${landing.mode === m ? 'bg-primary-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                  {m === 'influencer' ? 'Influencer' : m === 'partner' ? 'Partner' : 'Beides'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Hero */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Hero Tagline</label>
+              <input type="text" value={landing.hero_tagline} onChange={e => setL('hero_tagline', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">Hero Subtitle</label>
+              <textarea rows={2} value={landing.hero_subtitle} onChange={e => setL('hero_subtitle', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black resize-none" />
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">CTA Primär Text</label>
+              <input type="text" value={landing.cta_primary_text} onChange={e => setL('cta_primary_text', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">CTA Primär URL</label>
+              <input type="text" value={landing.cta_primary_url} onChange={e => setL('cta_primary_url', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">CTA Sekundär Text</label>
+              <input type="text" value={landing.cta_secondary_text} onChange={e => setL('cta_secondary_text', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black" />
+            </div>
+            <div>
+              <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-2">CTA Sekundär URL</label>
+              <input type="text" value={landing.cta_secondary_url} onChange={e => setL('cta_secondary_url', e.target.value)}
+                className="w-full px-4 py-3 glass-card rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-black" />
+            </div>
+          </div>
+
+          {/* Section Toggles */}
+          <div>
+            <label className="block text-[11px] font-black uppercase tracking-widest text-gray-500 mb-3">Sektionen anzeigen</label>
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                ['show_portfolio', 'Portfolio / Brands'],
+                ['show_approach', 'Methodik (Buy·Build·Scale)'],
+                ['show_jobs_link', 'Stellenausschreibungen'],
+                ['show_faq', 'FAQ'],
+              ] as [keyof LandingConfig, string][]).map(([key, label]) => (
+                <button key={key} type="button" onClick={() => setL(key, !landing[key] as any)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-left transition-all ${landing[key] ? 'bg-primary-50 border border-primary-200 text-primary-700' : 'bg-gray-50 border border-gray-200 text-gray-400'}`}>
+                  <span className={`w-4 h-4 rounded-full flex-shrink-0 border-2 transition-colors ${landing[key] ? 'bg-primary-500 border-primary-500' : 'bg-white border-gray-300'}`} />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

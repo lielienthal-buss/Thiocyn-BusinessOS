@@ -122,6 +122,11 @@ ALTER TABLE public.team_tasks
   ADD COLUMN IF NOT EXISTS scope TEXT DEFAULT 'team'
   CHECK (scope IN ('private', 'team'));
 
+-- 8. Add performance scoring columns to team_tasks
+ALTER TABLE public.team_tasks
+  ADD COLUMN IF NOT EXISTS quality_score INT CHECK (quality_score BETWEEN 1 AND 5),
+  ADD COLUMN IF NOT EXISTS impact_score INT CHECK (impact_score BETWEEN 1 AND 3);
+
 -- ============================================================
 -- Done. Verify by running:
 --   SELECT column_name FROM information_schema.columns

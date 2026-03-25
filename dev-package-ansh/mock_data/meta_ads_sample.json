@@ -1,0 +1,21 @@
+{
+  "brand": "Thiocyn",
+  "account_id": "act_987654321012345",
+  "data": [
+    {
+      "campaign_id": "23850012345670",
+      "campaign_name": "Thiocyn_DE_Conversions_Spring26",
+      "adset_id": "23850098765430",
+      "adset_name": "Thiocyn_DE_LLA_Purchasers_3pct",
+      "date_start": "2026-03-07",
+      "date_stop": "2026-03-07",
+      "impressions": 14720,
+      "clicks": 483,
+      "spend": "142.37",
+      "actions": [
+        { "action_type": "link_click", "value": "483" },
+        { "action_type": "purchase", "value": "22" }
+      ]
+    }
+  ]
+}

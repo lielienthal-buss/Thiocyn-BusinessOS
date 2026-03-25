@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { submitApplicationAction, getProjectAreas } from '../lib/actions';
 import { BFI_QUESTIONS, calculateBigFive } from '../utils/bigFive';
+import { trackStep, trackStepCompleted, trackSubmission } from '../lib/analytics';
 import Spinner from './ui/Spinner';
 import Card from './ui/Card';
 import ThankYouMessage from './ui/ThankYouMessage';
 import type { ProjectArea } from '../types';
 import Turnstile from 'react-turnstile';
+import { useLang } from '../lib/i18n';
+import { translations } from '../lib/translations';
 
 // --- MAIN FORM COMPONENT ---
 
@@ -13,7 +16,16 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PROJECT_HIGHLIGHT_MAX = 500;
 
 const ApplicationForm: React.FC = () => {
+  const { lang } = useLang();
+  const t = translations[lang].public.form;
   const [step, setStep] = useState(1);
+
+  const STEP_NAMES = ['', 'Basics', 'Experience', 'Project Preferences', 'Personality'];
+  const goToStep = (n: number) => {
+    trackStepCompleted(step, STEP_NAMES[step]);
+    trackStep(n, STEP_NAMES[n]);
+    setStep(n);
+  };
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +51,7 @@ const ApplicationForm: React.FC = () => {
         if (areas) {
           setAvailableProjectAreas(areas);
         } else {
-          setError('Failed to load project areas.');
+          setError(t.errorLoadingAreas);
         }
         setFetchingProjectAreas(false);
       };
@@ -71,15 +83,17 @@ const ApplicationForm: React.FC = () => {
       const result = await submitApplicationAction(formData);
 
       if (result.success) {
+        trackSubmission(true);
         setSubmitted(true);
       } else {
-        setError(result.error || 'Submission failed. Please try again.');
+        trackSubmission(false, result.error);
+        setError(result.error || t.errorFallback);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unexpected error occurred.');
+        setError(t.errorUnexpected);
       }
     } finally {
       setLoading(false);
@@ -95,10 +109,10 @@ const ApplicationForm: React.FC = () => {
       {/* Header & Steps */}
       <div className="mb-8">
         <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-2">
-          {step === 1 && 'Let’s start with the basics.'}
-          {step === 2 && 'Show us your work.'}
-          {step === 3 && 'What excites you?'}
-          {step === 4 && 'How do you tick?'}
+          {step === 1 && t.step1Title}
+          {step === 2 && t.step2Title}
+          {step === 3 && t.step3Title}
+          {step === 4 && t.step4Title}
         </h2>
         <div className="flex gap-2 mt-4">
           {Array.from({ length: totalSteps }).map((_, index) => (
@@ -121,7 +135,7 @@ const ApplicationForm: React.FC = () => {
         <div className="space-y-5 animate-fadeIn">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-              Full Name
+              {t.labelFullName}
             </label>
             <input
               type="text"
@@ -135,7 +149,7 @@ const ApplicationForm: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-              Email Address
+              {t.labelEmail}
             </label>
             <input
               type="email"
@@ -150,7 +164,7 @@ const ApplicationForm: React.FC = () => {
               }}
               onBlur={(e) => {
                 if (e.target.value && !EMAIL_REGEX.test(e.target.value)) {
-                  setFieldErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+                  setFieldErrors(prev => ({ ...prev, email: t.errorInvalidEmail }));
                 }
               }}
             />
@@ -160,14 +174,14 @@ const ApplicationForm: React.FC = () => {
           </div>
           <button
             onClick={() => {
-              const emailError = !EMAIL_REGEX.test(basics.email) ? 'Please enter a valid email address.' : undefined;
+              const emailError = !EMAIL_REGEX.test(basics.email) ? t.errorInvalidEmail : undefined;
               if (emailError) { setFieldErrors(prev => ({ ...prev, email: emailError })); return; }
-              setStep(2);
+              goToStep(2);
             }}
             disabled={!basics.full_name || !basics.email}
             className="w-full mt-6 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Next Step →
+            {t.nextStep}
           </button>
         </div>
       )}
@@ -177,15 +191,15 @@ const ApplicationForm: React.FC = () => {
         <div className="space-y-5 animate-fadeIn">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-              LinkedIn / Portfolio / Social
+              {t.labelLinkedin}
             </label>
-            <p className="text-gray-500 text-xs mb-2">Optional — LinkedIn, portfolio, Instagram, anything that shows your work.</p>
+            <p className="text-gray-500 text-xs mb-2">{t.linkedinHint}</p>
             <input
               type="url"
               className={`w-full p-4 bg-gray-50 border-2 rounded-xl focus:bg-white focus:outline-none transition-all text-lg text-black ${
                 fieldErrors.linkedin_url ? 'border-red-400 focus:border-red-500' : 'border-gray-100 focus:border-blue-500'
               }`}
-              placeholder="https://linkedin.com/in/... or any portfolio link"
+              placeholder={t.linkedinPlaceholder}
               value={experience.linkedin_url}
               onChange={(e) => {
                 setExperience({ ...experience, linkedin_url: e.target.value });
@@ -194,7 +208,7 @@ const ApplicationForm: React.FC = () => {
               onBlur={(e) => {
                 const val = e.target.value;
                 if (val && !val.startsWith('http')) {
-                  setFieldErrors(prev => ({ ...prev, linkedin_url: 'Please enter a valid URL (https://...)' }));
+                  setFieldErrors(prev => ({ ...prev, linkedin_url: t.errorInvalidUrl }));
                 }
               }}
             />
@@ -204,14 +218,14 @@ const ApplicationForm: React.FC = () => {
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-              Tell us something
+              {t.labelProject}
             </label>
             <p className="text-gray-600 text-sm mb-3">
-              Tell us about one project you are proud of. Keep it short.
+              {t.projectHint}
             </p>
             <textarea
               className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all text-lg min-h-[150px] text-black"
-              placeholder="A project, a result, a thing you're proud of. Optional."
+              placeholder={t.projectPlaceholder}
               maxLength={PROJECT_HIGHLIGHT_MAX}
               value={experience.project_highlight}
               onChange={(e) =>
@@ -229,23 +243,23 @@ const ApplicationForm: React.FC = () => {
           </div>
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => setStep(1)}
+              onClick={() => goToStep(1)}
               className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
-              Back
+              {t.back}
             </button>
             <button
               onClick={() => {
                 const linkedinError = experience.linkedin_url && !experience.linkedin_url.startsWith('http')
-                  ? 'Please enter a valid URL (https://...)'
+                  ? t.errorInvalidUrl
                   : undefined;
                 if (linkedinError) { setFieldErrors(prev => ({ ...prev, linkedin_url: linkedinError })); return; }
-                setStep(3);
+                goToStep(3);
               }}
               disabled={false}
               className="flex-1 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50"
             >
-              Next Step →
+              {t.nextStep}
             </button>
           </div>
         </div>
@@ -255,14 +269,14 @@ const ApplicationForm: React.FC = () => {
       {step === 3 && (
         <div className="space-y-5 animate-fadeIn">
           <p className="text-gray-600 text-sm mb-3">
-            Which project areas are you most interested in? Select all that apply.
+            {t.projectAreasHint}
           </p>
           {fetchingProjectAreas ? (
             <div className="flex justify-center py-4">
               <Spinner />
             </div>
           ) : availableProjectAreas.length === 0 ? (
-            <p className="text-gray-400">No project areas defined by the company yet.</p>
+            <p className="text-gray-400">{t.noProjectAreas}</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {availableProjectAreas.map((area) => (
@@ -316,16 +330,16 @@ const ApplicationForm: React.FC = () => {
           )}
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => setStep(2)}
+              onClick={() => goToStep(2)}
               className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
-              Back
+              {t.back}
             </button>
             <button
-              onClick={() => setStep(4)}
+              onClick={() => goToStep(4)}
               className="flex-1 py-4 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-all disabled:opacity-50"
             >
-              Next Step →
+              {t.nextStep}
             </button>
           </div>
         </div>
@@ -336,8 +350,7 @@ const ApplicationForm: React.FC = () => {
       {step === 4 && (
         <div className="space-y-8 animate-fadeIn">
           <div className="bg-blue-50 p-4 rounded-xl text-black text-sm">
-            <strong>Quick Check:</strong> Rate how well these statements
-            describe you. (1 = Not at all, 7 = Absolutely)
+            {t.personalityIntro}
           </div>
 
           <div className="space-y-6">
@@ -367,8 +380,8 @@ const ApplicationForm: React.FC = () => {
                   ))}
                 </div>
                 <div className="flex justify-between text-xs text-black mt-2 px-1 uppercase tracking-wider font-bold">
-                  <span>Disagree</span>
-                  <span>Agree</span>
+                  <span>{t.disagree}</span>
+                  <span>{t.agree}</span>
                 </div>
               </div>
             ))}
@@ -378,20 +391,20 @@ const ApplicationForm: React.FC = () => {
             <Turnstile
               sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
               onVerify={setTurnstileToken}
-              options={{ theme: 'light' }}
+              theme="light"
             />
             <button
-              onClick={() => setStep(3)}
+              onClick={() => goToStep(3)}
               className="px-6 py-4 bg-gray-100 text-black font-bold rounded-xl hover:bg-gray-200 transition-all"
             >
-              Back
+              {t.back}
             </button>
             <button
               onClick={handleSubmit}
               disabled={Object.keys(bfiAnswers).length < 15 || loading || !turnstileToken} // Disabled if no token
               className="flex-1 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all disabled:opacity-50 shadow-lg hover:shadow-green-500/30"
             >
-              {loading ? <Spinner /> : 'Submit Application'}
+              {loading ? <Spinner /> : t.submitApplication}
             </button>
           </div>
         </div>

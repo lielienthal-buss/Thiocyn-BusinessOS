@@ -172,6 +172,8 @@ CREATE TABLE IF NOT EXISTS team_tasks (
   due_date DATE,
   status TEXT DEFAULT 'todo' CHECK (status IN ('todo', 'in_progress', 'blocked', 'done', 'cancelled')),
   scope TEXT DEFAULT 'team' CHECK (scope IN ('private', 'team')),
+  quality_score INT CHECK (quality_score BETWEEN 1 AND 5),
+  impact_score INT CHECK (impact_score BETWEEN 1 AND 3),
   created_by_email TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()

@@ -362,4 +362,205 @@ const de: typeof en = {
   },
 };
 
-export const translations: Record<Lang, typeof en> = { en, de };
+// ─── PUBLIC SECTION ───────────────────────────────────────────────────────────
+
+const enPublic = {
+  nav: {
+    applyNow: 'Apply now',
+    ambassadorProgram: 'Ambassador Program',
+    aboutUs: 'About us',
+    login: 'Login',
+  },
+  header: {
+    badge: 'Now hiring — Thiocyn',
+    headlinePart1: 'Work with brands',
+    headlinePart2: 'people love.',
+    subline: 'Real work. Real responsibility. Real growth.',
+    body: "We're looking for driven people who want to build something meaningful. Join the team behind 6 high-growth D2C brands and get real ownership from day one.",
+    statBrands: 'Brands',
+    statCustomers: 'Customers',
+    statApply: 'To apply',
+    scrollCue: 'Apply below — takes 5 minutes',
+  },
+  faq: {
+    title: 'Frequently Asked Questions',
+    items: [
+      {
+        question: 'What is Take A Shot?',
+        answer:
+          'Take A Shot is a fast-growing D2C brand, part of Hart Limes GmbH — an e-commerce holding building and scaling multiple sustainable consumer brands. You work at the brand level with real ownership and impact.',
+      },
+      {
+        question: 'Is the team remote?',
+        answer: 'Yes. We are a fully remote team, which means we hire for output, not presence.',
+      },
+      {
+        question: 'What does the hiring process look like?',
+        answer:
+          'Extremely lean. After submitting your application, there is usually only ONE round — Interview, Phone, or Video Call. No endless loops.',
+      },
+      {
+        question: 'What is your culture built on?',
+        answer:
+          'Ownership over Excuses. Clarity over Complexity. Courage to Decide ("Take the Shot"). Performance with Substance. Humanity in Business.',
+      },
+      {
+        question: 'What tech do you use?',
+        answer:
+          'We have freedom of choice in our tech stack. We prioritize AI-driven workflows and move fast on things that create leverage.',
+      },
+    ],
+  },
+  form: {
+    step1Title: "Let's start with the basics.",
+    step2Title: 'Show us your work.',
+    step3Title: 'What excites you?',
+    step4Title: 'How do you tick?',
+    labelFullName: 'Full Name',
+    labelEmail: 'Email Address',
+    labelLinkedin: 'LinkedIn / Portfolio / Social',
+    linkedinHint: 'Optional — LinkedIn, portfolio, Instagram, anything that shows your work.',
+    linkedinPlaceholder: 'https://linkedin.com/in/... or any portfolio link',
+    labelProject: 'Tell us something',
+    projectHint: 'Tell us about one project you are proud of. Keep it short.',
+    projectPlaceholder: "A project, a result, a thing you're proud of. Optional.",
+    projectAreasHint: 'Which project areas are you most interested in? Select all that apply.',
+    noProjectAreas: 'No project areas defined by the company yet.',
+    personalityIntro: 'Quick Check: Rate how well these statements describe you. (1 = Not at all, 7 = Absolutely)',
+    disagree: 'Disagree',
+    agree: 'Agree',
+    nextStep: 'Next Step →',
+    back: 'Back',
+    submitApplication: 'Submit Application',
+    submitting: 'Submitting...',
+    errorInvalidEmail: 'Please enter a valid email address.',
+    errorInvalidUrl: 'Please enter a valid URL (https://...)',
+    errorFallback: 'Submission failed. Please try again.',
+    errorUnexpected: 'An unexpected error occurred.',
+    errorLoadingAreas: 'Failed to load project areas.',
+  },
+  creator: {
+    badge: 'Ambassador Program',
+    headline: 'Join the crew.',
+    subline: 'Apply for the Ambassador Program — we will get back to you within 48h.',
+    labelName: 'Name *',
+    labelInstagram: 'Instagram URL *',
+    labelBrand: 'Brand *',
+    labelFollowerRange: 'Follower Range',
+    labelNotes: 'Short intro',
+    notesPlaceholder: "Why are you a fit for the brand?",
+    labelEmail: 'Email (optional)',
+    submitButton: 'Apply now →',
+    submitting: 'Sending...',
+    successHeadline: 'Application received.',
+    successSubline: 'We will be in touch soon.',
+    successBack: 'Back to website →',
+    namePlaceholder: 'Your full name',
+    emailPlaceholder: 'your@mail.com',
+  },
+};
+
+const dePublic: typeof enPublic = {
+  nav: {
+    applyNow: 'Jetzt bewerben',
+    ambassadorProgram: 'Ambassador Program',
+    aboutUs: 'Über uns',
+    login: 'Login',
+  },
+  header: {
+    badge: 'Jetzt hiring — Thiocyn',
+    headlinePart1: 'Arbeite mit Brands,',
+    headlinePart2: 'die Menschen lieben.',
+    subline: 'Echte Arbeit. Echte Verantwortung. Echtes Wachstum.',
+    body: 'Wir suchen Menschen mit Antrieb, die etwas Bedeutendes aufbauen wollen. Werde Teil des Teams hinter 6 schnell wachsenden D2C-Brands — mit echter Verantwortung von Tag eins an.',
+    statBrands: 'Brands',
+    statCustomers: 'Kunden',
+    statApply: 'Zum Bewerben',
+    scrollCue: 'Jetzt bewerben — dauert 5 Minuten',
+  },
+  faq: {
+    title: 'Häufige Fragen',
+    items: [
+      {
+        question: 'Was ist Take A Shot?',
+        answer:
+          'Take A Shot ist eine schnell wachsende D2C-Brand, Teil der Hart Limes GmbH — einem E-Commerce-Holding, das mehrere nachhaltige Consumer-Brands aufbaut und skaliert. Du arbeitest auf Brand-Ebene mit echter Verantwortung und Wirkung.',
+      },
+      {
+        question: 'Ist das Team remote?',
+        answer: 'Ja. Wir sind ein vollständig remote arbeitendes Team — wir stellen für Output ein, nicht für Anwesenheit.',
+      },
+      {
+        question: 'Wie läuft der Einstellungsprozess ab?',
+        answer:
+          'Extrem schlank. Nach dem Einreichen deiner Bewerbung gibt es in der Regel nur EINE Runde — Interview, Telefonat oder Video Call. Keine endlosen Schleifen.',
+      },
+      {
+        question: 'Worauf basiert eure Kultur?',
+        answer:
+          'Ownership über Ausreden. Klarheit über Komplexität. Mut zur Entscheidung ("Take the Shot"). Performance mit Substanz. Menschlichkeit im Business.',
+      },
+      {
+        question: 'Welche Technologien nutzt ihr?',
+        answer:
+          'Wir haben freie Wahl bei unserem Tech-Stack. Wir priorisieren KI-gestützte Workflows und bewegen uns schnell bei Dingen, die echten Hebel erzeugen.',
+      },
+    ],
+  },
+  form: {
+    step1Title: 'Lass uns mit den Basics starten.',
+    step2Title: 'Zeig uns deine Arbeit.',
+    step3Title: 'Was begeistert dich?',
+    step4Title: 'Wie tickst du?',
+    labelFullName: 'Vollständiger Name',
+    labelEmail: 'E-Mail-Adresse',
+    labelLinkedin: 'LinkedIn / Portfolio / Social',
+    linkedinHint: 'Optional — LinkedIn, Portfolio, Instagram oder alles, das deine Arbeit zeigt.',
+    linkedinPlaceholder: 'https://linkedin.com/in/... oder beliebiger Portfolio-Link',
+    labelProject: 'Erzähl uns etwas',
+    projectHint: 'Erzähl uns von einem Projekt, auf das du stolz bist. Kurz halten.',
+    projectPlaceholder: 'Ein Projekt, ein Ergebnis, etwas auf das du stolz bist. Optional.',
+    projectAreasHint: 'Welche Projektbereiche interessieren dich am meisten? Alle zutreffenden auswählen.',
+    noProjectAreas: 'Noch keine Projektbereiche vom Unternehmen definiert.',
+    personalityIntro: 'Schnell-Check: Bewerte, wie gut diese Aussagen auf dich zutreffen. (1 = Gar nicht, 7 = Absolut)',
+    disagree: 'Stimme nicht zu',
+    agree: 'Stimme zu',
+    nextStep: 'Nächster Schritt →',
+    back: 'Zurück',
+    submitApplication: 'Bewerbung abschicken',
+    submitting: 'Wird gesendet...',
+    errorInvalidEmail: 'Bitte gib eine gültige E-Mail-Adresse ein.',
+    errorInvalidUrl: 'Bitte gib eine gültige URL ein (https://...)',
+    errorFallback: 'Übermittlung fehlgeschlagen. Bitte erneut versuchen.',
+    errorUnexpected: 'Ein unerwarteter Fehler ist aufgetreten.',
+    errorLoadingAreas: 'Projektbereiche konnten nicht geladen werden.',
+  },
+  creator: {
+    badge: 'Ambassador Program',
+    headline: 'Werde Teil der Crew.',
+    subline: 'Bewirb dich für das Ambassador Program — wir melden uns innerhalb von 48h.',
+    labelName: 'Name *',
+    labelInstagram: 'Instagram URL *',
+    labelBrand: 'Brand *',
+    labelFollowerRange: 'Follower-Bereich',
+    labelNotes: 'Kurze Vorstellung',
+    notesPlaceholder: 'Warum passt du zur Brand?',
+    labelEmail: 'Email (optional)',
+    submitButton: 'Jetzt bewerben →',
+    submitting: 'Wird gesendet...',
+    successHeadline: 'Bewerbung eingegangen.',
+    successSubline: 'Wir melden uns bald.',
+    successBack: 'Zurück zur Website →',
+    namePlaceholder: 'Dein vollständiger Name',
+    emailPlaceholder: 'deine@mail.com',
+  },
+};
+
+// Extend the base `en` type to include the public section
+type EnWithPublic = typeof en & { public: typeof enPublic };
+type DeWithPublic = typeof de & { public: typeof dePublic };
+
+const enFull: EnWithPublic = { ...en, public: enPublic };
+const deFull: DeWithPublic = { ...de, public: dePublic };
+
+export const translations: Record<Lang, EnWithPublic | DeWithPublic> = { en: enFull, de: deFull };

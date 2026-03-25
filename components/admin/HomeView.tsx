@@ -196,15 +196,11 @@ function PriorityDot({ priority }: { priority: number }) {
 
 // ─── Column 1: Urgent ─────────────────────────────────────────────────────────
 
-function DisputeRow({
-  dispute,
-  expanded,
-  onToggle,
-}: {
+const DisputeRow: React.FC<{
   dispute: Dispute;
   expanded: boolean;
   onToggle: () => void;
-}) {
+}> = ({ dispute, expanded, onToggle }) => {
   const days = daysUntil(dispute.deadline);
   const isUrgent = days <= 7;
 
@@ -252,7 +248,7 @@ function DisputeRow({
   );
 }
 
-function OverdueTaskRow({ task }: { task: TeamTask }) {
+const OverdueTaskRow: React.FC<{ task: TeamTask }> = ({ task }) => {
   return (
     <div className="flex items-center gap-2 py-2 border-b border-gray-50 last:border-0">
       <PriorityDot priority={task.priority} />
@@ -269,7 +265,7 @@ function OverdueTaskRow({ task }: { task: TeamTask }) {
 
 // ─── Column 2: This Week ──────────────────────────────────────────────────────
 
-function WeekTaskGroup({ brand, tasks }: { brand: string; tasks: TeamTask[] }) {
+const WeekTaskGroup: React.FC<{ brand: string; tasks: TeamTask[] }> = ({ brand, tasks }) => {
   return (
     <div className="mb-3 last:mb-0">
       <p className="text-xs font-semibold text-gray-500 mb-1">
@@ -289,7 +285,7 @@ function WeekTaskGroup({ brand, tasks }: { brand: string; tasks: TeamTask[] }) {
   );
 }
 
-function UpcomingDisputeRow({ dispute }: { dispute: Dispute }) {
+const UpcomingDisputeRow: React.FC<{ dispute: Dispute }> = ({ dispute }) => {
   const days = daysUntil(dispute.deadline);
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
@@ -307,7 +303,7 @@ function UpcomingDisputeRow({ dispute }: { dispute: Dispute }) {
 
 // ─── Column 3: Brand Pulse ────────────────────────────────────────────────────
 
-function BrandPulseCard({ brandId, metric }: { brandId: string; metric?: BrandMetric }) {
+const BrandPulseCard: React.FC<{ brandId: string; metric?: BrandMetric }> = ({ brandId, metric }) => {
   return (
     <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
       <div className="min-w-0 flex-1">
@@ -337,7 +333,7 @@ function BrandPulseCard({ brandId, metric }: { brandId: string; metric?: BrandMe
 
 // ─── Activity Feed ────────────────────────────────────────────────────────────
 
-function ActivityItem({ notification }: { notification: Notification }) {
+const ActivityItem: React.FC<{ notification: Notification }> = ({ notification }) => {
   const icon = NOTIFICATION_ICONS[notification.type] ?? '📌';
   return (
     <div className="flex gap-3 py-3 border-b border-gray-50 last:border-0">

@@ -105,7 +105,14 @@ const OverviewTab: React.FC = () => {
 
   const handleSync = async (metric: EcomMetric) => {
     setSyncingId(metric.id);
-    // TODO: trigger Make webhook SHOPIFY_SYNC_WEBHOOK_URL
+    const webhookUrl = (import.meta as any).env?.VITE_SHOPIFY_SYNC_WEBHOOK_URL as string | undefined;
+    if (webhookUrl) {
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brand_id: metric.brand_id }),
+      });
+    }
     await supabase
       .from('ecom_metrics')
       .update({ synced_at: new Date().toISOString() })

@@ -1,0 +1,120 @@
+{
+  "name": "Hiring — Application Auto Score",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "application-submitted",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000001",
+      "name": "Supabase Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "_comment": "Configure in Supabase: Database → Webhooks → applications INSERT → POST to this URL"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract application data from Supabase webhook payload\nconst record = $input.first().json.record;\nreturn [{\n  json: {\n    id: record.id,\n    full_name: record.full_name,\n    email: record.email,\n    linkedin_url: record.linkedin_url,\n    project_highlight: record.project_highlight,\n    psychometrics: record.psychometrics,\n    project_interest: record.project_interest\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "Parse Application",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key",         "value": "={{ $env.ANTHROPIC_API_KEY }}" },
+            { "name": "anthropic-version",  "value": "2023-06-01" },
+            { "name": "content-type",       "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "model": "claude-haiku-4-5-20251001",
+          "max_tokens": 300,
+          "messages": [
+            {
+              "role": "user",
+              "content": "=You are an HR screening assistant for Hart Limes GmbH (e-commerce, 6 brands). Score this intern application 0–100. Be strict. Output ONLY valid JSON: {\"score\": <0-100>, \"reason\": \"<one sentence>\", \"flag\": \"<green|yellow|red>\"}\n\nApplicant: {{ $json.full_name }}\nProject interest: {{ $json.project_interest }}\nProject highlight: {{ $json.project_highlight }}\nPsychometrics: {{ JSON.stringify($json.psychometrics) }}\nLinkedIn: {{ $json.linkedin_url }}\n\nScoring: 70+ = strong, 40–69 = review, <40 = reject."
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000003",
+      "name": "Score with Claude Haiku",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse AI response\nconst content = $input.first().json.content[0].text;\nlet parsed;\ntry {\n  parsed = JSON.parse(content);\n} catch (e) {\n  parsed = { score: 50, reason: 'Parse error — review manually', flag: 'yellow' };\n}\nreturn [{\n  json: {\n    application_id: $('Parse Application').first().json.id,\n    aiScore: parsed.score,\n    ai_reason: parsed.reason,\n    ai_flag: parsed.flag\n  }\n}];"
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000004",
+      "name": "Parse Score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/applications?id=eq.{{ $json.application_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "aiScore": "={{ $json.aiScore }}"
+        }
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000005",
+      "name": "Update aiScore in Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"ok\": true }"
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000006",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1340, 300]
+    }
+  ],
+  "connections": {
+    "Supabase Webhook":   { "main": [[{ "node": "Parse Application",         "type": "main", "index": 0 }]] },
+    "Parse Application":  { "main": [[{ "node": "Score with Claude Haiku",   "type": "main", "index": 0 }]] },
+    "Score with Claude Haiku": { "main": [[{ "node": "Parse Score",          "type": "main", "index": 0 }]] },
+    "Parse Score":        { "main": [[{ "node": "Update aiScore in Supabase","type": "main", "index": 0 }]] },
+    "Update aiScore in Supabase": { "main": [[{ "node": "Webhook Response",  "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "hiring" }],
+  "_comment": "SETUP: (1) Deploy workflow, copy webhook URL. (2) Supabase → Database → Webhooks → Table: applications, Event: INSERT → POST to webhook URL. (3) Set ANTHROPIC_API_KEY + SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY env vars."
+}

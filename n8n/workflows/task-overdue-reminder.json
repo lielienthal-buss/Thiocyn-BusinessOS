@@ -1,0 +1,84 @@
+{
+  "name": "Tasks — Overdue Reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "cronExpression", "expression": "0 17 * * 1-5" }]
+        }
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000001",
+      "name": "Weekdays at 17:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/team_tasks?status=neq.done&status=neq.cancelled&due_date=lt.{{ $now.toISODate() }}&scope=eq.team&assigned_to_email=not.is.null&select=id,title,assigned_to_email,due_date,brand,priority",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey",        "value": "={{ $env.SUPABASE_SERVICE_ROLE_KEY }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_SERVICE_ROLE_KEY }}" }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000002",
+      "name": "Fetch Overdue Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Group overdue tasks by assignee\nconst tasks = $input.first().json;\nif (!tasks || tasks.length === 0) return [];\n\nconst byAssignee = {};\nfor (const task of tasks) {\n  const email = task.assigned_to_email;\n  if (!byAssignee[email]) byAssignee[email] = [];\n  byAssignee[email].push(task);\n}\n\nreturn Object.entries(byAssignee).map(([email, tasks]) => ({\n  json: { email, tasks, count: tasks.length }\n}));"
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000003",
+      "name": "Group by Assignee",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}" },
+            { "name": "Content-Type",  "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "body": {
+          "from":    "Business OS <tasks@mail.hartlimesgmbh.de>",
+          "to":      "={{ $json.email }}",
+          "subject": "=⚠️ {{ $json.count }} overdue task{{ $json.count > 1 ? 's' : '' }} need your attention",
+          "html":    "=<div style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px'><h2 style='color:#dc2626'>⚠️ Overdue Tasks</h2><p>You have {{ $json.count }} task(s) past their deadline:</p><ul style='padding-left:20px'>{{ $json.tasks.map(t => `<li style='margin:8px 0'><strong>${t.title}</strong> — Due: ${t.due_date} (${t.brand || 'Cross-brand'})</li>`).join('') }}</ul><p style='margin-top:16px;color:#64748b'>Please update the status in Business OS or reach out to Luis if you're blocked.</p></div>"
+        }
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000004",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Weekdays at 17:00": { "main": [[{ "node": "Fetch Overdue Tasks",  "type": "main", "index": 0 }]] },
+    "Fetch Overdue Tasks":{ "main": [[{ "node": "Group by Assignee",   "type": "main", "index": 0 }]] },
+    "Group by Assignee":  { "main": [[{ "node": "Send Reminder Email", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "hart-limes" }, { "name": "tasks" }],
+  "_comment": "SETUP: (1) Set env vars: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY. (2) Activate workflow."
+}

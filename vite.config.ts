@@ -21,10 +21,7 @@ export default defineConfig(({ mode }) => {
         env.VITE_TURNSTILE_SITE_KEY
       ),
     },
-    css: {
-      // Add this CSS configuration block
-      postcss: true,
-    },
+    css: {},
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

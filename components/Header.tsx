@@ -1,62 +1,103 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLang } from '../lib/i18n';
+import { translations } from '../lib/translations';
 
-const STATS = [
-  { value: '6', label: 'Brands' },
-  { value: '100k+', label: 'Customers' },
-  { value: '5 min', label: 'To apply' },
+function useCounter(target: number, duration = 1400) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(false);
+  useEffect(() => {
+    if (ref.current) return;
+    ref.current = true;
+    const start = performance.now();
+    const step = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setCount(Math.round(ease * target));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    const timeout = setTimeout(() => requestAnimationFrame(step), 500);
+    return () => clearTimeout(timeout);
+  }, [target, duration]);
+  return count;
+}
+
+const StatBadge: React.FC<{ value: number; suffix: string; label: string }> = ({ value, suffix, label }) => {
+  const count = useCounter(value);
+  return (
+    <div className="flex items-center gap-2.5 px-5 py-2.5 bg-white/[0.06] border border-white/[0.1] rounded-2xl">
+      <span className="text-lg font-black text-white tabular-nums">{count}{suffix}</span>
+      <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{label}</span>
+    </div>
+  );
+};
+
+const STATS_CONFIG = [
+  { value: 6, suffix: '' as const, key: 'statBrands' as const },
+  { value: 100, suffix: 'k+' as const, key: 'statCustomers' as const },
+  { value: 5, suffix: ' min' as const, key: 'statApply' as const },
 ];
 
 const Header: React.FC = () => {
+  const { lang } = useLang();
+  const t = translations[lang].public.header;
+
+  const stats = STATS_CONFIG.map(s => ({ value: s.value, suffix: s.suffix, label: t[s.key] }));
+
   return (
-    <header className="relative overflow-hidden rounded-[3.5rem] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-700 shadow-2xl shadow-gray-900/40">
-      {/* Decorative glow */}
+    <header className="relative overflow-hidden rounded-[2.5rem] bg-[#0d0d0d] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.5)]">
+      {/* Ambient glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-80 h-80 bg-primary-600/20 rounded-full blur-[100px]" />
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px]" />
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-600/20 rounded-full blur-[120px] animate-blob" />
+        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px] animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/8 rounded-full blur-[80px] animate-blob animation-delay-4000" />
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}
+        />
+        {/* Top glow line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-px bg-gradient-to-r from-transparent via-primary-400/60 to-transparent" />
       </div>
 
-      <div className="relative z-10 px-10 py-14 md:px-16 md:py-20 flex flex-col items-center text-center gap-8">
-        {/* Brand badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/15 border border-primary-500/30 text-primary-400 text-[11px] font-black uppercase tracking-widest">
-          <div className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
-          Now hiring — Thiocyn
+      <div className="relative z-10 px-6 py-12 md:px-20 md:py-24 flex flex-col items-center text-center gap-10">
+
+        {/* Live badge */}
+        <div className="animate-slide-up">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-[10px] font-black uppercase tracking-[0.25em]">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-glow-pulse inline-block" />
+            {t.badge}
+          </div>
         </div>
 
         {/* Headline */}
-        <div className="space-y-3">
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none">
-            Work with brands{' '}
-            <span className="text-primary-400">people love.</span>
+        <div className="space-y-4 animate-slide-up-1">
+          <h1 className="text-5xl md:text-7xl font-black text-white tracking-[-0.04em] leading-[0.88]">
+            {t.headlinePart1}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 via-primary-300 to-primary-400 bg-[length:200%] animate-shimmer-text">
+              {t.headlinePart2}
+            </span>
           </h1>
-          <p className="text-lg md:text-xl font-bold text-gray-300">
-            Real work. Real responsibility. Real growth.
+          <p className="text-base md:text-lg font-semibold text-gray-500 tracking-tight">
+            {t.subline}
           </p>
         </div>
 
-        {/* Body copy */}
-        <p className="text-gray-400 text-base md:text-lg font-medium max-w-2xl leading-relaxed">
-          We're looking for driven people who want to build something meaningful — not just tick boxes. Join the team behind 6 high-growth D2C brands and get real ownership from day one.
-        </p>
+        {/* Body */}
+        <div className="animate-slide-up-2">
+          <p className="text-gray-500 text-sm md:text-base max-w-xl leading-relaxed">
+            {t.body}
+          </p>
+        </div>
 
-        {/* Stat badges */}
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {STATS.map(stat => (
-            <div
-              key={stat.label}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm"
-            >
-              <span className="text-xl font-black text-white">{stat.value}</span>
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{stat.label}</span>
-            </div>
-          ))}
+        {/* Stats */}
+        <div className="animate-slide-up-3 flex flex-wrap items-center justify-center gap-4 md:gap-3">
+          {stats.map(s => <StatBadge key={s.label} value={s.value} suffix={s.suffix} label={s.label} />)}
         </div>
 
         {/* Scroll cue */}
-        <div className="flex flex-col items-center gap-1.5 text-gray-500 text-xs font-semibold uppercase tracking-widest mt-2 animate-bounce">
-          <span>Apply below — takes 5 minutes</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
-          </svg>
+        <div className="animate-slide-up-4 flex flex-col items-center gap-2">
+          <span className="text-gray-600 text-[10px] font-black uppercase tracking-[0.3em]">{t.scrollCue}</span>
+          <div className="w-px h-8 bg-gradient-to-b from-gray-600/60 to-transparent animate-float" />
         </div>
       </div>
     </header>

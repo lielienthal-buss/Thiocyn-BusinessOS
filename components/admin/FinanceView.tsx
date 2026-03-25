@@ -232,7 +232,7 @@ function DisputesTab() {
     : null;
   const atRiskStr = atRiskLabel
     ? Object.entries(atRiskLabel)
-        .map(([cur, val]) => formatAmount(val, cur as Currency))
+        .map(([cur, val]) => formatAmount(val as number, cur as Currency))
         .join(' + ')
     : '—';
 
