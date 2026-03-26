@@ -2,18 +2,24 @@ import React, { useState } from 'react';
 import DisputesTab from './finance/DisputesTab';
 import InvoicesTab from './finance/InvoicesTab';
 import OverviewTab from './finance/OverviewTab';
+import FinanceMailsTab from './finance/FinanceMailsTab';
+import EmmaPlannerTab from './finance/EmmaPlannerTab';
 import type { FinanceTab } from './finance/financeTypes';
 
-const TABS: { id: FinanceTab; label: string }[] = [
+type ExtendedFinanceTab = FinanceTab | 'financeMails' | 'emmaPlanner';
+
+const TABS: { id: ExtendedFinanceTab; label: string }[] = [
   { id: 'disputes', label: 'Disputes' },
   { id: 'invoices', label: 'Invoices & Mahnungen' },
   { id: 'overview', label: 'Overview' },
+  { id: 'financeMails', label: '📬 Finance Mails' },
+  { id: 'emmaPlanner', label: '🗓 Emma · Plan' },
 ];
 
-interface Props { activeTab?: FinanceTab; }
+interface Props { activeTab?: ExtendedFinanceTab; }
 
 const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
-  const [activeTab, setActiveTab] = useState<FinanceTab>(initialTab ?? 'disputes');
+  const [activeTab, setActiveTab] = useState<ExtendedFinanceTab>(initialTab ?? 'disputes');
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
@@ -26,7 +32,7 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
       </div>
 
       {/* Tab navigation */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-2xl w-fit">
+      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-2xl w-fit">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -47,6 +53,8 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
         {activeTab === 'disputes' && <DisputesTab />}
         {activeTab === 'invoices' && <InvoicesTab />}
         {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'financeMails' && <FinanceMailsTab />}
+        {activeTab === 'emmaPlanner' && <EmmaPlannerTab />}
       </div>
     </div>
   );

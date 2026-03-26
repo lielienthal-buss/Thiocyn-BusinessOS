@@ -41,7 +41,7 @@ const NotificationFeedView = lazy(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazy(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazy(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner';
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
@@ -107,6 +107,8 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'financeOverview', label: 'Overview' },
       { id: 'financeDisputesTab', label: 'Disputes' },
       { id: 'toolStack', label: '🔧 Tool Stack' },
+      { id: 'financeMails', label: '📬 Finance Mails' },
+      { id: 'emmaPlanner', label: '🗓 Emma · Plan' },
     ],
   },
   {
@@ -290,8 +292,14 @@ const Dashboard: React.FC = () => {
       return <TeamTasksView userEmail={session?.user?.email} />;
     }
 
-    if (tab === 'financeOverview' || tab === 'financeDisputesTab') {
-      return <FinanceView activeTab={tab === 'financeDisputesTab' ? 'disputes' : 'overview'} />;
+    if (tab === 'financeOverview' || tab === 'financeDisputesTab' || tab === 'financeMails' || tab === 'emmaPlanner') {
+      const financeTabMap: Record<string, string> = {
+        financeDisputesTab: 'disputes',
+        financeOverview: 'overview',
+        financeMails: 'financeMails',
+        emmaPlanner: 'emmaPlanner',
+      };
+      return <FinanceView activeTab={financeTabMap[tab] as any} />;
     }
 
     if (tab === 'toolStack') {
