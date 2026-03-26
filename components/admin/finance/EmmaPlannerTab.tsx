@@ -12,7 +12,7 @@ interface TimeBlock {
 interface MailAction {
   mailId: string;
   subject: string;
-  action: 'forward_vanessa' | 'urgent_luis' | 'no_action';
+  action: 'forward_vanessa' | 'urgent_owner' | 'no_action';
   category: 'invoice' | 'reminder' | 'dispute' | 'info' | 'other';
   priority: 'high' | 'normal' | 'low';
 }
@@ -46,13 +46,13 @@ const BLOCK_LABELS: Record<TimeBlock['type'], string> = {
 
 const ACTION_STYLES: Record<MailAction['action'], string> = {
   forward_vanessa: 'bg-green-50 text-green-700 border-green-200',
-  urgent_luis: 'bg-red-50 text-red-700 border-red-200',
+  urgent_owner: 'bg-red-50 text-red-700 border-red-200',
   no_action: 'bg-gray-50 text-gray-500 border-gray-200',
 };
 
 const ACTION_LABELS: Record<MailAction['action'], string> = {
-  forward_vanessa: '→ Vanessa',
-  urgent_luis: 'Dringend (Luis)',
+  forward_vanessa: '→ Weiterleiten',
+  urgent_owner: '⚠️ Dringend',
   no_action: 'Keine Aktion',
 };
 

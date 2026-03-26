@@ -28,7 +28,7 @@ const STATUS_STYLES: Record<MailStatus, string> = {
 
 const STATUS_LABELS: Record<MailStatus, string> = {
   new: 'Neu',
-  forwarded_vanessa: '→ Vanessa',
+  forwarded_vanessa: 'Weitergeleitet',
   needs_clarification: 'Klären',
   no_action: 'Keine Aktion',
 };
@@ -58,7 +58,7 @@ function formatDate(iso: string) {
 const FILTERS: { id: FilterOption; label: string }[] = [
   { id: 'all', label: 'Alle' },
   { id: 'new', label: 'Neu' },
-  { id: 'forwarded_vanessa', label: '→ Vanessa' },
+  { id: 'forwarded_vanessa', label: 'Weitergeleitet' },
   { id: 'needs_clarification', label: 'Klären' },
 ];
 
@@ -214,7 +214,7 @@ export default function FinanceMailsTab() {
                   disabled={mail.status === 'forwarded_vanessa'}
                   className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors"
                 >
-                  → Vanessa
+                  → Weiterleiten
                 </button>
                 <button
                   onClick={() => updateStatus(mail.id, 'needs_clarification')}
@@ -231,11 +231,11 @@ export default function FinanceMailsTab() {
                   Keine Aktion
                 </button>
 
-                {/* Vanessa note */}
+                {/* Handoff note */}
                 <div className="flex items-center gap-1.5 ml-auto">
                   <input
                     type="text"
-                    placeholder="Notiz für Vanessa…"
+                    placeholder="Notiz für Buchhalter…"
                     value={noteValues[mail.id] ?? ''}
                     onChange={(e) => setNoteValues((v) => ({ ...v, [mail.id]: e.target.value }))}
                     className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-52"
