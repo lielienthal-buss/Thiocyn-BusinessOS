@@ -5,6 +5,18 @@ type MailStatus = 'new' | 'forwarded_vanessa' | 'needs_clarification' | 'no_acti
 type MailCategory = 'invoice' | 'reminder' | 'dispute' | 'info' | 'other';
 type FilterOption = 'all' | MailStatus;
 
+interface MailAnalysis {
+  sender_company?: string | null;
+  invoice_number?: string | null;
+  amount?: string | null;
+  currency?: string | null;
+  due_date?: string | null;
+  service_description?: string | null;
+  recommended_action?: string;
+  action_reason?: string;
+  summary?: string;
+}
+
 interface FinanceMail {
   id: string;
   sender: string;
@@ -15,7 +27,8 @@ interface FinanceMail {
   category: MailCategory | null;
   ai_action: string | null;
   ai_priority: 'high' | 'normal' | 'low' | null;
-  vanessa_note: string | null;
+  ai_analysis: MailAnalysis | null;
+  handoff_note: string | null;
   created_at: string;
 }
 
@@ -41,6 +54,14 @@ const CATEGORY_STYLES: Record<MailCategory, string> = {
   other: 'bg-gray-100 text-gray-500',
 };
 
+const CATEGORY_LABELS: Record<MailCategory, string> = {
+  invoice: 'Rechnung',
+  reminder: 'Mahnung',
+  dispute: 'Einspruch',
+  info: 'Info',
+  other: 'Sonstiges',
+};
+
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleString('de-DE', {
@@ -52,6 +73,18 @@ function formatDate(iso: string) {
     });
   } catch {
     return iso;
+  }
+}
+
+function formatDueDate(dateStr: string) {
+  try {
+    return new Date(dateStr).toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  } catch {
+    return dateStr;
   }
 }
 
@@ -70,6 +103,8 @@ export default function FinanceMailsTab() {
   const [noteValues, setNoteValues] = useState<Record<string, string>>({});
   const [savingNote, setSavingNote] = useState<string | null>(null);
   const [syncResult, setSyncResult] = useState<{ inserted: number; total: number } | null>(null);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const loadMails = useCallback(async () => {
     setLoading(true);
@@ -81,7 +116,7 @@ export default function FinanceMailsTab() {
       setMails(data as FinanceMail[]);
       const notes: Record<string, string> = {};
       for (const m of data as FinanceMail[]) {
-        notes[m.id] = m.vanessa_note ?? '';
+        notes[m.id] = m.handoff_note ?? '';
       }
       setNoteValues(notes);
     }
@@ -114,9 +149,27 @@ export default function FinanceMailsTab() {
     setSavingNote(id);
     await supabase
       .from('finance_mails')
-      .update({ vanessa_note: noteValues[id] || null })
+      .update({ handoff_note: noteValues[id] || null })
       .eq('id', id);
     setSavingNote(null);
+  };
+
+  const analyzeMail = async (id: string) => {
+    setAnalyzingId(id);
+    try {
+      const { data } = await supabase.functions.invoke('analyze-finance-mail', {
+        body: { mail_id: id },
+      });
+      if (data) {
+        setMails((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, ai_analysis: data as MailAnalysis } : m))
+        );
+        setExpandedId(id);
+      }
+    } catch {
+      // silent
+    }
+    setAnalyzingId(null);
   };
 
   const filtered = filter === 'all' ? mails : mails.filter((m) => m.status === filter);
@@ -189,14 +242,14 @@ export default function FinanceMailsTab() {
                     <p className="text-xs text-gray-400 mt-1 line-clamp-2">{mail.preview}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                   <span className="text-xs text-gray-400 whitespace-nowrap">{formatDate(mail.received_at)}</span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[mail.status]}`}>
                     {STATUS_LABELS[mail.status]}
                   </span>
                   {mail.category && (
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${CATEGORY_STYLES[mail.category]}`}>
-                      {mail.category}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category]}`}>
+                      {CATEGORY_LABELS[mail.category]}
                     </span>
                   )}
                   {mail.ai_priority === 'high' && (
@@ -206,6 +259,76 @@ export default function FinanceMailsTab() {
                   )}
                 </div>
               </div>
+
+              {/* AI Analysis panel */}
+              {mail.ai_analysis && expandedId === mail.id && (
+                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
+                    <button
+                      onClick={() => setExpandedId(null)}
+                      className="text-blue-400 hover:text-blue-600 text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  {mail.ai_analysis.summary && (
+                    <p className="text-xs text-blue-800 font-medium">{mail.ai_analysis.summary}</p>
+                  )}
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    {mail.ai_analysis.sender_company && (
+                      <div>
+                        <span className="text-blue-500">Unternehmen</span>
+                        <p className="text-blue-900 font-medium">{mail.ai_analysis.sender_company}</p>
+                      </div>
+                    )}
+                    {mail.ai_analysis.invoice_number && (
+                      <div>
+                        <span className="text-blue-500">Rechnungs-Nr.</span>
+                        <p className="text-blue-900 font-medium">{mail.ai_analysis.invoice_number}</p>
+                      </div>
+                    )}
+                    {mail.ai_analysis.amount && (
+                      <div>
+                        <span className="text-blue-500">Betrag</span>
+                        <p className="text-blue-900 font-medium">
+                          {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}
+                        </p>
+                      </div>
+                    )}
+                    {mail.ai_analysis.due_date && (
+                      <div>
+                        <span className="text-blue-500">Fälligkeit</span>
+                        <p className="text-blue-900 font-medium">{formatDueDate(mail.ai_analysis.due_date)}</p>
+                      </div>
+                    )}
+                    {mail.ai_analysis.service_description && (
+                      <div className="col-span-2">
+                        <span className="text-blue-500">Leistung</span>
+                        <p className="text-blue-900 font-medium">{mail.ai_analysis.service_description}</p>
+                      </div>
+                    )}
+                  </div>
+                  {mail.ai_analysis.action_reason && (
+                    <p className="text-xs text-blue-600 border-t border-blue-100 pt-2">
+                      💡 {mail.ai_analysis.action_reason}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Show collapsed analysis indicator */}
+              {mail.ai_analysis && expandedId !== mail.id && (
+                <button
+                  onClick={() => setExpandedId(mail.id)}
+                  className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                >
+                  <span>📊</span> KI-Analyse anzeigen
+                  {mail.ai_analysis.amount && (
+                    <span className="ml-1 text-blue-400">· {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}</span>
+                  )}
+                </button>
+              )}
 
               {/* Actions + note */}
               <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
@@ -229,6 +352,20 @@ export default function FinanceMailsTab() {
                   className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors"
                 >
                   Keine Aktion
+                </button>
+
+                {/* Analyze button */}
+                <button
+                  onClick={() => analyzeMail(mail.id)}
+                  disabled={analyzingId === mail.id}
+                  className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors flex items-center gap-1"
+                >
+                  {analyzingId === mail.id ? (
+                    <span className="inline-block w-3 h-3 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <span>🔍</span>
+                  )}
+                  {mail.ai_analysis ? 'Neu analysieren' : 'Analysieren'}
                 </button>
 
                 {/* Handoff note */}
