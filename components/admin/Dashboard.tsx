@@ -45,7 +45,7 @@ type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' 
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
-const ADMIN_EMAIL = 'luis@mail.hartlimesgmbh.de';
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
 
 // Role hierarchy: owner > admin > staff > intern_lead > viewer
 const ROLE_LEVEL: Record<UserRole, number> = { owner: 4, admin: 3, staff: 2, intern_lead: 1, viewer: 0 };
