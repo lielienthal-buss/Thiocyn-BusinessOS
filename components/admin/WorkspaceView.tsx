@@ -5,25 +5,26 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface WorkspaceConfig {
   enabled_modules: string[];
-  mail_label: string;
-  imap_host: string | null;
-  imap_port: number;
-  imap_user: string | null;
 }
 
 const DEFAULT_CONFIG: WorkspaceConfig = {
   enabled_modules: ['mails', 'tools', 'projekte', 'zugaenge'],
-  mail_label: 'Mein Postfach',
-  imap_host: null,
-  imap_port: 993,
-  imap_user: null,
 };
 
-const SESSION_PASS_KEY = 'ws_imap_pass';
+interface MailAccount {
+  id: string;
+  user_id: string;
+  label: string;
+  imap_host: string;
+  imap_port: number;
+  imap_user: string;
+  created_at: string;
+}
 
 interface UserMail {
   id: string;
   user_id: string;
+  account_id: string | null;
   sender: string;
   subject: string;
   preview: string | null;
@@ -106,14 +107,12 @@ const ACCESS_LABELS: Record<string, string> = {
 
 interface ConfigPanelProps {
   config: WorkspaceConfig;
-  onSave: (c: WorkspaceConfig, pass: string) => void;
+  onSave: (c: WorkspaceConfig) => void;
   onClose: () => void;
-  hasPassword: boolean;
 }
 
-function ConfigPanel({ config, onSave, onClose, hasPassword }: ConfigPanelProps) {
+function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
   const [form, setForm] = useState<WorkspaceConfig>({ ...config });
-  const [pass, setPass] = useState('');
   const ALL_MODULES = ['mails', 'tools', 'projekte', 'zugaenge'];
   const MODULE_LABELS: Record<string, string> = {
     mails: '📬 Mails', tools: '🔧 Tools', projekte: '📋 Projekte', zugaenge: '🔑 Zugänge',
@@ -152,49 +151,9 @@ function ConfigPanel({ config, onSave, onClose, hasPassword }: ConfigPanelProps)
           </div>
         </div>
 
-        {/* Mail settings */}
-        {form.enabled_modules.includes('mails') && (
-          <div className="space-y-3 border-t border-gray-100 pt-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mail-Account</p>
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">Bezeichnung</label>
-              <input value={form.mail_label} onChange={e => setForm(f => ({ ...f, mail_label: e.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder="z.B. CS Support, Mein Postfach" />
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="col-span-2">
-                <label className="text-xs text-gray-500 block mb-1">IMAP Host</label>
-                <input value={form.imap_host ?? ''} onChange={e => setForm(f => ({ ...f, imap_host: e.target.value || null }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                  placeholder="mail.domain.de" />
-              </div>
-              <div>
-                <label className="text-xs text-gray-500 block mb-1">Port</label>
-                <input type="number" value={form.imap_port} onChange={e => setForm(f => ({ ...f, imap_port: parseInt(e.target.value) || 993 }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">Benutzername / E-Mail</label>
-              <input value={form.imap_user ?? ''} onChange={e => setForm(f => ({ ...f, imap_user: e.target.value || null }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder="name@domain.de" />
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 block mb-1">
-                Passwort <span className="text-gray-400 font-normal">(nur für diese Sitzung — wird nicht gespeichert)</span>
-              </label>
-              <input type="password" value={pass} onChange={e => setPass(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder={hasPassword ? '••••••••  (bereits gesetzt)' : 'Passwort eingeben'} />
-            </div>
-          </div>
-        )}
-
         <div className="flex justify-end gap-2 pt-1">
           <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
-          <button onClick={() => onSave(form, pass)}
+          <button onClick={() => onSave(form)}
             className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
             Speichern
           </button>
@@ -204,17 +163,167 @@ function ConfigPanel({ config, onSave, onClose, hasPassword }: ConfigPanelProps)
   );
 }
 
+// ─── Accounts Panel ────────────────────────────────────────────────────────────
+
+interface AccountsPanelProps {
+  userId: string;
+  accounts: MailAccount[];
+  sessionPasses: Record<string, string>;
+  onSaved: (accounts: MailAccount[], passes: Record<string, string>) => void;
+  onClose: () => void;
+}
+
+function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: AccountsPanelProps) {
+  const [showAdd, setShowAdd] = useState(false);
+  const [label, setLabel] = useState('Postfach');
+  const [imapHost, setImapHost] = useState('');
+  const [imapPort, setImapPort] = useState(993);
+  const [imapUser, setImapUser] = useState('');
+  const [imapPass, setImapPass] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleAdd = async () => {
+    if (!imapHost || !imapUser) return;
+    setSaving(true);
+    const { data, error } = await supabase.from('user_mail_accounts').insert({
+      user_id: userId,
+      label,
+      imap_host: imapHost,
+      imap_port: imapPort,
+      imap_user: imapUser,
+    }).select().single();
+
+    if (!error && data) {
+      const newAccount = data as MailAccount;
+      const newAccounts = [...accounts, newAccount];
+      const newPasses = { ...sessionPasses };
+      if (imapPass) {
+        sessionStorage.setItem(`ws_imap_pass_${newAccount.id}`, imapPass);
+        newPasses[newAccount.id] = imapPass;
+      }
+      setLabel('Postfach');
+      setImapHost('');
+      setImapPort(993);
+      setImapUser('');
+      setImapPass('');
+      setShowAdd(false);
+      onSaved(newAccounts, newPasses);
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async (account: MailAccount) => {
+    if (!confirm(`Konto "${account.label}" entfernen?`)) return;
+    setDeletingId(account.id);
+    await supabase.from('user_mail_accounts').delete().eq('id', account.id).eq('user_id', userId);
+    sessionStorage.removeItem(`ws_imap_pass_${account.id}`);
+    const newPasses = { ...sessionPasses };
+    delete newPasses[account.id];
+    const newAccounts = accounts.filter(a => a.id !== account.id);
+    setDeletingId(null);
+    onSaved(newAccounts, newPasses);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-gray-800">Mail-Accounts</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">✕</button>
+        </div>
+
+        {/* Existing accounts */}
+        {accounts.length > 0 ? (
+          <div className="space-y-2">
+            {accounts.map(account => (
+              <div key={account.id} className="flex items-center justify-between gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 truncate">{account.label}</p>
+                  <p className="text-xs text-gray-400 truncate">{account.imap_user}</p>
+                </div>
+                <button onClick={() => handleDelete(account)} disabled={deletingId === account.id}
+                  className="p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50 shrink-0">
+                  {deletingId === account.id
+                    ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                    : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  }
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-400 text-center py-2">Noch keine Konten konfiguriert.</p>
+        )}
+
+        {/* Add form */}
+        {showAdd ? (
+          <div className="space-y-3 border-t border-gray-100 pt-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Konto hinzufügen</p>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Bezeichnung</label>
+              <input value={label} onChange={e => setLabel(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder="z.B. CS Support, Mein Postfach" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <label className="text-xs text-gray-500 block mb-1">IMAP Host</label>
+                <input value={imapHost} onChange={e => setImapHost(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                  placeholder="mail.domain.de" />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Port</label>
+                <input type="number" value={imapPort} onChange={e => setImapPort(parseInt(e.target.value) || 993)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Benutzername / E-Mail</label>
+              <input value={imapUser} onChange={e => setImapUser(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder="name@domain.de" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">
+                Passwort <span className="text-gray-400 font-normal">(nur für diese Sitzung)</span>
+              </label>
+              <input type="password" value={imapPass} onChange={e => setImapPass(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder="App-Passwort eingeben" />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
+              <button onClick={handleAdd} disabled={saving || !imapHost || !imapUser}
+                className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors">
+                {saving ? '…' : 'Speichern'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => setShowAdd(true)}
+            className="w-full py-2.5 border border-dashed border-gray-300 text-xs font-semibold text-gray-500 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-colors">
+            + Konto hinzufügen
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Mails Tab ────────────────────────────────────────────────────────────────
 
 interface MailsTabProps {
-  config: WorkspaceConfig;
   userId: string;
-  sessionPass: string | null;
-  onNeedConfig: () => void;
-  onNeedPassword: () => void;
+  accounts: MailAccount[];
+  sessionPasses: Record<string, string>;
+  onNeedAccounts: () => void;
+  onPasswordNeeded: (account: MailAccount) => void;
 }
 
-function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }: MailsTabProps) {
+function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordNeeded }: MailsTabProps) {
+  const [activeAccount, setActiveAccount] = useState<string | 'all'>('all');
   const [mails, setMails] = useState<UserMail[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -227,11 +336,13 @@ function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }:
 
   const loadMails = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    const query = supabase
       .from('user_mails')
       .select('*')
       .eq('user_id', userId)
       .order('received_at', { ascending: false });
+
+    const { data } = await query;
     if (data) {
       setMails(data as UserMail[]);
       const notes: Record<string, string> = {};
@@ -243,24 +354,47 @@ function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }:
 
   useEffect(() => { loadMails(); }, [loadMails]);
 
+  const syncAccount = async (account: MailAccount) => {
+    const pass = sessionPasses[account.id];
+    if (!pass) { onPasswordNeeded(account); return false; }
+    const { data } = await supabase.functions.invoke('fetch-user-mails', {
+      body: {
+        imap_host: account.imap_host,
+        imap_port: account.imap_port,
+        imap_user: account.imap_user,
+        imap_pass: pass,
+        user_id: userId,
+        account_id: account.id,
+      },
+    });
+    return data as { inserted: number; total: number } | null;
+  };
+
   const syncMails = async () => {
-    if (!config.imap_host || !config.imap_user) { onNeedConfig(); return; }
-    if (!sessionPass) { onNeedPassword(); return; }
+    if (accounts.length === 0) { onNeedAccounts(); return; }
     setSyncing(true);
     setSyncResult(null);
-    try {
-      const { data } = await supabase.functions.invoke('fetch-user-mails', {
-        body: {
-          imap_host: config.imap_host,
-          imap_port: config.imap_port,
-          imap_user: config.imap_user,
-          imap_pass: sessionPass,
-          user_id: userId,
-        },
-      });
-      if (data) setSyncResult(data as { inserted: number; total: number });
-      await loadMails();
-    } catch { /* silent */ }
+
+    if (activeAccount !== 'all') {
+      const account = accounts.find(a => a.id === activeAccount);
+      if (account) {
+        const result = await syncAccount(account);
+        if (result) setSyncResult(result);
+      }
+    } else {
+      let totalInserted = 0;
+      let totalChecked = 0;
+      for (const account of accounts) {
+        const result = await syncAccount(account);
+        if (result) {
+          totalInserted += result.inserted;
+          totalChecked += result.total;
+        }
+      }
+      setSyncResult({ inserted: totalInserted, total: totalChecked });
+    }
+
+    await loadMails();
     setSyncing(false);
   };
 
@@ -283,59 +417,88 @@ function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }:
     setSavingNote(null);
   };
 
-  // Not configured yet
-  if (!config.imap_host || !config.imap_user) {
+  // No accounts configured — SOP onboarding
+  if (accounts.length === 0) {
+    const steps = [
+      {
+        num: '1',
+        title: 'IMAP-Zugangsdaten besorgen',
+        body: 'Du brauchst: IMAP-Host, Port (993), E-Mail-Adresse und ein App-Passwort. App-Passwörter findest du in den Sicherheitseinstellungen deines E-Mail-Providers — nicht dein normales Login-Passwort verwenden.',
+        tip: 'KAS/All-Inkl: Kundenmenü → E-Mail → Postfach → App-Passwort erstellen',
+      },
+      {
+        num: '2',
+        title: 'Mail-Account konfigurieren',
+        body: 'Klicke auf "Postfächer" und trage Host, Port, Benutzername und App-Passwort ein. Das Passwort wird nur für diese Sitzung gespeichert — nie dauerhaft.',
+        tip: 'Host-Beispiele: mail.domain.de · imap.gmail.com · outlook.office365.com',
+      },
+      {
+        num: '3',
+        title: 'Postfach synchronisieren',
+        body: 'Nach der Einrichtung auf "Sync" klicken. Die letzten 30 Mails werden geladen und automatisch von der KI kategorisiert (Rechnung, Mahnung, Info …).',
+        tip: 'Bei jeder neuen Sitzung: Passwort erneut eingeben, dann Sync.',
+      },
+    ];
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
-        <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">📬</div>
-        <div>
-          <p className="text-sm font-semibold text-gray-800">Noch kein Mail-Account eingerichtet</p>
-          <p className="text-xs text-gray-400 mt-1">Füge dein IMAP-Postfach hinzu um Mails hier zu verwalten</p>
+      <div className="max-w-lg mx-auto py-8 space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-xl">📬</div>
+          <div>
+            <p className="text-sm font-bold text-gray-800">Mail-Account einrichten</p>
+            <p className="text-xs text-gray-400">Folge diesen 3 Schritten um dein Postfach anzubinden</p>
+          </div>
         </div>
-        <button onClick={onNeedConfig}
-          className="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
-          Mail einrichten
+
+        <div className="space-y-3">
+          {steps.map(s => (
+            <div key={s.num} className="bg-white border border-gray-200 rounded-2xl p-4 flex gap-4 shadow-sm">
+              <div className="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                {s.num}
+              </div>
+              <div className="space-y-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800">{s.title}</p>
+                <p className="text-xs text-gray-500 leading-relaxed">{s.body}</p>
+                <p className="text-xs text-primary-600 bg-primary-50 rounded-lg px-2.5 py-1 inline-block mt-1">{s.tip}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={onNeedAccounts}
+          className="w-full py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
+          Postfächer einrichten
         </button>
       </div>
     );
   }
 
-  // Configured but no session password
-  if (!sessionPass) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
-        <div className="w-12 h-12 bg-yellow-50 border border-yellow-200 rounded-2xl flex items-center justify-center text-2xl">🔑</div>
-        <div>
-          <p className="text-sm font-semibold text-gray-800">{config.mail_label}</p>
-          <p className="text-xs text-gray-400 mt-1">Passwort eingeben um Mails zu synchronisieren</p>
-          <p className="text-xs text-gray-300 mt-0.5">{config.imap_user}</p>
-        </div>
-        <button onClick={onNeedPassword}
-          className="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
-          Passwort eingeben
-        </button>
-        {mails.length > 0 && (
-          <p className="text-xs text-gray-400">({mails.length} Mails aus letzter Sitzung sichtbar)</p>
-        )}
-      </div>
-    );
-  }
-
-  const filtered = filter === 'all' ? mails : mails.filter(m => m.status === filter);
+  const accountMailsAll = activeAccount === 'all' ? mails : mails.filter(m => m.account_id === activeAccount);
+  const filtered = filter === 'all' ? accountMailsAll : accountMailsAll.filter(m => m.status === filter);
 
   return (
     <div className="space-y-4">
+      {/* Account filter row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <button onClick={() => setActiveAccount('all')}
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}>
+          Alle
+        </button>
+        {accounts.map(account => (
+          <button key={account.id} onClick={() => setActiveAccount(account.id)}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === account.id ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}>
+            {account.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <p className="text-xs font-semibold text-gray-600">{config.mail_label}</p>
-          <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-            {(['all', 'new', 'actioned', 'archived'] as const).map(f => (
-              <button key={f} onClick={() => setFilter(f)}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                {f === 'all' ? `Alle (${mails.length})` : f === 'new' ? `Neu (${mails.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
-              </button>
-            ))}
-          </div>
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
+          {(['all', 'new', 'actioned', 'archived'] as const).map(f => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+              {f === 'all' ? `Alle (${accountMailsAll.length})` : f === 'new' ? `Neu (${accountMailsAll.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
+            </button>
+          ))}
         </div>
         <button onClick={syncMails} disabled={syncing}
           className="flex items-center gap-2 px-3 py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-60 transition-colors">
@@ -362,80 +525,88 @@ function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }:
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(mail => (
-            <div key={mail.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3">
-              {/* Header */}
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-800 truncate">{mail.subject}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">{mail.sender}</p>
-                  {mail.preview && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{mail.preview}</p>}
-                </div>
-                <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                  <span className="text-xs text-gray-400">{fmt(mail.received_at)}</span>
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[mail.status]}`}>
-                    {STATUS_LABELS[mail.status]}
-                  </span>
-                  {mail.category && (
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category] ?? 'bg-gray-100 text-gray-500'}`}>
-                      {mail.category}
-                    </span>
-                  )}
-                  {mail.ai_priority === 'high' && (
-                    <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>
-                  )}
-                  <button onClick={() => deleteMail(mail.id)} disabled={deletingId === mail.id}
-                    className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50" title="Löschen">
-                    {deletingId === mail.id
-                      ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
-                      : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    }
-                  </button>
-                </div>
-              </div>
-
-              {/* Analysis panel */}
-              {mail.ai_analysis && expandedId === mail.id && (
-                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
-                    <button onClick={() => setExpandedId(null)} className="text-blue-400 hover:text-blue-600 text-xs">✕</button>
+          {filtered.map(mail => {
+            const mailAccount = accounts.find(a => a.id === mail.account_id);
+            return (
+              <div key={mail.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3">
+                {/* Header */}
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{mail.subject}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{mail.sender}</p>
+                    {mail.preview && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{mail.preview}</p>}
                   </div>
-                  {mail.ai_analysis.summary && <p className="text-xs text-blue-800">{mail.ai_analysis.summary}</p>}
-                  {mail.ai_analysis.action_reason && <p className="text-xs text-blue-600">💡 {mail.ai_analysis.action_reason}</p>}
+                  <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                    <span className="text-xs text-gray-400">{fmt(mail.received_at)}</span>
+                    {mailAccount && (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400">
+                        {mailAccount.label}
+                      </span>
+                    )}
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[mail.status]}`}>
+                      {STATUS_LABELS[mail.status]}
+                    </span>
+                    {mail.category && (
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category] ?? 'bg-gray-100 text-gray-500'}`}>
+                        {mail.category}
+                      </span>
+                    )}
+                    {mail.ai_priority === 'high' && (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>
+                    )}
+                    <button onClick={() => deleteMail(mail.id)} disabled={deletingId === mail.id}
+                      className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50" title="Löschen">
+                      {deletingId === mail.id
+                        ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                        : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      }
+                    </button>
+                  </div>
                 </div>
-              )}
-              {mail.ai_analysis && expandedId !== mail.id && (
-                <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">📊 Analyse anzeigen</button>
-              )}
 
-              {/* Actions */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
-                <button onClick={() => updateStatus(mail.id, 'actioned')} disabled={mail.status === 'actioned'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors">
-                  ✓ Erledigt
-                </button>
-                <button onClick={() => updateStatus(mail.id, 'archived')} disabled={mail.status === 'archived'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                  Archivieren
-                </button>
-                <button onClick={() => updateStatus(mail.id, 'new')} disabled={mail.status === 'new'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors">
-                  Als neu markieren
-                </button>
-                <div className="flex items-center gap-1.5 ml-auto">
-                  <input type="text" placeholder="Notiz…"
-                    value={noteValues[mail.id] ?? ''}
-                    onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
-                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-36" />
-                  <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
-                    className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                    {savingNote === mail.id ? '…' : 'Speichern'}
+                {/* Analysis panel */}
+                {mail.ai_analysis && expandedId === mail.id && (
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
+                      <button onClick={() => setExpandedId(null)} className="text-blue-400 hover:text-blue-600 text-xs">✕</button>
+                    </div>
+                    {mail.ai_analysis.summary && <p className="text-xs text-blue-800">{mail.ai_analysis.summary}</p>}
+                    {mail.ai_analysis.action_reason && <p className="text-xs text-blue-600">💡 {mail.ai_analysis.action_reason}</p>}
+                  </div>
+                )}
+                {mail.ai_analysis && expandedId !== mail.id && (
+                  <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">📊 Analyse anzeigen</button>
+                )}
+
+                {/* Actions */}
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
+                  <button onClick={() => updateStatus(mail.id, 'actioned')} disabled={mail.status === 'actioned'}
+                    className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors">
+                    ✓ Erledigt
                   </button>
+                  <button onClick={() => updateStatus(mail.id, 'archived')} disabled={mail.status === 'archived'}
+                    className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors">
+                    Archivieren
+                  </button>
+                  <button onClick={() => updateStatus(mail.id, 'new')} disabled={mail.status === 'new'}
+                    className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors">
+                    Als neu markieren
+                  </button>
+                  <div className="flex items-center gap-1.5 ml-auto">
+                    <input type="text" placeholder="Notiz…"
+                      value={noteValues[mail.id] ?? ''}
+                      onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-36" />
+                    <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
+                      className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
+                      {savingNote === mail.id ? '…' : 'Speichern'}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -447,6 +618,7 @@ function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }:
 interface PasswordPromptProps {
   label: string;
   user: string;
+  accountId?: string;
   onSubmit: (pass: string) => void;
   onClose: () => void;
 }
@@ -574,7 +746,7 @@ function ProjekteTab() {
 
   return (
     <div className="space-y-5">
-      {Object.entries(byBrand).sort().map(([brand, bt]) => (
+      {(Object.entries(byBrand) as [string, TeamTask[]][]).sort().map(([brand, bt]) => (
         <div key={brand}>
           <div className="flex items-center gap-2 mb-2">
             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{brand}</h4>
@@ -756,57 +928,59 @@ export default function WorkspaceView() {
   const [configLoaded, setConfigLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('mails');
   const [showConfig, setShowConfig] = useState(false);
-  const [showPassPrompt, setShowPassPrompt] = useState(false);
-  const [sessionPass, setSessionPass] = useState<string | null>(null);
+  const [showAccountsPanel, setShowAccountsPanel] = useState(false);
+  const [accounts, setAccounts] = useState<MailAccount[]>([]);
+  const [sessionPasses, setSessionPasses] = useState<Record<string, string>>({});
+  const [passwordTarget, setPasswordTarget] = useState<MailAccount | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Load user + config
+  // Load user + config + accounts
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
       setUserId(user.id);
 
-      // Restore session password if available
-      const storedPass = sessionStorage.getItem(SESSION_PASS_KEY);
-      if (storedPass) setSessionPass(storedPass);
-
       // Load workspace config
-      supabase.from('user_workspace_config').select('*').eq('user_id', user.id).maybeSingle()
+      supabase.from('user_workspace_config').select('enabled_modules').eq('user_id', user.id).maybeSingle()
         .then(({ data }) => {
           if (data) setConfig(data as WorkspaceConfig);
           setConfigLoaded(true);
         });
+
+      // Load mail accounts + restore session passwords
+      supabase.from('user_mail_accounts').select('*').eq('user_id', user.id).order('created_at')
+        .then(({ data }) => {
+          if (data) {
+            const loadedAccounts = data as MailAccount[];
+            setAccounts(loadedAccounts);
+            // Restore session passes for each account
+            const passes: Record<string, string> = {};
+            for (const account of loadedAccounts) {
+              const stored = sessionStorage.getItem(`ws_imap_pass_${account.id}`);
+              if (stored) passes[account.id] = stored;
+            }
+            setSessionPasses(passes);
+          }
+        });
     });
   }, []);
 
-  const saveConfig = async (newConfig: WorkspaceConfig, pass: string) => {
+  const saveConfig = async (newConfig: WorkspaceConfig) => {
     if (!userId) return;
-
-    // Save password to sessionStorage only
-    if (pass) {
-      sessionStorage.setItem(SESSION_PASS_KEY, pass);
-      setSessionPass(pass);
-    }
-
-    // Save config (without password) to DB
     await supabase.from('user_workspace_config').upsert({
       user_id: userId,
       enabled_modules: newConfig.enabled_modules,
-      mail_label: newConfig.mail_label,
-      imap_host: newConfig.imap_host,
-      imap_port: newConfig.imap_port,
-      imap_user: newConfig.imap_user,
       updated_at: new Date().toISOString(),
     });
-
     setConfig(newConfig);
     setShowConfig(false);
   };
 
   const handlePasswordSubmit = (pass: string) => {
-    sessionStorage.setItem(SESSION_PASS_KEY, pass);
-    setSessionPass(pass);
-    setShowPassPrompt(false);
+    if (!passwordTarget) return;
+    sessionStorage.setItem(`ws_imap_pass_${passwordTarget.id}`, pass);
+    setSessionPasses(prev => ({ ...prev, [passwordTarget.id]: pass }));
+    setPasswordTarget(null);
   };
 
   if (!configLoaded) {
@@ -820,16 +994,31 @@ export default function WorkspaceView() {
     <>
       {/* Config modal */}
       {showConfig && (
-        <ConfigPanel config={config} onSave={saveConfig} onClose={() => setShowConfig(false)} hasPassword={!!sessionPass} />
+        <ConfigPanel config={config} onSave={saveConfig} onClose={() => setShowConfig(false)} />
+      )}
+
+      {/* Accounts panel */}
+      {showAccountsPanel && userId && (
+        <AccountsPanel
+          userId={userId}
+          accounts={accounts}
+          sessionPasses={sessionPasses}
+          onSaved={(newAccounts, newPasses) => {
+            setAccounts(newAccounts);
+            setSessionPasses(newPasses);
+          }}
+          onClose={() => setShowAccountsPanel(false)}
+        />
       )}
 
       {/* Password prompt */}
-      {showPassPrompt && config.imap_host && config.imap_user && (
+      {passwordTarget && (
         <PasswordPrompt
-          label={config.mail_label}
-          user={config.imap_user}
+          label={passwordTarget.label}
+          user={passwordTarget.imap_user}
+          accountId={passwordTarget.id}
           onSubmit={handlePasswordSubmit}
-          onClose={() => setShowPassPrompt(false)}
+          onClose={() => setPasswordTarget(null)}
         />
       )}
 
@@ -844,24 +1033,30 @@ export default function WorkspaceView() {
               </button>
             ))}
           </div>
-          <button onClick={() => setShowConfig(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
-            </svg>
-            Konfigurieren
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowAccountsPanel(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+              📬 Postfächer
+            </button>
+            <button onClick={() => setShowConfig(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+              </svg>
+              Konfigurieren
+            </button>
+          </div>
         </div>
 
         {/* Content */}
         {userId && currentTab === 'mails' && (
           <MailsTab
-            config={config}
             userId={userId}
-            sessionPass={sessionPass}
-            onNeedConfig={() => setShowConfig(true)}
-            onNeedPassword={() => setShowPassPrompt(true)}
+            accounts={accounts}
+            sessionPasses={sessionPasses}
+            onNeedAccounts={() => setShowAccountsPanel(true)}
+            onPasswordNeeded={(account) => setPasswordTarget(account)}
           />
         )}
         {currentTab === 'tools' && <ToolsTab />}
