@@ -366,7 +366,13 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
       },
     });
     if (error) {
-      setSyncError(`${account.label}: ${error.message ?? 'Unbekannter Fehler'}`);
+      let detail = error.message ?? 'Verbindungsfehler';
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const body = await (error as any).context?.json?.();
+        if (body?.error) detail = body.error;
+      } catch { /* ignore */ }
+      setSyncError(`${account.label}: ${detail}`);
       return null;
     }
     if (data?.error) {
