@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useT } from '@/lib/language';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -91,16 +92,9 @@ const STATUS_STYLES: Record<string, string> = {
   archived: 'bg-gray-100 text-gray-400',
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  new: 'Neu', actioned: 'Erledigt', archived: 'Archiv',
-};
-
 const ACCESS_STATUS: Record<string, string> = {
   open: 'bg-gray-100 text-gray-600', requested: 'bg-blue-100 text-blue-700',
   granted: 'bg-green-100 text-green-700', denied: 'bg-red-100 text-red-600',
-};
-const ACCESS_LABELS: Record<string, string> = {
-  open: 'Offen', requested: 'Beantragt', granted: 'Erteilt', denied: 'Abgelehnt',
 };
 
 // ─── Config Panel ─────────────────────────────────────────────────────────────
@@ -112,6 +106,7 @@ interface ConfigPanelProps {
 }
 
 function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
+  const t = useT();
   const [form, setForm] = useState<WorkspaceConfig>({ ...config });
   const ALL_MODULES = ['mails', 'tools', 'projekte', 'zugaenge'];
   const MODULE_LABELS: Record<string, string> = {
@@ -131,13 +126,13 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
     <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-gray-800">Workspace konfigurieren</h3>
+          <h3 className="text-sm font-bold text-gray-800">{t('cp.title')}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">✕</button>
         </div>
 
         {/* Module toggles */}
         <div>
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Aktive Module</p>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t('cp.modules')}</p>
           <div className="grid grid-cols-2 gap-2">
             {ALL_MODULES.map(m => (
               <button key={m} onClick={() => toggleModule(m)}
@@ -152,10 +147,10 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">{t('ap.cancel')}</button>
           <button onClick={() => onSave(form)}
             className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
-            Speichern
+            {t('ap.save')}
           </button>
         </div>
       </div>
@@ -174,6 +169,7 @@ interface AccountsPanelProps {
 }
 
 function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: AccountsPanelProps) {
+  const t = useT();
   const [showAdd, setShowAdd] = useState(false);
   const [label, setLabel] = useState('Postfach');
   const [imapHost, setImapHost] = useState('');
@@ -229,7 +225,7 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
     <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-gray-800">Mail-Accounts</h3>
+          <h3 className="text-sm font-bold text-gray-800">{t('ap.title')}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">✕</button>
         </div>
 
@@ -253,58 +249,58 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-400 text-center py-2">Noch keine Konten konfiguriert.</p>
+          <p className="text-xs text-gray-400 text-center py-2">{t('ap.noAccounts')}</p>
         )}
 
         {/* Add form */}
         {showAdd ? (
           <div className="space-y-3 border-t border-gray-100 pt-4">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Konto hinzufügen</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('ap.addAccount')}</p>
             <div>
-              <label className="text-xs text-gray-500 block mb-1">Bezeichnung</label>
+              <label className="text-xs text-gray-500 block mb-1">{t('ap.label')}</label>
               <input value={label} onChange={e => setLabel(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="z.B. CS Support, Mein Postfach" />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
-                <label className="text-xs text-gray-500 block mb-1">IMAP Host</label>
+                <label className="text-xs text-gray-500 block mb-1">{t('ap.host')}</label>
                 <input value={imapHost} onChange={e => setImapHost(e.target.value)}
                   className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                   placeholder="mail.domain.de" />
               </div>
               <div>
-                <label className="text-xs text-gray-500 block mb-1">Port</label>
+                <label className="text-xs text-gray-500 block mb-1">{t('ap.port')}</label>
                 <input type="number" value={imapPort} onChange={e => setImapPort(parseInt(e.target.value) || 993)}
                   className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
               </div>
             </div>
             <div>
-              <label className="text-xs text-gray-500 block mb-1">Benutzername / E-Mail</label>
+              <label className="text-xs text-gray-500 block mb-1">{t('ap.user')}</label>
               <input value={imapUser} onChange={e => setImapUser(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="name@domain.de" />
             </div>
             <div>
               <label className="text-xs text-gray-500 block mb-1">
-                Passwort <span className="text-gray-400 font-normal">(nur für diese Sitzung)</span>
+                {t('ap.password')} <span className="text-gray-400 font-normal">({t('ap.passwordHint')})</span>
               </label>
               <input type="password" value={imapPass} onChange={e => setImapPass(e.target.value)}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="App-Passwort eingeben" />
             </div>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">{t('ap.cancel')}</button>
               <button onClick={handleAdd} disabled={saving || !imapHost || !imapUser}
                 className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                {saving ? '…' : 'Speichern'}
+                {saving ? '…' : t('ap.save')}
               </button>
             </div>
           </div>
         ) : (
           <button onClick={() => setShowAdd(true)}
             className="w-full py-2.5 border border-dashed border-gray-300 text-xs font-semibold text-gray-500 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-colors">
-            + Konto hinzufügen
+            + {t('ap.addAccount')}
           </button>
         )}
       </div>
@@ -323,6 +319,7 @@ interface MailsTabProps {
 }
 
 function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordNeeded }: MailsTabProps) {
+  const t = useT();
   const [activeAccount, setActiveAccount] = useState<string | 'all'>('all');
   const [mails, setMails] = useState<UserMail[]>([]);
   const [loading, setLoading] = useState(true);
@@ -422,21 +419,21 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
     const steps = [
       {
         num: '1',
-        title: 'IMAP-Zugangsdaten besorgen',
-        body: 'Du brauchst: IMAP-Host, Port (993), E-Mail-Adresse und ein App-Passwort. App-Passwörter findest du in den Sicherheitseinstellungen deines E-Mail-Providers — nicht dein normales Login-Passwort verwenden.',
-        tip: 'KAS/All-Inkl: Kundenmenü → E-Mail → Postfach → App-Passwort erstellen',
+        title: t('mt.step1Title'),
+        body: t('mt.step1Body'),
+        tip: t('mt.step1Tip'),
       },
       {
         num: '2',
-        title: 'Mail-Account konfigurieren',
-        body: 'Klicke auf "Postfächer" und trage Host, Port, Benutzername und App-Passwort ein. Das Passwort wird nur für diese Sitzung gespeichert — nie dauerhaft.',
-        tip: 'Host-Beispiele: mail.domain.de · imap.gmail.com · outlook.office365.com',
+        title: t('mt.step2Title'),
+        body: t('mt.step2Body'),
+        tip: t('mt.step2Tip'),
       },
       {
         num: '3',
-        title: 'Postfach synchronisieren',
-        body: 'Nach der Einrichtung auf "Sync" klicken. Die letzten 30 Mails werden geladen und automatisch von der KI kategorisiert (Rechnung, Mahnung, Info …).',
-        tip: 'Bei jeder neuen Sitzung: Passwort erneut eingeben, dann Sync.',
+        title: t('mt.step3Title'),
+        body: t('mt.step3Body'),
+        tip: t('mt.step3Tip'),
       },
     ];
     return (
@@ -444,8 +441,8 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary-50 rounded-2xl flex items-center justify-center text-xl">📬</div>
           <div>
-            <p className="text-sm font-bold text-gray-800">Mail-Account einrichten</p>
-            <p className="text-xs text-gray-400">Folge diesen 3 Schritten um dein Postfach anzubinden</p>
+            <p className="text-sm font-bold text-gray-800">{t('mt.setupTitle')}</p>
+            <p className="text-xs text-gray-400">{t('mt.setupSubtitle')}</p>
           </div>
         </div>
 
@@ -466,11 +463,15 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
 
         <button onClick={onNeedAccounts}
           className="w-full py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
-          Postfächer einrichten
+          {t('mt.setupBtn')}
         </button>
       </div>
     );
   }
+
+  const STATUS_LABELS: Record<string, string> = {
+    new: t('mt.new'), actioned: t('mt.actioned'), archived: t('mt.archived'),
+  };
 
   const accountMailsAll = activeAccount === 'all' ? mails : mails.filter(m => m.account_id === activeAccount);
   const filtered = filter === 'all' ? accountMailsAll : accountMailsAll.filter(m => m.status === filter);
@@ -481,7 +482,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
       <div className="flex items-center gap-2 flex-wrap">
         <button onClick={() => setActiveAccount('all')}
           className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}>
-          Alle
+          {t('mt.all')}
         </button>
         {accounts.map(account => (
           <button key={account.id} onClick={() => setActiveAccount(account.id)}
@@ -496,7 +497,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
           {(['all', 'new', 'actioned', 'archived'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-              {f === 'all' ? `Alle (${accountMailsAll.length})` : f === 'new' ? `Neu (${accountMailsAll.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
+              {f === 'all' ? `${t('mt.all')} (${accountMailsAll.length})` : f === 'new' ? `${t('mt.new')} (${accountMailsAll.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
             </button>
           ))}
         </div>
@@ -507,13 +508,13 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           )}
-          Sync
+          {t('mt.sync')}
         </button>
       </div>
 
       {syncResult && (
         <p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-          Sync: <strong>{syncResult.inserted}</strong> neue Mails ({syncResult.total} geprüft)
+          Sync: <strong>{syncResult.inserted}</strong> {t('mt.syncResult')} ({syncResult.total} {t('mt.syncChecked')})
         </p>
       )}
 
@@ -521,7 +522,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-          <p className="text-sm">Keine Mails.</p>
+          <p className="text-sm">{t('mt.noMails')}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -552,10 +553,10 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                       </span>
                     )}
                     {mail.ai_priority === 'high' && (
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">{t('mt.urgent')}</span>
                     )}
                     <button onClick={() => deleteMail(mail.id)} disabled={deletingId === mail.id}
-                      className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50" title="Löschen">
+                      className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50" title={t('zt.delete')}>
                       {deletingId === mail.id
                         ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                         : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -568,7 +569,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                 {mail.ai_analysis && expandedId === mail.id && (
                   <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
+                      <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">{t('mt.analysisTitle')}</p>
                       <button onClick={() => setExpandedId(null)} className="text-blue-400 hover:text-blue-600 text-xs">✕</button>
                     </div>
                     {mail.ai_analysis.summary && <p className="text-xs text-blue-800">{mail.ai_analysis.summary}</p>}
@@ -576,31 +577,31 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                   </div>
                 )}
                 {mail.ai_analysis && expandedId !== mail.id && (
-                  <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">📊 Analyse anzeigen</button>
+                  <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">{t('mt.showAnalysis')}</button>
                 )}
 
                 {/* Actions */}
                 <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
                   <button onClick={() => updateStatus(mail.id, 'actioned')} disabled={mail.status === 'actioned'}
                     className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors">
-                    ✓ Erledigt
+                    {t('mt.markDone')}
                   </button>
                   <button onClick={() => updateStatus(mail.id, 'archived')} disabled={mail.status === 'archived'}
                     className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors">
-                    Archivieren
+                    {t('mt.archive')}
                   </button>
                   <button onClick={() => updateStatus(mail.id, 'new')} disabled={mail.status === 'new'}
                     className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors">
-                    Als neu markieren
+                    {t('mt.markNew')}
                   </button>
                   <div className="flex items-center gap-1.5 ml-auto">
-                    <input type="text" placeholder="Notiz…"
+                    <input type="text" placeholder={t('mt.notePlaceholder')}
                       value={noteValues[mail.id] ?? ''}
                       onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
                       className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-36" />
                     <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
                       className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
-                      {savingNote === mail.id ? '…' : 'Speichern'}
+                      {savingNote === mail.id ? '…' : t('mt.noteSave')}
                     </button>
                   </div>
                 </div>
@@ -624,12 +625,13 @@ interface PasswordPromptProps {
 }
 
 function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps) {
+  const t = useT();
   const [pass, setPass] = useState('');
   return (
     <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-gray-800">Passwort eingeben</h3>
+          <h3 className="text-sm font-bold text-gray-800">{t('pp.title')}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
         <div>
@@ -638,7 +640,7 @@ function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps)
         </div>
         <div>
           <label className="text-xs text-gray-500 block mb-1">
-            Passwort <span className="text-gray-400">(nur für diese Sitzung)</span>
+            {t('pp.label')} <span className="text-gray-400">({t('pp.hint')})</span>
           </label>
           <input type="password" value={pass} onChange={e => setPass(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && pass && onSubmit(pass)}
@@ -646,10 +648,10 @@ function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps)
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
         </div>
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">Abbrechen</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">{t('pp.cancel')}</button>
           <button onClick={() => pass && onSubmit(pass)} disabled={!pass}
             className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
-            Verbinden
+            {t('pp.connect')}
           </button>
         </div>
       </div>
@@ -660,6 +662,7 @@ function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps)
 // ─── Tools Tab ────────────────────────────────────────────────────────────────
 
 function ToolsTab() {
+  const t = useT();
   const [tools, setTools] = useState<Tool[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -686,9 +689,9 @@ function ToolsTab() {
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: 'Monatlich', value: `${total.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` },
-          { label: 'Aktiv', value: String(active.length) },
-          { label: 'Review', value: String(review.length), warn: review.length > 0 },
+          { label: t('tt.monthly'), value: `${total.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` },
+          { label: t('tt.active'), value: String(active.length) },
+          { label: t('tt.review'), value: String(review.length), warn: review.length > 0 },
         ].map(s => (
           <div key={s.label} className={`border rounded-2xl p-4 ${s.warn ? 'bg-yellow-50 border-yellow-200' : 'bg-white border-gray-200'}`}>
             <p className="text-xs text-gray-500 mb-1">{s.label}</p>
@@ -697,18 +700,18 @@ function ToolsTab() {
         ))}
       </div>
       <div className="space-y-2">
-        {tools.map(t => (
-          <div key={t.id} className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+        {tools.map(tool => (
+          <div key={tool.id} className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-gray-800">{t.name}</p>
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS[t.status] ?? 'bg-gray-50 text-gray-500'}`}>{t.status}</span>
+                <p className="text-sm font-semibold text-gray-800">{tool.name}</p>
+                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS[tool.status] ?? 'bg-gray-50 text-gray-500'}`}>{tool.status}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">{t.category}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{tool.category}</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {t.monthly_cost !== null && <p className="text-sm font-semibold text-gray-700">{t.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {t.currency}/mo</p>}
-              {t.url && <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:text-primary-800 font-medium">Öffnen →</a>}
+              {tool.monthly_cost !== null && <p className="text-sm font-semibold text-gray-700">{tool.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {tool.currency}/mo</p>}
+              {tool.url && <a href={tool.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:text-primary-800 font-medium">{t('tt.open')}</a>}
             </div>
           </div>
         ))}
@@ -720,6 +723,7 @@ function ToolsTab() {
 // ─── Projekte Tab ─────────────────────────────────────────────────────────────
 
 function ProjekteTab() {
+  const t = useT();
   const [tasks, setTasks] = useState<TeamTask[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -729,9 +733,9 @@ function ProjekteTab() {
       .then(({ data }) => { if (data) setTasks(data as TeamTask[]); setLoading(false); });
   }, []);
 
-  const byBrand = tasks.reduce<Record<string, TeamTask[]>>((acc, t) => {
-    if (!acc[t.brand]) acc[t.brand] = [];
-    acc[t.brand].push(t);
+  const byBrand = tasks.reduce<Record<string, TeamTask[]>>((acc, task) => {
+    if (!acc[task.brand]) acc[task.brand] = [];
+    acc[task.brand].push(task);
     return acc;
   }, {});
 
@@ -742,7 +746,7 @@ function ProjekteTab() {
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
-  if (!tasks.length) return <div className="flex flex-col items-center py-12 text-gray-400"><p className="text-sm">Keine offenen Tasks.</p></div>;
+  if (!tasks.length) return <div className="flex flex-col items-center py-12 text-gray-400"><p className="text-sm">{t('pt.noTasks')}</p></div>;
 
   return (
     <div className="space-y-5">
@@ -775,11 +779,16 @@ function ProjekteTab() {
 // ─── Zugänge Tab ──────────────────────────────────────────────────────────────
 
 function ZugaengeTab() {
+  const t = useT();
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState<Partial<AccessRequest>>({ status: 'open', priority: 'normal' });
   const [saving, setSaving] = useState(false);
+
+  const ACCESS_LABELS: Record<string, string> = {
+    open: t('zt.statusOpen'), requested: t('zt.statusRequested'), granted: t('zt.statusGranted'), denied: t('zt.statusDenied'),
+  };
 
   const load = useCallback(async () => {
     const { data } = await supabase.from('access_requests').select('*').order('priority').order('created_at', { ascending: false });
@@ -824,9 +833,9 @@ function ZugaengeTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-500">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} offen</p>
+        <p className="text-xs text-gray-500">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} {t('zt.open')}</p>
         <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
-          + Zugang beantragen
+          {t('zt.addBtn')}
         </button>
       </div>
 
@@ -834,39 +843,39 @@ function ZugaengeTab() {
         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-gray-500 block mb-1">Tool / Service *</label>
+              <label className="text-xs text-gray-500 block mb-1">{t('zt.tool')} *</label>
               <input value={form.tool_or_service ?? ''} onChange={e => setForm(f => ({ ...f, tool_or_service: e.target.value }))}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 block mb-1">Verantwortlich</label>
+              <label className="text-xs text-gray-500 block mb-1">{t('zt.responsible')}</label>
               <input value={form.responsible_person ?? ''} onChange={e => setForm(f => ({ ...f, responsible_person: e.target.value }))}
                 className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Beschreibung</label>
+            <label className="text-xs text-gray-500 block mb-1">{t('zt.description')}</label>
             <textarea value={form.description ?? ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none resize-none" rows={2} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AccessRequest['priority'] }))}
               className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
-              <option value="high">Hohe Priorität</option>
-              <option value="normal">Normal</option>
-              <option value="low">Niedrig</option>
+              <option value="high">{t('zt.highPrio')}</option>
+              <option value="normal">{t('zt.normal')}</option>
+              <option value="low">{t('zt.low')}</option>
             </select>
             <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AccessRequest['status'] }))}
               className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
-              <option value="open">Offen</option>
-              <option value="requested">Beantragt</option>
+              <option value="open">{t('zt.statusOpen')}</option>
+              <option value="requested">{t('zt.statusRequested')}</option>
             </select>
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">Abbrechen</button>
+            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">{t('zt.cancel')}</button>
             <button onClick={handleSave} disabled={saving || !form.tool_or_service}
               className="px-4 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
-              {saving ? '…' : 'Speichern'}
+              {saving ? '…' : t('zt.save')}
             </button>
           </div>
         </div>
@@ -880,7 +889,7 @@ function ZugaengeTab() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-semibold text-gray-800">{req.tool_or_service}</p>
                   <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACCESS_STATUS[req.status]}`}>{ACCESS_LABELS[req.status]}</span>
-                  {req.priority === 'high' && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>}
+                  {req.priority === 'high' && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">{t('zt.urgent')}</span>}
                 </div>
                 {req.description && <p className="text-xs text-gray-500 mt-0.5">{req.description}</p>}
                 {req.responsible_person && <p className="text-xs text-gray-400 mt-0.5">→ {req.responsible_person}</p>}
@@ -897,12 +906,12 @@ function ZugaengeTab() {
               <div className="flex gap-2 pt-1 border-t border-gray-100">
                 {req.status === 'open' && (
                   <button onClick={() => updateStatus(req.id, 'requested')}
-                    className="px-3 py-1 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">→ Beantragt</button>
+                    className="px-3 py-1 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">{t('zt.markRequested')}</button>
                 )}
                 <button onClick={() => updateStatus(req.id, 'granted')}
-                  className="px-3 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">✓ Erteilt</button>
+                  className="px-3 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">{t('zt.markGranted')}</button>
                 <button onClick={() => updateStatus(req.id, 'denied')}
-                  className="px-3 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">✕ Abgelehnt</button>
+                  className="px-3 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">{t('zt.markDenied')}</button>
               </div>
             )}
           </div>
@@ -916,14 +925,15 @@ function ZugaengeTab() {
 
 type WorkspaceTab = 'mails' | 'tools' | 'projekte' | 'zugaenge';
 
-const ALL_TABS: { id: WorkspaceTab; label: string; emoji: string }[] = [
-  { id: 'mails', label: 'Mails', emoji: '📬' },
-  { id: 'tools', label: 'Tools', emoji: '🔧' },
-  { id: 'projekte', label: 'Projekte', emoji: '📋' },
-  { id: 'zugaenge', label: 'Zugänge', emoji: '🔑' },
+const ALL_TABS: { id: WorkspaceTab; emoji: string }[] = [
+  { id: 'mails', emoji: '📬' },
+  { id: 'tools', emoji: '🔧' },
+  { id: 'projekte', emoji: '📋' },
+  { id: 'zugaenge', emoji: '🔑' },
 ];
 
 export default function WorkspaceView() {
+  const t = useT();
   const [config, setConfig] = useState<WorkspaceConfig>(DEFAULT_CONFIG);
   const [configLoaded, setConfigLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('mails');
@@ -987,8 +997,15 @@ export default function WorkspaceView() {
     return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  const visibleTabs = ALL_TABS.filter(t => config.enabled_modules.includes(t.id));
-  const currentTab = visibleTabs.find(t => t.id === activeTab) ? activeTab : (visibleTabs[0]?.id ?? 'mails');
+  const visibleTabs = ALL_TABS.filter(tab => config.enabled_modules.includes(tab.id));
+  const currentTab = visibleTabs.find(tab => tab.id === activeTab) ? activeTab : (visibleTabs[0]?.id ?? 'mails');
+
+  const TAB_LABELS: Record<string, string> = {
+    mails: t('tab.mails'),
+    tools: t('tab.tools'),
+    projekte: t('tab.projekte'),
+    zugaenge: t('tab.zugaenge'),
+  };
 
   return (
     <>
@@ -1026,17 +1043,17 @@ export default function WorkspaceView() {
         {/* Header */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex gap-1 bg-gray-100 p-1 rounded-2xl w-fit flex-wrap">
-            {visibleTabs.map(t => (
-              <button key={t.id} onClick={() => setActiveTab(t.id as WorkspaceTab)}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                <span>{t.emoji}</span>{t.label}
+            {visibleTabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id as WorkspaceTab)}
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === tab.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                <span>{tab.emoji}</span>{TAB_LABELS[tab.id]}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowAccountsPanel(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-              📬 Postfächer
+              📬 {t('ws.mailboxes')}
             </button>
             <button onClick={() => setShowConfig(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
@@ -1044,7 +1061,7 @@ export default function WorkspaceView() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
               </svg>
-              Konfigurieren
+              {t('ws.configure')}
             </button>
           </div>
         </div>

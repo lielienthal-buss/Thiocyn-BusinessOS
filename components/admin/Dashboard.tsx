@@ -32,6 +32,7 @@ import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 import { useLang } from '@/lib/i18n';
 import { translations } from '@/lib/translations';
+import { LanguageProvider, useLang as useWorkspaceLang } from '@/lib/language';
 import BrandSwitcher from '@/components/ui/BrandSwitcher';
 // Lazy import with auto-reload on chunk load failure (stale deploy)
 function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
@@ -188,6 +189,19 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     ],
   },
 ];
+
+function LangToggle() {
+  const { lang, setLang } = useWorkspaceLang();
+  return (
+    <button
+      onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
+      className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+      title={lang === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+    >
+      {lang === 'de' ? '🇬🇧 EN' : '🇩🇪 DE'}
+    </button>
+  );
+}
 
 const Dashboard: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -460,6 +474,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
+    <LanguageProvider>
     <div className="animate-[fadeIn_0.5s_ease-out] bg-gradient-to-br from-slate-50 via-white to-amber-50/30 min-h-screen pb-20 md:pb-0">
       {/* Header */}
       <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200/60 py-3 md:py-4 px-4 md:px-8 gap-2 md:gap-4">
@@ -483,6 +498,7 @@ const Dashboard: React.FC = () => {
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
           {/* Language Toggle */}
+          <LangToggle />
           <div className="flex items-center gap-0.5 bg-gray-100 rounded-full p-0.5">
             <button
               onClick={() => setLang('de')}
@@ -664,6 +680,7 @@ const Dashboard: React.FC = () => {
         initialPrompt={chatInitialPrompt}
       />
     </div>
+    </LanguageProvider>
   );
 };
 
