@@ -33,14 +33,27 @@ import type { Session } from '@supabase/supabase-js';
 import { useLang } from '@/lib/i18n';
 import { translations } from '@/lib/translations';
 import BrandSwitcher from '@/components/ui/BrandSwitcher';
-const ISOComplianceView = lazy(() => import('./ISOComplianceView'));
-const CreatorView = React.lazy(() => import('./CreatorView'));
-const KnowledgeBaseView = lazy(() => import('./KnowledgeBaseView'));
-const BrandConfigView = lazy(() => import('./BrandConfigView'));
-const ProcessExecutionView = lazy(() => import('./ProcessExecutionView'));
-const NotificationFeedView = lazy(() => import('./NotificationFeedView'));
-const VideoGenerationView = lazy(() => import('./VideoGenerationView'));
-const BriefingGeneratorView = lazy(() => import('./BriefingGeneratorView'));
+// Lazy import with auto-reload on chunk load failure (stale deploy)
+function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
+  return lazy(() =>
+    factory().catch((err) => {
+      if (err?.name === 'ChunkLoadError' || String(err).includes('Failed to fetch')) {
+        window.location.reload();
+        return new Promise<{ default: T }>(() => {});
+      }
+      throw err;
+    })
+  );
+}
+
+const ISOComplianceView = lazyLoad(() => import('./ISOComplianceView'));
+const CreatorView = lazyLoad(() => import('./CreatorView'));
+const KnowledgeBaseView = lazyLoad(() => import('./KnowledgeBaseView'));
+const BrandConfigView = lazyLoad(() => import('./BrandConfigView'));
+const ProcessExecutionView = lazyLoad(() => import('./ProcessExecutionView'));
+const NotificationFeedView = lazyLoad(() => import('./NotificationFeedView'));
+const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
+const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 
 type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace';
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace';
