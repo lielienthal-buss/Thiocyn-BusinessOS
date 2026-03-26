@@ -324,6 +324,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
   const [mails, setMails] = useState<UserMail[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'new' | 'actioned' | 'archived'>('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -353,8 +354,8 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
 
   const syncAccount = async (account: MailAccount) => {
     const pass = sessionPasses[account.id];
-    if (!pass) { onPasswordNeeded(account); return false; }
-    const { data } = await supabase.functions.invoke('fetch-user-mails', {
+    if (!pass) { onPasswordNeeded(account); return null; }
+    const { data, error } = await supabase.functions.invoke('fetch-user-mails', {
       body: {
         imap_host: account.imap_host,
         imap_port: account.imap_port,
@@ -364,6 +365,14 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         account_id: account.id,
       },
     });
+    if (error) {
+      setSyncError(`${account.label}: ${error.message ?? 'Unbekannter Fehler'}`);
+      return null;
+    }
+    if (data?.error) {
+      setSyncError(`${account.label}: ${data.error}`);
+      return null;
+    }
     return data as { inserted: number; total: number } | null;
   };
 
@@ -371,6 +380,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
     if (accounts.length === 0) { onNeedAccounts(); return; }
     setSyncing(true);
     setSyncResult(null);
+    setSyncError(null);
 
     if (activeAccount !== 'all') {
       const account = accounts.find(a => a.id === activeAccount);
@@ -512,6 +522,11 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         </button>
       </div>
 
+      {syncError && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          ⚠️ {syncError}
+        </p>
+      )}
       {syncResult && (
         <p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
           Sync: <strong>{syncResult.inserted}</strong> {t('mt.syncResult')} ({syncResult.total} {t('mt.syncChecked')})

@@ -44,7 +44,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const { imap_host, imap_port, imap_user, imap_pass, user_id } = await req.json();
+    const { imap_host, imap_port, imap_user, imap_pass, user_id, account_id } = await req.json();
 
     if (!imap_host || !imap_user || !imap_pass || !user_id) {
       return new Response(JSON.stringify({ error: 'Missing credentials' }), {
@@ -131,6 +131,7 @@ serve(async (req) => {
         await supabase.from('user_mails').insert({
           id: mail.id,
           user_id,
+          account_id: account_id ?? null,
           sender: mail.sender,
           subject: mail.subject,
           preview: mail.preview,
