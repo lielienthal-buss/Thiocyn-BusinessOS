@@ -22,6 +22,7 @@ import FinanceView from './FinanceView';
 import ToolStackView from './ToolStackView';
 import EcommerceView from './EcommerceView';
 import AnalyticsView from './AnalyticsView';
+import WorkspaceView from './WorkspaceView';
 import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '@/lib/agentQuickActions';
 import { getApplicant } from '@/lib/actions'; // Import getApplicant
 import type { Application } from '@/types'; // Import Application
@@ -41,8 +42,8 @@ const NotificationFeedView = lazy(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazy(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazy(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner';
-type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace';
+type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -155,6 +156,14 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'knowledgeBase', label: '📚 Knowledge Base' },
       { id: 'processExecution', label: '▶ SOPs' },
       { id: 'notificationFeed', label: '🔔 Feed' },
+    ],
+  },
+  {
+    id: 'workspace' as Section,
+    label: 'Workspace',
+    emoji: '🗂️',
+    tabs: [
+      { id: 'workspace', label: 'My Workspace' },
     ],
   },
   {
@@ -312,6 +321,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'analyticsKpis' || tab === 'analyticsAds') {
       return <AnalyticsView activeTab={tab === 'analyticsAds' ? 'ads' : 'kpis'} />;
+    }
+
+    if (tab === 'workspace') {
+      return <WorkspaceView />;
     }
 
     if (tab === 'settings') {
