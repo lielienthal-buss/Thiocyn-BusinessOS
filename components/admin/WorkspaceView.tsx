@@ -3,20 +3,36 @@ import { supabase } from '@/lib/supabaseClient';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type MailStatus = 'new' | 'forwarded_vanessa' | 'needs_clarification' | 'no_action';
-type MailCategory = 'invoice' | 'reminder' | 'dispute' | 'info' | 'other';
+interface WorkspaceConfig {
+  enabled_modules: string[];
+  mail_label: string;
+  imap_host: string | null;
+  imap_port: number;
+  imap_user: string | null;
+}
 
-interface FinanceMail {
+const DEFAULT_CONFIG: WorkspaceConfig = {
+  enabled_modules: ['mails', 'tools', 'projekte', 'zugaenge'],
+  mail_label: 'Mein Postfach',
+  imap_host: null,
+  imap_port: 993,
+  imap_user: null,
+};
+
+const SESSION_PASS_KEY = 'ws_imap_pass';
+
+interface UserMail {
   id: string;
+  user_id: string;
   sender: string;
   subject: string;
   preview: string | null;
   received_at: string;
-  status: MailStatus;
-  category: MailCategory | null;
+  status: 'new' | 'actioned' | 'archived';
+  category: string | null;
   ai_priority: 'high' | 'normal' | 'low' | null;
   ai_analysis: Record<string, string> | null;
-  handoff_note: string | null;
+  note: string | null;
 }
 
 interface Tool {
@@ -27,8 +43,6 @@ interface Tool {
   monthly_cost: number | null;
   currency: string;
   url: string | null;
-  renewal_date: string | null;
-  owner: string | null;
 }
 
 interface AccessRequest {
@@ -39,7 +53,6 @@ interface AccessRequest {
   responsible_person: string | null;
   priority: 'high' | 'normal' | 'low';
   requested_at: string;
-  granted_at: string | null;
   notes: string | null;
 }
 
@@ -50,75 +63,163 @@ interface TeamTask {
   status: string;
   priority: number;
   due_date: string | null;
-  assigned_to_email: string | null;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const MAIL_STATUS_STYLES: Record<MailStatus, string> = {
+function fmt(iso: string) {
+  try { return new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+  catch { return iso; }
+}
+
+function fmtDate(iso: string) {
+  try { return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+  catch { return iso; }
+}
+
+const CATEGORY_STYLES: Record<string, string> = {
+  invoice: 'bg-purple-100 text-purple-700', reminder: 'bg-orange-100 text-orange-700',
+  dispute: 'bg-red-100 text-red-700', info: 'bg-gray-100 text-gray-500',
+  other: 'bg-gray-100 text-gray-500', task: 'bg-blue-100 text-blue-700',
+  question: 'bg-teal-100 text-teal-700',
+};
+
+const STATUS_STYLES: Record<string, string> = {
   new: 'bg-blue-100 text-blue-700',
-  forwarded_vanessa: 'bg-green-100 text-green-700',
-  needs_clarification: 'bg-yellow-100 text-yellow-700',
-  no_action: 'bg-gray-100 text-gray-500',
+  actioned: 'bg-green-100 text-green-700',
+  archived: 'bg-gray-100 text-gray-400',
 };
 
-const MAIL_STATUS_LABELS: Record<MailStatus, string> = {
-  new: 'Neu',
-  forwarded_vanessa: 'Weitergeleitet',
-  needs_clarification: 'Klären',
-  no_action: 'Keine Aktion',
+const STATUS_LABELS: Record<string, string> = {
+  new: 'Neu', actioned: 'Erledigt', archived: 'Archiv',
 };
 
-const MAIL_CATEGORY_STYLES: Record<MailCategory, string> = {
-  invoice: 'bg-purple-100 text-purple-700',
-  reminder: 'bg-orange-100 text-orange-700',
-  dispute: 'bg-red-100 text-red-700',
-  info: 'bg-gray-100 text-gray-500',
-  other: 'bg-gray-100 text-gray-500',
+const ACCESS_STATUS: Record<string, string> = {
+  open: 'bg-gray-100 text-gray-600', requested: 'bg-blue-100 text-blue-700',
+  granted: 'bg-green-100 text-green-700', denied: 'bg-red-100 text-red-600',
 };
-
-const MAIL_CATEGORY_LABELS: Record<MailCategory, string> = {
-  invoice: 'Rechnung', reminder: 'Mahnung', dispute: 'Einspruch', info: 'Info', other: 'Sonstiges',
-};
-
-const ACCESS_STATUS_STYLES: Record<AccessRequest['status'], string> = {
-  open: 'bg-gray-100 text-gray-600',
-  requested: 'bg-blue-100 text-blue-700',
-  granted: 'bg-green-100 text-green-700',
-  denied: 'bg-red-100 text-red-600',
-};
-
-const ACCESS_STATUS_LABELS: Record<AccessRequest['status'], string> = {
+const ACCESS_LABELS: Record<string, string> = {
   open: 'Offen', requested: 'Beantragt', granted: 'Erteilt', denied: 'Abgelehnt',
 };
 
-const PRIORITY_STYLES: Record<'high' | 'normal' | 'low', string> = {
-  high: 'bg-red-50 text-red-600',
-  normal: 'bg-gray-50 text-gray-500',
-  low: 'bg-gray-50 text-gray-400',
-};
+// ─── Config Panel ─────────────────────────────────────────────────────────────
 
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-  } catch { return iso; }
+interface ConfigPanelProps {
+  config: WorkspaceConfig;
+  onSave: (c: WorkspaceConfig, pass: string) => void;
+  onClose: () => void;
+  hasPassword: boolean;
 }
 
-function formatDateShort(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
-  } catch { return iso; }
+function ConfigPanel({ config, onSave, onClose, hasPassword }: ConfigPanelProps) {
+  const [form, setForm] = useState<WorkspaceConfig>({ ...config });
+  const [pass, setPass] = useState('');
+  const ALL_MODULES = ['mails', 'tools', 'projekte', 'zugaenge'];
+  const MODULE_LABELS: Record<string, string> = {
+    mails: '📬 Mails', tools: '🔧 Tools', projekte: '📋 Projekte', zugaenge: '🔑 Zugänge',
+  };
+
+  const toggleModule = (m: string) => {
+    setForm(f => ({
+      ...f,
+      enabled_modules: f.enabled_modules.includes(m)
+        ? f.enabled_modules.filter(x => x !== m)
+        : [...f.enabled_modules, m],
+    }));
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-gray-800">Workspace konfigurieren</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">✕</button>
+        </div>
+
+        {/* Module toggles */}
+        <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Aktive Module</p>
+          <div className="grid grid-cols-2 gap-2">
+            {ALL_MODULES.map(m => (
+              <button key={m} onClick={() => toggleModule(m)}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.enabled_modules.includes(m) ? 'bg-primary-50 border-primary-300 text-primary-700' : 'bg-gray-50 border-gray-200 text-gray-400'}`}>
+                <span className={`w-4 h-4 rounded border flex items-center justify-center text-xs ${form.enabled_modules.includes(m) ? 'bg-primary-600 border-primary-600 text-white' : 'border-gray-300'}`}>
+                  {form.enabled_modules.includes(m) ? '✓' : ''}
+                </span>
+                {MODULE_LABELS[m]}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Mail settings */}
+        {form.enabled_modules.includes('mails') && (
+          <div className="space-y-3 border-t border-gray-100 pt-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mail-Account</p>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Bezeichnung</label>
+              <input value={form.mail_label} onChange={e => setForm(f => ({ ...f, mail_label: e.target.value }))}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder="z.B. CS Support, Mein Postfach" />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2">
+                <label className="text-xs text-gray-500 block mb-1">IMAP Host</label>
+                <input value={form.imap_host ?? ''} onChange={e => setForm(f => ({ ...f, imap_host: e.target.value || null }))}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                  placeholder="mail.domain.de" />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 block mb-1">Port</label>
+                <input type="number" value={form.imap_port} onChange={e => setForm(f => ({ ...f, imap_port: parseInt(e.target.value) || 993 }))}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">Benutzername / E-Mail</label>
+              <input value={form.imap_user ?? ''} onChange={e => setForm(f => ({ ...f, imap_user: e.target.value || null }))}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder="name@domain.de" />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 block mb-1">
+                Passwort <span className="text-gray-400 font-normal">(nur für diese Sitzung — wird nicht gespeichert)</span>
+              </label>
+              <input type="password" value={pass} onChange={e => setPass(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                placeholder={hasPassword ? '••••••••  (bereits gesetzt)' : 'Passwort eingeben'} />
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 pt-1">
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
+          <button onClick={() => onSave(form, pass)}
+            className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
+            Speichern
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── Mails Tab ────────────────────────────────────────────────────────────────
 
-function MailsTab() {
-  const [mails, setMails] = useState<FinanceMail[]>([]);
+interface MailsTabProps {
+  config: WorkspaceConfig;
+  userId: string;
+  sessionPass: string | null;
+  onNeedConfig: () => void;
+  onNeedPassword: () => void;
+}
+
+function MailsTab({ config, userId, sessionPass, onNeedConfig, onNeedPassword }: MailsTabProps) {
+  const [mails, setMails] = useState<UserMail[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-  const [filter, setFilter] = useState<'all' | MailStatus>('all');
+  const [filter, setFilter] = useState<'all' | 'new' | 'actioned' | 'archived'>('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [noteValues, setNoteValues] = useState<Record<string, string>>({});
   const [savingNote, setSavingNote] = useState<string | null>(null);
@@ -127,87 +228,119 @@ function MailsTab() {
   const loadMails = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
-      .from('finance_mails')
+      .from('user_mails')
       .select('*')
+      .eq('user_id', userId)
       .order('received_at', { ascending: false });
     if (data) {
-      setMails(data as FinanceMail[]);
+      setMails(data as UserMail[]);
       const notes: Record<string, string> = {};
-      for (const m of data as FinanceMail[]) notes[m.id] = m.handoff_note ?? '';
+      for (const m of data as UserMail[]) notes[m.id] = m.note ?? '';
       setNoteValues(notes);
     }
     setLoading(false);
-  }, []);
-
-  const syncMails = useCallback(async () => {
-    setSyncing(true);
-    setSyncResult(null);
-    try {
-      const { data } = await supabase.functions.invoke('fetch-finance-mails');
-      if (data) setSyncResult(data as { inserted: number; total: number });
-    } catch { /* silent */ }
-    await loadMails();
-    setSyncing(false);
-  }, [loadMails]);
+  }, [userId]);
 
   useEffect(() => { loadMails(); }, [loadMails]);
 
-  const updateStatus = async (id: string, status: MailStatus) => {
-    await supabase.from('finance_mails').update({ status }).eq('id', id);
-    setMails((prev) => prev.map((m) => (m.id === id ? { ...m, status } : m)));
+  const syncMails = async () => {
+    if (!config.imap_host || !config.imap_user) { onNeedConfig(); return; }
+    if (!sessionPass) { onNeedPassword(); return; }
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const { data } = await supabase.functions.invoke('fetch-user-mails', {
+        body: {
+          imap_host: config.imap_host,
+          imap_port: config.imap_port,
+          imap_user: config.imap_user,
+          imap_pass: sessionPass,
+          user_id: userId,
+        },
+      });
+      if (data) setSyncResult(data as { inserted: number; total: number });
+      await loadMails();
+    } catch { /* silent */ }
+    setSyncing(false);
+  };
+
+  const updateStatus = async (id: string, status: UserMail['status']) => {
+    await supabase.from('user_mails').update({ status }).eq('id', id).eq('user_id', userId);
+    setMails(prev => prev.map(m => m.id === id ? { ...m, status } : m));
   };
 
   const deleteMail = async (id: string) => {
     if (!confirm('Mail aus dem System entfernen?')) return;
     setDeletingId(id);
-    await supabase.from('finance_mails').delete().eq('id', id);
-    setMails((prev) => prev.filter((m) => m.id !== id));
+    await supabase.from('user_mails').delete().eq('id', id).eq('user_id', userId);
+    setMails(prev => prev.filter(m => m.id !== id));
     setDeletingId(null);
-  };
-
-  const analyzeMail = async (id: string) => {
-    setAnalyzingId(id);
-    try {
-      const { data } = await supabase.functions.invoke('analyze-finance-mail', { body: { mail_id: id } });
-      if (data) {
-        setMails((prev) => prev.map((m) => (m.id === id ? { ...m, ai_analysis: data } : m)));
-        setExpandedId(id);
-      }
-    } catch { /* silent */ }
-    setAnalyzingId(null);
   };
 
   const saveNote = async (id: string) => {
     setSavingNote(id);
-    await supabase.from('finance_mails').update({ handoff_note: noteValues[id] || null }).eq('id', id);
+    await supabase.from('user_mails').update({ note: noteValues[id] || null }).eq('id', id).eq('user_id', userId);
     setSavingNote(null);
   };
 
-  const filtered = filter === 'all' ? mails : mails.filter((m) => m.status === filter);
+  // Not configured yet
+  if (!config.imap_host || !config.imap_user) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+        <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-2xl">📬</div>
+        <div>
+          <p className="text-sm font-semibold text-gray-800">Noch kein Mail-Account eingerichtet</p>
+          <p className="text-xs text-gray-400 mt-1">Füge dein IMAP-Postfach hinzu um Mails hier zu verwalten</p>
+        </div>
+        <button onClick={onNeedConfig}
+          className="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
+          Mail einrichten
+        </button>
+      </div>
+    );
+  }
 
-  const FILTERS: { id: 'all' | MailStatus; label: string }[] = [
-    { id: 'all', label: `Alle (${mails.length})` },
-    { id: 'new', label: `Neu (${mails.filter(m => m.status === 'new').length})` },
-    { id: 'forwarded_vanessa', label: 'Weitergeleitet' },
-    { id: 'needs_clarification', label: 'Klären' },
-    { id: 'no_action', label: 'Archiv' },
-  ];
+  // Configured but no session password
+  if (!sessionPass) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
+        <div className="w-12 h-12 bg-yellow-50 border border-yellow-200 rounded-2xl flex items-center justify-center text-2xl">🔑</div>
+        <div>
+          <p className="text-sm font-semibold text-gray-800">{config.mail_label}</p>
+          <p className="text-xs text-gray-400 mt-1">Passwort eingeben um Mails zu synchronisieren</p>
+          <p className="text-xs text-gray-300 mt-0.5">{config.imap_user}</p>
+        </div>
+        <button onClick={onNeedPassword}
+          className="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
+          Passwort eingeben
+        </button>
+        {mails.length > 0 && (
+          <p className="text-xs text-gray-400">({mails.length} Mails aus letzter Sitzung sichtbar)</p>
+        )}
+      </div>
+    );
+  }
+
+  const filtered = filter === 'all' ? mails : mails.filter(m => m.status === filter);
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit flex-wrap">
-          {FILTERS.map((f) => (
-            <button key={f.id} onClick={() => setFilter(f.id)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${filter === f.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-              {f.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <p className="text-xs font-semibold text-gray-600">{config.mail_label}</p>
+          <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
+            {(['all', 'new', 'actioned', 'archived'] as const).map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                {f === 'all' ? `Alle (${mails.length})` : f === 'new' ? `Neu (${mails.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
+              </button>
+            ))}
+          </div>
         </div>
         <button onClick={syncMails} disabled={syncing}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-60 transition-colors shadow-sm">
-          {syncing ? <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          className="flex items-center gap-2 px-3 py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-60 transition-colors">
+          {syncing ? <span className="inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           )}
@@ -222,14 +355,14 @@ function MailsTab() {
       )}
 
       {loading ? (
-        <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>
+        <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-          <p className="text-sm font-medium">Keine Mails.</p>
+        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+          <p className="text-sm">Keine Mails.</p>
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map((mail) => (
+          {filtered.map(mail => (
             <div key={mail.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3">
               {/* Header */}
               <div className="flex flex-wrap items-start justify-between gap-2">
@@ -239,22 +372,20 @@ function MailsTab() {
                   {mail.preview && <p className="text-xs text-gray-400 mt-1 line-clamp-2">{mail.preview}</p>}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                  <span className="text-xs text-gray-400">{formatDate(mail.received_at)}</span>
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${MAIL_STATUS_STYLES[mail.status]}`}>
-                    {MAIL_STATUS_LABELS[mail.status]}
+                  <span className="text-xs text-gray-400">{fmt(mail.received_at)}</span>
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[mail.status]}`}>
+                    {STATUS_LABELS[mail.status]}
                   </span>
                   {mail.category && (
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${MAIL_CATEGORY_STYLES[mail.category]}`}>
-                      {MAIL_CATEGORY_LABELS[mail.category]}
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category] ?? 'bg-gray-100 text-gray-500'}`}>
+                      {mail.category}
                     </span>
                   )}
                   {mail.ai_priority === 'high' && (
                     <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>
                   )}
-                  {/* Delete */}
                   <button onClick={() => deleteMail(mail.id)} disabled={deletingId === mail.id}
-                    className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50"
-                    title="Löschen">
+                    className="ml-1 p-1 text-gray-300 hover:text-red-500 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-50" title="Löschen">
                     {deletingId === mail.id
                       ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                       : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -265,52 +396,38 @@ function MailsTab() {
 
               {/* Analysis panel */}
               {mail.ai_analysis && expandedId === mail.id && (
-                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-2">
+                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-1.5">
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
                     <button onClick={() => setExpandedId(null)} className="text-blue-400 hover:text-blue-600 text-xs">✕</button>
                   </div>
-                  {mail.ai_analysis.summary && <p className="text-xs text-blue-800 font-medium">{mail.ai_analysis.summary}</p>}
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                    {mail.ai_analysis.sender_company && <div><span className="text-blue-500">Unternehmen</span><p className="text-blue-900 font-medium">{mail.ai_analysis.sender_company}</p></div>}
-                    {mail.ai_analysis.invoice_number && <div><span className="text-blue-500">Rechnungs-Nr.</span><p className="text-blue-900 font-medium">{mail.ai_analysis.invoice_number}</p></div>}
-                    {mail.ai_analysis.amount && <div><span className="text-blue-500">Betrag</span><p className="text-blue-900 font-medium">{mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}</p></div>}
-                    {mail.ai_analysis.due_date && <div><span className="text-blue-500">Fälligkeit</span><p className="text-blue-900 font-medium">{formatDateShort(mail.ai_analysis.due_date)}</p></div>}
-                  </div>
-                  {mail.ai_analysis.action_reason && <p className="text-xs text-blue-600 border-t border-blue-100 pt-2">💡 {mail.ai_analysis.action_reason}</p>}
+                  {mail.ai_analysis.summary && <p className="text-xs text-blue-800">{mail.ai_analysis.summary}</p>}
+                  {mail.ai_analysis.action_reason && <p className="text-xs text-blue-600">💡 {mail.ai_analysis.action_reason}</p>}
                 </div>
               )}
               {mail.ai_analysis && expandedId !== mail.id && (
-                <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                  <span>📊</span> Analyse
-                  {mail.ai_analysis.amount && <span className="ml-1 text-blue-400">· {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}</span>}
-                </button>
+                <button onClick={() => setExpandedId(mail.id)} className="text-xs text-blue-600 hover:text-blue-800 font-medium">📊 Analyse anzeigen</button>
               )}
 
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
-                <button onClick={() => updateStatus(mail.id, 'forwarded_vanessa')} disabled={mail.status === 'forwarded_vanessa'}
+                <button onClick={() => updateStatus(mail.id, 'actioned')} disabled={mail.status === 'actioned'}
                   className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors">
-                  → Weiterleiten
+                  ✓ Erledigt
                 </button>
-                <button onClick={() => updateStatus(mail.id, 'needs_clarification')} disabled={mail.status === 'needs_clarification'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 disabled:opacity-40 transition-colors">
-                  Klären
-                </button>
-                <button onClick={() => updateStatus(mail.id, 'no_action')} disabled={mail.status === 'no_action'}
+                <button onClick={() => updateStatus(mail.id, 'archived')} disabled={mail.status === 'archived'}
                   className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors">
                   Archivieren
                 </button>
-                <button onClick={() => analyzeMail(mail.id)} disabled={analyzingId === mail.id}
-                  className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors flex items-center gap-1">
-                  {analyzingId === mail.id ? <span className="inline-block w-3 h-3 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" /> : '🔍'}
-                  {mail.ai_analysis ? 'Neu' : 'Analysieren'}
+                <button onClick={() => updateStatus(mail.id, 'new')} disabled={mail.status === 'new'}
+                  className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors">
+                  Als neu markieren
                 </button>
                 <div className="flex items-center gap-1.5 ml-auto">
-                  <input type="text" placeholder="Notiz für Buchhalter…"
+                  <input type="text" placeholder="Notiz…"
                     value={noteValues[mail.id] ?? ''}
-                    onChange={(e) => setNoteValues((v) => ({ ...v, [mail.id]: e.target.value }))}
-                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-44" />
+                    onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
+                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-36" />
                   <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
                     className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
                     {savingNote === mail.id ? '…' : 'Speichern'}
@@ -325,6 +442,49 @@ function MailsTab() {
   );
 }
 
+// ─── Password Prompt Modal ─────────────────────────────────────────────────────
+
+interface PasswordPromptProps {
+  label: string;
+  user: string;
+  onSubmit: (pass: string) => void;
+  onClose: () => void;
+}
+
+function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps) {
+  const [pass, setPass] = useState('');
+  return (
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-gray-800">Passwort eingeben</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+        </div>
+        <div>
+          <p className="text-xs text-gray-600 font-medium">{label}</p>
+          <p className="text-xs text-gray-400">{user}</p>
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 block mb-1">
+            Passwort <span className="text-gray-400">(nur für diese Sitzung)</span>
+          </label>
+          <input type="password" value={pass} onChange={e => setPass(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && pass && onSubmit(pass)}
+            autoFocus
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+        </div>
+        <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">Abbrechen</button>
+          <button onClick={() => pass && onSubmit(pass)} disabled={!pass}
+            className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
+            Verbinden
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Tools Tab ────────────────────────────────────────────────────────────────
 
 function ToolsTab() {
@@ -332,65 +492,51 @@ function ToolsTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('tool_stack').select('*').order('status').order('name').then(({ data }) => {
-      if (data) setTools(data as Tool[]);
-      setLoading(false);
-    });
+    supabase.from('tool_stack').select('id,name,category,status,monthly_cost,currency,url')
+      .order('status').order('name').then(({ data }) => {
+        if (data) setTools(data as Tool[]);
+        setLoading(false);
+      });
   }, []);
 
   const active = tools.filter(t => t.status !== 'cancelled');
-  const totalMonthly = active.reduce((s, t) => s + (t.monthly_cost ?? 0), 0);
-  const needsReview = tools.filter(t => t.status === 'review' || t.status === 'cancelling');
+  const total = active.reduce((s, t) => s + (t.monthly_cost ?? 0), 0);
+  const review = tools.filter(t => t.status === 'review' || t.status === 'cancelling');
 
-  const STATUS_STYLES: Record<string, string> = {
-    active: 'bg-green-50 text-green-700',
-    review: 'bg-yellow-50 text-yellow-700',
-    cancelling: 'bg-orange-50 text-orange-700',
-    cancelled: 'bg-gray-50 text-gray-400',
-    free: 'bg-blue-50 text-blue-600',
+  const STATUS: Record<string, string> = {
+    active: 'bg-green-50 text-green-700', review: 'bg-yellow-50 text-yellow-700',
+    cancelling: 'bg-orange-50 text-orange-700', cancelled: 'bg-gray-50 text-gray-400', free: 'bg-blue-50 text-blue-600',
   };
 
-  if (loading) return <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
+  if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
 
   return (
     <div className="space-y-4">
-      {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-white border border-gray-200 rounded-2xl p-4">
-          <p className="text-xs text-gray-500 mb-1">Monatlich</p>
-          <p className="text-lg font-bold text-gray-800">{totalMonthly.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €</p>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-2xl p-4">
-          <p className="text-xs text-gray-500 mb-1">Aktive Tools</p>
-          <p className="text-lg font-bold text-gray-800">{active.length}</p>
-        </div>
-        <div className={`border rounded-2xl p-4 ${needsReview.length > 0 ? 'bg-yellow-50 border-yellow-200' : 'bg-white border-gray-200'}`}>
-          <p className="text-xs text-gray-500 mb-1">Review nötig</p>
-          <p className={`text-lg font-bold ${needsReview.length > 0 ? 'text-yellow-700' : 'text-gray-800'}`}>{needsReview.length}</p>
-        </div>
+        {[
+          { label: 'Monatlich', value: `${total.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €` },
+          { label: 'Aktiv', value: String(active.length) },
+          { label: 'Review', value: String(review.length), warn: review.length > 0 },
+        ].map(s => (
+          <div key={s.label} className={`border rounded-2xl p-4 ${s.warn ? 'bg-yellow-50 border-yellow-200' : 'bg-white border-gray-200'}`}>
+            <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+            <p className={`text-lg font-bold ${s.warn ? 'text-yellow-700' : 'text-gray-800'}`}>{s.value}</p>
+          </div>
+        ))}
       </div>
-
-      {/* Tool list */}
       <div className="space-y-2">
-        {tools.map((tool) => (
-          <div key={tool.id} className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+        {tools.map(t => (
+          <div key={t.id} className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-gray-800">{tool.name}</p>
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[tool.status] ?? 'bg-gray-50 text-gray-500'}`}>
-                  {tool.status}
-                </span>
+                <p className="text-sm font-semibold text-gray-800">{t.name}</p>
+                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS[t.status] ?? 'bg-gray-50 text-gray-500'}`}>{t.status}</span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">{tool.category}{tool.owner ? ` · ${tool.owner}` : ''}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{t.category}</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {tool.monthly_cost !== null && (
-                <p className="text-sm font-semibold text-gray-700">{tool.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {tool.currency}/mo</p>
-              )}
-              {tool.url && (
-                <a href={tool.url} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-primary-600 hover:text-primary-800 font-medium">Öffnen →</a>
-              )}
+              {t.monthly_cost !== null && <p className="text-sm font-semibold text-gray-700">{t.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {t.currency}/mo</p>}
+              {t.url && <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:text-primary-800 font-medium">Öffnen →</a>}
             </div>
           </div>
         ))}
@@ -406,7 +552,7 @@ function ProjekteTab() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('team_tasks').select('id, title, brand, status, priority, due_date, assigned_to_email')
+    supabase.from('team_tasks').select('id,title,brand,status,priority,due_date')
       .neq('status', 'done').order('priority', { ascending: false }).limit(40)
       .then(({ data }) => { if (data) setTasks(data as TeamTask[]); setLoading(false); });
   }, []);
@@ -417,44 +563,33 @@ function ProjekteTab() {
     return acc;
   }, {});
 
-  const PRIORITY_COLOR = (p: number) => p >= 4 ? 'text-red-500' : p >= 2 ? 'text-yellow-500' : 'text-gray-400';
-  const STATUS_STYLES: Record<string, string> = {
-    todo: 'bg-gray-100 text-gray-500',
-    in_progress: 'bg-blue-100 text-blue-700',
-    review: 'bg-yellow-100 text-yellow-700',
-    blocked: 'bg-red-100 text-red-600',
+  const PRIO = (p: number) => p >= 4 ? 'text-red-500' : p >= 2 ? 'text-yellow-500' : 'text-gray-400';
+  const ST: Record<string, string> = {
+    todo: 'bg-gray-100 text-gray-500', in_progress: 'bg-blue-100 text-blue-700',
+    review: 'bg-yellow-100 text-yellow-700', blocked: 'bg-red-100 text-red-600',
   };
 
-  if (loading) return <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
-
-  if (tasks.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-      <p className="text-sm font-medium">Keine offenen Tasks.</p>
-    </div>
-  );
+  if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
+  if (!tasks.length) return <div className="flex flex-col items-center py-12 text-gray-400"><p className="text-sm">Keine offenen Tasks.</p></div>;
 
   return (
     <div className="space-y-5">
-      {Object.entries(byBrand).sort().map(([brand, brandTasks]) => (
+      {Object.entries(byBrand).sort().map(([brand, bt]) => (
         <div key={brand}>
           <div className="flex items-center gap-2 mb-2">
             <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider">{brand}</h4>
-            <span className="text-xs text-gray-400">({brandTasks.length})</span>
+            <span className="text-xs text-gray-400">({bt.length})</span>
           </div>
           <div className="space-y-1.5">
-            {brandTasks.map((task) => (
-              <div key={task.id} className="bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3 flex-wrap">
+            {bt.map(task => (
+              <div key={task.id} className="bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className={`text-sm ${PRIORITY_COLOR(task.priority)}`}>●</span>
+                  <span className={`text-sm ${PRIO(task.priority)}`}>●</span>
                   <p className="text-sm text-gray-800 truncate">{task.title}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {task.due_date && (
-                    <span className="text-xs text-gray-400">{formatDateShort(task.due_date)}</span>
-                  )}
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[task.status] ?? 'bg-gray-100 text-gray-500'}`}>
-                    {task.status}
-                  </span>
+                  {task.due_date && <span className="text-xs text-gray-400">{fmtDate(task.due_date)}</span>}
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ST[task.status] ?? 'bg-gray-100 text-gray-500'}`}>{task.status}</span>
                 </div>
               </div>
             ))}
@@ -484,15 +619,15 @@ function ZugaengeTab() {
 
   const updateStatus = async (id: string, status: AccessRequest['status']) => {
     const update: Partial<AccessRequest> = { status };
-    if (status === 'granted') update.granted_at = new Date().toISOString();
+    if (status === 'granted') (update as Record<string, unknown>).granted_at = new Date().toISOString();
     await supabase.from('access_requests').update(update).eq('id', id);
-    setRequests((prev) => prev.map((r) => r.id === id ? { ...r, ...update } : r));
+    setRequests(prev => prev.map(r => r.id === id ? { ...r, ...update } : r));
   };
 
-  const deleteRequest = async (id: string) => {
+  const deleteReq = async (id: string) => {
     if (!confirm('Eintrag löschen?')) return;
     await supabase.from('access_requests').delete().eq('id', id);
-    setRequests((prev) => prev.filter((r) => r.id !== id));
+    setRequests(prev => prev.filter(r => r.id !== id));
   };
 
   const handleSave = async () => {
@@ -512,113 +647,90 @@ function ZugaengeTab() {
     await load();
   };
 
-  if (loading) return <div className="flex justify-center py-16"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
+  if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-gray-500">{requests.filter(r => r.status !== 'granted').length} offen · {requests.filter(r => r.status === 'granted').length} erteilt</p>
-        <button onClick={() => setShowAdd(!showAdd)}
-          className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
+        <p className="text-xs text-gray-500">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} offen</p>
+        <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
           + Zugang beantragen
         </button>
       </div>
 
-      {/* Add form */}
       {showAdd && (
         <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Neuer Zugang</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Tool / Service *</label>
+              <label className="text-xs text-gray-500 block mb-1">Tool / Service *</label>
               <input value={form.tool_or_service ?? ''} onChange={e => setForm(f => ({ ...f, tool_or_service: e.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" placeholder="z.B. Shopify Admin" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Verantwortlich</label>
+              <label className="text-xs text-gray-500 block mb-1">Verantwortlich</label>
               <input value={form.responsible_person ?? ''} onChange={e => setForm(f => ({ ...f, responsible_person: e.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" placeholder="z.B. Valentin" />
+                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Beschreibung</label>
+            <label className="text-xs text-gray-500 block mb-1">Beschreibung</label>
             <textarea value={form.description ?? ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none" rows={2} placeholder="Wofür wird der Zugang benötigt?" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none resize-none" rows={2} />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Priorität</label>
-              <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AccessRequest['priority'] }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
-                <option value="high">Hoch</option>
-                <option value="normal">Normal</option>
-                <option value="low">Niedrig</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-gray-500 mb-1 block">Status</label>
-              <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AccessRequest['status'] }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
-                <option value="open">Offen</option>
-                <option value="requested">Beantragt</option>
-                <option value="granted">Erteilt</option>
-              </select>
-            </div>
+            <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AccessRequest['priority'] }))}
+              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
+              <option value="high">Hohe Priorität</option>
+              <option value="normal">Normal</option>
+              <option value="low">Niedrig</option>
+            </select>
+            <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AccessRequest['status'] }))}
+              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
+              <option value="open">Offen</option>
+              <option value="requested">Beantragt</option>
+            </select>
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100 transition-colors">Abbrechen</button>
+            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-gray-600 rounded-xl hover:bg-gray-100">Abbrechen</button>
             <button onClick={handleSave} disabled={saving || !form.tool_or_service}
-              className="px-4 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors">
+              className="px-4 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
               {saving ? '…' : 'Speichern'}
             </button>
           </div>
         </div>
       )}
 
-      {/* List */}
       <div className="space-y-2">
-        {requests.map((req) => (
+        {requests.map(req => (
           <div key={req.id} className={`bg-white border rounded-2xl p-4 space-y-2 ${req.status === 'granted' ? 'border-gray-100 opacity-60' : 'border-gray-200'}`}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-semibold text-gray-800">{req.tool_or_service}</p>
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACCESS_STATUS_STYLES[req.status]}`}>
-                    {ACCESS_STATUS_LABELS[req.status]}
-                  </span>
-                  {req.priority === 'high' && (
-                    <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>
-                  )}
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACCESS_STATUS[req.status]}`}>{ACCESS_LABELS[req.status]}</span>
+                  {req.priority === 'high' && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">Dringend</span>}
                 </div>
                 {req.description && <p className="text-xs text-gray-500 mt-0.5">{req.description}</p>}
                 {req.responsible_person && <p className="text-xs text-gray-400 mt-0.5">→ {req.responsible_person}</p>}
-                {req.notes && <p className="text-xs text-gray-400 mt-0.5 font-mono">{req.notes}</p>}
+                {req.notes && <p className="text-xs text-gray-300 mt-0.5 font-mono text-[10px]">{req.notes}</p>}
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <span className="text-xs text-gray-400">{formatDateShort(req.requested_at)}</span>
-                <button onClick={() => deleteRequest(req.id)} className="p-1 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50">
+                <span className="text-xs text-gray-400">{fmtDate(req.requested_at)}</span>
+                <button onClick={() => deleteReq(req.id)} className="p-1 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </button>
               </div>
             </div>
-
-            {/* Status actions */}
             {req.status !== 'granted' && req.status !== 'denied' && (
               <div className="flex gap-2 pt-1 border-t border-gray-100">
                 {req.status === 'open' && (
                   <button onClick={() => updateStatus(req.id, 'requested')}
-                    className="px-3 py-1 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
-                    → Beantragt
-                  </button>
+                    className="px-3 py-1 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">→ Beantragt</button>
                 )}
                 <button onClick={() => updateStatus(req.id, 'granted')}
-                  className="px-3 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-                  ✓ Erteilt
-                </button>
+                  className="px-3 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">✓ Erteilt</button>
                 <button onClick={() => updateStatus(req.id, 'denied')}
-                  className="px-3 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
-                  ✕ Abgelehnt
-                </button>
+                  className="px-3 py-1 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">✕ Abgelehnt</button>
               </div>
             )}
           </div>
@@ -632,7 +744,7 @@ function ZugaengeTab() {
 
 type WorkspaceTab = 'mails' | 'tools' | 'projekte' | 'zugaenge';
 
-const TABS: { id: WorkspaceTab; label: string; emoji: string }[] = [
+const ALL_TABS: { id: WorkspaceTab; label: string; emoji: string }[] = [
   { id: 'mails', label: 'Mails', emoji: '📬' },
   { id: 'tools', label: 'Tools', emoji: '🔧' },
   { id: 'projekte', label: 'Projekte', emoji: '📋' },
@@ -640,25 +752,122 @@ const TABS: { id: WorkspaceTab; label: string; emoji: string }[] = [
 ];
 
 export default function WorkspaceView() {
+  const [config, setConfig] = useState<WorkspaceConfig>(DEFAULT_CONFIG);
+  const [configLoaded, setConfigLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('mails');
+  const [showConfig, setShowConfig] = useState(false);
+  const [showPassPrompt, setShowPassPrompt] = useState(false);
+  const [sessionPass, setSessionPass] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Load user + config
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      setUserId(user.id);
+
+      // Restore session password if available
+      const storedPass = sessionStorage.getItem(SESSION_PASS_KEY);
+      if (storedPass) setSessionPass(storedPass);
+
+      // Load workspace config
+      supabase.from('user_workspace_config').select('*').eq('user_id', user.id).maybeSingle()
+        .then(({ data }) => {
+          if (data) setConfig(data as WorkspaceConfig);
+          setConfigLoaded(true);
+        });
+    });
+  }, []);
+
+  const saveConfig = async (newConfig: WorkspaceConfig, pass: string) => {
+    if (!userId) return;
+
+    // Save password to sessionStorage only
+    if (pass) {
+      sessionStorage.setItem(SESSION_PASS_KEY, pass);
+      setSessionPass(pass);
+    }
+
+    // Save config (without password) to DB
+    await supabase.from('user_workspace_config').upsert({
+      user_id: userId,
+      enabled_modules: newConfig.enabled_modules,
+      mail_label: newConfig.mail_label,
+      imap_host: newConfig.imap_host,
+      imap_port: newConfig.imap_port,
+      imap_user: newConfig.imap_user,
+      updated_at: new Date().toISOString(),
+    });
+
+    setConfig(newConfig);
+    setShowConfig(false);
+  };
+
+  const handlePasswordSubmit = (pass: string) => {
+    sessionStorage.setItem(SESSION_PASS_KEY, pass);
+    setSessionPass(pass);
+    setShowPassPrompt(false);
+  };
+
+  if (!configLoaded) {
+    return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
+  }
+
+  const visibleTabs = ALL_TABS.filter(t => config.enabled_modules.includes(t.id));
+  const currentTab = visibleTabs.find(t => t.id === activeTab) ? activeTab : (visibleTabs[0]?.id ?? 'mails');
 
   return (
-    <div className="space-y-5">
-      {/* Tab bar */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-2xl w-fit">
-        {TABS.map((t) => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${activeTab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-            <span>{t.emoji}</span> {t.label}
-          </button>
-        ))}
-      </div>
+    <>
+      {/* Config modal */}
+      {showConfig && (
+        <ConfigPanel config={config} onSave={saveConfig} onClose={() => setShowConfig(false)} hasPassword={!!sessionPass} />
+      )}
 
-      {/* Content */}
-      {activeTab === 'mails' && <MailsTab />}
-      {activeTab === 'tools' && <ToolsTab />}
-      {activeTab === 'projekte' && <ProjekteTab />}
-      {activeTab === 'zugaenge' && <ZugaengeTab />}
-    </div>
+      {/* Password prompt */}
+      {showPassPrompt && config.imap_host && config.imap_user && (
+        <PasswordPrompt
+          label={config.mail_label}
+          user={config.imap_user}
+          onSubmit={handlePasswordSubmit}
+          onClose={() => setShowPassPrompt(false)}
+        />
+      )}
+
+      <div className="space-y-5">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex gap-1 bg-gray-100 p-1 rounded-2xl w-fit flex-wrap">
+            {visibleTabs.map(t => (
+              <button key={t.id} onClick={() => setActiveTab(t.id as WorkspaceTab)}
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === t.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                <span>{t.emoji}</span>{t.label}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setShowConfig(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+            </svg>
+            Konfigurieren
+          </button>
+        </div>
+
+        {/* Content */}
+        {userId && currentTab === 'mails' && (
+          <MailsTab
+            config={config}
+            userId={userId}
+            sessionPass={sessionPass}
+            onNeedConfig={() => setShowConfig(true)}
+            onNeedPassword={() => setShowPassPrompt(true)}
+          />
+        )}
+        {currentTab === 'tools' && <ToolsTab />}
+        {currentTab === 'projekte' && <ProjekteTab />}
+        {currentTab === 'zugaenge' && <ZugaengeTab />}
+      </div>
+    </>
   );
 }

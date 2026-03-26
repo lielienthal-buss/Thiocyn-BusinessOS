@@ -1,0 +1,157 @@
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { ImapFlow } from 'npm:imapflow';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+async function classifyMail(
+  apiKey: string,
+  sender: string,
+  subject: string,
+  preview: string | null
+): Promise<{ category: string; priority: string }> {
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 100,
+        system: `Classify this email. Return ONLY valid JSON: {"category":"invoice|reminder|dispute|info|other|task|question","priority":"high|normal|low"}`,
+        messages: [{
+          role: 'user',
+          content: `From: ${sender}\nSubject: ${subject}${preview ? `\nPreview: ${preview.substring(0, 200)}` : ''}`,
+        }],
+      }),
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text ?? '{}';
+    const match = text.match(/\{[\s\S]*\}/);
+    return JSON.parse(match?.[0] ?? '{}');
+  } catch {
+    return { category: 'other', priority: 'normal' };
+  }
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  try {
+    const { imap_host, imap_port, imap_user, imap_pass, user_id } = await req.json();
+
+    if (!imap_host || !imap_user || !imap_pass || !user_id) {
+      return new Response(JSON.stringify({ error: 'Missing credentials' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
+    const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY')!;
+
+    const client = new ImapFlow({
+      host: imap_host,
+      port: imap_port ?? 993,
+      secure: true,
+      auth: { user: imap_user, pass: imap_pass },
+      logger: false,
+    });
+
+    await client.connect();
+    const lock = await client.getMailboxLock('INBOX');
+    const mails: Array<{
+      id: string;
+      sender: string;
+      subject: string;
+      preview: string | null;
+      received_at: string;
+    }> = [];
+
+    try {
+      const messages = [];
+      for await (const msg of client.fetch('1:*', { envelope: true, bodyParts: ['TEXT'] }, { uid: false })) {
+        messages.push(msg);
+      }
+
+      for (const msg of messages.slice(-30)) {
+        const envelope = msg.envelope;
+        if (!envelope) continue;
+
+        const id = `imap-${(envelope.messageId ?? `${envelope.date?.getTime()}-${Math.random()}`).replace(/[<>]/g, '')}`;
+        const sender = envelope.from?.[0]
+          ? `${envelope.from[0].name ?? ''} <${envelope.from[0].address ?? ''}>`.trim()
+          : 'unknown';
+
+        let preview: string | null = null;
+        try {
+          const textBuf = msg.bodyParts?.get('TEXT');
+          if (textBuf) {
+            preview = new TextDecoder().decode(textBuf)
+              .replace(/=\r?\n/g, '').replace(/=[0-9A-Fa-f]{2}/g, ' ').replace(/\s+/g, ' ')
+              .trim().substring(0, 600) || null;
+          }
+        } catch { /* skip */ }
+
+        mails.push({
+          id,
+          sender,
+          subject: envelope.subject ?? '(no subject)',
+          preview,
+          received_at: envelope.date?.toISOString() ?? new Date().toISOString(),
+        });
+      }
+    } finally {
+      lock.release();
+    }
+
+    await client.logout();
+
+    // Upsert new mails with classification
+    let inserted = 0;
+    for (const mail of mails) {
+      const { data: existing } = await supabase
+        .from('user_mails')
+        .select('id')
+        .eq('id', mail.id)
+        .eq('user_id', user_id)
+        .maybeSingle();
+
+      if (!existing) {
+        const classification = await classifyMail(anthropicKey, mail.sender, mail.subject, mail.preview);
+        await supabase.from('user_mails').insert({
+          id: mail.id,
+          user_id,
+          sender: mail.sender,
+          subject: mail.subject,
+          preview: mail.preview,
+          received_at: mail.received_at,
+          status: 'new',
+          category: classification.category ?? 'other',
+          ai_priority: classification.priority ?? 'normal',
+        });
+        inserted++;
+      }
+    }
+
+    return new Response(
+      JSON.stringify({ inserted, total: mails.length }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (err) {
+    console.error(err);
+    return new Response(
+      JSON.stringify({ error: String(err) }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+});
