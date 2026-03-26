@@ -40,6 +40,18 @@ async function classifyMail(
   }
 }
 
+async function fetchWithTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms);
+  });
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    clearTimeout(timer!);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -65,10 +77,15 @@ serve(async (req) => {
       secure: true,
       auth: { user: imap_user, pass: imap_pass },
       logger: false,
+      // Prevent unhandled error events from crashing the Deno worker
+      emitLogs: false,
     });
 
-    await client.connect();
-    const lock = await client.getMailboxLock('INBOX');
+    // Catch error events so they don't crash the worker
+    client.on('error', (err: Error) => {
+      console.error('ImapFlow error event:', err.message);
+    });
+
     const mails: Array<{
       id: string;
       sender: string;
@@ -78,43 +95,54 @@ serve(async (req) => {
     }> = [];
 
     try {
-      const messages = [];
-      for await (const msg of client.fetch('1:*', { envelope: true, bodyParts: ['TEXT'] }, { uid: false })) {
-        messages.push(msg);
+      // 30s connection timeout
+      await fetchWithTimeout(client.connect(), 30_000);
+
+      const lock = await fetchWithTimeout(client.getMailboxLock('INBOX'), 15_000);
+
+      try {
+        const messages = [];
+        for await (const msg of client.fetch('1:*', { envelope: true, bodyParts: ['TEXT'] }, { uid: false })) {
+          messages.push(msg);
+        }
+
+        for (const msg of messages.slice(-30)) {
+          const envelope = msg.envelope;
+          if (!envelope) continue;
+
+          const id = `imap-${(envelope.messageId ?? `${envelope.date?.getTime()}-${Math.random()}`).replace(/[<>]/g, '')}`;
+          const sender = envelope.from?.[0]
+            ? `${envelope.from[0].name ?? ''} <${envelope.from[0].address ?? ''}>`.trim()
+            : 'unknown';
+
+          let preview: string | null = null;
+          try {
+            const textBuf = msg.bodyParts?.get('TEXT');
+            if (textBuf) {
+              preview = new TextDecoder().decode(textBuf)
+                .replace(/=\r?\n/g, '').replace(/=[0-9A-Fa-f]{2}/g, ' ').replace(/\s+/g, ' ')
+                .trim().substring(0, 600) || null;
+            }
+          } catch { /* skip */ }
+
+          mails.push({
+            id,
+            sender,
+            subject: envelope.subject ?? '(no subject)',
+            preview,
+            received_at: envelope.date?.toISOString() ?? new Date().toISOString(),
+          });
+        }
+      } finally {
+        lock.release();
       }
 
-      for (const msg of messages.slice(-30)) {
-        const envelope = msg.envelope;
-        if (!envelope) continue;
-
-        const id = `imap-${(envelope.messageId ?? `${envelope.date?.getTime()}-${Math.random()}`).replace(/[<>]/g, '')}`;
-        const sender = envelope.from?.[0]
-          ? `${envelope.from[0].name ?? ''} <${envelope.from[0].address ?? ''}>`.trim()
-          : 'unknown';
-
-        let preview: string | null = null;
-        try {
-          const textBuf = msg.bodyParts?.get('TEXT');
-          if (textBuf) {
-            preview = new TextDecoder().decode(textBuf)
-              .replace(/=\r?\n/g, '').replace(/=[0-9A-Fa-f]{2}/g, ' ').replace(/\s+/g, ' ')
-              .trim().substring(0, 600) || null;
-          }
-        } catch { /* skip */ }
-
-        mails.push({
-          id,
-          sender,
-          subject: envelope.subject ?? '(no subject)',
-          preview,
-          received_at: envelope.date?.toISOString() ?? new Date().toISOString(),
-        });
-      }
-    } finally {
-      lock.release();
+      await client.logout();
+    } catch (imapErr) {
+      // Try graceful close, ignore errors
+      try { client.close(); } catch { /* ignore */ }
+      throw imapErr;
     }
-
-    await client.logout();
 
     // Upsert new mails with classification
     let inserted = 0;
