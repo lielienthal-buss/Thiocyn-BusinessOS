@@ -155,7 +155,15 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        const classification = await classifyMail(anthropicKey, mail.sender, mail.subject, mail.preview);
+        let category = 'other';
+        let ai_priority = 'normal';
+        if (anthropicKey) {
+          try {
+            const c = await classifyMail(anthropicKey, mail.sender, mail.subject, mail.preview);
+            if (c.category) category = c.category;
+            if (c.priority) ai_priority = c.priority;
+          } catch { /* skip classification, insert anyway */ }
+        }
         await supabase.from('user_mails').insert({
           id: mail.id,
           user_id,
@@ -165,8 +173,8 @@ serve(async (req) => {
           preview: mail.preview,
           received_at: mail.received_at,
           status: 'new',
-          category: classification.category ?? 'other',
-          ai_priority: classification.priority ?? 'normal',
+          category,
+          ai_priority,
         });
         inserted++;
       }
