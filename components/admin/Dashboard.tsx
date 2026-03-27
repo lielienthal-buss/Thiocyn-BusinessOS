@@ -47,6 +47,7 @@ function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ defaul
   );
 }
 
+const DailyBriefingView = lazyLoad(() => import('./DailyBriefingView'));
 const ISOComplianceView = lazyLoad(() => import('./ISOComplianceView'));
 const CreatorView = lazyLoad(() => import('./CreatorView'));
 const KnowledgeBaseView = lazyLoad(() => import('./KnowledgeBaseView'));
@@ -56,8 +57,8 @@ const NotificationFeedView = lazyLoad(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace';
-type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
+type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace' | 'briefing';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -68,6 +69,14 @@ const hasRole = (userRole: string, minRole: UserRole) =>
   (ROLE_LEVEL[userRole as UserRole] ?? 0) >= ROLE_LEVEL[minRole];
 
 const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole; tabs: { id: Tab; label: string }[] }[] = [
+  {
+    id: 'briefing',
+    label: 'Briefing',
+    emoji: '☀️',
+    tabs: [
+      { id: 'briefing', label: 'Daily Briefing' },
+    ],
+  },
   {
     id: 'home',
     label: 'Home',
@@ -320,6 +329,10 @@ const Dashboard: React.FC = () => {
   }, [selectedAppId]);
 
   const renderContent = () => {
+    if (tab === 'briefing') {
+      return <React.Suspense fallback={<div>Loading...</div>}><DailyBriefingView /></React.Suspense>;
+    }
+
     if (tab === 'home') {
       return <HomeView />;
     }
