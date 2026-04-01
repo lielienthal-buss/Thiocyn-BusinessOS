@@ -6,13 +6,13 @@ import { toast } from 'sonner';
 
 // Stage badge color map
 const stageBadgeClasses: Record<string, string> = {
-  applied: 'bg-blue-100 text-blue-700',
-  task_requested: 'bg-amber-100 text-amber-700',
-  task_submitted: 'bg-green-100 text-green-700',
-  interview: 'bg-indigo-100 text-indigo-700',
-  hired: 'bg-purple-100 text-purple-700',
-  onboarding: 'bg-teal-100 text-teal-700',
-  rejected: 'bg-red-100 text-red-700',
+  applied: 'bg-blue-500/15 text-blue-400',
+  task_requested: 'bg-amber-500/15 text-amber-400',
+  task_submitted: 'bg-emerald-500/15 text-emerald-400',
+  interview: 'bg-indigo-500/15 text-indigo-400',
+  hired: 'bg-violet-500/15 text-violet-400',
+  onboarding: 'bg-teal-500/15 text-teal-400',
+  rejected: 'bg-red-500/15 text-red-400',
 };
 
 // Define the columns for the Kanban board
@@ -33,13 +33,13 @@ const KanbanCard: React.FC<{
   return (
     <div
       onClick={onClick}
-      className="bg-white p-4 rounded-lg shadow border border-gray-200 mb-4 cursor-pointer hover:bg-gray-50"
+      className="bg-surface-800/60 p-4 rounded-lg shadow border border-white/[0.06] mb-4 cursor-pointer hover:bg-surface-800/80 backdrop-blur-sm"
     >
-      <h4 className="font-bold text-sm text-gray-900">
+      <h4 className="font-bold text-sm text-white">
         {application.full_name}
       </h4>
-      <p className="text-xs text-gray-500">{application.email}</p>
-      <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${stageBadgeClasses[application.stage] ?? 'bg-gray-100 text-gray-600'}`}>
+      <p className="text-xs text-slate-500">{application.email}</p>
+      <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${stageBadgeClasses[application.stage] ?? 'bg-slate-500/15 text-slate-400'}`}>
         {application.stage}
       </span>
     </div>
@@ -55,6 +55,10 @@ const UpdateStageModal: React.FC<{
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
+    if (newStage === 'hired') {
+      toast.error('Use the "Hire" button in the applicant detail view — this creates the intern account and sends the invite.');
+      return;
+    }
     setIsSaving(true);
     const success = await updateApplicationStage(application.id, newStage);
     if (success) {
@@ -67,19 +71,19 @@ const UpdateStageModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">
+      <div className="bg-surface-800 border border-white/[0.08] rounded-lg shadow-xl p-8 w-full max-w-md">
+        <h2 className="text-xl font-bold text-white mb-4">
           Update Stage for {application.full_name}
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               New Stage
             </label>
             <select
               value={newStage}
               onChange={(e) => setNewStage(e.target.value as ApplicationStage)}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md"
             >
               {columns.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -92,7 +96,7 @@ const UpdateStageModal: React.FC<{
         <div className="mt-6 flex justify-end gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md"
+            className="px-4 py-2 bg-white/[0.08] text-slate-100 rounded-md"
           >
             Cancel
           </button>
@@ -152,10 +156,10 @@ const KanbanBoard: React.FC = () => {
         {columns.map((column) => (
           <div
             key={column.id}
-            className="w-72 bg-gray-50 rounded-xl flex-shrink-0"
+            className="w-72 bg-surface-900/60 rounded-xl flex-shrink-0"
           >
-            <div className="p-4 border-b border-gray-200">
-              <h3 className="font-bold text-gray-900">
+            <div className="p-4 border-b border-white/[0.06]">
+              <h3 className="font-bold text-white">
                 {column.title}
               </h3>
             </div>

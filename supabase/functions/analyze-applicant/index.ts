@@ -45,19 +45,22 @@ VERDICT: [STRONG YES / YES / MAYBE / NO]
 REASON: [2-3 sentences]
 WATCH OUT: [1 potential concern or "None"]`;
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${Deno.env.get('GEMINI_API_KEY')}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-        }),
-      }
-    );
+    const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
 
-    const geminiData = await geminiResponse.json();
-    const analysis = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Analysis failed';
+    const claudeData = await claudeResponse.json();
+    const analysis = claudeData.content?.[0]?.text || 'Analysis failed';
 
     // Store AI score as a simple flag (1=strong yes, 0.75=yes, 0.5=maybe, 0.25=no)
     const verdictScores: Record<string, number> = {
