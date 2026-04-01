@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getConfig } from '../_shared/config.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,11 +18,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    // Fetch application + template in parallel
-    const [appResult, templateResult, settingsResult] = await Promise.all([
+    const [appResult, templateResult, config] = await Promise.all([
       supabase.from('applications').select('*').eq('id', application_id).single(),
       supabase.from('email_templates').select('*').eq('slug', template_slug).single(),
-      supabase.from('recruiter_settings').select('*').eq('id', 1).single(),
+      getConfig(supabase),
     ]);
 
     if (appResult.error || !appResult.data) throw new Error('Application not found');
@@ -29,19 +29,16 @@ serve(async (req) => {
 
     const app = appResult.data;
     const template = templateResult.data;
-    const settings = settingsResult.data;
 
-    // Build task link for task_invite template
-    const taskLink = `${Deno.env.get('APP_URL') || 'https://your-app.vercel.app'}/task/${app.access_token}`;
+    const taskLink = `${config.app_url}/task/${app.access_token}`;
 
-    // Replace template variables
     const body = template.body
       .replace(/\{\{full_name\}\}/g, app.full_name || 'Candidate')
       .replace(/\{\{task_link\}\}/g, taskLink)
-      .replace(/\{\{calendly_url\}\}/g, settings?.calendly_url || '[CALENDLY LINK]')
-      .replace(/\{\{company_name\}\}/g, settings?.company_name || 'Take A Shot GmbH');
+      .replace(/\{\{calendly_url\}\}/g, config.calendly_url || '[CALENDLY LINK]')
+      .replace(/\{\{company_name\}\}/g, config.company_name)
+      .replace(/\{\{program_name\}\}/g, config.program_name);
 
-    // Send via Resend
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -49,7 +46,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Take A Shot GmbH <hiring@takeashot.de>',
+        from: `${config.from_name} <${config.from_email}>`,
         to: app.email,
         subject: template.subject,
         html: body,
@@ -61,7 +58,6 @@ serve(async (req) => {
       throw new Error(`Resend error: ${error}`);
     }
 
-    // Update stage + timestamp based on template
     const stageUpdates: Record<string, object> = {
       task_invite: { stage: 'task_requested', task_sent_at: new Date().toISOString() },
       interview_invite: { stage: 'interview' },
@@ -69,10 +65,7 @@ serve(async (req) => {
     };
 
     if (stageUpdates[template_slug]) {
-      await supabase
-        .from('applications')
-        .update(stageUpdates[template_slug])
-        .eq('id', application_id);
+      await supabase.from('applications').update(stageUpdates[template_slug]).eq('id', application_id);
     }
 
     return new Response(JSON.stringify({ success: true }), {

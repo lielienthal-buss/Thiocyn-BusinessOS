@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { getConfig } from '../_shared/config.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,15 +18,20 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const { data: app, error } = await supabase
-      .from('applications')
-      .select('*')
-      .eq('id', application_id)
-      .single();
+    const [appResult, config] = await Promise.all([
+      supabase.from('applications').select('*').eq('id', application_id).single(),
+      getConfig(supabase),
+    ]);
 
-    if (error || !app) throw new Error('Application not found');
+    if (appResult.error || !appResult.data) throw new Error('Application not found');
+    const app = appResult.data;
 
-    const prompt = `You are an HR assistant for Take A Shot GmbH, a holding company with 6 sustainable D2C brands.
+    const companyContext = config.ai_instruction ||
+      `${config.company_name} is a company running the ${config.program_name}. We value ownership, proactivity, fast-paced execution, and AI-savviness. We avoid people who wait for instructions or lack initiative.`;
+
+    const prompt = `You are an HR assistant for ${config.company_name}.
+
+${companyContext}
 
 Analyze this internship applicant briefly (max 120 words):
 
@@ -34,9 +40,6 @@ Project Highlight: ${app.project_highlight || 'Not provided'}
 Personality Scores (BFI): ${JSON.stringify(app.psychometrics || {})}
 Preferred Areas: ${(app.project_interest || []).join(', ') || 'Not specified'}
 Work Sample: ${app.work_sample_text ? app.work_sample_text.substring(0, 500) : 'Not submitted'}
-
-We value: ownership, proactivity, fast-paced execution, AI-savviness.
-We avoid: people who wait for instructions, lack initiative.
 
 Neuroticism note: ${(app.psychometrics?.neuroticism || 0) >= 80 ? '⚠️ HIGH neuroticism score — flag this.' : 'Within acceptable range.'}
 
@@ -62,7 +65,6 @@ WATCH OUT: [1 potential concern or "None"]`;
     const claudeData = await claudeResponse.json();
     const analysis = claudeData.content?.[0]?.text || 'Analysis failed';
 
-    // Store AI score as a simple flag (1=strong yes, 0.75=yes, 0.5=maybe, 0.25=no)
     const verdictScores: Record<string, number> = {
       'STRONG YES': 100, 'YES': 75, 'MAYBE': 50, 'NO': 25,
     };
