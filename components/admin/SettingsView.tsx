@@ -1,32 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useConfig } from '@/lib/ConfigContext';
-import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/Spinner';
 import type { LandingConfig } from '@/types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TEMPLATE_VARIABLES = [
-  { key: '{{full_name}}', label: 'Bewerber Name' },
-  { key: '{{task_link}}', label: 'Task Link' },
-  { key: '{{calendly_url}}', label: 'Calendly URL' },
-  { key: '{{company_name}}', label: 'Firmenname' },
-  { key: '{{program_name}}', label: 'Programmname' },
-];
-
 const FEATURE_LABELS: Record<string, string> = {
   kanban: 'Kanban Board',
   ai_analysis: 'KI-Analyse (Bewerber)',
   onboarding: 'Onboarding Checklist',
   public_positions: 'Öffentliche Stellenanzeigen',
-};
-
-const SLUG_LABELS: Record<string, string> = {
-  task_invite: '📋 Task Invite',
-  interview_invite: '🗓 Interview Invite',
-  rejection: '❌ Absage',
-  application_received: '✅ Eingangsbestätigung',
 };
 
 const DEFAULT_LANDING: LandingConfig = {
@@ -43,135 +27,6 @@ const DEFAULT_LANDING: LandingConfig = {
   show_faq: true,
 };
 
-// ─── Email Template Editor ────────────────────────────────────────────────────
-
-const EmailTemplateEditor: React.FC = () => {
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any | null>(null);
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [preview, setPreview] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    supabase.from('email_templates').select('*').order('slug').then(({ data }) => {
-      if (data && data.length > 0) {
-        setTemplates(data);
-        setSelected(data[0]);
-        setSubject(data[0].subject);
-        setBody(data[0].body);
-      }
-    });
-  }, []);
-
-  const selectTemplate = (t: any) => {
-    setSelected(t);
-    setSubject(t.subject);
-    setBody(t.body);
-    setPreview(false);
-  };
-
-  const insertVariable = (variable: string) => {
-    const ta = textareaRef.current;
-    if (!ta) { setBody(b => b + variable); return; }
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const newBody = body.substring(0, start) + variable + body.substring(end);
-    setBody(newBody);
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(start + variable.length, start + variable.length);
-    }, 0);
-  };
-
-  const previewBody = body
-    .replace(/\{\{full_name\}\}/g, 'Max Mustermann')
-    .replace(/\{\{task_link\}\}/g, '#')
-    .replace(/\{\{calendly_url\}\}/g, '#')
-    .replace(/\{\{company_name\}\}/g, 'Meine Firma GmbH')
-    .replace(/\{\{program_name\}\}/g, 'Internship Program');
-
-  const handleSave = async () => {
-    if (!selected) return;
-    setSaving(true);
-    const { error } = await supabase
-      .from('email_templates')
-      .update({ subject, body })
-      .eq('id', selected.id);
-    if (!error) {
-      setTemplates(prev => prev.map(t => t.id === selected.id ? { ...t, subject, body } : t));
-      setSelected((prev: any) => ({ ...prev, subject, body }));
-      toast.success('Template gespeichert');
-    } else {
-      toast.error('Fehler beim Speichern');
-    }
-    setSaving(false);
-  };
-
-  return (
-    <div className="space-y-5">
-      <div className="flex gap-2 flex-wrap">
-        {templates.map(t => (
-          <button key={t.id} onClick={() => selectTemplate(t)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-              selected?.id === t.id ? 'bg-blue-600 text-white' : 'bg-white/[0.06] text-slate-400 hover:bg-white/[0.10]'
-            }`}>
-            {SLUG_LABELS[t.slug] || t.slug}
-          </button>
-        ))}
-      </div>
-
-      {selected && (
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Betreff</label>
-            <input value={subject} onChange={e => setSubject(e.target.value)}
-              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-sm" />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Variable einfügen</label>
-            <div className="flex gap-2 flex-wrap">
-              {TEMPLATE_VARIABLES.map(v => (
-                <button key={v.key} onClick={() => insertVariable(v.key)}
-                  className="px-2 py-1 text-xs bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-md hover:bg-blue-500/20 transition-colors font-mono">
-                  + {v.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                {preview ? 'Vorschau' : 'HTML Inhalt'}
-              </label>
-              <button onClick={() => setPreview(p => !p)} className="text-xs text-blue-400 hover:text-blue-300">
-                {preview ? '← Editor' : 'Vorschau →'}
-              </button>
-            </div>
-            {preview ? (
-              <div className="w-full min-h-48 bg-white rounded-lg p-4 text-sm text-gray-800 overflow-auto"
-                dangerouslySetInnerHTML={{ __html: previewBody }} />
-            ) : (
-              <textarea ref={textareaRef} value={body} onChange={e => setBody(e.target.value)}
-                rows={12} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-xs font-mono resize-y" />
-            )}
-          </div>
-
-          <div className="flex justify-end">
-            <button onClick={handleSave} disabled={saving}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-colors">
-              {saving && <Spinner className="w-4 h-4" />} Speichern
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
 // ─── Main Settings View ───────────────────────────────────────────────────────
 
 interface SettingsViewProps { isDemoMode?: boolean; }
@@ -181,7 +36,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
   const [form, setForm] = useState({ ...config });
   const [landing, setLanding] = useState<LandingConfig>({ ...DEFAULT_LANDING, ...config.landing_config });
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'general' | 'email' | 'features' | 'ai' | 'landing'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'features' | 'ai' | 'landing'>('general');
 
   useEffect(() => {
     setForm({ ...config });
@@ -232,7 +87,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
 
   const TABS = [
     { id: 'general', label: '⚙️ Allgemein' },
-    { id: 'email', label: '📧 E-Mail Templates' },
     { id: 'features', label: '🧩 Features' },
     { id: 'ai', label: '🤖 KI Kontext' },
     { id: 'landing', label: '🌐 Landing Page' },
@@ -269,8 +123,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
             <SaveButton />
           </>
         )}
-
-        {activeTab === 'email' && <EmailTemplateEditor />}
 
         {activeTab === 'features' && (
           <>
