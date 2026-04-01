@@ -300,7 +300,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
       {/* --- Header --- */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             {application.full_name}
           </h2>
         </div>
