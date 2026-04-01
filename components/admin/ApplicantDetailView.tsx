@@ -134,6 +134,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
   };
 
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailLang, setEmailLang] = useState<'de' | 'en'>('de');
   const [isHiring, setIsHiring] = useState(false);
   const [hireModal, setHireModal] = useState(false);
   const [hireDepartment, setHireDepartment] = useState('marketing');
@@ -161,7 +162,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
         setIsSendingEmail(true);
         try {
           const { error } = await supabase.functions.invoke('send-email', {
-            body: { application_id: application.id, template_slug: templateSlug },
+            body: { application_id: application.id, template_slug: templateSlug, lang: emailLang },
           });
           if (error) throw error;
           const stageMap: Record<string, string> = {
@@ -305,6 +306,11 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          {/* Language toggle for outgoing emails */}
+          <div className="flex items-center gap-0.5 bg-surface-800 border border-white/[0.08] rounded-lg p-0.5">
+            <button onClick={() => setEmailLang('de')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'de' ? 'bg-amber-500 text-black' : 'text-slate-500 hover:text-slate-300'}`}>DE</button>
+            <button onClick={() => setEmailLang('en')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'en' ? 'bg-amber-500 text-black' : 'text-slate-500 hover:text-slate-300'}`}>EN</button>
+          </div>
           {(application.stage === 'applied' || application.stage === 'task_requested') && (
             <>
               <button

@@ -11,21 +11,28 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const { application_id, template_slug } = await req.json();
+    const { application_id, template_slug, lang = 'de' } = await req.json();
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
 
-    const [appResult, templateResult, config] = await Promise.all([
+    // Try language-specific template first (e.g. task_invite_en), fall back to base slug
+    const localizedSlug = lang === 'en' ? `${template_slug}_en` : template_slug;
+    const [appResult, localizedResult, config] = await Promise.all([
       supabase.from('applications').select('*').eq('id', application_id).single(),
-      supabase.from('email_templates').select('*').eq('slug', template_slug).single(),
+      supabase.from('email_templates').select('*').eq('slug', localizedSlug).maybeSingle(),
       getConfig(supabase),
     ]);
 
+    // Fall back to base slug if localized version doesn't exist
+    const templateResult = (!localizedResult.data && localizedSlug !== template_slug)
+      ? await supabase.from('email_templates').select('*').eq('slug', template_slug).single()
+      : localizedResult;
+
     if (appResult.error || !appResult.data) throw new Error('Application not found');
-    if (templateResult.error || !templateResult.data) throw new Error('Template not found');
+    if (!templateResult.data) throw new Error('Template not found');
 
     const app = appResult.data;
     const template = templateResult.data;
