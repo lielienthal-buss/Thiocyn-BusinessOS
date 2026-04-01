@@ -102,7 +102,7 @@ export default function BrandConfigView() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-gray-400">
+      <div className="flex items-center justify-center h-64 text-sm text-slate-500">
         Lade Konfigurationen…
       </div>
     );
@@ -114,20 +114,20 @@ export default function BrandConfigView() {
     <div className="flex gap-4 h-full">
       {/* Left Sidebar */}
       <div className="w-48 shrink-0 flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Brands</h3>
+        <h3 className="text-sm font-semibold text-slate-300 mb-3">Brands</h3>
         {brands.map((brand) => (
           <button
             key={brand.slug}
             onClick={() => setActiveBrandSlug(brand.slug)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-left transition-colors ${
               activeBrandSlug === brand.slug
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium'
+                : 'text-slate-300 hover:bg-white/[0.05]'
             }`}
           >
             <span
               className={`w-2 h-2 rounded-full shrink-0 ${
-                brand.status === 'active' ? 'bg-green-500' : 'bg-gray-300'
+                brand.status === 'active' ? 'bg-green-500' : 'bg-slate-600'
               }`}
             />
             <span className="mr-1">{brand.emoji}</span>
@@ -141,7 +141,7 @@ export default function BrandConfigView() {
         {activeBrand ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-800">
+              <h2 className="text-base font-semibold text-slate-100">
                 {activeBrand.emoji} {activeBrand.name} — Konfiguration
               </h2>
               <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function BrandConfigView() {
                       configs[activeBrandSlug!] ?? { brand_slug: activeBrandSlug! }
                     )
                   }
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200"
+                  className="px-4 py-2 bg-white/[0.06] text-slate-300 rounded-xl text-sm font-medium hover:bg-white/[0.10]"
                 >
                   Abbrechen
                 </button>
@@ -166,43 +166,43 @@ export default function BrandConfigView() {
             </div>
 
             {/* Security Notice */}
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-400">
               Speichere hier nur Referenz-Namen (z.B. Env-Var-Namen), keine echten API Keys.
             </div>
 
             {/* Section 1 — Shopify */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Shopify</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-slate-300 mb-3">Shopify</h3>
               <div className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Shopify Store URL
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.shopify_store_url ?? ''}
                     onChange={(e) => handleChange('shopify_store_url', e.target.value)}
                     placeholder="mystore.myshopify.com"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     API Key Ref
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.shopify_api_key_ref ?? ''}
                     onChange={(e) => handleChange('shopify_api_key_ref', e.target.value)}
                     placeholder="Env var name, not the key itself"
                   />
-                  <p className="text-xs text-gray-400 mt-1">Env var name, not the key itself</p>
+                  <p className="text-xs text-slate-500 mt-1">Env var name, not the key itself</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Webhook Secret Ref
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.shopify_webhook_secret_ref ?? ''}
                     onChange={(e) =>
                       handleChange('shopify_webhook_secret_ref', e.target.value)
@@ -214,48 +214,48 @@ export default function BrandConfigView() {
             </div>
 
             {/* Section 2 — Meta Ads */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Meta Ads</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-slate-300 mb-3">Meta Ads</h3>
               <div className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Ad Account ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.meta_ad_account_id ?? ''}
                     onChange={(e) => handleChange('meta_ad_account_id', e.target.value)}
                     placeholder="act_XXXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Pixel ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.meta_pixel_id ?? ''}
                     onChange={(e) => handleChange('meta_pixel_id', e.target.value)}
                     placeholder="XXXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Page ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.meta_page_id ?? ''}
                     onChange={(e) => handleChange('meta_page_id', e.target.value)}
                     placeholder="XXXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Credential Ref
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.meta_credential_ref ?? ''}
                     onChange={(e) => handleChange('meta_credential_ref', e.target.value)}
                     placeholder="Env var name"
@@ -265,48 +265,48 @@ export default function BrandConfigView() {
             </div>
 
             {/* Section 3 — Other Platforms */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Other Platforms</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-slate-300 mb-3">Other Platforms</h3>
               <div className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     TikTok Ad Account ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.tiktok_ad_account_id ?? ''}
                     onChange={(e) => handleChange('tiktok_ad_account_id', e.target.value)}
                     placeholder="XXXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     TikTok Credential Ref
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.tiktok_credential_ref ?? ''}
                     onChange={(e) => handleChange('tiktok_credential_ref', e.target.value)}
                     placeholder="Env var name"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Amazon Seller ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.amazon_seller_id ?? ''}
                     onChange={(e) => handleChange('amazon_seller_id', e.target.value)}
                     placeholder="XXXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Billbee Shop ID
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.billbee_shop_id ?? ''}
                     onChange={(e) => handleChange('billbee_shop_id', e.target.value)}
                     placeholder="XXXXXXXXXX"
@@ -316,15 +316,15 @@ export default function BrandConfigView() {
             </div>
 
             {/* Section 4 — Communication */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Communication</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-slate-300 mb-3">Communication</h3>
               <div className="flex flex-col gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     CS Email
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.cs_email ?? ''}
                     onChange={(e) => handleChange('cs_email', e.target.value)}
                     placeholder="support@brand.com"
@@ -332,11 +332,11 @@ export default function BrandConfigView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Sender Email
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.sender_email ?? ''}
                     onChange={(e) => handleChange('sender_email', e.target.value)}
                     placeholder="hello@brand.com"
@@ -344,11 +344,11 @@ export default function BrandConfigView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                  <label className="block text-xs font-medium text-slate-500 mb-1">
                     Resend Domain Ref
                   </label>
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                     value={editState.resend_domain_ref ?? ''}
                     onChange={(e) => handleChange('resend_domain_ref', e.target.value)}
                     placeholder="Env var name"
@@ -356,11 +356,11 @@ export default function BrandConfigView() {
                 </div>
                 {activeBrandSlug === 'paigh' && (
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                    <label className="block text-xs font-medium text-slate-500 mb-1">
                       Paigh Inbox ID
                     </label>
                     <input
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                       value={editState.paigh_inbox_id ?? ''}
                       onChange={(e) => handleChange('paigh_inbox_id', e.target.value)}
                       placeholder="inbox_XXXXXXXXXX"
@@ -371,10 +371,10 @@ export default function BrandConfigView() {
             </div>
 
             {/* Notes */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Notizen</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-slate-300 mb-3">Notizen</h3>
               <textarea
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm h-24 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-xl px-3 py-2 text-sm h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
                 value={editState.notes ?? ''}
                 onChange={(e) => handleChange('notes', e.target.value)}
                 placeholder="Interne Notizen zur Brand-Konfiguration…"
@@ -389,7 +389,7 @@ export default function BrandConfigView() {
                     configs[activeBrandSlug!] ?? { brand_slug: activeBrandSlug! }
                   )
                 }
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200"
+                className="px-4 py-2 bg-white/[0.06] text-slate-300 rounded-xl text-sm font-medium hover:bg-white/[0.10]"
               >
                 Abbrechen
               </button>
@@ -403,7 +403,7 @@ export default function BrandConfigView() {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-64 text-sm text-gray-400">
+          <div className="flex items-center justify-center h-64 text-sm text-slate-500">
             Wähle eine Brand aus der Liste.
           </div>
         )}

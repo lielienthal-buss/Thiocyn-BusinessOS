@@ -25,22 +25,22 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
     <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-black text-gray-900 tracking-tight">Finance</h2>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <h2 className="text-xl font-black text-white tracking-tight">Finance</h2>
+        <p className="text-sm text-slate-500 mt-0.5">
           Disputes, invoices, and financial overview across all brands
         </p>
       </div>
 
       {/* Tab navigation */}
-      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-2xl w-fit">
+      <div className="flex flex-wrap gap-1 bg-white/[0.05] border border-white/[0.06] p-1 rounded-2xl w-fit">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-5 py-2 text-sm font-semibold rounded-xl transition-all ${
               activeTab === tab.id
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                : 'text-slate-500 hover:text-slate-300'
             }`}
           >
             {tab.label}

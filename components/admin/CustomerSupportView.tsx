@@ -57,9 +57,9 @@ const BRAND_CS: {
 ];
 
 const STATUS_STYLES = {
-  active: 'bg-green-50 text-green-700 border-green-200',
-  paused: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  external: 'bg-blue-50 text-blue-700 border-blue-200',
+  active: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  paused: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
+  external: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
 };
 
 const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
@@ -78,8 +78,8 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
     <div className="space-y-8 animate-[fadeIn_0.3s_ease-out]">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-black text-gray-900 tracking-tight">Customer Support</h2>
-        <p className="text-sm text-gray-500 mt-0.5">Brand-Status, Team und Quick-Links</p>
+        <h2 className="text-xl font-black text-white tracking-tight">Customer Support</h2>
+        <p className="text-sm text-slate-500 mt-0.5">Brand-Status, Team und Quick-Links</p>
       </div>
 
       {/* Quick Access — cross-brand */}
@@ -95,9 +95,9 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 hover:bg-gray-100 hover:border-gray-200 transition-colors text-xs font-semibold text-gray-700"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-surface-900/60 border border-white/[0.06] hover:bg-white/[0.03] transition-colors text-xs font-semibold text-slate-300"
           >
-            <span className="text-gray-400">↗</span>
+            <span className="text-slate-500">↗</span>
             {link.label}
           </a>
         ))}
@@ -105,17 +105,17 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
 
       {/* Brand CS Status Grid */}
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Brand Status</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">Brand Status</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {BRAND_CS.map(brand => (
             <div
               key={brand.name}
-              className="rounded-xl border border-gray-100 bg-white p-4 space-y-3"
+              className="rounded-xl border border-white/[0.06] bg-surface-800/60 p-4 space-y-3 backdrop-blur-sm"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full" style={{ background: brand.accent }} />
-                  <span className="font-black text-sm text-gray-900">{brand.name}</span>
+                  <span className="font-black text-sm text-white">{brand.name}</span>
                 </div>
                 <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${STATUS_STYLES[brand.status]}`}>
                   {brand.statusLabel}
@@ -129,9 +129,9 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-900 transition-colors"
+                      className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-200 transition-colors"
                     >
-                      <span className="text-gray-300">→</span>
+                      <span className="text-slate-600">→</span>
                       {link.label}
                     </a>
                   ))}
@@ -145,21 +145,21 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
       {/* CS Team */}
       {team.length > 0 && (
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-3">CS Team ({team.length} aktiv)</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">CS Team ({team.length} aktiv)</p>
           <div className="flex flex-wrap gap-2">
             {team.map(intern => (
-              <div key={intern.email} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-50 border border-gray-100">
-                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-black text-gray-600">
+              <div key={intern.email} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-900/60 border border-white/[0.06]">
+                <div className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-[10px] font-black text-slate-300">
                   {intern.full_name.charAt(0)}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-gray-900">{intern.full_name}</div>
-                  <div className="text-[10px] text-gray-400">{intern.email}</div>
+                  <div className="text-xs font-bold text-white">{intern.full_name}</div>
+                  <div className="text-[10px] text-slate-500">{intern.email}</div>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-gray-400 mt-2">
+          <p className="text-[10px] text-slate-500 mt-2">
             Support-Mailaccounts: support1–5@mail.hartlimesgmbh.de
           </p>
         </div>
@@ -167,7 +167,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
 
       {/* KPI Targets */}
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-3">KPI Targets</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">KPI Targets</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {[
             { label: 'First Response', target: '≤ 24h' },
@@ -175,9 +175,9 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             { label: 'Standup', target: 'Mo bis 10:00' },
             { label: 'Escalation Rate', target: '≤ 10%' },
           ].map(kpi => (
-            <div key={kpi.label} className="px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100">
-              <div className="text-[9px] font-black uppercase tracking-wider text-gray-400">{kpi.label}</div>
-              <div className="text-sm font-black text-gray-900 mt-0.5">{kpi.target}</div>
+            <div key={kpi.label} className="px-3 py-2.5 rounded-lg bg-surface-900/60 border border-white/[0.06]">
+              <div className="text-[9px] font-black uppercase tracking-wider text-slate-500">{kpi.label}</div>
+              <div className="text-sm font-black text-white mt-0.5">{kpi.target}</div>
             </div>
           ))}
         </div>
@@ -185,7 +185,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
 
       {/* Resources */}
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-3">Ressourcen</p>
+        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">Ressourcen</p>
         <ResourceCardList section="support" isAdmin={isAdmin} />
       </div>
     </div>

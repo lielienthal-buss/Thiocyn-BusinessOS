@@ -14,13 +14,13 @@ type Notification = {
 
 const typeBadge = (type: string) => {
   const map: Record<string, string> = {
-    task_completed: 'bg-green-100 text-green-700',
-    task_assigned: 'bg-blue-100 text-blue-700',
-    dispute: 'bg-red-100 text-red-700',
-    invoice: 'bg-yellow-100 text-yellow-700',
-    application: 'bg-purple-100 text-purple-700',
+    task_completed: 'bg-emerald-500/15 text-emerald-400',
+    task_assigned: 'bg-blue-500/15 text-blue-400',
+    dispute: 'bg-red-500/15 text-red-400',
+    invoice: 'bg-yellow-500/15 text-yellow-400',
+    application: 'bg-violet-500/15 text-violet-400',
   };
-  return map[type] ?? 'bg-gray-100 text-gray-600';
+  return map[type] ?? 'bg-slate-500/15 text-slate-400';
 };
 
 export default function NotificationFeedView() {
@@ -75,12 +75,12 @@ export default function NotificationFeedView() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-gray-900">Notification Feed</h2>
+            <h2 className="text-lg font-semibold text-white">Notification Feed</h2>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
+              <span className="px-2 py-0.5 text-xs font-medium bg-blue-500/15 text-blue-400 rounded-full">
                 {unreadCount} ungelesen
               </span>
             )}
@@ -103,24 +103,24 @@ export default function NotificationFeedView() {
       </div>
 
       {/* Filter bar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+          <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.06] rounded-xl p-1">
             {types.map(type => (
               <button
                 key={type}
                 onClick={() => setTypeFilter(type)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                   typeFilter === type
-                    ? 'bg-white shadow-sm text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                    : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {type === 'all' ? 'Alle' : type}
               </button>
             ))}
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
             <input
               type="checkbox"
               className="rounded"
@@ -134,11 +134,11 @@ export default function NotificationFeedView() {
 
       {/* Notification list */}
       {loading ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-slate-500">
           <p className="text-sm">Lade Benachrichtigungen...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-slate-500">
           <p className="text-4xl mb-3">🔔</p>
           <p className="font-medium">Keine Benachrichtigungen</p>
         </div>
@@ -149,8 +149,8 @@ export default function NotificationFeedView() {
               key={n.id}
               className={
                 n.read
-                  ? 'bg-white border border-gray-100 rounded-xl p-4 opacity-70'
-                  : 'bg-blue-50 border-l-4 border-blue-400 rounded-xl p-4'
+                  ? 'bg-surface-800/40 border border-white/[0.06] rounded-xl p-4 opacity-60'
+                  : 'bg-blue-500/[0.08] border-l-4 border-blue-400 rounded-xl p-4'
               }
             >
               {/* Top row */}
@@ -159,21 +159,21 @@ export default function NotificationFeedView() {
                   <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${typeBadge(n.type)}`}>
                     {n.type}
                   </span>
-                  <span className="text-sm font-medium text-gray-900">{n.title}</span>
+                  <span className="text-sm font-medium text-white">{n.title}</span>
                 </div>
-                <span className="text-xs text-gray-400 whitespace-nowrap shrink-0">
+                <span className="text-xs text-slate-500 whitespace-nowrap shrink-0">
                   {new Date(n.created_at).toLocaleString('de-DE')}
                 </span>
               </div>
 
               {/* Body */}
               {n.body && (
-                <p className="text-sm text-gray-600 mt-1">{n.body}</p>
+                <p className="text-sm text-slate-300 mt-1">{n.body}</p>
               )}
 
               {/* Metadata */}
               {n.metadata && (
-                <pre className="text-xs bg-gray-50 rounded-lg p-2 mt-2 text-gray-500 overflow-x-auto">
+                <pre className="text-xs bg-surface-900/60 rounded-lg p-2 mt-2 text-slate-500 overflow-x-auto">
                   {JSON.stringify(n.metadata, null, 2)}
                 </pre>
               )}
@@ -182,7 +182,7 @@ export default function NotificationFeedView() {
               {!n.read && (
                 <div className="mt-3">
                   <button
-                    className="px-3 py-1 text-xs rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    className="px-3 py-1 text-xs rounded-lg bg-white/[0.06] text-slate-400 hover:bg-white/[0.10]"
                     onClick={() => markRead(n.id)}
                   >
                     Als gelesen markieren

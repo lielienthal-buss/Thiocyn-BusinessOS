@@ -10,9 +10,9 @@ const STAGE_LABELS: Record<string, string> = {
 };
 
 const STAGE_COLORS: Record<string, string> = {
-  onboarding: 'bg-blue-100 text-blue-700',
-  active: 'bg-green-100 text-green-700',
-  completed: 'bg-purple-100 text-purple-700',
+  onboarding: 'bg-blue-500/15 text-blue-400',
+  active: 'bg-emerald-500/15 text-emerald-400',
+  completed: 'bg-violet-500/15 text-violet-400',
 };
 
 const MOOD_EMOJI: Record<number, string> = {
@@ -80,8 +80,8 @@ const WeeklyReviewForm: React.FC<{
   }
 
   return (
-    <div className="mt-4 p-4 bg-gray-50 rounded-lg border space-y-3">
-      <p className="font-semibold text-sm text-gray-700">Week {weekNumber} Check-in</p>
+    <div className="mt-4 p-4 bg-surface-900/60 rounded-lg border border-white/[0.06] space-y-3">
+      <p className="font-semibold text-sm text-slate-300">Week {weekNumber} Check-in</p>
       {[
         ['highlight', 'Highlight this week'],
         ['challenge', 'Biggest challenge'],
@@ -89,17 +89,17 @@ const WeeklyReviewForm: React.FC<{
         ['next_goal', 'Goal for next week'],
       ].map(([key, label]) => (
         <div key={key}>
-          <label className="block text-xs text-gray-500 mb-1">{label}</label>
+          <label className="block text-xs text-slate-500 mb-1">{label}</label>
           <textarea
             rows={2}
             value={form[key as keyof typeof form] as string}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            className="w-full text-sm border rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-primary-400"
+            className="w-full text-sm border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           />
         </div>
       ))}
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Mood</label>
+        <label className="block text-xs text-slate-500 mb-1">Mood</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(n => (
             <button
@@ -152,10 +152,10 @@ const FinalReviewForm: React.FC<{
   }
 
   return (
-    <div className="p-4 bg-purple-50 rounded-lg border border-purple-200 space-y-3">
-      <p className="font-semibold text-sm text-purple-800">Exit Assessment</p>
+    <div className="p-4 bg-violet-500/10 rounded-lg border border-violet-500/20 space-y-3">
+      <p className="font-semibold text-sm text-violet-400">Exit Assessment</p>
       <div>
-        <label className="block text-xs text-gray-500 mb-1">Overall Rating</label>
+        <label className="block text-xs text-slate-500 mb-1">Overall Rating</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(n => (
             <button
@@ -163,8 +163,8 @@ const FinalReviewForm: React.FC<{
               onClick={() => setForm(p => ({ ...p, overall_rating: n }))}
               className={`w-8 h-8 rounded-full font-bold text-sm transition-all ${
                 form.overall_rating === n
-                  ? 'bg-purple-600 text-white scale-110'
-                  : 'bg-purple-100 text-purple-600'
+                  ? 'bg-violet-500 text-white scale-110'
+                  : 'bg-violet-500/15 text-violet-400'
               }`}
             >
               {n}
@@ -178,16 +178,16 @@ const FinalReviewForm: React.FC<{
         ['admin_notes', 'Internal notes'],
       ].map(([key, label]) => (
         <div key={key}>
-          <label className="block text-xs text-gray-500 mb-1">{label}</label>
+          <label className="block text-xs text-slate-500 mb-1">{label}</label>
           <textarea
             rows={2}
             value={form[key as keyof typeof form] as string}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            className="w-full text-sm border rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="w-full text-sm border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/30"
           />
         </div>
       ))}
-      <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+      <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
         <input
           type="checkbox"
           checked={form.recommend_for_hire}
@@ -247,45 +247,45 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
 
   return (
-    <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] backdrop-blur-sm overflow-hidden">
       {/* Header */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.03]"
         onClick={() => setExpanded(p => !p)}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center font-bold text-primary-700 text-lg">
+          <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center font-bold text-primary-400 text-lg">
             {intern.full_name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold text-gray-900">{intern.full_name}</p>
-            <p className="text-xs text-gray-500">{intern.email}</p>
+            <p className="font-semibold text-white">{intern.full_name}</p>
+            <p className="text-xs text-slate-500">{intern.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
             inviteAccepted
-              ? 'bg-green-100 text-green-700'
-              : 'bg-yellow-100 text-yellow-700'
+              ? 'bg-emerald-500/15 text-emerald-400'
+              : 'bg-yellow-500/15 text-yellow-400'
           }`}>
             {inviteAccepted ? 'Accepted' : 'Pending'}
           </span>
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STAGE_COLORS[intern.stage] ?? 'bg-gray-100 text-gray-600'}`}>
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STAGE_COLORS[intern.stage] ?? 'bg-slate-500/15 text-slate-400'}`}>
             {STAGE_LABELS[intern.stage] ?? intern.stage}
           </span>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-slate-500">
             W{intern.weeks.length} · {completedTasks}/{intern.tasks.length} tasks
           </span>
-          <span className="text-gray-400 text-sm">{expanded ? '▲' : '▼'}</span>
+          <span className="text-slate-500 text-sm">{expanded ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {expanded && (
-        <div className="border-t px-4 pb-4 space-y-4">
+        <div className="border-t border-white/[0.06] px-4 pb-4 space-y-4">
           {/* Weekly Reviews Timeline */}
           <div>
             <div className="flex items-center justify-between mt-4 mb-2">
-              <p className="text-sm font-semibold text-gray-700">Weekly Check-ins</p>
+              <p className="text-sm font-semibold text-slate-300">Weekly Check-ins</p>
               {intern.stage === 'active' && (
                 <button
                   onClick={() => setShowWeeklyForm(p => !p)}
@@ -296,18 +296,18 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               )}
             </div>
             {intern.weeks.length === 0 ? (
-              <p className="text-xs text-gray-400 italic">No check-ins yet.</p>
+              <p className="text-xs text-slate-500 italic">No check-ins yet.</p>
             ) : (
               <div className="space-y-2">
                 {intern.weeks.map(w => (
-                  <div key={w.id} className="text-xs bg-gray-50 rounded-lg p-3 border">
+                  <div key={w.id} className="text-xs bg-surface-900/60 rounded-lg p-3 border border-white/[0.06]">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-gray-700">Week {w.week_number}</span>
+                      <span className="font-semibold text-slate-300">Week {w.week_number}</span>
                       {w.mood_score && <span>{MOOD_EMOJI[w.mood_score]}</span>}
                     </div>
-                    {w.highlight && <p className="text-gray-600"><span className="font-medium">✨</span> {w.highlight}</p>}
-                    {w.challenge && <p className="text-gray-500 mt-0.5"><span className="font-medium">⚡</span> {w.challenge}</p>}
-                    {w.learning && <p className="text-gray-500 mt-0.5"><span className="font-medium">📚</span> {w.learning}</p>}
+                    {w.highlight && <p className="text-slate-300"><span className="font-medium">✨</span> {w.highlight}</p>}
+                    {w.challenge && <p className="text-slate-500 mt-0.5"><span className="font-medium">⚡</span> {w.challenge}</p>}
+                    {w.learning && <p className="text-slate-500 mt-0.5"><span className="font-medium">📚</span> {w.learning}</p>}
                   </div>
                 ))}
               </div>
@@ -323,9 +323,9 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
 
           {/* Tasks */}
           <div>
-            <p className="text-sm font-semibold text-gray-700 mb-2">Tasks & Learning</p>
+            <p className="text-sm font-semibold text-slate-300 mb-2">Tasks & Learning</p>
             {intern.tasks.length === 0 ? (
-              <p className="text-xs text-gray-400 italic">No tasks yet.</p>
+              <p className="text-xs text-slate-500 italic">No tasks yet.</p>
             ) : (
               <div className="space-y-1.5">
                 {intern.tasks.map(t => (
@@ -334,9 +334,9 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
                       type="checkbox"
                       checked={t.completed}
                       onChange={() => toggleTask(t.id, t.completed)}
-                      className="mt-0.5 accent-primary-600"
+                      className="mt-0.5 accent-amber-500"
                     />
-                    <span className={`text-sm ${t.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+                    <span className={`text-sm ${t.completed ? 'line-through text-slate-500' : 'text-slate-300'}`}>
                       {t.title}
                     </span>
                   </div>
@@ -350,7 +350,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
                 onChange={e => setNewTask(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addTask()}
                 placeholder="Add task…"
-                className="flex-1 text-sm border rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="flex-1 text-sm border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500/30 placeholder-slate-600"
               />
               <button
                 onClick={addTask}
@@ -366,7 +366,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           {(intern.stage === 'active' || intern.stage === 'completed') && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-gray-700">Final Review</p>
+                <p className="text-sm font-semibold text-slate-300">Final Review</p>
                 {!showFinalForm && (
                   <button
                     onClick={() => setShowFinalForm(true)}
@@ -377,17 +377,17 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
                 )}
               </div>
               {intern.finalReview && !showFinalForm && (
-                <div className="text-xs bg-purple-50 rounded-lg p-3 border border-purple-100">
+                <div className="text-xs bg-violet-500/10 rounded-lg p-3 border border-violet-500/20">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold">Rating: {intern.finalReview.overall_rating}/5</span>
+                    <span className="font-semibold text-slate-300">Rating: {intern.finalReview.overall_rating}/5</span>
                     {intern.finalReview.recommend_for_hire && (
-                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
+                      <span className="bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">
                         ✓ Hire Recommended
                       </span>
                     )}
                   </div>
                   {intern.finalReview.key_contributions && (
-                    <p className="text-gray-600">{intern.finalReview.key_contributions}</p>
+                    <p className="text-slate-400">{intern.finalReview.key_contributions}</p>
                   )}
                 </div>
               )}
@@ -402,13 +402,13 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           )}
 
           {/* Intern Portal Link */}
-          <div className="pt-2 border-t">
-            <p className="text-xs text-gray-500 mb-1">Intern Portal Link</p>
+          <div className="pt-2 border-t border-white/[0.06]">
+            <p className="text-xs text-slate-500 mb-1">Intern Portal Link</p>
             <div className="flex items-center gap-2">
               <input
                 readOnly
                 value={internPortalUrl}
-                className="flex-1 text-xs bg-gray-50 border rounded px-2 py-1.5 text-gray-600"
+                className="flex-1 text-xs bg-white/[0.04] border border-white/[0.10] rounded px-2 py-1.5 text-slate-400"
               />
               <button
                 onClick={() => navigator.clipboard.writeText(internPortalUrl)}
@@ -421,7 +421,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
 
           {/* Deactivate button */}
           {intern.is_active && (
-            <div className="pt-2 border-t">
+            <div className="pt-2 border-t border-white/[0.06]">
               <button
                 onClick={async () => {
                   await supabase.from('intern_accounts').update({ is_active: false }).eq('id', intern.id);
@@ -524,8 +524,8 @@ const AcademyView: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Founders Associate Academy</h2>
-          <p className="text-sm text-gray-500 mt-1">Full intern lifecycle — onboarding → active → completed</p>
+          <h2 className="text-xl font-bold text-white">Founders Associate Academy</h2>
+          <p className="text-sm text-slate-500 mt-1">Full intern lifecycle — onboarding → active → completed</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
@@ -544,13 +544,13 @@ const AcademyView: React.FC = () => {
 
       {/* Pending Invites Banner */}
       {pendingInvites.length > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-sm font-bold text-yellow-800">
+              <p className="text-sm font-bold text-yellow-400">
                 Pending Invites ({pendingInvites.length})
               </p>
-              <p className="text-xs text-yellow-600 mt-0.5">
+              <p className="text-xs text-yellow-500/80 mt-0.5">
                 Diese Interns haben ihre Einladungs-Mail noch nicht geöffnet / Zugang noch nicht aktiviert.
               </p>
             </div>
@@ -583,7 +583,7 @@ const AcademyView: React.FC = () => {
             {pendingInvites.map(i => (
               <span
                 key={i.id}
-                className="text-xs bg-yellow-100 text-yellow-800 border border-yellow-200 px-2.5 py-1 rounded-full font-medium"
+                className="text-xs bg-yellow-500/15 text-yellow-400 border border-yellow-500/20 px-2.5 py-1 rounded-full font-medium"
               >
                 {i.email}
               </span>
@@ -599,9 +599,9 @@ const AcademyView: React.FC = () => {
           { label: 'Active', count: counts.active, color: 'green' },
           { label: 'Completed', count: counts.completed, color: 'purple' },
         ].map(({ label, count, color }) => (
-          <div key={label} className={`bg-${color}-50 border border-${color}-100 rounded-xl p-4 text-center`}>
-            <p className={`text-3xl font-bold text-${color}-700`}>{count}</p>
-            <p className={`text-sm text-${color}-600 mt-1`}>{label}</p>
+          <div key={label} className={`bg-${color}-500/10 border border-${color}-500/20 rounded-xl p-4 text-center`}>
+            <p className={`text-3xl font-bold text-${color}-400`}>{count}</p>
+            <p className={`text-sm text-${color}-400/80 mt-1`}>{label}</p>
           </div>
         ))}
       </div>
@@ -614,8 +614,8 @@ const AcademyView: React.FC = () => {
             onClick={() => setFilter(f)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
               filter === f
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                : 'bg-white/[0.05] text-slate-500 hover:text-slate-300 border border-white/[0.06]'
             }`}
           >
             {f === 'all' ? `All (${counts.all})` : `${f} (${counts[f]})`}
@@ -624,75 +624,75 @@ const AcademyView: React.FC = () => {
       </div>
 
       {/* ─── Token-Verbrauch (AI Senior Accounts) ─── */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+      <div className="border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 bg-surface-900/60 border-b border-white/[0.06]">
           <div>
-            <h3 className="text-sm font-bold text-gray-800">Token-Verbrauch · AI Senior</h3>
-            <p className="text-xs text-gray-500">Monat: {new Date().toISOString().slice(0, 7)}</p>
+            <h3 className="text-sm font-bold text-white">Token-Verbrauch · AI Senior</h3>
+            <p className="text-xs text-slate-500">Monat: {new Date().toISOString().slice(0, 7)}</p>
           </div>
         </div>
         {loading ? (
-          <div className="text-center py-8 text-gray-400 text-sm">Lade Accounts…</div>
+          <div className="text-center py-8 text-slate-500 text-sm">Lade Accounts…</div>
         ) : interns.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">
+          <div className="text-center py-8 text-slate-500 text-sm">
             Noch keine Intern-Accounts vorhanden.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
+                <tr className="border-b border-white/[0.06] bg-surface-900/60">
                   {['Intern', 'Department', 'Invite', 'Modell', 'Tokens (Monat)', 'Kosten', 'Budget', 'Status'].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/[0.04]">
                 {interns.map(acc => {
                   const totalTokens = (acc.usage?.tokens_input ?? 0) + (acc.usage?.tokens_output ?? 0);
                   const budgetPct = Math.min(100, Math.round((totalTokens / acc.budget_tokens_monthly) * 100));
                   return (
-                    <tr key={acc.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={acc.id} className="hover:bg-white/[0.03] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">{acc.full_name}</p>
-                        <p className="text-xs text-gray-400">{acc.email}</p>
+                        <p className="font-medium text-white">{acc.full_name}</p>
+                        <p className="text-xs text-slate-500">{acc.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                        <span className="text-xs bg-blue-500/15 text-blue-400 px-2 py-1 rounded-full font-medium">
                           {DEPARTMENT_LABELS[acc.department] ?? acc.department}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                           acc.auth_user_id != null
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                            ? 'bg-emerald-500/15 text-emerald-400'
+                            : 'bg-yellow-500/15 text-yellow-400'
                         }`}>
                           {acc.auth_user_id != null ? 'Accepted' : 'Pending'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">
+                      <td className="px-4 py-3 text-xs text-slate-500">
                         {acc.model.includes('haiku') ? 'Haiku' : 'Sonnet'}
                       </td>
-                      <td className="px-4 py-3 text-gray-700">
+                      <td className="px-4 py-3 text-slate-300">
                         {totalTokens.toLocaleString()}
-                        <div className="w-24 h-1.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                        <div className="w-24 h-1.5 bg-white/[0.10] rounded-full mt-1 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${budgetPct >= 90 ? 'bg-red-500' : budgetPct >= 70 ? 'bg-yellow-500' : 'bg-green-500'}`}
                             style={{ width: `${budgetPct}%` }}
                           />
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-700">
+                      <td className="px-4 py-3 text-slate-300">
                         ${(acc.usage?.cost_usd ?? 0).toFixed(4)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">
+                      <td className="px-4 py-3 text-xs text-slate-500">
                         {acc.budget_tokens_monthly.toLocaleString()} · {budgetPct}%
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${STAGE_COLORS[acc.stage] ?? 'bg-gray-100 text-gray-500'}`}>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${STAGE_COLORS[acc.stage] ?? 'bg-slate-500/15 text-slate-400'}`}>
                           {STAGE_LABELS[acc.stage] ?? acc.stage}
                         </span>
                       </td>
@@ -707,9 +707,9 @@ const AcademyView: React.FC = () => {
 
       {/* Intern lifecycle cards */}
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading…</div>
+        <div className="text-center py-12 text-slate-500">Loading…</div>
       ) : displayed.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-slate-500">
           <p className="text-4xl mb-3">🎓</p>
           <p className="font-medium">No interns in this stage yet.</p>
           <p className="text-sm mt-1">Interns are managed via SQL in intern_accounts.</p>

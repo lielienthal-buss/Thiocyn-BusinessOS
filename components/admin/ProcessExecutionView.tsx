@@ -144,10 +144,10 @@ export default function ProcessExecutionView() {
   });
 
   const statusBadge = (status: string) => {
-    if (status === 'running') return 'bg-blue-100 text-blue-700';
-    if (status === 'failed') return 'bg-red-100 text-red-700';
-    if (status === 'completed') return 'bg-green-100 text-green-700';
-    return 'bg-gray-100 text-gray-600';
+    if (status === 'running') return 'bg-blue-500/15 text-blue-400';
+    if (status === 'failed') return 'bg-red-500/15 text-red-400';
+    if (status === 'completed') return 'bg-emerald-500/15 text-emerald-400';
+    return 'bg-slate-500/15 text-slate-400';
   };
 
   const progressPct =
@@ -158,16 +158,16 @@ export default function ProcessExecutionView() {
       {/* Left Sidebar */}
       <div className="w-64 flex-shrink-0 flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-1">
-          <h2 className="text-sm font-semibold text-gray-700">SOPs</h2>
-          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+          <h2 className="text-sm font-semibold text-slate-300">SOPs</h2>
+          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-slate-400">
             {filteredProcesses.length}
           </span>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-400">Loading...</div>
+          <div className="text-center py-12 text-slate-500">Loading...</div>
         ) : filteredProcesses.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">Keine SOPs gefunden.</div>
+          <div className="text-center py-12 text-slate-500 text-sm">Keine SOPs gefunden.</div>
         ) : (
           <div className="overflow-y-auto flex flex-col gap-2 pr-1">
             {filteredProcesses.map((p) => (
@@ -181,16 +181,16 @@ export default function ProcessExecutionView() {
                 }}
                 className={`cursor-pointer rounded-2xl border p-3 transition-all ${
                   selectedProcess?.id === p.id
-                    ? 'bg-blue-50 border-blue-200 shadow-sm'
-                    : 'bg-white border-gray-100 hover:border-gray-200 shadow-sm'
+                    ? 'bg-blue-500/10 border-blue-500/20'
+                    : 'bg-surface-800/60 border-white/[0.06] hover:border-white/10 backdrop-blur-sm'
                 }`}
               >
-                <p className="text-xs text-gray-400 mb-0.5">
+                <p className="text-xs text-slate-500 mb-0.5">
                   {p.category} · {p.est_minutes} min
                 </p>
-                <p className="text-sm font-semibold text-gray-800 leading-snug">{p.title}</p>
+                <p className="text-sm font-semibold text-slate-200 leading-snug">{p.title}</p>
                 {p.brand_slug && (
-                  <span className="mt-1 inline-block px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500">
+                  <span className="mt-1 inline-block px-1.5 py-0.5 rounded-full text-xs bg-slate-500/15 text-slate-400">
                     {p.brand_slug}
                   </span>
                 )}
@@ -203,25 +203,25 @@ export default function ProcessExecutionView() {
       {/* Right Panel */}
       <div className="flex-1 overflow-y-auto flex flex-col gap-4 min-w-0">
         {!selectedProcess ? (
-          <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+          <div className="flex items-center justify-center h-full text-slate-500 text-sm">
             ← SOP auswählen
           </div>
         ) : (
           <>
             {/* Section A — Process Info */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h3 className="text-base font-semibold text-gray-800 mb-1">{selectedProcess.title}</h3>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h3 className="text-base font-semibold text-slate-100 mb-1">{selectedProcess.title}</h3>
               {selectedProcess.description && (
-                <p className="text-sm text-gray-500 mb-3">{selectedProcess.description}</p>
+                <p className="text-sm text-slate-500 mb-3">{selectedProcess.description}</p>
               )}
-              <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-4">
-                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+              <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-4">
+                <span className="px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
                   {selectedProcess.owner_role}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                <span className="px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
                   {selectedProcess.trigger}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                <span className="px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
                   {selectedProcess.est_minutes} min
                 </span>
               </div>
@@ -237,27 +237,27 @@ export default function ProcessExecutionView() {
 
             {/* Section C — Active Execution */}
             {activeExecution && (
-              <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-4">
+              <div className="bg-surface-800/60 rounded-2xl border border-blue-500/20 p-4 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-gray-700">Aktive Ausführung</h4>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                  <h4 className="text-sm font-semibold text-slate-300">Aktive Ausführung</h4>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-400">
                     running
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-slate-500 mb-3">
                   Gestartet:{' '}
                   {new Date(activeExecution.started_at).toLocaleString('de-DE')}
                 </p>
 
                 {/* Progress bar */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <div className="flex justify-between text-xs text-slate-500 mb-1">
                     <span>Fortschritt</span>
                     <span>
                       {completedSteps.size}/{steps.length} Schritte
                     </span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
                     <div
                       className="h-2 bg-blue-600 rounded-full transition-all"
                       style={{ width: `${progressPct}%` }}
@@ -267,7 +267,7 @@ export default function ProcessExecutionView() {
 
                 {/* Notes */}
                 <textarea
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm h-20 mb-3 focus:outline-none focus:border-blue-300 resize-none"
+                  className="w-full border border-white/[0.10] rounded-xl px-3 py-2 bg-white/[0.04] text-slate-100 text-sm h-20 mb-3 focus:outline-none focus:border-blue-500/40 resize-none"
                   placeholder="Notizen..."
                   value={executionNotes}
                   onChange={(e) => setExecutionNotes(e.target.value)}
@@ -282,7 +282,7 @@ export default function ProcessExecutionView() {
                   </button>
                   <button
                     onClick={() => completeExecution('failed')}
-                    className="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-sm font-medium hover:bg-red-200"
+                    className="px-4 py-2 bg-red-500/15 text-red-400 rounded-xl text-sm font-medium hover:bg-red-500/25"
                   >
                     ✗ Fehlgeschlagen
                   </button>
@@ -291,10 +291,10 @@ export default function ProcessExecutionView() {
             )}
 
             {/* Section B — Steps */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Schritte</h4>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h4 className="text-sm font-semibold text-slate-300 mb-3">Schritte</h4>
               {steps.length === 0 ? (
-                <p className="text-sm text-gray-400">Keine Schritte definiert.</p>
+                <p className="text-sm text-slate-500">Keine Schritte definiert.</p>
               ) : (
                 <div className="flex flex-col gap-3">
                   {steps.map((step) => (
@@ -304,28 +304,28 @@ export default function ProcessExecutionView() {
                           type="checkbox"
                           checked={completedSteps.has(step.id)}
                           onChange={() => toggleStep(step.id)}
-                          className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 cursor-pointer flex-shrink-0"
+                          className="mt-0.5 h-4 w-4 rounded border-white/20 text-blue-600 cursor-pointer flex-shrink-0"
                         />
                       ) : (
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-medium text-slate-500">
                           {step.step_number}
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-medium text-gray-800">{step.title}</span>
+                          <span className="text-sm font-medium text-slate-200">{step.title}</span>
                           {step.is_automated && (
                             <span className="text-yellow-500 text-xs" title="Automatisiert">
                               ⚡
                             </span>
                           )}
-                          <span className="px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-500">
+                          <span className="px-1.5 py-0.5 rounded-full text-xs bg-slate-500/15 text-slate-400">
                             {step.assignee_role}
                           </span>
-                          <span className="text-xs text-gray-400">{step.est_minutes} min</span>
+                          <span className="text-xs text-slate-500">{step.est_minutes} min</span>
                         </div>
                         {step.description && (
-                          <p className="text-xs text-gray-400 mt-0.5 leading-snug">
+                          <p className="text-xs text-slate-500 mt-0.5 leading-snug">
                             {step.description}
                           </p>
                         )}
@@ -337,15 +337,15 @@ export default function ProcessExecutionView() {
             </div>
 
             {/* Section D — Recent Executions */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Letzte Ausführungen</h4>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h4 className="text-sm font-semibold text-slate-300 mb-3">Letzte Ausführungen</h4>
               {recentExecutions.length === 0 ? (
-                <p className="text-sm text-gray-400">Noch keine Ausführungen.</p>
+                <p className="text-sm text-slate-500">Noch keine Ausführungen.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-gray-600">
+                  <table className="w-full text-xs text-slate-400">
                     <thead>
-                      <tr className="text-gray-400 border-b border-gray-100">
+                      <tr className="text-slate-500 border-b border-white/[0.06]">
                         <th className="text-left py-1.5 pr-3 font-medium">Gestartet</th>
                         <th className="text-left py-1.5 pr-3 font-medium">Brand</th>
                         <th className="text-left py-1.5 pr-3 font-medium">Status</th>
@@ -355,17 +355,17 @@ export default function ProcessExecutionView() {
                     </thead>
                     <tbody>
                       {recentExecutions.map((exec) => (
-                        <tr key={exec.id} className="border-b border-gray-50 last:border-0">
-                          <td className="py-1.5 pr-3 whitespace-nowrap text-gray-500">
+                        <tr key={exec.id} className="border-b border-white/[0.04] last:border-0">
+                          <td className="py-1.5 pr-3 whitespace-nowrap text-slate-500">
                             {new Date(exec.started_at).toLocaleString('de-DE')}
                           </td>
                           <td className="py-1.5 pr-3">
                             {exec.brand_slug ? (
-                              <span className="px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                              <span className="px-1.5 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
                                 {exec.brand_slug}
                               </span>
                             ) : (
-                              <span className="text-gray-300">—</span>
+                              <span className="text-slate-600">—</span>
                             )}
                           </td>
                           <td className="py-1.5 pr-3">
@@ -375,17 +375,17 @@ export default function ProcessExecutionView() {
                               {exec.status}
                             </span>
                           </td>
-                          <td className="py-1.5 pr-3 whitespace-nowrap text-gray-500">
+                          <td className="py-1.5 pr-3 whitespace-nowrap text-slate-500">
                             {exec.completed_at
                               ? new Date(exec.completed_at).toLocaleString('de-DE')
-                              : <span className="text-gray-300">—</span>}
+                              : <span className="text-slate-600">—</span>}
                           </td>
-                          <td className="py-1.5 text-gray-400 max-w-xs truncate">
+                          <td className="py-1.5 text-slate-500 max-w-xs truncate">
                             {exec.notes
                               ? exec.notes.length > 60
                                 ? exec.notes.slice(0, 60) + '…'
                                 : exec.notes
-                              : <span className="text-gray-300">—</span>}
+                              : <span className="text-slate-600">—</span>}
                           </td>
                         </tr>
                       ))}

@@ -25,6 +25,7 @@ import TopNav from '@/components/TopNav';
 import { Toaster } from 'sonner';
 import { LangProvider } from '@/lib/i18n';
 import { BrandProvider } from '@/lib/BrandContext';
+import { ConfigProvider } from '@/lib/ConfigContext';
 import CookieBanner from '@/components/CookieBanner';
 
 // --- Layout Component ---
@@ -61,8 +62,8 @@ const AppLayout: React.FC = () => {
   if (!authInitialized) return null;
 
   return (
-    <div className="min-h-screen relative py-12 px-4 transition-colors duration-500 selection:bg-primary-100">
-      <div className="fixed inset-0 pointer-events-none -z-10 bg-gradient-to-br from-gray-50 to-white" />
+    <div className="min-h-screen relative py-12 px-4 transition-colors duration-500">
+      <div className="fixed inset-0 pointer-events-none -z-10 bg-surface-950" />
       <div className="w-full max-w-7xl mx-auto relative z-10">
         <div className="mb-16">
           <TopNav />
@@ -81,7 +82,7 @@ const App: React.FC = () => {
     {
       path: '/',
       element: (
-        <div className="min-h-screen bg-white px-4 py-12">
+        <div className="min-h-screen bg-surface-950 px-4 py-12">
           <div className="max-w-5xl mx-auto space-y-10 md:space-y-20">
             <TopNav />
             <Header />
@@ -112,7 +113,7 @@ const App: React.FC = () => {
     },
     {
       path: 'admin/dashboard',
-      element: <BrandProvider><Dashboard /></BrandProvider>,
+      element: <ConfigProvider><BrandProvider><Dashboard /></BrandProvider></ConfigProvider>,
     },
     {
       path: 'company',

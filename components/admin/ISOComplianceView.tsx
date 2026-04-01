@@ -57,12 +57,12 @@ type NonConformance = {
 
 const riskBadge = (level: string) => {
   const map: Record<string, string> = {
-    low: 'bg-green-100 text-green-700',
-    medium: 'bg-yellow-100 text-yellow-700',
-    high: 'bg-orange-100 text-orange-700',
-    critical: 'bg-red-100 text-red-700',
+    low: 'bg-emerald-500/15 text-emerald-400',
+    medium: 'bg-yellow-500/15 text-yellow-400',
+    high: 'bg-orange-500/15 text-orange-400',
+    critical: 'bg-red-500/15 text-red-400',
   };
-  return map[level] ?? 'bg-gray-100 text-gray-600';
+  return map[level] ?? 'bg-slate-500/15 text-slate-400';
 };
 
 const fmt = (dateStr: string | null) =>
@@ -136,15 +136,15 @@ export default function ISOComplianceView() {
   return (
     <div className="space-y-4">
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-white/[0.05] border border-white/[0.06] rounded-xl p-1 w-fit">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={
               tab === t.key
-                ? 'px-3 py-1.5 rounded-lg text-sm font-medium bg-white shadow-sm text-gray-900'
-                : 'px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700'
+                ? 'px-3 py-1.5 rounded-lg text-sm font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                : 'px-3 py-1.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-300'
             }
           >
             {t.label}
@@ -153,20 +153,20 @@ export default function ISOComplianceView() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-gray-400">Loading...</div>
+        <div className="text-center py-12 text-slate-500">Loading...</div>
       ) : (
         <>
           {/* Tab: Risk Register */}
           {tab === 'risks' && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">Risk Register</h2>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h2 className="text-sm font-semibold text-slate-300 mb-3">Risk Register</h2>
               {risks.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">Keine Einträge gefunden.</div>
+                <div className="text-center py-12 text-slate-500">Keine Einträge gefunden.</div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead>
-                      <tr className="text-xs text-gray-500 border-b border-gray-100">
+                      <tr className="text-xs text-slate-500 border-b border-white/[0.06]">
                         <th className="pb-2 pr-4 font-medium">Asset</th>
                         <th className="pb-2 pr-4 font-medium">Threat</th>
                         <th className="pb-2 pr-4 font-medium">Risk Level</th>
@@ -176,14 +176,14 @@ export default function ISOComplianceView() {
                         <th className="pb-2 font-medium">Next Review</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-white/[0.06]">
                       {risks.map((r) => (
-                        <tr key={r.id} className="hover:bg-gray-50 transition-colors">
+                        <tr key={r.id} className="hover:bg-white/[0.03] transition-colors">
                           <td className="py-2.5 pr-4">
-                            <div className="font-medium text-gray-800">{r.asset}</div>
-                            <div className="text-xs text-gray-400">{r.asset_category}</div>
+                            <div className="font-medium text-slate-200">{r.asset}</div>
+                            <div className="text-xs text-slate-500">{r.asset_category}</div>
                           </td>
-                          <td className="py-2.5 pr-4 text-gray-600">{r.threat}</td>
+                          <td className="py-2.5 pr-4 text-slate-400">{r.threat}</td>
                           <td className="py-2.5 pr-4">
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-medium ${riskBadge(r.risk_level)}`}
@@ -191,10 +191,10 @@ export default function ISOComplianceView() {
                               {r.risk_level}
                             </span>
                           </td>
-                          <td className="py-2.5 pr-4 text-gray-700 font-medium">{r.risk_score}</td>
-                          <td className="py-2.5 pr-4 text-gray-600">{r.mitigation_status}</td>
-                          <td className="py-2.5 pr-4 text-gray-500 text-xs">{r.owner_email}</td>
-                          <td className="py-2.5 text-gray-500 text-xs">{fmt(r.next_review_date)}</td>
+                          <td className="py-2.5 pr-4 text-slate-300 font-medium">{r.risk_score}</td>
+                          <td className="py-2.5 pr-4 text-slate-400">{r.mitigation_status}</td>
+                          <td className="py-2.5 pr-4 text-slate-500 text-xs">{r.owner_email}</td>
+                          <td className="py-2.5 text-slate-500 text-xs">{fmt(r.next_review_date)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -208,24 +208,24 @@ export default function ISOComplianceView() {
           {tab === 'incidents' && (
             <div className="space-y-3">
               {incidents.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">Keine Einträge gefunden.</div>
+                <div className="text-center py-12 text-slate-500">Keine Einträge gefunden.</div>
               ) : (
                 incidents.map((inc) => (
                   <div
                     key={inc.id}
-                    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"
+                    className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-semibold text-gray-800 text-sm">{inc.title}</span>
+                          <span className="font-semibold text-slate-200 text-sm">{inc.title}</span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${riskBadge(inc.severity)}`}
                           >
                             {inc.severity}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
+                        <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
                           <span>{inc.incident_type}</span>
                           <span>·</span>
                           <span>Detected: {fmt(inc.detected_at)}</span>
@@ -237,7 +237,7 @@ export default function ISOComplianceView() {
                           )}
                         </div>
                         {inc.description && (
-                          <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                          <p className="text-xs text-slate-500 mt-2 leading-relaxed">
                             {inc.description}
                           </p>
                         )}
@@ -245,10 +245,10 @@ export default function ISOComplianceView() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                           inc.status === 'resolved'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-emerald-500/15 text-emerald-400'
                             : inc.status === 'open'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                            ? 'bg-red-500/15 text-red-400'
+                            : 'bg-yellow-500/15 text-yellow-400'
                         }`}
                       >
                         {inc.status}
@@ -262,15 +262,15 @@ export default function ISOComplianceView() {
 
           {/* Tab: Business Risks */}
           {tab === 'bizRisks' && (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <h2 className="text-sm font-semibold text-gray-700 mb-3">Business Risks</h2>
+            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+              <h2 className="text-sm font-semibold text-slate-300 mb-3">Business Risks</h2>
               {bizRisks.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">Keine Einträge gefunden.</div>
+                <div className="text-center py-12 text-slate-500">Keine Einträge gefunden.</div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead>
-                      <tr className="text-xs text-gray-500 border-b border-gray-100">
+                      <tr className="text-xs text-slate-500 border-b border-white/[0.06]">
                         <th className="pb-2 pr-4 font-medium">Title</th>
                         <th className="pb-2 pr-4 font-medium">Category</th>
                         <th className="pb-2 pr-4 font-medium">Risk Level</th>
@@ -280,11 +280,11 @@ export default function ISOComplianceView() {
                         <th className="pb-2 font-medium">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-50">
+                    <tbody className="divide-y divide-white/[0.06]">
                       {bizRisks.map((r) => (
-                        <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                          <td className="py-2.5 pr-4 font-medium text-gray-800">{r.title}</td>
-                          <td className="py-2.5 pr-4 text-gray-500 text-xs">{r.category}</td>
+                        <tr key={r.id} className="hover:bg-white/[0.03] transition-colors">
+                          <td className="py-2.5 pr-4 font-medium text-slate-200">{r.title}</td>
+                          <td className="py-2.5 pr-4 text-slate-500 text-xs">{r.category}</td>
                           <td className="py-2.5 pr-4">
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-medium ${riskBadge(r.risk_level)}`}
@@ -292,19 +292,19 @@ export default function ISOComplianceView() {
                               {r.risk_level}
                             </span>
                           </td>
-                          <td className="py-2.5 pr-4 text-gray-700 font-medium">{r.risk_score}</td>
-                          <td className="py-2.5 pr-4 text-gray-500 text-xs">
+                          <td className="py-2.5 pr-4 text-slate-300 font-medium">{r.risk_score}</td>
+                          <td className="py-2.5 pr-4 text-slate-500 text-xs">
                             {truncate(r.mitigation_strategy, 80)}
                           </td>
-                          <td className="py-2.5 pr-4 text-gray-500 text-xs">{r.owner_email}</td>
+                          <td className="py-2.5 pr-4 text-slate-500 text-xs">{r.owner_email}</td>
                           <td className="py-2.5 text-xs">
                             <span
                               className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                 r.status === 'resolved'
-                                  ? 'bg-green-100 text-green-700'
+                                  ? 'bg-emerald-500/15 text-emerald-400'
                                   : r.status === 'open'
-                                  ? 'bg-red-100 text-red-700'
-                                  : 'bg-yellow-100 text-yellow-700'
+                                  ? 'bg-red-500/15 text-red-400'
+                                  : 'bg-yellow-500/15 text-yellow-400'
                               }`}
                             >
                               {r.status}
@@ -323,34 +323,34 @@ export default function ISOComplianceView() {
           {tab === 'nonconf' && (
             <div className="space-y-3">
               {nonConfs.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">Keine Einträge gefunden.</div>
+                <div className="text-center py-12 text-slate-500">Keine Einträge gefunden.</div>
               ) : (
                 nonConfs.map((nc) => (
                   <div
                     key={nc.id}
-                    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4"
+                    className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <span className="font-semibold text-gray-800 text-sm">{nc.title}</span>
+                          <span className="font-semibold text-slate-200 text-sm">{nc.title}</span>
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${riskBadge(nc.severity)}`}
                           >
                             {nc.severity}
                           </span>
                           {nc.brand_slug && (
-                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-slate-400">
                               {nc.brand_slug}
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-gray-500 mb-1">
+                        <div className="text-xs text-slate-500 mb-1">
                           Detected: {fmt(nc.detected_at)}
                         </div>
                         {nc.root_cause && (
-                          <p className="text-xs text-gray-500 leading-relaxed">
-                            <span className="font-medium text-gray-600">Root Cause: </span>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            <span className="font-medium text-slate-400">Root Cause: </span>
                             {truncate(nc.root_cause, 80)}
                           </p>
                         )}
@@ -358,10 +358,10 @@ export default function ISOComplianceView() {
                       <span
                         className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                           nc.status === 'resolved'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-emerald-500/15 text-emerald-400'
                             : nc.status === 'in_progress'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-red-100 text-red-700'
+                            ? 'bg-yellow-500/15 text-yellow-400'
+                            : 'bg-red-500/15 text-red-400'
                         }`}
                       >
                         {nc.status}

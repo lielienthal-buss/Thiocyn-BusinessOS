@@ -122,7 +122,7 @@ function InvoicesTab() {
       <div className="flex flex-wrap items-center gap-3 justify-between">
         <div className="flex items-center gap-2">
           <select
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+            className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as InvoiceStatus | 'all')}
           >
@@ -130,7 +130,7 @@ function InvoicesTab() {
             {INVOICE_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           <select
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+            className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
             value={filterBrand}
             onChange={(e) => setFilterBrand(e.target.value as Brand | 'all')}
           >
@@ -151,8 +151,8 @@ function InvoicesTab() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-gray-800">New Invoice / Mahnung</h3>
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-sm font-bold text-slate-100">New Invoice / Mahnung</h3>
           {error && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
               {error}
@@ -160,9 +160,9 @@ function InvoicesTab() {
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Brand</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Brand</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.brand}
                 onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value as Brand }))}
               >
@@ -170,18 +170,18 @@ function InvoicesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Vendor *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Vendor *</label>
               <input
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="e.g. Shopify, Meta"
                 value={form.vendor}
                 onChange={(e) => setForm((f) => ({ ...f, vendor: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Category</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as InvoiceCategory }))}
               >
@@ -189,21 +189,21 @@ function InvoicesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Amount *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Amount *</label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="0.00"
                 value={form.amount}
                 onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Currency</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Currency</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.currency}
                 onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as Currency }))}
               >
@@ -211,9 +211,9 @@ function InvoicesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Status</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as InvoiceStatus }))}
               >
@@ -221,29 +221,29 @@ function InvoicesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Invoice Date</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Invoice Date</label>
               <input
                 type="date"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.invoice_date}
                 onChange={(e) => setForm((f) => ({ ...f, invoice_date: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Due Date</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Due Date</label>
               <input
                 type="date"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.due_date}
                 onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+            <label className="block text-xs font-medium text-slate-300 mb-1">Notes</label>
             <textarea
               rows={2}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
+              className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
               placeholder="Optional notes..."
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -252,7 +252,7 @@ function InvoicesTab() {
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => { setShowAddForm(false); setError(null); }}
-              className="px-4 py-2 text-sm text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm text-slate-300 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
             >
               Cancel
             </button>
@@ -275,33 +275,33 @@ function InvoicesTab() {
       ) : filtered.length === 0 ? (
         <EmptyState message="No invoices match the current filters." />
       ) : (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
+                <tr className="border-b border-white/[0.06] bg-surface-900/60">
                   {['Brand', 'Vendor', 'Category', 'Amount', 'Invoice Date', 'Due Date', 'Status', 'Notes', ''].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/[0.06]">
                 {filtered.map((inv) => {
                   const isPaid = inv.status === 'paid';
                   return (
                     <tr
                       key={inv.id}
-                      className={`hover:bg-gray-50 transition-colors ${deadlineBg(inv.due_date, isPaid)}`}
+                      className={`hover:bg-white/[0.03] transition-colors ${deadlineBg(inv.due_date, isPaid)}`}
                     >
-                      <td className="px-4 py-3 font-medium text-gray-800 capitalize whitespace-nowrap">{inv.brand}</td>
-                      <td className="px-4 py-3 text-gray-700 whitespace-nowrap">{inv.vendor}</td>
+                      <td className="px-4 py-3 font-medium text-slate-100 capitalize whitespace-nowrap">{inv.brand}</td>
+                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{inv.vendor}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <StatusBadge status={inv.category} styles={CATEGORY_STYLES} />
                       </td>
-                      <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">{formatAmount(inv.amount, inv.currency)}</td>
-                      <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatDate(inv.invoice_date)}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-100 whitespace-nowrap">{formatAmount(inv.amount, inv.currency)}</td>
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(inv.invoice_date)}</td>
                       <td className={`px-4 py-3 whitespace-nowrap ${deadlineColor(inv.due_date, isPaid)}`}>
                         {formatDate(inv.due_date)}
                         {!isPaid && daysUntil(inv.due_date) !== null && (
@@ -311,7 +311,7 @@ function InvoicesTab() {
                       <td className="px-4 py-3 whitespace-nowrap">
                         <StatusBadge status={inv.status} styles={INVOICE_STATUS_STYLES} />
                       </td>
-                      <td className="px-4 py-3 text-gray-400 text-xs max-w-[160px] truncate">{inv.notes ?? '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs max-w-[160px] truncate">{inv.notes ?? '—'}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         {!isPaid && (
                           <button

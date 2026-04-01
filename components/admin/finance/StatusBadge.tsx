@@ -9,7 +9,7 @@ export function StatusBadge({
   status: string;
   styles: Record<string, string>;
 }) {
-  const cls = styles[status] ?? 'bg-gray-100 text-gray-500';
+  const cls = styles[status] ?? 'bg-slate-500/15 text-slate-400';
   return (
     <span
       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${cls}`}
@@ -23,7 +23,7 @@ export function StatusBadge({
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+    <div className="flex flex-col items-center justify-center py-16 text-slate-500">
       <svg
         className="w-10 h-10 mb-3 opacity-40"
         fill="none"
@@ -50,10 +50,10 @@ export function SummaryBar({ items }: { items: { label: string; value: string; c
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm"
+          className="flex items-center gap-2 bg-surface-800/60 border border-white/[0.06] rounded-xl px-4 py-2.5 shadow-sm"
         >
-          <span className="text-xs text-gray-500 font-medium">{item.label}</span>
-          <span className={`text-sm font-bold ${item.color ?? 'text-gray-800'}`}>{item.value}</span>
+          <span className="text-xs text-slate-500 font-medium">{item.label}</span>
+          <span className={`text-sm font-bold ${item.color ?? 'text-white'}`}>{item.value}</span>
         </div>
       ))}
     </div>

@@ -41,11 +41,11 @@ const fmtNum = (n: number | null | undefined, decimals = 0) => {
 };
 
 const roasBadge = (roas: number | null) => {
-  if (roas == null) return <span className="text-xs text-gray-400 font-semibold">—</span>;
+  if (roas == null) return <span className="text-xs text-slate-500 font-semibold">—</span>;
   const cls =
-    roas >= 3 ? 'bg-green-50 text-green-700 border-green-200' :
-    roas >= 2 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                'bg-red-50 text-red-700 border-red-200';
+    roas >= 3 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' :
+    roas >= 2 ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20' :
+                'bg-red-500/15 text-red-400 border-red-500/20';
   return (
     <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full border ${cls}`}>
       {roas.toFixed(2)}x
@@ -54,18 +54,18 @@ const roasBadge = (roas: number | null) => {
 };
 
 const ctrBadge = (ctr: number | null) => {
-  if (ctr == null) return <span className="text-xs text-gray-400">—</span>;
+  if (ctr == null) return <span className="text-xs text-slate-500">—</span>;
   const cls =
-    ctr >= 1.5 ? 'text-green-700' :
-    ctr >= 1.0 ? 'text-yellow-600' :
-                 'text-red-600';
+    ctr >= 1.5 ? 'text-emerald-400' :
+    ctr >= 1.0 ? 'text-yellow-400' :
+                 'text-red-400';
   return <span className={`font-bold text-xs ${cls}`}>{ctr.toFixed(2)}%</span>;
 };
 
 const CAMPAIGN_STATUS_STYLES: Record<CampaignStatus, string> = {
-  active: 'bg-green-50 text-green-700 border-green-200',
-  paused: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  ended:  'bg-gray-100 text-gray-500 border-gray-200',
+  active: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+  paused: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
+  ended:  'bg-slate-500/15 text-slate-400 border-slate-500/20',
 };
 
 const EMPTY_CAMPAIGN: Omit<AdCampaign, 'id'> = {
@@ -142,19 +142,19 @@ const AdPerformanceTab: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-black text-gray-900">Ad Performance</h3>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <h3 className="text-base font-black text-white">Ad Performance</h3>
+          <p className="text-xs text-slate-500 mt-0.5">
             {filtered.length} campaign{filtered.length !== 1 ? 's' : ''}
             {filterPlatform !== 'all' ? ` on ${filterPlatform}` : ' across all platforms'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Platform filter */}
-          <div className="flex items-center gap-1 bg-gray-100 rounded-full p-0.5">
+          <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.06] rounded-full p-0.5">
             <button
               onClick={() => setFilterPlatform('all')}
               className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${
-                filterPlatform === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                filterPlatform === 'all' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
               All
@@ -164,7 +164,7 @@ const AdPerformanceTab: React.FC = () => {
                 key={p}
                 onClick={() => setFilterPlatform(p)}
                 className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${
-                  filterPlatform === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                  filterPlatform === p ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 {p}
@@ -185,42 +185,42 @@ const AdPerformanceTab: React.FC = () => {
       {showAddForm && (
         <form
           onSubmit={handleAddCampaign}
-          className="p-5 bg-white border-2 border-primary-200 rounded-2xl space-y-4"
+          className="p-5 bg-surface-800/60 border-2 border-primary-500/30 rounded-2xl space-y-4 backdrop-blur-sm"
         >
-          <p className="text-sm font-black text-gray-900">Add Campaign</p>
+          <p className="text-sm font-black text-white">Add Campaign</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Brand</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Brand</label>
               <select
                 required
                 value={formData.brand_id}
                 onChange={e => setFormData(f => ({ ...f, brand_id: e.target.value as BrandId }))}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               >
                 {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_META[b].name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Platform</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Platform</label>
               <select
                 required
                 value={formData.platform}
                 onChange={e => setFormData(f => ({ ...f, platform: e.target.value as AdPlatform }))}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               >
                 {AD_PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div className="sm:col-span-1">
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Campaign Name</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Campaign Name</label>
               <input
                 required
                 type="text"
                 value={formData.campaign_name}
                 onChange={e => setFormData(f => ({ ...f, campaign_name: e.target.value }))}
                 placeholder="e.g. Thiocyn – MOFU Retargeting"
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               />
             </div>
 
@@ -236,7 +236,7 @@ const AdPerformanceTab: React.FC = () => {
               ] as const
             ).map(field => (
               <div key={field.key}>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">
+                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
                   {field.label}
                 </label>
                 <input
@@ -250,17 +250,17 @@ const AdPerformanceTab: React.FC = () => {
                       [field.key]: e.target.value === '' ? null : parseFloat(e.target.value),
                     }))
                   }
-                  className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
                 />
               </div>
             ))}
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Status</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Status</label>
               <select
                 value={formData.status}
                 onChange={e => setFormData(f => ({ ...f, status: e.target.value as CampaignStatus }))}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 bg-white focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               >
                 {CAMPAIGN_STATUSES.map(s => (
                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
@@ -268,21 +268,21 @@ const AdPerformanceTab: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Period Start</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Period Start</label>
               <input
                 type="date"
                 value={formData.period_start ?? ''}
                 onChange={e => setFormData(f => ({ ...f, period_start: e.target.value || null }))}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Period End</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Period End</label>
               <input
                 type="date"
                 value={formData.period_end ?? ''}
                 onChange={e => setFormData(f => ({ ...f, period_end: e.target.value || null }))}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
               />
             </div>
           </div>
@@ -300,7 +300,7 @@ const AdPerformanceTab: React.FC = () => {
             <button
               type="button"
               onClick={() => { setShowAddForm(false); setSaveError(null); }}
-              className="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 bg-white/[0.05] text-slate-300 text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
             >
               Cancel
             </button>
@@ -316,8 +316,8 @@ const AdPerformanceTab: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-3xl mb-3">📊</p>
-          <p className="text-sm font-semibold text-gray-500">No campaigns found</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-sm font-semibold text-slate-500">No campaigns found</p>
+          <p className="text-xs text-slate-600 mt-1">
             {filterPlatform !== 'all'
               ? `No ${filterPlatform} campaigns yet.`
               : 'Add a campaign above to get started.'}
@@ -329,12 +329,12 @@ const AdPerformanceTab: React.FC = () => {
             const { name, emoji } = BRAND_META[brandId];
             const rows = grouped[brandId];
             return (
-              <div key={brandId} className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+              <div key={brandId} className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden backdrop-blur-sm">
                 {/* Brand group header */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">
+                <div className="flex items-center gap-2 px-4 py-3 bg-surface-900/60 border-b border-white/[0.06]">
                   <span className="text-base">{emoji}</span>
-                  <span className="text-sm font-black text-gray-900">{name}</span>
-                  <span className="ml-auto text-[10px] text-gray-400 font-semibold">
+                  <span className="text-sm font-black text-white">{name}</span>
+                  <span className="ml-auto text-[10px] text-slate-500 font-semibold">
                     {rows.length} campaign{rows.length !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -343,42 +343,42 @@ const AdPerformanceTab: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="border-b border-gray-50 text-left">
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider">Campaign</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider">Platform</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">Daily Budget</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">Spend MTD</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">Impressions</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">CTR</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">Purchases</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider text-right">ROAS</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-2.5 font-black text-gray-400 uppercase tracking-wider">Period</th>
+                      <tr className="border-b border-white/[0.06] text-left">
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Campaign</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Platform</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Daily Budget</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Spend MTD</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Impressions</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">CTR</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Purchases</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">ROAS</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Status</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Period</th>
                       </tr>
                     </thead>
                     <tbody>
                       {rows.map((c, i) => (
                         <tr
                           key={c.id}
-                          className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${i % 2 === 1 ? 'bg-gray-50/20' : ''}`}
+                          className={`border-b border-white/[0.06] hover:bg-white/[0.03] transition-colors ${i % 2 === 1 ? 'bg-white/[0.02]' : ''}`}
                         >
-                          <td className="px-4 py-3 font-semibold text-gray-800 max-w-[200px] truncate">
+                          <td className="px-4 py-3 font-semibold text-slate-100 max-w-[200px] truncate">
                             {c.campaign_name}
                           </td>
-                          <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{c.platform}</td>
-                          <td className="px-4 py-3 text-gray-700 text-right whitespace-nowrap">
+                          <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{c.platform}</td>
+                          <td className="px-4 py-3 text-slate-300 text-right whitespace-nowrap">
                             {fmtCurrency(c.budget_daily)}
                           </td>
-                          <td className="px-4 py-3 font-bold text-gray-900 text-right whitespace-nowrap">
+                          <td className="px-4 py-3 font-bold text-white text-right whitespace-nowrap">
                             {fmtCurrency(c.spend_mtd)}
                           </td>
-                          <td className="px-4 py-3 text-gray-600 text-right whitespace-nowrap">
+                          <td className="px-4 py-3 text-slate-400 text-right whitespace-nowrap">
                             {c.impressions != null ? fmtNum(c.impressions) : '—'}
                           </td>
                           <td className="px-4 py-3 text-right whitespace-nowrap">
                             {ctrBadge(c.ctr)}
                           </td>
-                          <td className="px-4 py-3 text-gray-700 text-right whitespace-nowrap font-semibold">
+                          <td className="px-4 py-3 text-slate-300 text-right whitespace-nowrap font-semibold">
                             {c.purchases ?? '—'}
                           </td>
                           <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -389,7 +389,7 @@ const AdPerformanceTab: React.FC = () => {
                               {c.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-gray-400 whitespace-nowrap text-[10px]">
+                          <td className="px-4 py-3 text-slate-500 whitespace-nowrap text-[10px]">
                             {c.period_start
                               ? `${new Date(c.period_start).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}${c.period_end ? ` – ${new Date(c.period_end).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}` : ''}`
                               : '—'}

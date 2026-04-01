@@ -24,17 +24,17 @@ interface EmmaPlan {
 }
 
 const BLOCK_STYLES: Record<TimeBlock['type'], string> = {
-  'deep-work': 'bg-blue-50 border-blue-200 text-blue-700',
-  admin: 'bg-gray-50 border-gray-200 text-gray-600',
-  call: 'bg-green-50 border-green-200 text-green-700',
-  review: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+  'deep-work': 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+  admin: 'bg-slate-500/10 border-white/[0.06] text-slate-400',
+  call: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
+  review: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
 };
 
 const BLOCK_BADGE: Record<TimeBlock['type'], string> = {
-  'deep-work': 'bg-blue-100 text-blue-700',
-  admin: 'bg-gray-100 text-gray-600',
-  call: 'bg-green-100 text-green-700',
-  review: 'bg-yellow-100 text-yellow-700',
+  'deep-work': 'bg-blue-500/15 text-blue-400',
+  admin: 'bg-slate-500/15 text-slate-400',
+  call: 'bg-emerald-500/15 text-emerald-400',
+  review: 'bg-amber-500/15 text-amber-400',
 };
 
 const BLOCK_LABELS: Record<TimeBlock['type'], string> = {
@@ -45,9 +45,9 @@ const BLOCK_LABELS: Record<TimeBlock['type'], string> = {
 };
 
 const ACTION_STYLES: Record<MailAction['action'], string> = {
-  forward_vanessa: 'bg-green-50 text-green-700 border-green-200',
-  urgent_owner: 'bg-red-50 text-red-700 border-red-200',
-  no_action: 'bg-gray-50 text-gray-500 border-gray-200',
+  forward_vanessa: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  urgent_owner: 'bg-red-500/10 text-red-400 border-red-500/20',
+  no_action: 'bg-slate-500/10 text-slate-400 border-white/[0.06]',
 };
 
 const ACTION_LABELS: Record<MailAction['action'], string> = {
@@ -57,9 +57,9 @@ const ACTION_LABELS: Record<MailAction['action'], string> = {
 };
 
 const PRIORITY_BADGE: Record<MailAction['priority'], string> = {
-  high: 'bg-red-100 text-red-600',
-  normal: 'bg-gray-100 text-gray-500',
-  low: 'bg-gray-50 text-gray-400',
+  high: 'bg-red-500/15 text-red-400',
+  normal: 'bg-slate-500/15 text-slate-400',
+  low: 'bg-slate-500/10 text-slate-500',
 };
 
 export default function EmmaPlannerTab() {
@@ -89,8 +89,8 @@ export default function EmmaPlannerTab() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-bold text-gray-800">Emma · Tagesplan</h3>
-          <p className="text-xs text-gray-500 mt-0.5">KI-generierter Tagesplan + Finance-Mail-Klassifikation</p>
+          <h3 className="text-sm font-bold text-slate-100">Emma · Tagesplan</h3>
+          <p className="text-xs text-slate-500 mt-0.5">KI-generierter Tagesplan + Finance-Mail-Klassifikation</p>
         </div>
         <button
           onClick={generatePlan}
@@ -110,7 +110,7 @@ export default function EmmaPlannerTab() {
 
       {/* Loading */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400 gap-3">
+        <div className="flex flex-col items-center justify-center py-20 text-slate-500 gap-3">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600" />
           <p className="text-sm font-medium">Emma denkt nach…</p>
         </div>
@@ -118,7 +118,7 @@ export default function EmmaPlannerTab() {
 
       {/* Error */}
       {!loading && error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400">
           {error}
         </div>
       )}
@@ -128,27 +128,27 @@ export default function EmmaPlannerTab() {
         <div className="space-y-6">
           {/* Summary */}
           {plan.summary && (
-            <div className="bg-primary-50 border border-primary-100 rounded-2xl px-4 py-3">
-              <p className="text-sm font-medium text-primary-800">{plan.summary}</p>
+            <div className="bg-white/[0.04] border border-white/[0.06] rounded-2xl px-4 py-3">
+              <p className="text-sm font-medium text-slate-300">{plan.summary}</p>
             </div>
           )}
 
           {/* Time blocks */}
           {plan.blocks && plan.blocks.length > 0 && (
             <div>
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Zeitblöcke</h4>
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Zeitblöcke</h4>
               <div className="space-y-2">
                 {plan.blocks.map((block, i) => (
                   <div
                     key={i}
-                    className={`border rounded-xl px-4 py-3 ${BLOCK_STYLES[block.type] ?? 'bg-gray-50 border-gray-200 text-gray-600'}`}
+                    className={`border rounded-xl px-4 py-3 ${BLOCK_STYLES[block.type] ?? 'bg-slate-500/10 border-white/[0.06] text-slate-400'}`}
                   >
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold tabular-nums">
                           {block.start}–{block.end}
                         </span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${BLOCK_BADGE[block.type] ?? 'bg-gray-100 text-gray-600'}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${BLOCK_BADGE[block.type] ?? 'bg-slate-500/15 text-slate-400'}`}>
                           {BLOCK_LABELS[block.type] ?? block.type}
                         </span>
                       </div>
@@ -173,19 +173,19 @@ export default function EmmaPlannerTab() {
           {/* Mail actions */}
           {plan.mailActions && plan.mailActions.length > 0 && (
             <div>
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Emma schlägt vor:</h4>
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Emma schlägt vor:</h4>
               <div className="space-y-2">
                 {plan.mailActions.map((action, i) => (
                   <div
                     key={i}
-                    className={`border rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 ${ACTION_STYLES[action.action] ?? 'bg-gray-50 border-gray-200 text-gray-500'}`}
+                    className={`border rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 ${ACTION_STYLES[action.action] ?? 'bg-slate-500/10 border-white/[0.06] text-slate-500'}`}
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{action.subject}</p>
                       <p className="text-xs opacity-70 mt-0.5 capitalize">{action.category}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${PRIORITY_BADGE[action.priority] ?? 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${PRIORITY_BADGE[action.priority] ?? 'bg-slate-500/15 text-slate-400'}`}>
                         {action.priority}
                       </span>
                       <span className="text-xs font-semibold">
@@ -200,7 +200,7 @@ export default function EmmaPlannerTab() {
 
           {/* Empty states */}
           {(!plan.blocks || plan.blocks.length === 0) && (!plan.mailActions || plan.mailActions.length === 0) && (
-            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+            <div className="flex flex-col items-center justify-center py-16 text-slate-500">
               <p className="text-sm font-medium">Kein Plan generiert. Versuche es erneut.</p>
             </div>
           )}

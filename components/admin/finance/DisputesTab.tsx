@@ -146,8 +146,8 @@ function DisputesTab() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-gray-800">New Dispute</h3>
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 className="text-sm font-bold text-slate-100">New Dispute</h3>
           {error && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
               {error}
@@ -155,9 +155,9 @@ function DisputesTab() {
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Brand</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Brand</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.brand}
                 onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value as Brand }))}
               >
@@ -165,18 +165,18 @@ function DisputesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Case ID *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Case ID *</label>
               <input
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="PP-12345-XXXXX"
                 value={form.case_id}
                 onChange={(e) => setForm((f) => ({ ...f, case_id: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Platform</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Platform</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.platform}
                 onChange={(e) => setForm((f) => ({ ...f, platform: e.target.value as Platform }))}
               >
@@ -184,21 +184,21 @@ function DisputesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Amount *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Amount *</label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 placeholder="0.00"
                 value={form.amount}
                 onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Currency</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Currency</label>
               <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.currency}
                 onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as Currency }))}
               >
@@ -206,20 +206,20 @@ function DisputesTab() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Deadline</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Deadline</label>
               <input
                 type="date"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.deadline}
                 onChange={(e) => setForm((f) => ({ ...f, deadline: e.target.value }))}
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+            <label className="block text-xs font-medium text-slate-300 mb-1">Notes</label>
             <textarea
               rows={2}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
+              className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
               placeholder="Optional notes..."
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -228,7 +228,7 @@ function DisputesTab() {
           <div className="flex gap-2 justify-end">
             <button
               onClick={() => { setShowAddForm(false); setError(null); }}
-              className="px-4 py-2 text-sm text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm text-slate-300 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
             >
               Cancel
             </button>
@@ -251,32 +251,32 @@ function DisputesTab() {
       ) : disputes.length === 0 ? (
         <EmptyState message="No disputes recorded." />
       ) : (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
+                <tr className="border-b border-white/[0.06] bg-surface-900/60">
                   {['Brand', 'Case ID', 'Platform', 'Amount', 'Deadline', 'Status', 'Notes', ''].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/[0.06]">
                 {disputes.map((d) => {
                   const isEditing = editingId === d.id;
                   const isResolved = d.status === 'resolved' || d.status === 'won' || d.status === 'lost';
                   return (
                     <React.Fragment key={d.id}>
                       <tr
-                        className={`hover:bg-gray-50 transition-colors cursor-pointer ${deadlineBg(d.deadline, isResolved)}`}
+                        className={`hover:bg-white/[0.03] transition-colors cursor-pointer ${deadlineBg(d.deadline, isResolved)}`}
                         onClick={() => !isEditing && startEdit(d)}
                       >
-                        <td className="px-4 py-3 font-medium text-gray-800 capitalize whitespace-nowrap">{d.brand}</td>
-                        <td className="px-4 py-3 text-gray-600 font-mono text-xs whitespace-nowrap">{d.case_id}</td>
-                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{d.platform}</td>
-                        <td className="px-4 py-3 font-semibold text-gray-800 whitespace-nowrap">{formatAmount(d.amount, d.currency)}</td>
+                        <td className="px-4 py-3 font-medium text-slate-100 capitalize whitespace-nowrap">{d.brand}</td>
+                        <td className="px-4 py-3 text-slate-300 font-mono text-xs whitespace-nowrap">{d.case_id}</td>
+                        <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{d.platform}</td>
+                        <td className="px-4 py-3 font-semibold text-slate-100 whitespace-nowrap">{formatAmount(d.amount, d.currency)}</td>
                         <td className={`px-4 py-3 whitespace-nowrap ${deadlineColor(d.deadline, isResolved)}`}>
                           {formatDate(d.deadline)}
                           {!isResolved && daysUntil(d.deadline) !== null && (
@@ -288,7 +288,7 @@ function DisputesTab() {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <StatusBadge status={d.status} styles={DISPUTE_STATUS_STYLES} />
                         </td>
-                        <td className="px-4 py-3 text-gray-400 text-xs max-w-[180px] truncate">{d.notes ?? '—'}</td>
+                        <td className="px-4 py-3 text-slate-500 text-xs max-w-[180px] truncate">{d.notes ?? '—'}</td>
                         <td className="px-4 py-3 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                           {!isResolved && (
                             <button
@@ -302,12 +302,12 @@ function DisputesTab() {
                       </tr>
                       {isEditing && (
                         <tr>
-                          <td colSpan={8} className="px-4 py-4 bg-blue-50 border-t border-blue-100">
+                          <td colSpan={8} className="px-4 py-4 bg-blue-500/10 border-t border-blue-500/20">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Brand</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Brand</label>
                                 <select
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.brand ?? d.brand}
                                   onChange={(e) => setEditForm((f) => ({ ...f, brand: e.target.value as Brand }))}
                                 >
@@ -315,17 +315,17 @@ function DisputesTab() {
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Case ID</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Case ID</label>
                                 <input
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.case_id ?? d.case_id}
                                   onChange={(e) => setEditForm((f) => ({ ...f, case_id: e.target.value }))}
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Status</label>
                                 <select
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.status ?? d.status}
                                   onChange={(e) => setEditForm((f) => ({ ...f, status: e.target.value as DisputeStatus }))}
                                 >
@@ -333,20 +333,20 @@ function DisputesTab() {
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Amount</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Amount</label>
                                 <input
                                   type="number"
                                   min="0"
                                   step="0.01"
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.amount ?? d.amount}
                                   onChange={(e) => setEditForm((f) => ({ ...f, amount: parseFloat(e.target.value) }))}
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Platform</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Platform</label>
                                 <select
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.platform ?? d.platform}
                                   onChange={(e) => setEditForm((f) => ({ ...f, platform: e.target.value as Platform }))}
                                 >
@@ -354,9 +354,9 @@ function DisputesTab() {
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Currency</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Currency</label>
                                 <select
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.currency ?? d.currency}
                                   onChange={(e) => setEditForm((f) => ({ ...f, currency: e.target.value as Currency }))}
                                 >
@@ -364,18 +364,18 @@ function DisputesTab() {
                                 </select>
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Deadline</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Deadline</label>
                                 <input
                                   type="date"
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.deadline ?? d.deadline ?? ''}
                                   onChange={(e) => setEditForm((f) => ({ ...f, deadline: e.target.value }))}
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+                                <label className="block text-xs font-medium text-slate-300 mb-1">Notes</label>
                                 <input
-                                  className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+                                  className="w-full border border-white/[0.06] rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                                   value={editForm.notes ?? d.notes ?? ''}
                                   onChange={(e) => setEditForm((f) => ({ ...f, notes: e.target.value }))}
                                 />
@@ -384,7 +384,7 @@ function DisputesTab() {
                             <div className="flex gap-2 mt-3 justify-end">
                               <button
                                 onClick={() => { setEditingId(null); setEditForm({}); }}
-                                className="px-3 py-1.5 text-xs text-gray-600 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-xs text-slate-300 font-medium hover:bg-white/[0.06] rounded-lg transition-colors"
                               >
                                 Cancel
                               </button>

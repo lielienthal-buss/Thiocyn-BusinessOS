@@ -81,11 +81,11 @@ const NOTIFICATION_ICONS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<number, string> = {
-  1: 'bg-gray-300',
-  2: 'bg-blue-400',
-  3: 'bg-yellow-400',
+  1: 'bg-slate-600',
+  2: 'bg-sky-500',
+  3: 'bg-amber-400',
   4: 'bg-orange-500',
-  5: 'bg-red-600',
+  5: 'bg-red-500',
 };
 
 const PRIORITY_LABELS: Record<number, string> = {
@@ -129,11 +129,20 @@ function formatFollowers(n: number): string {
   return String(n);
 }
 
+const BRAND_ACCENT: Record<string, string> = {
+  'thiocyn':     'border-violet-500/60',
+  'take-a-shot': 'border-amber-500/60',
+  'dr-severin':  'border-emerald-500/60',
+  'paigh':       'border-rose-500/60',
+  'wristr':      'border-sky-500/60',
+  'timber-john': 'border-orange-500/60',
+};
+
 function roasColor(roas: number): string {
-  if (!roas) return 'bg-gray-100 text-gray-400';
-  if (roas >= 3) return 'bg-green-100 text-green-700';
-  if (roas >= 2) return 'bg-yellow-100 text-yellow-700';
-  return 'bg-red-100 text-red-700';
+  if (!roas) return 'bg-white/5 text-slate-500';
+  if (roas >= 3) return 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25';
+  if (roas >= 2) return 'bg-amber-500/15 text-amber-400 border border-amber-500/25';
+  return 'bg-red-500/15 text-red-400 border border-red-500/25';
 }
 
 function today(): string {
@@ -150,7 +159,8 @@ function plusDays(n: number): string {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+    <h2 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">
+      <span className="w-4 h-px bg-amber-500/40 inline-block" />
       {children}
     </h2>
   );
@@ -158,7 +168,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-4 ${className}`}>
+    <div className={`rounded-2xl border border-white/[0.06] p-4 bg-surface-800/60 backdrop-blur-sm ${className}`}>
       {children}
     </div>
   );
@@ -166,7 +176,7 @@ function Card({ children, className = '' }: { children: React.ReactNode; classNa
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex items-center justify-center py-6 text-gray-400 text-sm">
+    <div className="flex items-center justify-center py-6 text-slate-600 text-sm">
       {message}
     </div>
   );
@@ -174,9 +184,9 @@ function EmptyState({ message }: { message: string }) {
 
 function StatusBadge({ status }: { status: Dispute['status'] }) {
   const map: Record<Dispute['status'], string> = {
-    open: 'bg-red-100 text-red-700',
-    pending: 'bg-yellow-100 text-yellow-700',
-    resolved: 'bg-green-100 text-green-700',
+    open:     'bg-red-500/15 text-red-400 border border-red-500/25',
+    pending:  'bg-amber-500/15 text-amber-400 border border-amber-500/25',
+    resolved: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25',
   };
   return (
     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${map[status]}`}>
@@ -206,21 +216,21 @@ const DisputeRow: React.FC<{
 
   return (
     <div
-      className="border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors"
+      className="border-b border-white/[0.05] last:border-0 cursor-pointer hover:bg-white/[0.03] transition-colors rounded-lg"
       onClick={onToggle}
     >
       <div className="flex items-center justify-between py-2 px-1 gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-medium text-gray-700 truncate">{dispute.case_id}</span>
-            <span className="text-xs text-gray-400">{BRAND_LABELS[dispute.brand] ?? dispute.brand}</span>
-            <span className="text-xs text-gray-400">{dispute.platform}</span>
+            <span className="text-xs font-medium text-slate-200 truncate">{dispute.case_id}</span>
+            <span className="text-xs text-slate-500">{BRAND_LABELS[dispute.brand] ?? dispute.brand}</span>
+            <span className="text-xs text-slate-600">{dispute.platform}</span>
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-xs font-semibold text-gray-800">
+            <span className="text-xs font-semibold text-slate-300">
               {dispute.amount} {dispute.currency}
             </span>
-            <span className={`text-xs font-medium ${isUrgent ? 'text-red-600' : 'text-gray-500'}`}>
+            <span className={`text-xs font-medium ${isUrgent ? 'text-red-400' : 'text-slate-500'}`}>
               {days < 0
                 ? `${Math.abs(days)}d overdue`
                 : days === 0
@@ -231,17 +241,17 @@ const DisputeRow: React.FC<{
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <StatusBadge status={dispute.status} />
-          <span className="text-gray-300 text-xs">{expanded ? '▲' : '▼'}</span>
+          <span className="text-slate-600 text-xs">{expanded ? '▲' : '▼'}</span>
         </div>
       </div>
       {expanded && dispute.notes && (
         <div className="px-1 pb-2">
-          <p className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">{dispute.notes}</p>
+          <p className="text-xs text-slate-400 bg-white/[0.04] rounded-lg p-2">{dispute.notes}</p>
         </div>
       )}
       {expanded && !dispute.notes && (
         <div className="px-1 pb-2">
-          <p className="text-xs text-gray-400 italic">No notes attached.</p>
+          <p className="text-xs text-slate-600 italic">No notes attached.</p>
         </div>
       )}
     </div>
@@ -250,15 +260,15 @@ const DisputeRow: React.FC<{
 
 const OverdueTaskRow: React.FC<{ task: TeamTask }> = ({ task }) => {
   return (
-    <div className="flex items-center gap-2 py-2 border-b border-gray-50 last:border-0">
+    <div className="flex items-center gap-2 py-2 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] rounded transition-colors">
       <PriorityDot priority={task.priority} />
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-gray-700 truncate">{task.title}</p>
-        <p className="text-xs text-gray-400 truncate">
+        <p className="text-xs font-medium text-slate-200 truncate">{task.title}</p>
+        <p className="text-xs text-slate-500 truncate">
           {task.assigned_to_email} · {BRAND_LABELS[task.brand] ?? task.brand}
         </p>
       </div>
-      <span className="text-xs text-red-500 flex-shrink-0">{formatDate(task.due_date)}</span>
+      <span className="text-xs text-red-400 flex-shrink-0">{formatDate(task.due_date)}</span>
     </div>
   );
 }
@@ -268,17 +278,17 @@ const OverdueTaskRow: React.FC<{ task: TeamTask }> = ({ task }) => {
 const WeekTaskGroup: React.FC<{ brand: string; tasks: TeamTask[] }> = ({ brand, tasks }) => {
   return (
     <div className="mb-3 last:mb-0">
-      <p className="text-xs font-semibold text-gray-500 mb-1">
+      <p className={`text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5 pl-2 border-l-2 ${BRAND_ACCENT[brand] ?? 'border-slate-600'}`}>
         {BRAND_LABELS[brand] ?? brand}
       </p>
       {tasks.map((t) => (
-        <div key={t.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
+        <div key={t.id} className="flex items-center gap-2 py-1.5 border-b border-white/[0.04] last:border-0">
           <PriorityDot priority={t.priority} />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-700 truncate">{t.title}</p>
-            <p className="text-xs text-gray-400 truncate">{t.assigned_to_email}</p>
+            <p className="text-xs text-slate-300 truncate">{t.title}</p>
+            <p className="text-xs text-slate-500 truncate">{t.assigned_to_email}</p>
           </div>
-          <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(t.due_date)}</span>
+          <span className="text-xs text-slate-500 flex-shrink-0">{formatDate(t.due_date)}</span>
         </div>
       ))}
     </div>
@@ -288,13 +298,13 @@ const WeekTaskGroup: React.FC<{ brand: string; tasks: TeamTask[] }> = ({ brand, 
 const UpcomingDisputeRow: React.FC<{ dispute: Dispute }> = ({ dispute }) => {
   const days = daysUntil(dispute.deadline);
   return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] rounded transition-colors">
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-gray-700 truncate">{dispute.case_id}</p>
-        <p className="text-xs text-gray-400">{dispute.platform} · {BRAND_LABELS[dispute.brand] ?? dispute.brand}</p>
+        <p className="text-xs font-medium text-slate-200 truncate">{dispute.case_id}</p>
+        <p className="text-xs text-slate-500">{dispute.platform} · {BRAND_LABELS[dispute.brand] ?? dispute.brand}</p>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-xs text-gray-500">{days}d</span>
+        <span className="text-xs text-slate-500">{days}d</span>
         <StatusBadge status={dispute.status} />
       </div>
     </div>
@@ -305,10 +315,10 @@ const UpcomingDisputeRow: React.FC<{ dispute: Dispute }> = ({ dispute }) => {
 
 const BrandPulseCard: React.FC<{ brandId: string; metric?: BrandMetric }> = ({ brandId, metric }) => {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+    <div className={`flex items-center justify-between py-2.5 border-b border-white/[0.05] last:border-0 pl-2 border-l-2 ${BRAND_ACCENT[brandId] ?? 'border-slate-600'} hover:bg-white/[0.02] transition-colors rounded-r`}>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold text-gray-800">{BRAND_LABELS[brandId]}</p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs font-semibold text-slate-200">{BRAND_LABELS[brandId]}</p>
+        <p className="text-xs text-slate-500">
           {metric ? formatFollowers(metric.followers) : '--'} followers
           {metric?.engagement_rate != null
             ? ` · ${(metric.engagement_rate * 100).toFixed(1)}% eng`
@@ -317,11 +327,11 @@ const BrandPulseCard: React.FC<{ brandId: string; metric?: BrandMetric }> = ({ b
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         {metric?.sop_phase != null && (
-          <span className="text-xs text-gray-400">SOP {metric.sop_phase}</span>
+          <span className="text-xs text-slate-500">SOP {metric.sop_phase}</span>
         )}
         <span
           className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-            metric?.roas != null ? roasColor(metric.roas) : 'bg-gray-100 text-gray-400'
+            metric?.roas != null ? roasColor(metric.roas) : 'bg-white/5 text-slate-500'
           }`}
         >
           {metric?.roas != null ? `${metric.roas.toFixed(1)}x` : '--'}
@@ -336,15 +346,15 @@ const BrandPulseCard: React.FC<{ brandId: string; metric?: BrandMetric }> = ({ b
 const ActivityItem: React.FC<{ notification: Notification }> = ({ notification }) => {
   const icon = NOTIFICATION_ICONS[notification.type] ?? '📌';
   return (
-    <div className="flex gap-3 py-3 border-b border-gray-50 last:border-0">
+    <div className="flex gap-3 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.02] rounded transition-colors">
       <span className="text-base flex-shrink-0 mt-0.5">{icon}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-gray-800">{notification.title}</p>
+        <p className="text-xs font-medium text-slate-200">{notification.title}</p>
         {notification.body && (
-          <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{notification.body}</p>
+          <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{notification.body}</p>
         )}
       </div>
-      <span className="text-xs text-gray-400 flex-shrink-0 mt-0.5">
+      <span className="text-xs text-slate-600 flex-shrink-0 mt-0.5">
         {formatRelativeTime(notification.created_at)}
       </span>
     </div>
@@ -405,98 +415,62 @@ function AddTaskForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 backdrop-blur-sm px-4">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-md p-5">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-md px-4">
+      <div className="bg-surface-800 rounded-2xl shadow-2xl border border-white/[0.08] w-full max-w-md p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-800">Add Task</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-lg leading-none"
-          >
-            ✕
-          </button>
+          <h3 className="text-sm font-semibold text-slate-100">Add Task</h3>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-200 text-lg leading-none transition-colors">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Title *</label>
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Title *</label>
             <input
-              name="title"
-              value={form.title}
-              onChange={handleChange}
+              name="title" value={form.title} onChange={handleChange}
               placeholder="What needs to be done?"
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600/30 focus:border-primary-600"
+              className="w-full text-sm bg-white/[0.05] border border-white/[0.08] text-slate-200 placeholder-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40"
               autoFocus
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Assign to (email)</label>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Assign to</label>
               <input
-                name="assigned_to_email"
-                type="email"
-                value={form.assigned_to_email}
-                onChange={handleChange}
+                name="assigned_to_email" type="email" value={form.assigned_to_email} onChange={handleChange}
                 placeholder="name@example.com"
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600/30 focus:border-primary-600"
+                className="w-full text-sm bg-white/[0.05] border border-white/[0.08] text-slate-200 placeholder-slate-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Brand</label>
-              <select
-                name="brand"
-                value={form.brand}
-                onChange={handleChange}
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600/30 focus:border-primary-600 bg-white"
-              >
-                {BRANDS.map((b) => (
-                  <option key={b} value={b}>
-                    {BRAND_LABELS[b]}
-                  </option>
-                ))}
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Brand</label>
+              <select name="brand" value={form.brand} onChange={handleChange}
+                className="w-full text-sm bg-surface-700 border border-white/[0.08] text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+                {BRANDS.map((b) => <option key={b} value={b}>{BRAND_LABELS[b]}</option>)}
               </select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Due date</label>
-              <input
-                name="due_date"
-                type="date"
-                value={form.due_date}
-                onChange={handleChange}
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600/30 focus:border-primary-600"
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Due date</label>
+              <input name="due_date" type="date" value={form.due_date} onChange={handleChange}
+                className="w-full text-sm bg-white/[0.05] border border-white/[0.08] text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1">Priority</label>
-              <select
-                name="priority"
-                value={form.priority}
-                onChange={handleChange}
-                className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-600/30 focus:border-primary-600 bg-white"
-              >
-                {[1, 2, 3, 4, 5].map((p) => (
-                  <option key={p} value={p}>
-                    {p} — {PRIORITY_LABELS[p]}
-                  </option>
-                ))}
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Priority</label>
+              <select name="priority" value={form.priority} onChange={handleChange}
+                className="w-full text-sm bg-surface-700 border border-white/[0.08] text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+                {[1, 2, 3, 4, 5].map((p) => <option key={p} value={p}>{p} — {PRIORITY_LABELS[p]}</option>)}
               </select>
             </div>
           </div>
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && <p className="text-xs text-red-400">{error}</p>}
           <div className="flex gap-2 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 text-sm border border-gray-200 text-gray-600 rounded-lg px-4 py-2 hover:bg-gray-50 transition-colors"
-            >
+            <button type="button" onClick={onClose}
+              className="flex-1 text-sm border border-white/[0.08] text-slate-400 rounded-lg px-4 py-2 hover:bg-white/[0.05] hover:text-slate-200 transition-colors">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 text-sm bg-primary-600 text-white rounded-lg px-4 py-2 font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors"
-            >
+            <button type="submit" disabled={submitting}
+              className="flex-1 text-sm bg-amber-500 hover:bg-amber-400 text-black rounded-lg px-4 py-2 font-bold disabled:opacity-50 transition-colors">
               {submitting ? 'Saving…' : 'Add Task'}
             </button>
           </div>
@@ -591,32 +565,31 @@ export default function HomeView() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+      <div className="flex items-center justify-center h-64 text-slate-500 text-sm">
         Loading dashboard…
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+    <div className="p-4 sm:p-6 animate-[fadeIn_0.4s_ease-out]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-lg font-bold text-gray-900">Business OS</h1>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <h1 className="text-xl font-black text-white tracking-tight">
+            Overview
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
             {new Date().toLocaleDateString('de-DE', {
-              weekday: 'long',
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
+              weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
             })}
           </p>
         </div>
         <button
           onClick={() => setShowAddTask(true)}
-          className="flex items-center gap-1.5 bg-primary-600 text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
+          className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-black text-xs font-black px-4 py-2 rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:-translate-y-0.5"
         >
-          <span className="text-base leading-none">+</span>
+          <span className="text-sm leading-none">+</span>
           Add Task
         </button>
       </div>
@@ -628,10 +601,10 @@ export default function HomeView() {
           <SectionTitle>Urgent</SectionTitle>
 
           <Card>
-            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
               <span>⚖️</span> Disputes
               {urgentDisputes.length > 0 && (
-                <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
+                <span className="ml-1 bg-red-500/20 text-red-400 border border-red-500/25 text-xs rounded-full px-1.5 py-0.5 leading-none font-black">
                   {urgentDisputes.length}
                 </span>
               )}
@@ -640,23 +613,19 @@ export default function HomeView() {
               <EmptyState message="No urgent disputes" />
             ) : (
               urgentDisputes.map((d) => (
-                <DisputeRow
-                  key={d.id}
-                  dispute={d}
+                <DisputeRow key={d.id} dispute={d}
                   expanded={expandedDispute === d.id}
-                  onToggle={() =>
-                    setExpandedDispute((prev) => (prev === d.id ? null : d.id))
-                  }
+                  onToggle={() => setExpandedDispute((prev) => (prev === d.id ? null : d.id))}
                 />
               ))
             )}
           </Card>
 
           <Card>
-            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
               <span>🔴</span> Overdue Tasks
               {overdueTasks.length > 0 && (
-                <span className="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 leading-none">
+                <span className="ml-1 bg-red-500/20 text-red-400 border border-red-500/25 text-xs rounded-full px-1.5 py-0.5 leading-none font-black">
                   {overdueTasks.length}
                 </span>
               )}
@@ -674,7 +643,7 @@ export default function HomeView() {
           <SectionTitle>This Week</SectionTitle>
 
           <Card>
-            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
               <span>📋</span> Tasks due this week
             </p>
             {Object.keys(weekTasksByBrand).length === 0 ? (
@@ -687,15 +656,13 @@ export default function HomeView() {
           </Card>
 
           <Card>
-            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
               <span>📅</span> Upcoming deadlines (7–30d)
             </p>
             {upcomingDisputes.length === 0 ? (
               <EmptyState message="No upcoming deadlines" />
             ) : (
-              upcomingDisputes.map((d) => (
-                <UpcomingDisputeRow key={d.id} dispute={d} />
-              ))
+              upcomingDisputes.map((d) => <UpcomingDisputeRow key={d.id} dispute={d} />)
             )}
           </Card>
         </div>
@@ -703,9 +670,8 @@ export default function HomeView() {
         {/* ── Column 3: Brand Pulse ── */}
         <div className="space-y-4">
           <SectionTitle>Brand Pulse</SectionTitle>
-
           <Card>
-            <p className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-1.5">
               <span>📊</span> Live metrics
             </p>
             {BRANDS.map((b) => (
@@ -725,12 +691,8 @@ export default function HomeView() {
         )}
       </Card>
 
-      {/* Add Task Modal */}
       {showAddTask && (
-        <AddTaskForm
-          onClose={() => setShowAddTask(false)}
-          onSuccess={fetchAll}
-        />
+        <AddTaskForm onClose={() => setShowAddTask(false)} onSuccess={fetchAll} />
       )}
     </div>
   );

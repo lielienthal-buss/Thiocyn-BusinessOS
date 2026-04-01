@@ -89,8 +89,8 @@ function OverviewTab() {
       label: 'Open Disputes',
       value: String(openDisputes.length),
       sub: sumByCurrency(openDisputes),
-      color: openDisputes.length > 0 ? 'text-red-600' : 'text-green-600',
-      bg: openDisputes.length > 0 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100',
+      color: openDisputes.length > 0 ? 'text-red-400' : 'text-emerald-400',
+      bg: openDisputes.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -101,8 +101,8 @@ function OverviewTab() {
       label: 'Outstanding Invoices',
       value: sumByCurrency(outstandingInvoices),
       sub: `${outstandingInvoices.length} items`,
-      color: outstandingInvoices.length > 0 ? 'text-amber-600' : 'text-green-600',
-      bg: outstandingInvoices.length > 0 ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100',
+      color: outstandingInvoices.length > 0 ? 'text-amber-400' : 'text-emerald-400',
+      bg: outstandingInvoices.length > 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -113,8 +113,8 @@ function OverviewTab() {
       label: 'Overdue Invoices',
       value: sumByCurrency(overdueInvoices),
       sub: `${overdueInvoices.length} items`,
-      color: overdueInvoices.length > 0 ? 'text-red-600' : 'text-green-600',
-      bg: overdueInvoices.length > 0 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100',
+      color: overdueInvoices.length > 0 ? 'text-red-400' : 'text-emerald-400',
+      bg: overdueInvoices.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -142,23 +142,23 @@ function OverviewTab() {
           >
             <div className={`mt-0.5 ${card.color}`}>{card.icon}</div>
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{card.label}</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{card.label}</p>
               <p className={`text-xl font-black mt-0.5 ${card.color}`}>{card.value}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{card.sub}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{card.sub}</p>
             </div>
           </div>
         ))}
       </div>
 
       {/* Urgent items */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
           <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h3 className="text-sm font-bold text-gray-800">Due within 7 days</h3>
+          <h3 className="text-sm font-bold text-slate-100">Due within 7 days</h3>
           {urgentItems.length > 0 && (
-            <span className="ml-auto text-xs font-semibold text-red-600 bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">
+            <span className="ml-auto text-xs font-semibold text-red-400 bg-red-500/15 border border-red-500/20 px-2 py-0.5 rounded-full">
               {urgentItems.length} item{urgentItems.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -166,24 +166,24 @@ function OverviewTab() {
         {urgentItems.length === 0 ? (
           <EmptyState message="No items due within 7 days." />
         ) : (
-          <ul className="divide-y divide-gray-50">
+          <ul className="divide-y divide-white/[0.06]">
             {urgentItems.map((item, idx) => (
-              <li key={idx} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
+              <li key={idx} className="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.03] transition-colors">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
                     item.type === 'dispute' ? 'bg-orange-400' : 'bg-amber-400'
                   }`} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{item.label}</p>
-                    <p className="text-xs text-gray-400 capitalize">{item.brand} · {item.type}</p>
+                    <p className="text-sm font-semibold text-slate-100 truncate">{item.label}</p>
+                    <p className="text-xs text-slate-500 capitalize">{item.brand} · {item.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-                  <span className="text-sm font-bold text-gray-700">{item.amount}</span>
+                  <span className="text-sm font-bold text-slate-300">{item.amount}</span>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
                     (item.daysLeft ?? 0) <= 0
-                      ? 'bg-red-100 text-red-700 border-red-200'
-                      : 'bg-amber-100 text-amber-700 border-amber-200'
+                      ? 'bg-red-500/15 text-red-400 border-red-500/20'
+                      : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
                   }`}>
                     {item.daysLeft !== null
                       ? item.daysLeft <= 0

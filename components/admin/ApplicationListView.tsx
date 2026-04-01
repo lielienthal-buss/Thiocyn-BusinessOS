@@ -32,8 +32,8 @@ const PaginationControls: React.FC<{
   if (totalCount === 0) return null;
 
   return (
-    <div className="flex justify-between items-center px-6 py-3 bg-white/30 dark:bg-slate-900/30 border-t border-gray-100 dark:border-slate-800">
-      <p className="text-xs text-gray-600 dark:text-gray-400">
+    <div className="flex justify-between items-center px-6 py-3 bg-white/[0.04] border-t border-white/[0.06]">
+      <p className="text-xs text-slate-400">
         Showing <span className="font-bold">{from}</span> to{' '}
         <span className="font-bold">{to}</span> of{' '}
         <span className="font-bold">{totalCount}</span> results
@@ -148,9 +148,9 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         variant="danger"
       />
     )}
-    <div className="rounded-[3rem] overflow-hidden shadow-2xl bg-white border border-gray-200 animate-[fadeIn_0.5s_ease-out]">
+    <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl animate-[fadeIn_0.5s_ease-out]">
       {/* Filter Controls */}
-      <div className="p-6 flex flex-wrap gap-4 items-center border-b border-gray-200">
+      <div className="p-6 flex flex-wrap gap-4 items-center border-b border-white/[0.06]">
         <input
           type="text"
           placeholder="Filter by Name or Email"
@@ -177,25 +177,25 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
       {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-white/50 dark:bg-slate-900/50">
+          <thead className="bg-surface-900/60">
             <tr>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+              <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
                 Name
               </th>
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+              <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
                 Stage
               </th>{' '}
               {/* Changed from Status to Stage */}
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+              <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
                 Project Highlight
               </th>{' '}
               {/* New column */}
-              <th className="px-6 py-4 text-xs font-bold uppercase text-gray-500">
+              <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-slate-800 relative">
+          <tbody className="divide-y divide-white/[0.06] relative">
             {loading && (
               <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center">
                 <Spinner className="w-8 h-8 text-primary-500" />
@@ -205,19 +205,19 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
               return (
                 <tr
                   key={app.id}
-                  className="hover:bg-white/30 dark:hover:bg-slate-800/30 transition-colors"
+                  className="hover:bg-white/[0.03] transition-colors"
                 >
                   <td className="px-6 py-4 font-semibold">{app.full_name}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                      app.stage === 'applied' ? 'bg-blue-100 text-blue-700' :
-                      app.stage === 'task_requested' ? 'bg-amber-100 text-amber-700' :
-                      app.stage === 'task_submitted' ? 'bg-green-100 text-green-700' :
-                      app.stage === 'interview' ? 'bg-indigo-100 text-indigo-700' :
-                      app.stage === 'hired' ? 'bg-purple-100 text-purple-700' :
-                      app.stage === 'onboarding' ? 'bg-teal-100 text-teal-700' :
-                      app.stage === 'rejected' ? 'bg-red-100 text-red-700' :
-                      'bg-gray-100 text-gray-700'
+                      app.stage === 'applied' ? 'bg-blue-500/15 text-blue-400' :
+                      app.stage === 'task_requested' ? 'bg-amber-500/15 text-amber-400' :
+                      app.stage === 'task_submitted' ? 'bg-emerald-500/15 text-emerald-400' :
+                      app.stage === 'interview' ? 'bg-indigo-500/15 text-indigo-400' :
+                      app.stage === 'hired' ? 'bg-violet-500/15 text-violet-400' :
+                      app.stage === 'onboarding' ? 'bg-teal-500/15 text-teal-400' :
+                      app.stage === 'rejected' ? 'bg-red-500/15 text-red-400' :
+                      'bg-slate-500/15 text-slate-400'
                     }`}>
                       {app.stage} {/* Changed from app.status to app.stage */}
                     </span>
@@ -261,7 +261,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
       </div>
 
       {/* Mobile cards */}
-      <div className="md:hidden divide-y divide-gray-100">
+      <div className="md:hidden divide-y divide-white/[0.06]">
         {loading && apps.length > 0 && (
           <div className="flex justify-center py-4">
             <Spinner className="w-6 h-6 text-primary-500" />
@@ -270,22 +270,22 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
         {apps.map((app) => (
           <div key={app.id} className="p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
-              <p className="font-semibold text-gray-900 text-sm">{app.full_name}</p>
+              <p className="font-semibold text-slate-100 text-sm">{app.full_name}</p>
               <span className={`shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full ${
-                app.stage === 'applied' ? 'bg-blue-100 text-blue-700' :
-                app.stage === 'task_requested' ? 'bg-amber-100 text-amber-700' :
-                app.stage === 'task_submitted' ? 'bg-green-100 text-green-700' :
-                app.stage === 'interview' ? 'bg-indigo-100 text-indigo-700' :
-                app.stage === 'hired' ? 'bg-purple-100 text-purple-700' :
-                app.stage === 'onboarding' ? 'bg-teal-100 text-teal-700' :
-                app.stage === 'rejected' ? 'bg-red-100 text-red-700' :
-                'bg-gray-100 text-gray-700'
+                app.stage === 'applied' ? 'bg-blue-500/15 text-blue-400' :
+                app.stage === 'task_requested' ? 'bg-amber-500/15 text-amber-400' :
+                app.stage === 'task_submitted' ? 'bg-emerald-500/15 text-emerald-400' :
+                app.stage === 'interview' ? 'bg-indigo-500/15 text-indigo-400' :
+                app.stage === 'hired' ? 'bg-violet-500/15 text-violet-400' :
+                app.stage === 'onboarding' ? 'bg-teal-500/15 text-teal-400' :
+                app.stage === 'rejected' ? 'bg-red-500/15 text-red-400' :
+                'bg-slate-500/15 text-slate-400'
               }`}>
                 {app.stage}
               </span>
             </div>
             {app.project_highlight && (
-              <p className="text-xs text-gray-500">{app.project_highlight}</p>
+              <p className="text-xs text-slate-400">{app.project_highlight}</p>
             )}
             <div className="flex gap-2">
               <button onClick={() => onSelectApplicant(app.id)} className="btn-primary text-xs">View</button>
@@ -298,7 +298,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
 
       {apps.length === 0 && !loading && (
         <div className="py-20 text-center">
-          <p className="text-xs font-bold uppercase text-gray-400">
+          <p className="text-xs font-bold uppercase text-slate-500">
             No applications yet.
           </p>
         </div>

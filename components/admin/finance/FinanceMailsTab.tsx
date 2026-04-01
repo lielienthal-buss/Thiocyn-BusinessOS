@@ -33,10 +33,10 @@ interface FinanceMail {
 }
 
 const STATUS_STYLES: Record<MailStatus, string> = {
-  new: 'bg-blue-100 text-blue-700',
-  forwarded_vanessa: 'bg-green-100 text-green-700',
-  needs_clarification: 'bg-yellow-100 text-yellow-700',
-  no_action: 'bg-gray-100 text-gray-500',
+  new: 'bg-blue-500/15 text-blue-400',
+  forwarded_vanessa: 'bg-emerald-500/15 text-emerald-400',
+  needs_clarification: 'bg-amber-500/15 text-amber-400',
+  no_action: 'bg-slate-500/15 text-slate-400',
 };
 
 const STATUS_LABELS: Record<MailStatus, string> = {
@@ -47,11 +47,11 @@ const STATUS_LABELS: Record<MailStatus, string> = {
 };
 
 const CATEGORY_STYLES: Record<MailCategory, string> = {
-  invoice: 'bg-purple-100 text-purple-700',
-  reminder: 'bg-orange-100 text-orange-700',
-  dispute: 'bg-red-100 text-red-700',
-  info: 'bg-gray-100 text-gray-500',
-  other: 'bg-gray-100 text-gray-500',
+  invoice: 'bg-violet-500/15 text-violet-400',
+  reminder: 'bg-amber-500/15 text-amber-400',
+  dispute: 'bg-red-500/15 text-red-400',
+  info: 'bg-slate-500/15 text-slate-400',
+  other: 'bg-slate-500/15 text-slate-400',
 };
 
 const CATEGORY_LABELS: Record<MailCategory, string> = {
@@ -178,13 +178,13 @@ export default function FinanceMailsTab() {
     <div className="space-y-5">
       {/* Header row */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
+        <div className="flex gap-1 bg-white/[0.05] border border-white/[0.06] p-1 rounded-xl w-fit">
           {FILTERS.map((f) => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
               className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
-                filter === f.id ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                filter === f.id ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
               {f.label}
@@ -209,7 +209,7 @@ export default function FinanceMailsTab() {
 
       {/* Sync result */}
       {syncResult && (
-        <p className="text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+        <p className="text-xs text-slate-400 bg-surface-900/60 border border-white/[0.06] rounded-lg px-3 py-2">
           Sync abgeschlossen: <strong>{syncResult.inserted}</strong> neue Mails importiert ({syncResult.total} geprüft)
         </p>
       )}
@@ -220,7 +220,7 @@ export default function FinanceMailsTab() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-16 text-slate-500">
           <svg className="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
@@ -231,19 +231,19 @@ export default function FinanceMailsTab() {
           {filtered.map((mail) => (
             <div
               key={mail.id}
-              className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-3"
+              className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-4 shadow-sm space-y-3"
             >
               {/* Top row */}
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">{mail.subject}</p>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">{mail.sender}</p>
+                  <p className="text-sm font-semibold text-slate-100 truncate">{mail.subject}</p>
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">{mail.sender}</p>
                   {mail.preview && (
-                    <p className="text-xs text-gray-400 mt-1 line-clamp-2">{mail.preview}</p>
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">{mail.preview}</p>
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
-                  <span className="text-xs text-gray-400 whitespace-nowrap">{formatDate(mail.received_at)}</span>
+                  <span className="text-xs text-slate-500 whitespace-nowrap">{formatDate(mail.received_at)}</span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[mail.status]}`}>
                     {STATUS_LABELS[mail.status]}
                   </span>
@@ -253,7 +253,7 @@ export default function FinanceMailsTab() {
                     </span>
                   )}
                   {mail.ai_priority === 'high' && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-600">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-400">
                       Dringend
                     </span>
                   )}
@@ -262,55 +262,55 @@ export default function FinanceMailsTab() {
 
               {/* AI Analysis panel */}
               {mail.ai_analysis && expandedId === mail.id && (
-                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 space-y-2">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">KI-Analyse</p>
+                    <p className="text-xs font-semibold text-blue-400 uppercase tracking-wide">KI-Analyse</p>
                     <button
                       onClick={() => setExpandedId(null)}
-                      className="text-blue-400 hover:text-blue-600 text-xs"
+                      className="text-blue-400 hover:text-blue-300 text-xs"
                     >
                       ✕
                     </button>
                   </div>
                   {mail.ai_analysis.summary && (
-                    <p className="text-xs text-blue-800 font-medium">{mail.ai_analysis.summary}</p>
+                    <p className="text-xs text-blue-300 font-medium">{mail.ai_analysis.summary}</p>
                   )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                     {mail.ai_analysis.sender_company && (
                       <div>
-                        <span className="text-blue-500">Unternehmen</span>
-                        <p className="text-blue-900 font-medium">{mail.ai_analysis.sender_company}</p>
+                        <span className="text-blue-400">Unternehmen</span>
+                        <p className="text-blue-200 font-medium">{mail.ai_analysis.sender_company}</p>
                       </div>
                     )}
                     {mail.ai_analysis.invoice_number && (
                       <div>
-                        <span className="text-blue-500">Rechnungs-Nr.</span>
-                        <p className="text-blue-900 font-medium">{mail.ai_analysis.invoice_number}</p>
+                        <span className="text-blue-400">Rechnungs-Nr.</span>
+                        <p className="text-blue-200 font-medium">{mail.ai_analysis.invoice_number}</p>
                       </div>
                     )}
                     {mail.ai_analysis.amount && (
                       <div>
-                        <span className="text-blue-500">Betrag</span>
-                        <p className="text-blue-900 font-medium">
+                        <span className="text-blue-400">Betrag</span>
+                        <p className="text-blue-200 font-medium">
                           {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}
                         </p>
                       </div>
                     )}
                     {mail.ai_analysis.due_date && (
                       <div>
-                        <span className="text-blue-500">Fälligkeit</span>
-                        <p className="text-blue-900 font-medium">{formatDueDate(mail.ai_analysis.due_date)}</p>
+                        <span className="text-blue-400">Fälligkeit</span>
+                        <p className="text-blue-200 font-medium">{formatDueDate(mail.ai_analysis.due_date)}</p>
                       </div>
                     )}
                     {mail.ai_analysis.service_description && (
                       <div className="col-span-2">
-                        <span className="text-blue-500">Leistung</span>
-                        <p className="text-blue-900 font-medium">{mail.ai_analysis.service_description}</p>
+                        <span className="text-blue-400">Leistung</span>
+                        <p className="text-blue-200 font-medium">{mail.ai_analysis.service_description}</p>
                       </div>
                     )}
                   </div>
                   {mail.ai_analysis.action_reason && (
-                    <p className="text-xs text-blue-600 border-t border-blue-100 pt-2">
+                    <p className="text-xs text-blue-400 border-t border-blue-500/20 pt-2">
                       💡 {mail.ai_analysis.action_reason}
                     </p>
                   )}
@@ -321,35 +321,35 @@ export default function FinanceMailsTab() {
               {mail.ai_analysis && expandedId !== mail.id && (
                 <button
                   onClick={() => setExpandedId(mail.id)}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                  className="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center gap-1"
                 >
                   <span>📊</span> KI-Analyse anzeigen
                   {mail.ai_analysis.amount && (
-                    <span className="ml-1 text-blue-400">· {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}</span>
+                    <span className="ml-1 text-slate-500">· {mail.ai_analysis.amount} {mail.ai_analysis.currency ?? ''}</span>
                   )}
                 </button>
               )}
 
               {/* Actions + note */}
-              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-100">
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
                 <button
                   onClick={() => updateStatus(mail.id, 'forwarded_vanessa')}
                   disabled={mail.status === 'forwarded_vanessa'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 text-xs font-semibold bg-emerald-500/15 text-emerald-400 rounded-lg hover:bg-emerald-500/25 disabled:opacity-40 transition-colors"
                 >
                   → Weiterleiten
                 </button>
                 <button
                   onClick={() => updateStatus(mail.id, 'needs_clarification')}
                   disabled={mail.status === 'needs_clarification'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 text-xs font-semibold bg-amber-500/15 text-amber-400 rounded-lg hover:bg-amber-500/25 disabled:opacity-40 transition-colors"
                 >
                   Klären
                 </button>
                 <button
                   onClick={() => updateStatus(mail.id, 'no_action')}
                   disabled={mail.status === 'no_action'}
-                  className="px-3 py-1.5 text-xs font-semibold bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 disabled:opacity-40 transition-colors"
+                  className="px-3 py-1.5 text-xs font-semibold bg-slate-500/15 text-slate-400 rounded-lg hover:bg-slate-500/25 disabled:opacity-40 transition-colors"
                 >
                   Keine Aktion
                 </button>
@@ -358,10 +358,10 @@ export default function FinanceMailsTab() {
                 <button
                   onClick={() => analyzeMail(mail.id)}
                   disabled={analyzingId === mail.id}
-                  className="px-3 py-1.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-40 transition-colors flex items-center gap-1"
+                  className="px-3 py-1.5 text-xs font-semibold bg-blue-500/15 text-blue-400 rounded-lg hover:bg-blue-500/25 disabled:opacity-40 transition-colors flex items-center gap-1"
                 >
                   {analyzingId === mail.id ? (
-                    <span className="inline-block w-3 h-3 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" />
+                    <span className="inline-block w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <span>🔍</span>
                   )}
@@ -375,7 +375,7 @@ export default function FinanceMailsTab() {
                     placeholder="Notiz für Buchhalter…"
                     value={noteValues[mail.id] ?? ''}
                     onChange={(e) => setNoteValues((v) => ({ ...v, [mail.id]: e.target.value }))}
-                    className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-52"
+                    className="border border-white/[0.06] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-primary-400 w-52"
                   />
                   <button
                     onClick={() => saveNote(mail.id)}

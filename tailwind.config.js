@@ -27,6 +27,23 @@ export default {
           600: '#2a3f91',
           700: '#1f2f6e',
         },
+        // Dark surface palette
+        surface: {
+          950: '#07070e',
+          900: '#0b0b14',
+          800: '#111120',
+          700: '#181828',
+          600: '#1f1f30',
+          500: '#27273a',
+          400: '#363650',
+        },
+        // Electric accent (indigo)
+        accent: {
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

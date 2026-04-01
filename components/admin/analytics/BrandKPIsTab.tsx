@@ -47,11 +47,11 @@ const fmtTs = (ts: string | null | undefined) => {
 };
 
 const roasBadge = (roas: number | null) => {
-  if (roas == null) return <span className="text-xs text-gray-400 font-semibold">—</span>;
+  if (roas == null) return <span className="text-xs text-slate-500 font-semibold">—</span>;
   const cls =
-    roas >= 3 ? 'bg-green-50 text-green-700 border-green-200' :
-    roas >= 2 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                'bg-red-50 text-red-700 border-red-200';
+    roas >= 3 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' :
+    roas >= 2 ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20' :
+                'bg-red-500/15 text-red-400 border-red-500/20';
   return (
     <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full border ${cls}`}>
       {roas.toFixed(2)}x
@@ -63,7 +63,7 @@ const SOP_PHASE_COLORS = (phase: number) => {
   if (phase >= 5) return 'bg-green-500';
   if (phase >= 3) return 'bg-amber-400';
   if (phase >= 1) return 'bg-orange-400';
-  return 'bg-gray-200';
+  return 'bg-white/[0.08]';
 };
 
 // ─── Brand KPIs Tab ───────────────────────────────────────────────────────────
@@ -155,29 +155,29 @@ const BrandKPIsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-black text-gray-900">Brand KPIs</h3>
-        <p className="text-xs text-gray-500 mt-0.5">Live performance metrics per brand from Supabase</p>
+        <h3 className="text-base font-black text-white">Brand KPIs</h3>
+        <p className="text-xs text-slate-500 mt-0.5">Live performance metrics per brand from Supabase</p>
       </div>
 
       {/* Summary row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 bg-white border border-gray-100 rounded-2xl">
-          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">Avg ROAS (all brands)</p>
-          <p className="text-2xl font-black text-gray-900">{avgRoas != null ? `${avgRoas.toFixed(2)}x` : '—'}</p>
+        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
+          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Avg ROAS (all brands)</p>
+          <p className="text-2xl font-black text-white">{avgRoas != null ? `${avgRoas.toFixed(2)}x` : '—'}</p>
         </div>
-        <div className="p-4 bg-white border border-gray-100 rounded-2xl">
-          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">Total Ad Spend MTD</p>
-          <p className="text-2xl font-black text-gray-900">{totalSpend > 0 ? fmtCurrency(totalSpend) : '—'}</p>
+        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
+          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Total Ad Spend MTD</p>
+          <p className="text-2xl font-black text-white">{totalSpend > 0 ? fmtCurrency(totalSpend) : '—'}</p>
         </div>
-        <div className="p-4 bg-white border border-gray-100 rounded-2xl">
-          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1">Best Performing Brand</p>
-          <p className="text-2xl font-black text-gray-900">
+        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
+          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Best Performing Brand</p>
+          <p className="text-2xl font-black text-white">
             {bestBrand
               ? `${BRAND_META[bestBrand.brand_id]?.emoji} ${BRAND_META[bestBrand.brand_id]?.name}`
               : '—'}
           </p>
           {bestBrand?.roas != null && (
-            <p className="text-xs text-gray-400 mt-0.5">{bestBrand.roas.toFixed(2)}x ROAS</p>
+            <p className="text-xs text-slate-500 mt-0.5">{bestBrand.roas.toFixed(2)}x ROAS</p>
           )}
         </div>
       </div>
@@ -191,16 +191,16 @@ const BrandKPIsTab: React.FC = () => {
           return (
             <div
               key={brandId}
-              className="flex flex-col gap-3 p-5 bg-white border-2 border-gray-100 hover:border-primary-200 rounded-2xl transition-all duration-200"
+              className="flex flex-col gap-3 p-5 bg-surface-800/60 border-2 border-white/[0.06] hover:border-primary-500/30 rounded-2xl backdrop-blur-sm transition-all duration-200"
             >
               {/* Card header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-2xl">{emoji}</span>
                   <div>
-                    <p className="font-black text-gray-900 text-sm">{name}</p>
+                    <p className="font-black text-white text-sm">{name}</p>
                     {m?.sop_phase != null && (
-                      <span className="inline-block text-[9px] font-black uppercase tracking-wider bg-primary-50 text-primary-600 border border-primary-200 px-1.5 py-0.5 rounded-full mt-0.5">
+                      <span className="inline-block text-[9px] font-black uppercase tracking-wider bg-primary-500/15 text-primary-400 border border-primary-500/20 px-1.5 py-0.5 rounded-full mt-0.5">
                         Phase {m.sop_phase}
                       </span>
                     )}
@@ -209,7 +209,7 @@ const BrandKPIsTab: React.FC = () => {
                 {m && !isEditing && (
                   <button
                     onClick={() => startEdit(m)}
-                    className="text-[10px] font-bold text-gray-400 hover:text-primary-600 transition-colors px-2 py-1 rounded-lg hover:bg-primary-50"
+                    className="text-[10px] font-bold text-slate-500 hover:text-primary-400 transition-colors px-2 py-1 rounded-lg hover:bg-primary-500/10"
                   >
                     Edit KPIs
                   </button>
@@ -230,7 +230,7 @@ const BrandKPIsTab: React.FC = () => {
                       ] as const
                     ).map(field => (
                       <div key={field.key}>
-                        <label className="block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-0.5">
+                        <label className="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-0.5">
                           {field.label}
                         </label>
                         <input
@@ -245,17 +245,17 @@ const BrandKPIsTab: React.FC = () => {
                               [field.key]: e.target.value === '' ? null : parseFloat(e.target.value),
                             }))
                           }
-                          className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
+                          className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
                         />
                       </div>
                     ))}
                     <div className="col-span-2">
-                      <label className="block text-[9px] font-black uppercase tracking-wider text-gray-400 mb-0.5">Notes</label>
+                      <label className="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-0.5">Notes</label>
                       <input
                         type="text"
                         value={editForm.notes ?? ''}
                         onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))}
-                        className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
+                        className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
                         placeholder="Optional note..."
                       />
                     </div>
@@ -271,7 +271,7 @@ const BrandKPIsTab: React.FC = () => {
                     </button>
                     <button
                       onClick={() => { setEditingId(null); setSaveError(null); }}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-700 text-[10px] font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                      className="px-3 py-1.5 bg-white/[0.05] text-slate-300 text-[10px] font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
                     >
                       Cancel
                     </button>
@@ -279,8 +279,8 @@ const BrandKPIsTab: React.FC = () => {
                 </div>
               ) : m == null ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-4 gap-2">
-                  <span className="text-xs font-black text-gray-300">—</span>
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-gray-100 text-gray-400 rounded-full border border-gray-200">
+                  <span className="text-xs font-black text-slate-600">—</span>
+                  <span className="text-[10px] font-bold px-2.5 py-1 bg-white/[0.05] text-slate-500 rounded-full border border-white/[0.06]">
                     No data yet
                   </span>
                 </div>
@@ -289,16 +289,16 @@ const BrandKPIsTab: React.FC = () => {
                   {/* Followers + Engagement */}
                   <div className="flex items-center justify-between text-xs">
                     <div>
-                      <p className="text-[10px] text-gray-400 font-semibold">Followers</p>
-                      <p className="font-black text-gray-900 text-base mt-0.5">
+                      <p className="text-[10px] text-slate-500 font-semibold">Followers</p>
+                      <p className="font-black text-white text-base mt-0.5">
                         {m.followers != null ? fmtNum(m.followers) : '—'}
                         {/* Trend arrow placeholder */}
-                        <span className="text-gray-300 text-xs ml-1" title="Trend data not yet available">↔</span>
+                        <span className="text-slate-600 text-xs ml-1" title="Trend data not yet available">↔</span>
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-gray-400 font-semibold">Engagement</p>
-                      <p className="font-black text-gray-900 text-base mt-0.5">
+                      <p className="text-[10px] text-slate-500 font-semibold">Engagement</p>
+                      <p className="font-black text-white text-base mt-0.5">
                         {m.engagement_rate != null ? `${m.engagement_rate.toFixed(2)}%` : '—'}
                       </p>
                     </div>
@@ -307,37 +307,37 @@ const BrandKPIsTab: React.FC = () => {
                   {/* ROAS + Ad Spend */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] text-gray-400 font-semibold mb-1">ROAS</p>
+                      <p className="text-[10px] text-slate-500 font-semibold mb-1">ROAS</p>
                       {roasBadge(m.roas)}
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-gray-400 font-semibold">Ad Spend MTD</p>
-                      <p className="font-bold text-gray-700 text-xs mt-0.5">{fmtCurrency(m.ad_spend)}</p>
+                      <p className="text-[10px] text-slate-500 font-semibold">Ad Spend MTD</p>
+                      <p className="font-bold text-slate-300 text-xs mt-0.5">{fmtCurrency(m.ad_spend)}</p>
                     </div>
                   </div>
 
                   {/* SOP Phase dots */}
                   {m.sop_phase != null && (
                     <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-gray-400 mr-1">SOP</span>
+                      <span className="text-[10px] text-slate-500 mr-1">SOP</span>
                       {[1, 2, 3, 4, 5, 6, 7].map(p => (
                         <div
                           key={p}
-                          className={`w-2 h-2 rounded-full ${p <= m.sop_phase! ? SOP_PHASE_COLORS(m.sop_phase!) : 'bg-gray-100'}`}
+                          className={`w-2 h-2 rounded-full ${p <= m.sop_phase! ? SOP_PHASE_COLORS(m.sop_phase!) : 'bg-white/[0.08]'}`}
                           title={`Phase ${p}`}
                         />
                       ))}
-                      <span className="text-[10px] text-gray-400 ml-1">{m.sop_phase}/7</span>
+                      <span className="text-[10px] text-slate-500 ml-1">{m.sop_phase}/7</span>
                     </div>
                   )}
 
                   {/* Notes */}
                   {m.notes && (
-                    <p className="text-[10px] text-gray-400 italic leading-snug">{m.notes}</p>
+                    <p className="text-[10px] text-slate-500 italic leading-snug">{m.notes}</p>
                   )}
 
                   {/* Footer */}
-                  <p className="text-[10px] text-gray-300 mt-auto pt-2 border-t border-gray-50">
+                  <p className="text-[10px] text-slate-600 mt-auto pt-2 border-t border-white/[0.06]">
                     Updated {fmtTs(m.updated_at)}
                   </p>
                 </>

@@ -17,12 +17,12 @@ const BRANDS = ['All', 'Paigh', 'Take A Shot', 'Wristr', 'Thiocyn', 'Dr. Severin
 const STATUSES = ['Prospect', 'Contacted', 'Interested', 'Product sent', 'Content posted', 'Active'];
 
 const STATUS_COLORS: Record<string, string> = {
-  Prospect: 'bg-gray-100 text-gray-600',
-  Contacted: 'bg-blue-100 text-blue-600',
-  Interested: 'bg-yellow-100 text-yellow-700',
-  'Product sent': 'bg-orange-100 text-orange-600',
-  'Content posted': 'bg-green-100 text-green-700',
-  Active: 'bg-purple-100 text-purple-700',
+  Prospect: 'bg-slate-500/15 text-slate-400',
+  Contacted: 'bg-blue-500/15 text-blue-400',
+  Interested: 'bg-yellow-500/15 text-yellow-400',
+  'Product sent': 'bg-orange-500/15 text-orange-400',
+  'Content posted': 'bg-emerald-500/15 text-emerald-400',
+  Active: 'bg-violet-500/15 text-violet-400',
 };
 
 const NEXT_STATUS: Record<string, string> = {
@@ -100,8 +100,8 @@ const CreatorView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Creator Pipeline</h1>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-100 text-primary-700">
+          <h1 className="text-2xl font-black text-white tracking-tight">Creator Pipeline</h1>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-500/15 text-primary-400">
             {filtered.length}
           </span>
         </div>
@@ -116,21 +116,21 @@ const CreatorView: React.FC = () => {
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Brand</label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</label>
           <select
             value={brandFilter}
             onChange={e => setBrandFilter(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+            className="text-sm border border-white/[0.06] bg-surface-800/60 text-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
           >
             {BRANDS.map(b => <option key={b}>{b}</option>)}
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status</label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Status</label>
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+            className="text-sm border border-white/[0.06] bg-surface-800/60 text-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
           >
             <option>All</option>
             {STATUSES.map(s => <option key={s}>{s}</option>)}
@@ -140,31 +140,31 @@ const CreatorView: React.FC = () => {
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-20 text-gray-400 text-sm">Lade Creator...</div>
+        <div className="flex justify-center py-20 text-slate-500 text-sm">Lade Creator...</div>
       ) : error ? (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{error}</div>
+        <div className="p-4 bg-red-500/15 border border-red-500/20 text-red-400 rounded-xl text-sm">{error}</div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-20 text-slate-500">
           <span className="text-4xl mb-3">🤳</span>
           <p className="text-sm font-medium">Keine Creator gefunden.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] overflow-hidden backdrop-blur-sm">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Name</th>
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Instagram</th>
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Brand</th>
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Status</th>
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Added</th>
-                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">Action</th>
+              <tr className="bg-surface-900/60 border-b border-white/[0.06]">
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Name</th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Instagram</th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Added</th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-white/[0.06]">
               {filtered.map(c => (
-                <tr key={c.id} className="hover:bg-gray-50/70 transition-colors">
-                  <td className="px-4 py-3 font-semibold text-gray-900">{c.name}</td>
+                <tr key={c.id} className="hover:bg-white/[0.03] transition-colors">
+                  <td className="px-4 py-3 font-semibold text-white">{c.name}</td>
                   <td className="px-4 py-3">
                     {c.instagram_url ? (
                       <a
@@ -176,16 +176,16 @@ const CreatorView: React.FC = () => {
                         {c.instagram_url.replace('https://www.instagram.com/', '@').replace(/\/$/, '')}
                       </a>
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-slate-600">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{c.brand}</td>
+                  <td className="px-4 py-3 text-slate-400">{c.brand}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${STATUS_COLORS[c.status] ?? 'bg-gray-100 text-gray-600'}`}>
                       {c.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-400 text-xs">
+                  <td className="px-4 py-3 text-slate-500 text-xs">
                     {new Date(c.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                   </td>
                   <td className="px-4 py-3">
@@ -208,75 +208,75 @@ const CreatorView: React.FC = () => {
       {/* Add Creator Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
+          <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-2xl w-full max-w-md p-8 relative backdrop-blur-sm">
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl font-black"
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 text-xl font-black"
             >
               ×
             </button>
-            <h2 className="text-xl font-black text-gray-900 mb-6">Add Creator</h2>
+            <h2 className="text-xl font-black text-white mb-6">Add Creator</h2>
             <form onSubmit={handleAddCreator} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Name *</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Name *</label>
                 <input
                   type="text"
                   required
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
                   placeholder="Max Mustermann"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Instagram URL</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Instagram URL</label>
                 <input
                   type="url"
                   value={form.instagram_url}
                   onChange={e => setForm(f => ({ ...f, instagram_url: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
                   placeholder="https://www.instagram.com/profil/"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Brand</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Brand</label>
                   <select
                     value={form.brand}
                     onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none bg-white"
+                    className="w-full px-3 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
                   >
                     {BRANDS.filter(b => b !== 'All').map(b => <option key={b}>{b}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Status</label>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Status</label>
                   <select
                     value={form.status}
                     onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none bg-white"
+                    className="w-full px-3 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
                   >
                     {STATUSES.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Email (optional)</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Email (optional)</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
                   placeholder="creator@mail.com"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Notes (optional)</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Notes (optional)</label>
                 <textarea
                   value={form.notes}
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none resize-none"
+                  className="w-full px-4 py-2.5 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none resize-none"
                   placeholder="Infos zum Creator..."
                 />
               </div>
