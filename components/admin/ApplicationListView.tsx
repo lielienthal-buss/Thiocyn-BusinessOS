@@ -232,7 +232,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                       {STAGE_LABELS[app.stage] ?? app.stage}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-slate-300 text-sm max-w-xs truncate">
+                  <td className="px-6 py-4 text-white text-sm max-w-xs truncate">
                     {app.project_highlight || <span className="text-slate-600">—</span>}
                   </td>{' '}
                   {/* Display Project Highlight */}
