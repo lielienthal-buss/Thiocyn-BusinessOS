@@ -245,6 +245,50 @@ export async function updateProjectArea(id: string, name: string, description: s
   return data[0];
 }
 
+// ─── Hiring Tasks ─────────────────────────────────────────────────────────────
+
+export interface HiringTask {
+  id: string;
+  title: string;
+  description: string | null;
+  instructions: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export async function getHiringTasks(): Promise<HiringTask[]> {
+  const { data } = await supabase.from('hiring_tasks').select('*').order('created_at', { ascending: false });
+  return (data as HiringTask[]) ?? [];
+}
+
+export async function getActiveHiringTask(): Promise<HiringTask | null> {
+  const { data } = await supabase.from('hiring_tasks').select('*').eq('is_active', true).maybeSingle();
+  return (data as HiringTask) ?? null;
+}
+
+export async function createHiringTask(title: string, description: string, instructions: string): Promise<HiringTask | null> {
+  const { data, error } = await supabase.from('hiring_tasks').insert({ title, description, instructions, is_active: false }).select().single();
+  if (error) { console.error(error); return null; }
+  return data as HiringTask;
+}
+
+export async function updateHiringTask(id: string, title: string, description: string, instructions: string): Promise<boolean> {
+  const { error } = await supabase.from('hiring_tasks').update({ title, description, instructions, updated_at: new Date().toISOString() }).eq('id', id);
+  return !error;
+}
+
+export async function activateHiringTask(id: string): Promise<boolean> {
+  // Deactivate all, then activate the selected one
+  await supabase.from('hiring_tasks').update({ is_active: false }).neq('id', id);
+  const { error } = await supabase.from('hiring_tasks').update({ is_active: true }).eq('id', id);
+  return !error;
+}
+
+export async function deleteHiringTask(id: string): Promise<boolean> {
+  const { error } = await supabase.from('hiring_tasks').delete().eq('id', id);
+  return !error;
+}
+
 export async function deleteProjectArea(id: string): Promise<boolean> {
   const { error, count } = await supabase.from('project_areas').delete().eq('id', id);
   if (error) {

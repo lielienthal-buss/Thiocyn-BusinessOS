@@ -5,7 +5,8 @@ import ApplicantDetailView from './ApplicantDetailView';
 import InsightsView from './InsightsView';
 import EmailTemplateManager from './EmailTemplateManager';
 import KanbanBoard from './KanbanBoard'; // Import the Kanban board
-import ProjectAreaManager from './ProjectAreaManager'; // Import the new ProjectAreaManager
+import ProjectAreaManager from './ProjectAreaManager';
+import TaskManager from './TaskManager';
 import OnboardingView from './OnboardingView';
 import AcademyView from './AcademyView';
 import CustomerSupportView from './CustomerSupportView';
@@ -57,7 +58,7 @@ const NotificationFeedView = lazyLoad(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace' | 'briefing';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
@@ -94,6 +95,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'applications', label: 'Applications' },
       { id: 'kanban', label: 'Kanban Board' },
       { id: 'projectAreas', label: 'Project Areas' },
+      { id: 'taskManager', label: 'Aufgaben' },
       { id: 'onboarding', label: 'Onboarding' },
       { id: 'emailTemplates', label: 'Email Templates' },
     ],
@@ -381,6 +383,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'projectAreas') {
       return <ProjectAreaManager />;
+    }
+
+    if (tab === 'taskManager') {
+      return <TaskManager />;
     }
 
     if (tab === 'applications') {
