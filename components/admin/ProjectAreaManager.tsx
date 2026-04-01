@@ -12,6 +12,8 @@ const ProjectAreaManager: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [newAreaName, setNewAreaName] = useState('');
   const [newAreaDescription, setNewAreaDescription] = useState('');
+  const [newAreaPositionType, setNewAreaPositionType] = useState('internship');
+  const [newAreaIsActive, setNewAreaIsActive] = useState(true);
   const [editingArea, setEditingArea] = useState<ProjectArea | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
@@ -47,14 +49,16 @@ const ProjectAreaManager: React.FC = () => {
 
     let result: ProjectArea | null;
     if (editingArea) {
-      result = await updateProjectArea(editingArea.id, newAreaName, newAreaDescription);
+      result = await updateProjectArea(editingArea.id, newAreaName, newAreaDescription, newAreaPositionType, newAreaIsActive);
     } else {
-      result = await addProjectArea(newAreaName, newAreaDescription);
+      result = await addProjectArea(newAreaName, newAreaDescription, newAreaPositionType, newAreaIsActive);
     }
 
     if (result) {
       setNewAreaName('');
       setNewAreaDescription('');
+      setNewAreaPositionType('internship');
+      setNewAreaIsActive(true);
       setEditingArea(null);
       fetchProjectAreas(); // Refresh the list
     } else {
@@ -105,7 +109,7 @@ const ProjectAreaManager: React.FC = () => {
       />
     )}
     <div className="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
-      <h2 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter mb-6">
+      <h2 className="text-3xl font-black text-white tracking-tighter mb-6">
         Manage Project Areas
       </h2>
 
@@ -113,28 +117,57 @@ const ProjectAreaManager: React.FC = () => {
       <Card title={editingArea ? 'Edit Project Area' : 'Add New Project Area'}>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Name
             </label>
             <input
               type="text"
               value={newAreaName}
               onChange={(e) => setNewAreaName(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md"
+              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md placeholder-slate-600"
               placeholder="e.g., Frontend Development"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-slate-300 mb-1">
               Description (for applicants)
             </label>
             <textarea
               rows={3}
               value={newAreaDescription}
               onChange={(e) => setNewAreaDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-md"
+              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md placeholder-slate-600"
               placeholder="A short description of what this role entails..."
             />
+          </div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
+                Position Type
+              </label>
+              <select
+                value={newAreaPositionType}
+                onChange={(e) => setNewAreaPositionType(e.target.value)}
+                className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md"
+              >
+                <option value="internship">Praktikum</option>
+                <option value="working_student">Werkstudent</option>
+                <option value="freelance">Freelance</option>
+                <option value="fulltime">Vollzeit</option>
+              </select>
+            </div>
+            <div className="flex items-end pb-1 gap-2">
+              <input
+                type="checkbox"
+                id="is_active"
+                checked={newAreaIsActive}
+                onChange={(e) => setNewAreaIsActive(e.target.checked)}
+                className="w-4 h-4 accent-blue-500"
+              />
+              <label htmlFor="is_active" className="text-sm font-medium text-slate-300">
+                Öffentlich sichtbar
+              </label>
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             {editingArea && (
@@ -144,7 +177,7 @@ const ProjectAreaManager: React.FC = () => {
                   setNewAreaName('');
                   setNewAreaDescription('');
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-800 dark:text-white rounded-md"
+                className="px-4 py-2 bg-white/[0.08] text-slate-100 rounded-md"
               >
                 Cancel Edit
               </button>
@@ -162,21 +195,29 @@ const ProjectAreaManager: React.FC = () => {
       </Card>
 
       {/* Project Areas List */}
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">
+      <h3 className="text-xl font-bold text-white mt-8 mb-4">
         Existing Project Areas
       </h3>
       <div className="space-y-4">
         {projectAreas.length === 0 ? (
-          <p className="text-gray-500">No project areas defined yet.</p>
+          <p className="text-slate-500">No project areas defined yet.</p>
         ) : (
           projectAreas.map((area) => (
             <Card key={area.id}>
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-bold text-lg text-gray-900 dark:text-white">
-                    {area.name}
-                  </h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-bold text-lg text-white">{area.name}</h4>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">
+                      {{ internship: 'Praktikum', working_student: 'Werkstudent', freelance: 'Freelance', fulltime: 'Vollzeit' }[(area as any).position_type] || 'Praktikum'}
+                    </span>
+                    {(area as any).is_active ? (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 font-medium">● Live</span>
+                    ) : (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-500 font-medium">Versteckt</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-300">
                     {area.description || 'No description provided.'}
                   </p>
                 </div>
@@ -186,6 +227,8 @@ const ProjectAreaManager: React.FC = () => {
                       setEditingArea(area);
                       setNewAreaName(area.name);
                       setNewAreaDescription(area.description || '');
+                      setNewAreaPositionType((area as any).position_type || 'internship');
+                      setNewAreaIsActive((area as any).is_active ?? true);
                     }}
                     className="px-3 py-1 bg-yellow-500/20 text-yellow-600 text-xs rounded-md hover:bg-yellow-500/30"
                   >

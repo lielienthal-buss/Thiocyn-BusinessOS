@@ -24,8 +24,8 @@ const OnboardingView: React.FC = () => {
   const load = useCallback(async () => {
     const { data: apps } = await supabase
       .from('applications')
-      .select('id, full_name, email, status, project_interest')
-      .in('status', ['hired', 'onboarding'])
+      .select('id, full_name, email, stage, project_interest')
+      .in('stage', ['hired', 'onboarding'])
       .order('created_at', { ascending: false });
 
     setCandidates(apps || []);
@@ -76,7 +76,7 @@ const OnboardingView: React.FC = () => {
   }
 
   async function promoteToActive(candidateId: string) {
-    await supabase.from('applications').update({ status: 'active' }).eq('id', candidateId);
+    await supabase.from('applications').update({ stage: 'hired' }).eq('id', candidateId);
     await load();
   }
 
@@ -87,12 +87,12 @@ const OnboardingView: React.FC = () => {
   }
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading...</div>;
+    return <div className="p-8 text-center text-slate-500">Loading...</div>;
   }
 
   if (candidates.length === 0) {
     return (
-      <div className="p-8 text-center text-gray-500">
+      <div className="p-8 text-center text-slate-500">
         No candidates in onboarding yet. Move hires to the Onboarding stage in the Kanban board.
       </div>
     );
@@ -108,12 +108,12 @@ const OnboardingView: React.FC = () => {
           const isComplete = progress === 100;
 
           return (
-            <div key={candidate.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm p-5">
+            <div key={candidate.id} className="bg-surface-800/60 border border-white/[0.06] rounded-xl backdrop-blur-sm p-5">
               <div className="mb-3">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{candidate.full_name}</h3>
-                <p className="text-sm text-gray-500">{candidate.email}</p>
+                <h3 className="font-semibold text-white">{candidate.full_name}</h3>
+                <p className="text-sm text-slate-500">{candidate.email}</p>
                 {candidate.project_interest && candidate.project_interest.length > 0 && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     {Array.isArray(candidate.project_interest)
                       ? candidate.project_interest.join(', ')
                       : candidate.project_interest}
@@ -121,14 +121,14 @@ const OnboardingView: React.FC = () => {
                 )}
               </div>
               <div className="mb-4">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <div className="flex justify-between text-xs text-slate-500 mb-1">
                   <span>Progress</span>
                   <span className="flex items-center gap-1">
                     {saving === candidate.id && <span className="text-primary-500">saving…</span>}
                     {progress}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-2">
+                <div className="w-full bg-white/[0.06] rounded-full h-2">
                   <div
                     className={`h-2 rounded-full transition-all duration-300 ${isComplete ? 'bg-green-500' : 'bg-primary-500'}`}
                     style={{ width: `${progress}%` }}
@@ -145,7 +145,7 @@ const OnboardingView: React.FC = () => {
                     <div className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                       cl[item.id]
                         ? 'bg-green-500 border-green-500'
-                        : 'border-gray-300 dark:border-slate-500 group-hover:border-green-400'
+                        : 'border-white/20 group-hover:border-green-400'
                     }`}>
                       {cl[item.id] && (
                         <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -153,7 +153,7 @@ const OnboardingView: React.FC = () => {
                         </svg>
                       )}
                     </div>
-                    <span className={`text-sm ${cl[item.id] ? 'line-through text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                    <span className={`text-sm ${cl[item.id] ? 'line-through text-slate-500' : 'text-slate-300'}`}>
                       {item.label}
                     </span>
                   </li>

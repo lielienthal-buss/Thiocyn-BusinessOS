@@ -210,11 +210,11 @@ export async function getProjectAreas(): Promise<ProjectArea[]> {
   return data || [];
 }
 
-export async function addProjectArea(name: string, description: string): Promise<ProjectArea | null> {
+export async function addProjectArea(name: string, description: string, position_type = 'internship', is_active = true): Promise<ProjectArea | null> {
   const { data, error } = await supabase
     .from('project_areas')
-    .insert([{ name, description }])
-    .select(); // Removed .single()
+    .insert([{ name, description, position_type, is_active }])
+    .select();
 
   if (error) {
     console.error('Error adding project area:', error);
@@ -227,12 +227,12 @@ export async function addProjectArea(name: string, description: string): Promise
   return data[0];
 }
 
-export async function updateProjectArea(id: string, name: string, description: string): Promise<ProjectArea | null> {
+export async function updateProjectArea(id: string, name: string, description: string, position_type = 'internship', is_active = true): Promise<ProjectArea | null> {
   const { data, error } = await supabase
     .from('project_areas')
-    .update({ name, description })
+    .update({ name, description, position_type, is_active })
     .eq('id', id)
-    .select(); // Removed .single()
+    .select();
 
   if (error) {
     console.error('Error updating project area:', error);

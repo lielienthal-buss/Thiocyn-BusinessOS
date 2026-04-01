@@ -152,21 +152,25 @@ const KanbanBoard: React.FC = () => {
 
   return (
     <>
-      <div className="flex gap-4 md:gap-6 p-2 md:p-4 overflow-x-auto -mx-2 md:mx-0">
-        {columns.map((column) => (
+      <div className="flex gap-3 p-1 overflow-x-auto pb-4" style={{ minHeight: '400px' }}>
+        {columns.map((column) => {
+          const colApps = applications.filter((app) => app.stage === column.id);
+          return (
           <div
             key={column.id}
-            className="w-72 bg-surface-900/60 rounded-xl flex-shrink-0"
+            className="w-64 bg-surface-900/60 rounded-xl flex-shrink-0 flex flex-col"
           >
-            <div className="p-4 border-b border-white/[0.06]">
-              <h3 className="font-bold text-white">
-                {column.title}
-              </h3>
+            <div className="p-3 border-b border-white/[0.06] flex items-center justify-between">
+              <h3 className="font-bold text-sm text-white">{column.title}</h3>
+              <span className="text-xs font-semibold bg-white/[0.08] text-slate-400 rounded-full px-2 py-0.5">
+                {colApps.length}
+              </span>
             </div>
-            <div className="p-4">
-              {applications
-                .filter((app) => app.stage === column.id)
-                .map((app) => (
+            <div className="p-3 flex-1">
+              {colApps.length === 0 && (
+                <p className="text-xs text-slate-600 text-center pt-4">—</p>
+              )}
+              {colApps.map((app) => (
                   <KanbanCard
                     key={app.id}
                     application={app}
@@ -175,7 +179,8 @@ const KanbanBoard: React.FC = () => {
                 ))}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       {selectedApp && (
         <UpdateStageModal
