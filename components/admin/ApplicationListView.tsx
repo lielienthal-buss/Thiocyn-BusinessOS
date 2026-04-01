@@ -13,6 +13,16 @@ import type {
 import Spinner from '@/components/ui/Spinner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
 
+const STAGE_LABELS: Record<string, string> = {
+  applied: 'Applied',
+  task_requested: 'Task Sent',
+  task_submitted: 'Task Submitted',
+  interview: 'Interview',
+  hired: 'Hired',
+  onboarding: 'Onboarding',
+  rejected: 'Rejected',
+};
+
 interface Props {
   onSelectApplicant: (id: string) => void;
 }
@@ -207,7 +217,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                   key={app.id}
                   className="hover:bg-white/[0.03] transition-colors"
                 >
-                  <td className="px-6 py-4 font-semibold">{app.full_name}</td>
+                  <td className="px-6 py-4 font-semibold text-slate-100">{app.full_name}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                       app.stage === 'applied' ? 'bg-blue-500/15 text-blue-400' :
@@ -219,7 +229,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                       app.stage === 'rejected' ? 'bg-red-500/15 text-red-400' :
                       'bg-slate-500/15 text-slate-400'
                     }`}>
-                      {app.stage} {/* Changed from app.status to app.stage */}
+                      {STAGE_LABELS[app.stage] ?? app.stage}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -281,7 +291,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                 app.stage === 'rejected' ? 'bg-red-500/15 text-red-400' :
                 'bg-slate-500/15 text-slate-400'
               }`}>
-                {app.stage}
+                {STAGE_LABELS[app.stage] ?? app.stage}
               </span>
             </div>
             {app.project_highlight && (

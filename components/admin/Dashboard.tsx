@@ -509,11 +509,9 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Brand Switcher — visible when in a brand-aware section */}
-          {section !== 'account' && section !== 'home' && <BrandSwitcher />}
+          {section !== 'account' && section !== 'home' && <BrandSwitcher compact />}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
-          {/* Language Toggle */}
-          <LangToggle />
           <div className="flex items-center gap-0.5 bg-surface-700 rounded-full p-0.5 border border-white/[0.06]">
             <button
               onClick={() => setLang('de')}

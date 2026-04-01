@@ -4,6 +4,16 @@ import type { Application, ApplicationStage } from '@/types';
 import Spinner from '@/components/ui/Spinner';
 import { toast } from 'sonner';
 
+const STAGE_LABELS: Record<string, string> = {
+  applied: 'Applied',
+  task_requested: 'Task Sent',
+  task_submitted: 'Task Submitted',
+  interview: 'Interview',
+  hired: 'Hired',
+  onboarding: 'Onboarding',
+  rejected: 'Rejected',
+};
+
 // Stage badge color map
 const stageBadgeClasses: Record<string, string> = {
   applied: 'bg-blue-500/15 text-blue-400',
@@ -40,7 +50,7 @@ const KanbanCard: React.FC<{
       </h4>
       <p className="text-xs text-slate-500">{application.email}</p>
       <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${stageBadgeClasses[application.stage] ?? 'bg-slate-500/15 text-slate-400'}`}>
-        {application.stage}
+        {STAGE_LABELS[application.stage] ?? application.stage}
       </span>
     </div>
   );

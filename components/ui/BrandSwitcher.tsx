@@ -6,6 +6,7 @@ interface BrandSwitcherProps {
   showAllOption?: boolean;    // default: true
   showPaused?: boolean;       // default: false
   size?: 'sm' | 'md';        // default: 'sm'
+  compact?: boolean;          // icon-only mode for tight spaces (default: false)
   className?: string;
 }
 
@@ -13,6 +14,7 @@ const BrandSwitcher: React.FC<BrandSwitcherProps> = ({
   showAllOption = true,
   showPaused = false,
   size = 'sm',
+  compact = false,
   className = '',
 }) => {
   const { brands, activeBrand, setActiveBrand } = useBrand();
@@ -24,6 +26,9 @@ const BrandSwitcher: React.FC<BrandSwitcherProps> = ({
       ? 'px-2.5 py-1 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer select-none'
       : 'px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 cursor-pointer select-none';
 
+  const inactiveCls = 'bg-white/[0.06] text-slate-300 hover:bg-white/[0.12] border border-white/[0.08]';
+  const activeCls   = 'text-white shadow-sm border border-white/[0.15]';
+
   return (
     <div className={`flex items-center gap-1.5 flex-wrap ${className}`}>
       {showAllOption && (
@@ -31,11 +36,11 @@ const BrandSwitcher: React.FC<BrandSwitcherProps> = ({
           onClick={() => setActiveBrand(null)}
           className={`${pillBase} ${
             activeBrand === null
-              ? 'bg-slate-800 text-white shadow-sm'
-              : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+              ? 'bg-white/[0.15] text-white border border-white/[0.20]'
+              : inactiveCls
           }`}
         >
-          All Brands
+          {compact ? '✦' : 'All Brands'}
         </button>
       )}
 
@@ -45,17 +50,13 @@ const BrandSwitcher: React.FC<BrandSwitcherProps> = ({
           <button
             key={brand.slug}
             onClick={() => setActiveBrand(isActive ? null : brand)}
-            className={`${pillBase} ${
-              isActive
-                ? 'text-white shadow-sm'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            } ${brand.status === 'paused' ? 'opacity-60' : ''}`}
+            className={`${pillBase} ${isActive ? activeCls : inactiveCls} ${brand.status === 'paused' ? 'opacity-60' : ''}`}
             style={isActive ? { backgroundColor: brand.color } : {}}
             title={`${brand.name}${brand.status === 'paused' ? ' (paused)' : ''}`}
           >
             <span>{brand.emoji}</span>
-            <span className="ml-1">{brand.name}</span>
-            {brand.status === 'paused' && (
+            {!compact && <span className="ml-1">{brand.name}</span>}
+            {!compact && brand.status === 'paused' && (
               <span className="ml-1 text-[10px] opacity-70">⏸</span>
             )}
           </button>
