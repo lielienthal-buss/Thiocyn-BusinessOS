@@ -38,7 +38,7 @@ Analyze this internship applicant briefly (max 120 words):
 Name: ${app.full_name}
 Project Highlight: ${app.project_highlight || 'Not provided'}
 Personality Scores (BFI): ${JSON.stringify(app.psychometrics || {})}
-Preferred Areas: ${(app.project_interest || []).join(', ') || 'Not specified'}
+Preferred Areas: ${(Array.isArray(app.preferred_project_areas) ? app.preferred_project_areas : (app.project_interest || [])).join(', ') || 'Not specified'}
 Work Sample: ${app.work_sample_text ? app.work_sample_text.substring(0, 500) : 'Not submitted'}
 
 Neuroticism note: ${(app.psychometrics?.neuroticism || 0) >= 80 ? '⚠️ HIGH neuroticism score — flag this.' : 'Within acceptable range.'}

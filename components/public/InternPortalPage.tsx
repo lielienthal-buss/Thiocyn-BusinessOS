@@ -116,6 +116,12 @@ const InternPortalPage: React.FC = () => {
   }, []);
 
   async function load(internId: string) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError('Please log in to view this profile.');
+      setLoading(false);
+      return;
+    }
     const { data: app, error: err } = await supabase
       .from('applications')
       .select('id, full_name, email, status, created_at, project_interest')
@@ -173,10 +179,19 @@ const InternPortalPage: React.FC = () => {
   }
 
   if (error || !intern) {
+    const isAuthError = error === 'Please log in to view this profile.';
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <div className="text-center">
+        <div className="text-center space-y-4">
           <p className="text-red-400 text-lg font-semibold">{error || 'Something went wrong.'}</p>
+          {isAuthError && (
+            <a
+              href="/admin"
+              className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+            >
+              Log in
+            </a>
+          )}
         </div>
       </div>
     );
