@@ -4,16 +4,18 @@ import InvoicesTab from './finance/InvoicesTab';
 import OverviewTab from './finance/OverviewTab';
 import FinanceMailsTab from './finance/FinanceMailsTab';
 import EmmaPlannerTab from './finance/EmmaPlannerTab';
+import MonthlyReportingTab from './finance/MonthlyReportingTab';
 import type { FinanceTab } from './finance/financeTypes';
 
 type ExtendedFinanceTab = FinanceTab | 'financeMails' | 'emmaPlanner';
 
 const TABS: { id: ExtendedFinanceTab; label: string }[] = [
-  { id: 'disputes', label: 'Disputes' },
-  { id: 'invoices', label: 'Invoices & Mahnungen' },
-  { id: 'overview', label: 'Overview' },
-  { id: 'financeMails', label: '📬 Finance Mails' },
-  { id: 'emmaPlanner', label: '🗓 Emma · Plan' },
+  { id: 'disputes',         label: 'Disputes' },
+  { id: 'invoices',         label: 'Invoices & Mahnungen' },
+  { id: 'overview',         label: 'Overview' },
+  { id: 'monthlyReporting', label: '📊 Monats-Reporting' },
+  { id: 'financeMails',     label: '📬 Finance Mails' },
+  { id: 'emmaPlanner',      label: '🗓 Emma · Plan' },
 ];
 
 interface Props { activeTab?: ExtendedFinanceTab; }
@@ -50,11 +52,12 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
 
       {/* Tab content */}
       <div>
-        {activeTab === 'disputes' && <DisputesTab />}
-        {activeTab === 'invoices' && <InvoicesTab />}
-        {activeTab === 'overview' && <OverviewTab />}
-        {activeTab === 'financeMails' && <FinanceMailsTab />}
-        {activeTab === 'emmaPlanner' && <EmmaPlannerTab />}
+        {activeTab === 'disputes'         && <DisputesTab />}
+        {activeTab === 'invoices'          && <InvoicesTab />}
+        {activeTab === 'overview'          && <OverviewTab />}
+        {activeTab === 'monthlyReporting'  && <MonthlyReportingTab />}
+        {activeTab === 'financeMails'      && <FinanceMailsTab />}
+        {activeTab === 'emmaPlanner'       && <EmmaPlannerTab />}
       </div>
     </div>
   );

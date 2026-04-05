@@ -22,7 +22,7 @@ export type Currency = typeof CURRENCIES[number];
 export type DisputeStatus = typeof DISPUTE_STATUSES[number];
 export type InvoiceStatus = typeof INVOICE_STATUSES[number];
 export type InvoiceCategory = typeof INVOICE_CATEGORIES[number];
-export type FinanceTab = 'disputes' | 'invoices' | 'overview';
+export type FinanceTab = 'disputes' | 'invoices' | 'overview' | 'monthlyReporting';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
