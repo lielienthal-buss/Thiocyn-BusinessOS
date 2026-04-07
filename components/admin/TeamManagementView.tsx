@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabaseClient';
 
-type Role = 'owner' | 'admin' | 'marketing' | 'hiring' | 'support' | 'viewer';
+type Role = 'owner' | 'admin' | 'creative' | 'hiring' | 'support' | 'viewer';
 type MemberStatus = 'pending' | 'active' | 'deactivated';
 
 interface TeamMember {
@@ -16,22 +16,22 @@ interface TeamMember {
   created_at: string;
 }
 
-const ALL_SECTIONS = ['hiring', 'marketing', 'support', 'ecommerce', 'finance', 'analytics', 'admin'];
+const ALL_SECTIONS = ['command', 'creative', 'revenue', 'hiring', 'finance', 'support', 'admin'];
 
 const SECTION_LABELS: Record<string, string> = {
-  hiring: 'Hiring',
-  marketing: 'Marketing',
-  support: 'Customer Support',
-  ecommerce: 'E-Commerce',
+  command: 'Command Center',
+  creative: 'Creative Studio',
+  revenue: 'Revenue & Analytics',
+  hiring: 'Hiring & Academy',
   finance: 'Finance',
-  analytics: 'Analytics',
+  support: 'Support',
   admin: 'Admin',
 };
 
 const ROLE_BADGE_COLORS: Record<Role, string> = {
   owner: 'bg-violet-500/15 text-violet-400 border border-violet-500/20',
   admin: 'bg-amber-500/15 text-amber-400 border border-amber-500/20',
-  marketing: 'bg-pink-500/15 text-pink-400 border border-pink-500/20',
+  creative: 'bg-pink-500/15 text-pink-400 border border-pink-500/20',
   hiring: 'bg-blue-500/15 text-blue-400 border border-blue-500/20',
   support: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20',
   viewer: 'bg-slate-500/15 text-slate-400 border border-slate-500/20',
@@ -46,27 +46,27 @@ const STATUS_BADGE_COLORS: Record<MemberStatus, string> = {
 const ROLE_DESCRIPTIONS: { role: Role; desc: string }[] = [
   { role: 'owner', desc: 'Full access including team management' },
   { role: 'admin', desc: 'All sections, cannot manage team' },
-  { role: 'marketing', desc: 'Marketing section only' },
-  { role: 'hiring', desc: 'Hiring section only' },
-  { role: 'support', desc: 'Customer Support only' },
+  { role: 'creative', desc: 'Creative Studio + Command Center' },
+  { role: 'hiring', desc: 'Hiring & Academy + Command Center' },
+  { role: 'support', desc: 'Support + Command Center' },
   { role: 'viewer', desc: 'Read-only access to assigned sections' },
 ];
 
-const SELECTABLE_SECTIONS = ['hiring', 'marketing', 'support'];
+const SELECTABLE_SECTIONS = ['command', 'creative', 'revenue', 'hiring', 'finance', 'support'];
 
 function getDefaultSections(role: Role): string[] {
   switch (role) {
     case 'owner':
     case 'admin':
       return ALL_SECTIONS;
-    case 'marketing':
-      return ['marketing'];
+    case 'creative':
+      return ['command', 'creative'];
     case 'hiring':
-      return ['hiring'];
+      return ['command', 'hiring'];
     case 'support':
-      return ['support'];
+      return ['command', 'support'];
     default:
-      return [];
+      return ['command'];
   }
 }
 
@@ -213,7 +213,7 @@ const TeamManagementView: React.FC = () => {
           >
             <option value="viewer">Viewer</option>
             <option value="hiring">Hiring</option>
-            <option value="marketing">Marketing</option>
+            <option value="creative">Creative</option>
             <option value="support">Support</option>
             <option value="admin">Admin</option>
             <option value="owner">Owner</option>
@@ -284,7 +284,7 @@ const TeamManagementView: React.FC = () => {
                         >
                           <option value="viewer">Viewer</option>
                           <option value="hiring">Hiring</option>
-                          <option value="marketing">Marketing</option>
+                          <option value="creative">Creative</option>
                           <option value="support">Support</option>
                           <option value="admin">Admin</option>
                           <option value="owner">Owner</option>

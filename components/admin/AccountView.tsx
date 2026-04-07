@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 
-type Role = 'owner' | 'admin' | 'marketing' | 'hiring' | 'support' | 'viewer';
+type Role = 'owner' | 'admin' | 'creative' | 'hiring' | 'support' | 'viewer';
 
 interface TeamMember {
   id: string;

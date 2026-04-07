@@ -10,7 +10,6 @@ import TaskManager from './TaskManager';
 import OnboardingView from './OnboardingView';
 import AcademyView from './AcademyView';
 import CustomerSupportView from './CustomerSupportView';
-import MarketingView from './MarketingView';
 import PostsTrackerView from './PostsTrackerView';
 import AgentChatDrawer from './AgentChatDrawer';
 import NotificationBell from './NotificationBell';
@@ -333,11 +332,11 @@ const Dashboard: React.FC = () => {
     }
 
     if (tab === 'ecomOverview' || tab === 'ecomOrders') {
-      return <EcommerceView activeTab={tab === 'ecomOrders' ? 'orders' : 'overview'} />;
+      return <EcommerceView />;
     }
 
     if (tab === 'analyticsKpis' || tab === 'analyticsAds') {
-      return <AnalyticsView activeTab={tab === 'analyticsAds' ? 'ads' : 'kpis'} />;
+      return <AnalyticsView />;
     }
 
     if (tab === 'workspace') {
@@ -399,7 +398,6 @@ const Dashboard: React.FC = () => {
       return <CustomerSupportView isAdmin={isAdmin} />;
     }
 
-    // MarketingView tabs removed — content lives in Creative Factory + Content Machine
 
     if (tab === 'postsTracker') {
       return <PostsTrackerView />;
@@ -496,7 +494,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Brand Switcher — visible when in a brand-aware section */}
-          {section !== 'account' && section !== 'home' && <BrandSwitcher compact />}
+          {section !== 'account' && section !== 'command' && <BrandSwitcher compact />}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
           <div className="flex items-center gap-0.5 bg-surface-700 rounded-full p-0.5 border border-white/[0.06]">

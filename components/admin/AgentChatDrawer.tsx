@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 type Section =
-  | 'home'
+  | 'command'
+  | 'creative'
+  | 'revenue'
   | 'hiring'
-  | 'marketing'
-  | 'support'
-  | 'ecommerce'
   | 'finance'
-  | 'analytics'
-  | 'admin';
+  | 'support'
+  | 'admin'
+  | 'account'
+  | 'workspace';
 
 interface Message {
   id: string;
