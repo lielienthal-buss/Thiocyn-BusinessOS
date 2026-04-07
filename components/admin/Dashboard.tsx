@@ -57,8 +57,10 @@ const ProcessExecutionView = lazyLoad(() => import('./ProcessExecutionView'));
 const NotificationFeedView = lazyLoad(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
+const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
+const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
+type Tab = 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'creativeFactory' | 'contentMachine' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
 type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace' | 'briefing';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
@@ -114,6 +116,8 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'creatorPipeline', label: '🤳 Creators' },
       { id: 'videoGeneration', label: '🎬 Video Gen' },
       { id: 'briefingGenerator', label: '⚡ Briefings' },
+      { id: 'creativeFactory', label: '🏭 Creative Factory' },
+      { id: 'contentMachine', label: '⚙️ Content Machine' },
     ],
   },
   {
@@ -442,6 +446,14 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'briefingGenerator') {
       return <React.Suspense fallback={<div>Loading...</div>}><BriefingGeneratorView /></React.Suspense>;
+    }
+
+    if (tab === 'creativeFactory') {
+      return <React.Suspense fallback={<div>Loading...</div>}><CreativeFactoryView /></React.Suspense>;
+    }
+
+    if (tab === 'contentMachine') {
+      return <React.Suspense fallback={<div>Loading...</div>}><ContentMachineView /></React.Suspense>;
     }
 
     if (tab === 'teamManagement') {
