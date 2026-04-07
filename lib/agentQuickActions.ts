@@ -5,6 +5,18 @@ export interface QuickAction {
 }
 
 export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
+  command: [
+    {
+      emoji: '☀️',
+      label: 'Daily brief',
+      prompt: 'Give me a quick daily briefing: what tasks are due today, any urgent items, and key metrics.',
+    },
+    {
+      emoji: '📋',
+      label: 'Summarize status',
+      prompt: 'Summarize the current status across all areas: open tasks, pending items, and what needs my attention.',
+    },
+  ],
   hiring: [
     {
       emoji: '📋',
@@ -25,7 +37,7 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
         'Suggest 5 strong interview questions for a marketing intern position at Hart Limes GmbH.',
     },
   ],
-  marketing: [
+  creative: [
     {
       emoji: '🪝',
       label: 'Generate hook',
@@ -43,6 +55,30 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       label: 'Review SOP status',
       prompt:
         'Based on our Meta Ads SOP phases, what should be the next priority action for Thiocyn (currently in phase 3: script production)?',
+    },
+  ],
+  revenue: [
+    {
+      emoji: '📊',
+      label: 'Revenue overview',
+      prompt: 'Give me a revenue overview across all brands: MTD revenue, top performing products, and trends.',
+    },
+    {
+      emoji: '🛒',
+      label: 'Order analysis',
+      prompt: 'Analyze recent order patterns: AOV trends, return rates, and any anomalies across brands.',
+    },
+  ],
+  finance: [
+    {
+      emoji: '💰',
+      label: 'Open invoices',
+      prompt: 'What invoices are currently open or overdue? Prioritize by amount and deadline.',
+    },
+    {
+      emoji: '⚠️',
+      label: 'Dispute status',
+      prompt: 'Summarize all active payment disputes: platform, amount, deadline, and recommended action.',
     },
   ],
   support: [

@@ -60,8 +60,8 @@ const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
 const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
 
-type Tab = 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'insights' | 'settings' | 'emailTemplates' | 'onboarding' | 'academy' | 'customerSupportOverview' | 'marketingBrands' | 'marketingResources' | 'marketingSOPTracker' | 'marketingContentPlaybook' | 'postsTracker' | 'teamManagement' | 'accountProfile' | 'home' | 'teamTasks' | 'financeOverview' | 'financeDisputesTab' | 'toolStack' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'performance' | 'isoCompliance' | 'knowledgeBase' | 'brandConfig' | 'processExecution' | 'notificationFeed' | 'creatorPipeline' | 'videoGeneration' | 'briefingGenerator' | 'creativeFactory' | 'contentMachine' | 'financeMails' | 'emmaPlanner' | 'workspace' | 'briefing';
-type Section = 'home' | 'hiring' | 'marketing' | 'support' | 'ecommerce' | 'finance' | 'analytics' | 'admin' | 'account' | 'compliance' | 'workspace' | 'briefing';
+type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'financeOverview' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
+type Section = 'command' | 'creative' | 'revenue' | 'hiring' | 'finance' | 'support' | 'admin' | 'account' | 'workspace';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -73,59 +73,53 @@ const hasRole = (userRole: string, minRole: UserRole) =>
 
 const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole; tabs: { id: Tab; label: string }[] }[] = [
   {
-    id: 'briefing',
-    label: 'Briefing',
-    emoji: '☀️',
+    id: 'command',
+    label: 'Command Center',
+    emoji: '🎯',
     tabs: [
       { id: 'briefing', label: 'Daily Briefing' },
+      { id: 'home', label: 'Overview' },
+      { id: 'teamTasks', label: 'Tasks' },
+      { id: 'emmaPlanner', label: 'Planner' },
     ],
   },
   {
-    id: 'home',
-    label: 'Home',
-    emoji: '🏠',
+    id: 'creative',
+    label: 'Creative Studio',
+    emoji: '🎨',
     tabs: [
-      { id: 'home', label: 'Overview' },
-      { id: 'teamTasks', label: 'Tasks' },
+      { id: 'creatorPipeline', label: 'Creators' },
+      { id: 'creativeFactory', label: 'Creative Factory' },
+      { id: 'contentMachine', label: 'Content Machine' },
+      { id: 'videoGeneration', label: 'Video Gen' },
+      { id: 'postsTracker', label: 'Posts' },
+      { id: 'briefingGenerator', label: 'Briefings' },
+    ],
+  },
+  {
+    id: 'revenue',
+    label: 'Revenue & Analytics',
+    emoji: '📊',
+    minRole: 'staff',
+    tabs: [
+      { id: 'ecomOverview', label: 'Overview' },
+      { id: 'ecomOrders', label: 'Orders' },
+      { id: 'analyticsKpis', label: 'Brand KPIs' },
+      { id: 'analyticsAds', label: 'Ad Performance' },
     ],
   },
   {
     id: 'hiring',
-    label: 'Hiring',
-    emoji: '🎯',
+    label: 'Hiring & Academy',
+    emoji: '🎓',
     tabs: [
       { id: 'applications', label: 'Applications' },
       { id: 'kanban', label: 'Kanban Board' },
       { id: 'projectAreas', label: 'Project Areas' },
       { id: 'taskManager', label: 'Aufgaben' },
       { id: 'onboarding', label: 'Onboarding' },
+      { id: 'academy', label: 'Academy' },
       { id: 'emailTemplates', label: 'Email Templates' },
-    ],
-  },
-  {
-    id: 'marketing',
-    label: 'Marketing',
-    emoji: '📣',
-    minRole: 'staff',
-    tabs: [
-      { id: 'marketingBrands', label: 'Brand Status' },
-      { id: 'marketingSOPTracker', label: 'Ads SOP Tracker' },
-      { id: 'marketingContentPlaybook', label: 'Content Playbook' },
-      { id: 'postsTracker', label: 'Posts Tracker' },
-      { id: 'marketingResources', label: 'Resources' },
-      { id: 'creatorPipeline', label: '🤳 Creators' },
-      { id: 'videoGeneration', label: '🎬 Video Gen' },
-      { id: 'briefingGenerator', label: '⚡ Briefings' },
-      { id: 'creativeFactory', label: '🏭 Creative Factory' },
-      { id: 'contentMachine', label: '⚙️ Content Machine' },
-    ],
-  },
-  {
-    id: 'support',
-    label: 'Customer Support',
-    emoji: '💬',
-    tabs: [
-      { id: 'customerSupportOverview', label: 'Overview' },
     ],
   },
   {
@@ -136,29 +130,15 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     tabs: [
       { id: 'financeOverview', label: 'Overview' },
       { id: 'financeDisputesTab', label: 'Disputes' },
-      { id: 'toolStack', label: '🔧 Tool Stack' },
-      { id: 'financeMails', label: '📬 Finance Mails' },
-      { id: 'emmaPlanner', label: '🗓 Emma · Plan' },
+      { id: 'financeMails', label: 'Finance Mails' },
     ],
   },
   {
-    id: 'ecommerce',
-    label: 'E-Commerce',
-    emoji: '🛒',
-    minRole: 'staff',
+    id: 'support',
+    label: 'Support',
+    emoji: '💬',
     tabs: [
-      { id: 'ecomOverview', label: 'Overview' },
-      { id: 'ecomOrders', label: 'Orders' },
-    ],
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    emoji: '📊',
-    minRole: 'staff',
-    tabs: [
-      { id: 'analyticsKpis', label: 'Brand KPIs' },
-      { id: 'analyticsAds', label: 'Ad Performance' },
+      { id: 'customerSupportOverview', label: 'Overview' },
     ],
   },
   {
@@ -168,23 +148,14 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     minRole: 'admin',
     tabs: [
       { id: 'teamManagement', label: 'Team' },
-      { id: 'performance', label: '📈 Performance' },
-      { id: 'academy', label: '🎓 Academy' },
+      { id: 'performance', label: 'Performance' },
+      { id: 'brandConfig', label: 'Brand Config' },
+      { id: 'toolStack', label: 'Tool Stack' },
+      { id: 'knowledgeBase', label: 'Knowledge Base' },
+      { id: 'processExecution', label: 'SOPs' },
+      { id: 'isoCompliance', label: 'Risk & ISO' },
       { id: 'insights', label: 'Insights' },
-      { id: 'brandConfig', label: '🏷️ Brand Config' },
       { id: 'settings', label: 'Settings' },
-    ],
-  },
-  {
-    id: 'compliance' as Section,
-    label: 'Compliance',
-    emoji: '🛡️',
-    minRole: 'admin',
-    tabs: [
-      { id: 'isoCompliance', label: '⚠️ Risk & ISO' },
-      { id: 'knowledgeBase', label: '📚 Knowledge Base' },
-      { id: 'processExecution', label: '▶ SOPs' },
-      { id: 'notificationFeed', label: '🔔 Feed' },
     ],
   },
   {
@@ -237,7 +208,7 @@ const Dashboard: React.FC = () => {
   const { lang, setLang } = useLang();
   const t = translations[lang];
 
-  const [section, setSection] = useState<Section>('home');
+  const [section, setSection] = useState<Section>('command');
   const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [tab, setTab] = useState<Tab>('home');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
@@ -428,9 +399,7 @@ const Dashboard: React.FC = () => {
       return <CustomerSupportView isAdmin={isAdmin} />;
     }
 
-    if (tab === 'marketingBrands' || tab === 'marketingResources' || tab === 'marketingSOPTracker' || tab === 'marketingContentPlaybook') {
-      return <MarketingView activeTab={tab} isAdmin={isAdmin} />;
-    }
+    // MarketingView tabs removed — content lives in Creative Factory + Content Machine
 
     if (tab === 'postsTracker') {
       return <PostsTrackerView />;
@@ -675,10 +644,10 @@ const Dashboard: React.FC = () => {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-surface-900/90 backdrop-blur-xl border-t border-white/[0.06] flex items-center justify-around px-2 py-2 safe-area-pb">
         {[
-          { id: 'home' as Section, emoji: '🏠', label: 'Home' },
-          { id: 'hiring' as Section, emoji: '🎯', label: 'Hiring' },
-          { id: 'marketing' as Section, emoji: '📣', label: 'Marketing' },
-          { id: 'finance' as Section, emoji: '💰', label: 'Finance' },
+          { id: 'command' as Section, emoji: '🎯', label: 'Home' },
+          { id: 'creative' as Section, emoji: '🎨', label: 'Creative' },
+          { id: 'revenue' as Section, emoji: '📊', label: 'Revenue' },
+          { id: 'hiring' as Section, emoji: '🎓', label: 'Hiring' },
           { id: 'admin' as Section, emoji: '⚙️', label: 'Admin' },
         ].filter(s => visibleSections.find(vs => vs.id === s.id)).map(s => (
           <button
