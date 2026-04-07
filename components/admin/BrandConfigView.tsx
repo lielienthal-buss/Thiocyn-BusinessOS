@@ -1,5 +1,141 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+
+// ─── Integration Secrets Section ──────────────────────────────────────────
+// Secure secret management via manage-secrets Edge Function.
+// Values are never returned to the frontend — only "configured" status.
+
+const INTEGRATIONS = [
+  { integration: 'shopify', keys: ['access_token', 'store_url'], label: 'Shopify' },
+  { integration: 'meta', keys: ['access_token', 'app_secret'], label: 'Meta Ads' },
+  { integration: 'tiktok', keys: ['access_token'], label: 'TikTok' },
+  { integration: 'google', keys: ['api_key'], label: 'Google Ads' },
+];
+
+function IntegrationSecretsSection({ brandSlug }: { brandSlug: string }) {
+  const [configured, setConfigured] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
+  const [inputValues, setInputValues] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const loadStatus = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-secrets', {
+        body: { action: 'list', brand_slug: brandSlug },
+      });
+      if (error) throw error;
+      const map: Record<string, boolean> = {};
+      for (const s of (data?.secrets ?? [])) {
+        map[`${s.integration}:${s.key_name}`] = true;
+      }
+      setConfigured(map);
+    } catch {
+      // Silent fail — user might not have permissions
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { loadStatus(); setInputValues({}); }, [brandSlug]);
+
+  const handleSave = async (integration: string, keyName: string) => {
+    const value = inputValues[`${integration}:${keyName}`];
+    if (!value?.trim()) return;
+    setSaving(`${integration}:${keyName}`);
+    setMessage(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-secrets', {
+        body: { action: 'set', brand_slug: brandSlug, integration, key_name: keyName, value: value.trim() },
+      });
+      if (error) throw error;
+      setMessage(data?.message ?? 'Gespeichert');
+      setInputValues(prev => ({ ...prev, [`${integration}:${keyName}`]: '' }));
+      await loadStatus();
+    } catch (err) {
+      setMessage(`Fehler: ${String(err)}`);
+    }
+    setSaving(null);
+  };
+
+  const handleDelete = async (integration: string, keyName: string) => {
+    if (!confirm(`${integration}/${keyName} für ${brandSlug} wirklich löschen?`)) return;
+    setSaving(`${integration}:${keyName}`);
+    try {
+      await supabase.functions.invoke('manage-secrets', {
+        body: { action: 'delete', brand_slug: brandSlug, integration, key_name: keyName },
+      });
+      await loadStatus();
+    } catch {}
+    setSaving(null);
+  };
+
+  if (loading) return <div className="text-sm text-slate-500 py-4">Lade Integrations...</div>;
+
+  return (
+    <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
+      <h3 className="text-sm font-semibold text-slate-300 mb-1">Integration Secrets</h3>
+      <p className="text-xs text-slate-500 mb-4">
+        API Keys werden verschlüsselt gespeichert. Werte werden nie angezeigt — nur der Status.
+      </p>
+
+      {message && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2 text-xs text-emerald-400 mb-3">
+          {message}
+        </div>
+      )}
+
+      {INTEGRATIONS.map(({ integration, keys, label }) => (
+        <div key={integration} className="mb-4 last:mb-0">
+          <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{label}</h4>
+          <div className="flex flex-col gap-2">
+            {keys.map(keyName => {
+              const fullKey = `${integration}:${keyName}`;
+              const isConfigured = configured[fullKey];
+              const isSaving = saving === fullKey;
+
+              return (
+                <div key={fullKey} className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="block text-xs text-slate-500 mb-0.5">{keyName}</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="password"
+                        value={inputValues[fullKey] ?? ''}
+                        onChange={e => setInputValues(prev => ({ ...prev, [fullKey]: e.target.value }))}
+                        placeholder={isConfigured ? '••••••••  (konfiguriert)' : 'Nicht konfiguriert'}
+                        className="flex-1 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-600"
+                      />
+                      <button
+                        onClick={() => handleSave(integration, keyName)}
+                        disabled={isSaving || !inputValues[fullKey]?.trim()}
+                        className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 disabled:opacity-30 transition-colors"
+                      >
+                        {isSaving ? '...' : 'Save'}
+                      </button>
+                      {isConfigured && (
+                        <button
+                          onClick={() => handleDelete(integration, keyName)}
+                          className="px-2 py-1.5 text-red-400 hover:bg-red-500/10 rounded-lg text-xs transition-colors"
+                          title="Secret löschen"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <span className={`text-xs font-bold mt-4 ${isConfigured ? 'text-green-400' : 'text-slate-600'}`}>
+                    {isConfigured ? '✓' : '—'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 type Brand = {
   id: string;
@@ -370,6 +506,9 @@ export default function BrandConfigView() {
               </div>
             </div>
 
+            {/* Integration Secrets (secure) */}
+            <IntegrationSecretsSection brandSlug={activeBrandSlug!} />
+
             {/* Notes */}
             <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
               <h3 className="text-sm font-semibold text-slate-300 mb-3">Notizen</h3>
@@ -380,6 +519,8 @@ export default function BrandConfigView() {
                 placeholder="Interne Notizen zur Brand-Konfiguration…"
               />
             </div>
+
+            {/* Security Notice updated */}
 
             {/* Bottom save bar */}
             <div className="flex justify-end gap-2 pb-4">

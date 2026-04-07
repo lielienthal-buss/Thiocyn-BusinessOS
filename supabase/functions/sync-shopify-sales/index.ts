@@ -45,22 +45,30 @@ serve(async (req: Request) => {
       );
     }
 
-    // Get Shopify credentials
+    // Get Shopify credentials from secure store
+    const { data: secrets } = await supabase
+      .from('integration_secrets')
+      .select('key_name, encrypted_value')
+      .eq('brand_slug', brandSlug)
+      .eq('integration', 'shopify');
+
+    const secretMap = new Map((secrets ?? []).map((s: { key_name: string; encrypted_value: string }) => [s.key_name, s.encrypted_value]));
+
     const { data: config } = await supabase
       .from('brand_configs')
-      .select('shopify_store_url, shopify_access_token_encrypted, shopify_api_version')
+      .select('shopify_store_url, shopify_api_version')
       .eq('brand_slug', brandSlug)
       .single();
 
-    const storeUrl = body.store_url ?? config?.shopify_store_url;
-    const accessToken = body.access_token ?? config?.shopify_access_token_encrypted;
+    const storeUrl = body.store_url ?? secretMap.get('store_url') ?? config?.shopify_store_url;
+    const accessToken = body.access_token ?? secretMap.get('access_token');
     const apiVersion = config?.shopify_api_version ?? '2024-10';
 
     if (!storeUrl || !accessToken) {
       return new Response(
         JSON.stringify({
           error: 'Missing Shopify credentials',
-          hint: 'Provide access_token and store_url in request body, or configure in brand_configs (shopify_store_url + shopify_access_token_encrypted)',
+          hint: 'Go to Admin → Brand Config → store the Shopify access_token and store_url via the Integrations settings.',
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
