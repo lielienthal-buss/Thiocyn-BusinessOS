@@ -98,8 +98,6 @@ const CreativeFactoryView: React.FC = () => {
   const [selectedBrand, setSelectedBrand] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [subTab, setSubTab] = useState<'scoreboard' | 'assets' | 'insights' | 'health'>('health');
-  const [syncing, setSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<string | null>(null);
 
   // ─── Data Fetching ──────────────────────────────────────────────────────
 
@@ -151,25 +149,6 @@ const CreativeFactoryView: React.FC = () => {
     };
   }, [filteredAngles]);
 
-  const handleShopifySync = async () => {
-    if (selectedBrand === 'all') {
-      setSyncResult('Bitte eine Brand auswählen für den Ad Sync.');
-      return;
-    }
-    setSyncing(true);
-    setSyncResult(null);
-    try {
-      const { data, error } = await supabase.functions.invoke('sync-shopify-sales', {
-        body: { brand_slug: selectedBrand, days_back: 7 },
-      });
-      if (error) throw error;
-      setSyncResult(JSON.stringify(data, null, 2));
-    } catch (err) {
-      setSyncResult(`Error: ${String(err)}`);
-    }
-    setSyncing(false);
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -199,23 +178,8 @@ const CreativeFactoryView: React.FC = () => {
               <option key={b} value={b}>{b}</option>
             ))}
           </select>
-          <button
-            onClick={handleShopifySync}
-            disabled={syncing || selectedBrand === 'all'}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-          >
-            {syncing ? 'Syncing...' : 'Shopify Sync'}
-          </button>
         </div>
       </div>
-
-      {/* Sync Result */}
-      {syncResult && (
-        <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-xs font-mono text-slate-300 relative">
-          <button onClick={() => setSyncResult(null)} className="absolute top-2 right-2 text-slate-500 hover:text-white">×</button>
-          <pre className="whitespace-pre-wrap">{syncResult}</pre>
-        </div>
-      )}
 
       {/* KPI Strip */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

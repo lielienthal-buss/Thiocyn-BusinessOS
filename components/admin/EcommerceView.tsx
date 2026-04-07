@@ -580,7 +580,7 @@ const OrdersTab: React.FC = () => {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-type EcomTab = 'overview' | 'orders';
+type EcomTab = 'overview' | 'orders' | 'shopify' | 'products';
 
 const EcommerceView: React.FC = () => {
   const [tab, setTab] = useState<EcomTab>('overview');
@@ -588,6 +588,8 @@ const EcommerceView: React.FC = () => {
   const TABS: { id: EcomTab; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'orders',   label: 'Orders' },
+    { id: 'products', label: 'Products' },
+    { id: 'shopify',  label: 'Shopify Sync' },
   ];
 
   return (
@@ -617,6 +619,169 @@ const EcommerceView: React.FC = () => {
 
       {tab === 'overview' && <OverviewTab />}
       {tab === 'orders'   && <OrdersTab />}
+      {tab === 'products' && <ProductsTab />}
+      {tab === 'shopify'  && <ShopifySyncTab />}
+    </div>
+  );
+};
+
+// ─── Products Tab ─────────────────────────────────────────────────────────
+
+const ProductsTab: React.FC = () => {
+  const [products, setProducts] = useState<{ brand_slug: string; product_title: string; total_orders: number; total_revenue: number; total_units: number; creator_attributed_orders: number; creator_attributed_revenue: number; period: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('product_performance').select('*').order('total_revenue', { ascending: false }).limit(100);
+      setProducts(data ?? []);
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) return <div className="flex justify-center py-20 text-slate-500 text-sm">Lade Produkte...</div>;
+  if (products.length === 0) return <div className="text-center py-20 text-slate-500">Noch keine Produktdaten. Starte einen Shopify Sync.</div>;
+
+  return (
+    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-surface-900/60 border-b border-white/[0.06]">
+            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
+            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Produkt</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Orders</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Revenue</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Units</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Creator Orders</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Creator Rev</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-white/[0.06]">
+          {products.map((p, i) => (
+            <tr key={i} className="hover:bg-white/[0.03]">
+              <td className="px-4 py-3 text-slate-400 text-xs">{p.brand_slug}</td>
+              <td className="px-4 py-3 text-white font-medium">{p.product_title}</td>
+              <td className="px-4 py-3 text-right text-slate-300">{p.total_orders}</td>
+              <td className="px-4 py-3 text-right text-white font-bold">{fmt(p.total_revenue)}</td>
+              <td className="px-4 py-3 text-right text-slate-400">{p.total_units}</td>
+              <td className="px-4 py-3 text-right text-amber-400">{p.creator_attributed_orders}</td>
+              <td className="px-4 py-3 text-right text-amber-400">{fmt(p.creator_attributed_revenue)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+// ─── Shopify Sync Tab ─────────────────────────────────────────────────────
+
+const ShopifySyncTab: React.FC = () => {
+  const [selectedBrand, setSelectedBrand] = useState<BrandId>('paigh');
+  const [daysBack, setDaysBack] = useState(7);
+  const [syncing, setSyncing] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+  const [logs, setLogs] = useState<{ brand_slug: string; sync_type: string; orders_fetched: number; orders_matched: number; revenue_total: number; status: string; created_at: string }[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.from('shopify_sync_log').select('*').order('created_at', { ascending: false }).limit(20);
+      setLogs(data ?? []);
+    })();
+  }, [result]);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('sync-shopify-sales', {
+        body: { brand_slug: selectedBrand, days_back: daysBack },
+      });
+      if (error) throw error;
+      setResult(JSON.stringify(data, null, 2));
+    } catch (err) {
+      setResult(`Error: ${String(err)}`);
+    }
+    setSyncing(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Sync Controls */}
+      <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl p-5">
+        <h3 className="text-white font-bold mb-4">Shopify Sync</h3>
+        <div className="flex gap-3 items-end flex-wrap">
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Brand</label>
+            <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value as BrandId)}
+              className="px-3 py-2 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg text-sm">
+              {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_LABELS[b].emoji} {BRAND_LABELS[b].name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Zeitraum</label>
+            <select value={daysBack} onChange={e => setDaysBack(Number(e.target.value))}
+              className="px-3 py-2 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg text-sm">
+              <option value={1}>Gestern</option>
+              <option value={7}>Letzte 7 Tage</option>
+              <option value={14}>Letzte 14 Tage</option>
+              <option value={30}>Letzte 30 Tage</option>
+            </select>
+          </div>
+          <button onClick={handleSync} disabled={syncing}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50">
+            {syncing ? 'Syncing...' : 'Sync starten'}
+          </button>
+        </div>
+        <p className="text-xs text-slate-500 mt-3">
+          Zieht Bestellungen aus Shopify, matched Affiliate-Codes auf Creator, aktualisiert Sales + Product Performance.
+        </p>
+      </div>
+
+      {/* Result */}
+      {result && (
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl p-4 text-xs font-mono text-slate-300 relative">
+          <button onClick={() => setResult(null)} className="absolute top-2 right-2 text-slate-500 hover:text-white">×</button>
+          <pre className="whitespace-pre-wrap">{result}</pre>
+        </div>
+      )}
+
+      {/* Sync Log */}
+      {logs.length > 0 && (
+        <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/[0.06]">
+            <h3 className="text-sm font-bold text-white">Sync History</h3>
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-surface-900/60 border-b border-white/[0.06]">
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Zeit</th>
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Orders</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Matched</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Revenue</th>
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.06]">
+              {logs.map((l, i) => (
+                <tr key={i} className="hover:bg-white/[0.03]">
+                  <td className="px-4 py-2 text-slate-500 text-xs">{new Date(l.created_at).toLocaleString('de-DE')}</td>
+                  <td className="px-4 py-2 text-slate-300">{l.brand_slug}</td>
+                  <td className="px-4 py-2 text-right text-slate-300">{l.orders_fetched}</td>
+                  <td className="px-4 py-2 text-right text-amber-400">{l.orders_matched}</td>
+                  <td className="px-4 py-2 text-right text-white font-bold">{fmt(l.revenue_total)}</td>
+                  <td className="px-4 py-2">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${l.status === 'success' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                      {l.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
