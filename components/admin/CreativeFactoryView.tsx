@@ -151,7 +151,7 @@ const CreativeFactoryView: React.FC = () => {
     };
   }, [filteredAngles]);
 
-  const handleAdSync = async () => {
+  const handleShopifySync = async () => {
     if (selectedBrand === 'all') {
       setSyncResult('Bitte eine Brand auswählen für den Ad Sync.');
       return;
@@ -159,8 +159,8 @@ const CreativeFactoryView: React.FC = () => {
     setSyncing(true);
     setSyncResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke('sync-ad-performance', {
-        body: { brand_slug: selectedBrand },
+      const { data, error } = await supabase.functions.invoke('sync-shopify-sales', {
+        body: { brand_slug: selectedBrand, days_back: 7 },
       });
       if (error) throw error;
       setSyncResult(JSON.stringify(data, null, 2));
@@ -200,11 +200,11 @@ const CreativeFactoryView: React.FC = () => {
             ))}
           </select>
           <button
-            onClick={handleAdSync}
+            onClick={handleShopifySync}
             disabled={syncing || selectedBrand === 'all'}
             className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
           >
-            {syncing ? 'Syncing...' : 'Ad Sync'}
+            {syncing ? 'Syncing...' : 'Shopify Sync'}
           </button>
         </div>
       </div>
