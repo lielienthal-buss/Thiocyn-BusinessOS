@@ -301,12 +301,13 @@ export default function BrandConfigView() {
               </div>
             </div>
 
-            {/* Security Notice */}
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-400">
-              Speichere hier nur Referenz-Namen (z.B. Env-Var-Namen), keine echten API Keys.
-            </div>
+            {/* Integration Secrets (secure) — TOP PRIORITY */}
+            <IntegrationSecretsSection brandSlug={activeBrandSlug!} />
 
-            {/* Section 1 — Shopify */}
+            {/* Section 1 — Shopify (non-secret config) */}
+            <div className="bg-slate-500/5 border border-slate-500/10 rounded-xl p-3 text-xs text-slate-400">
+              Die Felder unten sind für nicht-sensible Konfiguration (Store URLs, Account IDs). API Keys gehören in die Integration Secrets oben.
+            </div>
             <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
               <h3 className="text-sm font-semibold text-slate-300 mb-3">Shopify</h3>
               <div className="flex flex-col gap-3">
@@ -505,9 +506,6 @@ export default function BrandConfigView() {
                 )}
               </div>
             </div>
-
-            {/* Integration Secrets (secure) */}
-            <IntegrationSecretsSection brandSlug={activeBrandSlug!} />
 
             {/* Notes */}
             <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4 backdrop-blur-sm">
