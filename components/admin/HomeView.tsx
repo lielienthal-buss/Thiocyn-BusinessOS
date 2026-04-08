@@ -192,6 +192,58 @@ export default function HomeView() {
   const tasksByBrand = (b: string) => tasks.filter(t => t.brand === b && t.status !== 'done').length;
   const ticketsByBrand = (b: string) => tickets.filter(t => t.brand_id === b).length;
 
+  // ─── Smart Alerts (rule-based, no AI) ──────────────────────────────
+
+  type Alert = { id: string; severity: 'critical' | 'warning' | 'info'; icon: string; title: string; detail: string };
+  const alerts: Alert[] = [];
+
+  // Dispute deadlines within 3 days
+  const urgentDisputes = disputes.filter(d => daysUntil(d.deadline) <= 3 && daysUntil(d.deadline) >= 0);
+  if (urgentDisputes.length > 0) {
+    alerts.push({ id: 'dispute-deadline', severity: 'critical', icon: '⚖️',
+      title: `${urgentDisputes.length} Dispute${urgentDisputes.length > 1 ? 's' : ''} — Deadline in ≤3 Tagen`,
+      detail: urgentDisputes.map(d => `${d.case_id} (${BRAND_META[d.brand]?.name ?? d.brand}): ${daysUntil(d.deadline)}d`).join(' · '),
+    });
+  }
+
+  // Critical support tickets
+  if (criticalTickets.length > 0) {
+    alerts.push({ id: 'critical-support', severity: 'critical', icon: '🚨',
+      title: `${criticalTickets.length} Critical Support-Ticket${criticalTickets.length > 1 ? 's' : ''}`,
+      detail: criticalTickets.map(t => `${t.subject} (${BRAND_META[t.brand_id]?.name ?? t.brand_id})`).join(' · '),
+    });
+  }
+
+  // Overdue invoices
+  if (overdueInvoices.length > 0) {
+    alerts.push({ id: 'overdue-invoices', severity: 'warning', icon: '💰',
+      title: `${overdueInvoices.length} überfällige Rechnung${overdueInvoices.length > 1 ? 'en' : ''}`,
+      detail: `Gesamt: ${fmtCurrency(overdueInvoices.reduce((s, i) => s + i.amount, 0))}`,
+    });
+  }
+
+  // Overdue tasks
+  if (overdueTasks.length > 2) {
+    alerts.push({ id: 'overdue-tasks', severity: 'warning', icon: '📋',
+      title: `${overdueTasks.length} überfällige Tasks`,
+      detail: overdueTasks.slice(0, 3).map(t => t.title).join(', ') + (overdueTasks.length > 3 ? '...' : ''),
+    });
+  }
+
+  // ROAS below target for any brand
+  const lowRoas = metrics.filter(m => m.roas != null && m.roas < 2.0 && (m.ad_spend ?? 0) > 0);
+  if (lowRoas.length > 0) {
+    alerts.push({ id: 'low-roas', severity: 'warning', icon: '📉',
+      title: `ROAS unter 2.0 bei ${lowRoas.length} Brand${lowRoas.length > 1 ? 's' : ''}`,
+      detail: lowRoas.map(m => `${BRAND_META[m.brand_id]?.name ?? m.brand_id}: ${m.roas?.toFixed(1)}x`).join(' · '),
+    });
+  }
+
+  // No alerts = good news
+  if (alerts.length === 0) {
+    alerts.push({ id: 'all-clear', severity: 'info', icon: '✅', title: 'Alles im grünen Bereich', detail: 'Keine dringenden Aktionen.' });
+  }
+
   return (
     <div className="p-4 sm:p-6 animate-[fadeIn_0.4s_ease-out] space-y-6">
       {/* ── Header ── */}
@@ -206,6 +258,34 @@ export default function HomeView() {
         </div>
         <button onClick={fetchAll} className="text-xs text-slate-500 hover:text-amber-400 transition-colors">↻ Refresh</button>
       </div>
+
+      {/* ── Smart Alerts ── */}
+      {alerts.filter(a => a.severity !== 'info').length > 0 && (
+        <div className="space-y-2">
+          {alerts.filter(a => a.severity !== 'info').map(a => (
+            <div key={a.id} className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
+              a.severity === 'critical'
+                ? 'bg-red-500/10 border-red-500/20'
+                : 'bg-amber-500/10 border-amber-500/20'
+            }`}>
+              <span className="text-lg shrink-0 mt-0.5">{a.icon}</span>
+              <div className="min-w-0 flex-1">
+                <p className={`text-sm font-bold ${a.severity === 'critical' ? 'text-red-400' : 'text-amber-400'}`}>
+                  {a.title}
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">{a.detail}</p>
+              </div>
+              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 ${
+                a.severity === 'critical'
+                  ? 'bg-red-500/15 text-red-400 border-red-500/20'
+                  : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
+              }`}>
+                {a.severity}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Top-Level KPIs ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">

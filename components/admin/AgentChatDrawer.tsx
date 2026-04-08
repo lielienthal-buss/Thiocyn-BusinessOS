@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/lib/supabaseClient';
 
 type Section =
   | 'command'
@@ -26,26 +27,28 @@ interface Props {
   initialPrompt?: string;
 }
 
-const SECTION_LABELS: Record<Section, string> = {
-  home: 'Home',
-  hiring: 'Hiring',
-  marketing: 'Marketing',
-  support: 'Customer Support',
-  ecommerce: 'E-Commerce',
+const SECTION_LABELS: Record<string, string> = {
+  command: 'Command Center',
+  creative: 'Creative Studio',
+  revenue: 'Revenue & Analytics',
+  hiring: 'Hiring & Academy',
   finance: 'Finance',
-  analytics: 'Analytics',
+  support: 'Support',
   admin: 'Admin',
+  account: 'Account',
+  workspace: 'Workspace',
 };
 
-const SECTION_EMOJIS: Record<Section, string> = {
-  home: '🏠',
-  hiring: '🎯',
-  marketing: '📣',
-  support: '💬',
-  ecommerce: '🛒',
+const SECTION_EMOJIS: Record<string, string> = {
+  command: '🎯',
+  creative: '🎨',
+  revenue: '📊',
+  hiring: '🎓',
   finance: '💰',
-  analytics: '📊',
+  support: '💬',
   admin: '⚙️',
+  account: '👤',
+  workspace: '🗂️',
 };
 
 function generateId(): string {
@@ -57,22 +60,16 @@ async function sendToJarvis(
   section: Section,
   history: Message[]
 ): Promise<string> {
-  const response = await fetch('/api/jarvis', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
+  const { data, error } = await supabase.functions.invoke('jarvis-chat', {
+    body: {
       message: userMessage,
       section,
       history: history.map(m => ({ role: m.role, content: m.content })),
-    }),
+    },
   });
 
-  if (!response.ok) {
-    throw new Error(`API error ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.reply ?? "I'm having a moment of silence. Please try again.";
+  if (error) throw new Error(error.message);
+  return data?.reply ?? "I'm having a moment of silence. Please try again.";
 }
 
 const AgentChatDrawer: React.FC<Props> = ({
