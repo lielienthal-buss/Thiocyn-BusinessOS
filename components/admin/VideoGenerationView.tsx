@@ -218,6 +218,11 @@ const JobCard: React.FC<{ job: VideoJob; onRefresh: () => void }> = ({ job, onRe
     onRefresh();
   };
 
+  const handleRetry = async () => {
+    await supabase.from('video_jobs').update({ status: 'queued', error_msg: null, result_url: null }).eq('id', job.id);
+    onRefresh();
+  };
+
   return (
     <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 space-y-3 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between gap-3">
@@ -270,6 +275,11 @@ const JobCard: React.FC<{ job: VideoJob; onRefresh: () => void }> = ({ job, onRe
           >
             {expanded ? 'Less' : 'Details'}
           </button>
+          {job.status === 'failed' && (
+            <button onClick={handleRetry} className="text-xs text-violet-400 hover:text-violet-300 font-bold transition-colors">
+              Retry
+            </button>
+          )}
           {(job.status === 'draft' || job.status === 'failed') && (
             <button onClick={handleDelete} className="text-xs text-red-500/60 hover:text-red-400 transition-colors">
               Delete

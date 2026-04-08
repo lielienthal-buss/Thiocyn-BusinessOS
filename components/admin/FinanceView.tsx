@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import DisputesTab from './finance/DisputesTab';
 import InvoicesTab from './finance/InvoicesTab';
 import OverviewTab from './finance/OverviewTab';
+import ActionCenterTab from './finance/ActionCenterTab';
 import FinanceMailsTab from './finance/FinanceMailsTab';
 import EmmaPlannerTab from './finance/EmmaPlannerTab';
 import MonthlyReportingTab from './finance/MonthlyReportingTab';
+import FinancePipelineTab from './finance/FinancePipelineTab';
 import type { FinanceTab } from './finance/financeTypes';
 
-type ExtendedFinanceTab = FinanceTab | 'financeMails' | 'emmaPlanner';
+type ExtendedFinanceTab = FinanceTab | 'actionCenter' | 'financeMails' | 'emmaPlanner';
 
 const TABS: { id: ExtendedFinanceTab; label: string }[] = [
+  { id: 'actionCenter',     label: '🚨 Action Center' },
+  { id: 'pipeline',         label: '📋 Pipeline' },
   { id: 'disputes',         label: 'Disputes' },
   { id: 'invoices',         label: 'Invoices & Mahnungen' },
   { id: 'overview',         label: 'Overview' },
@@ -21,7 +25,7 @@ const TABS: { id: ExtendedFinanceTab; label: string }[] = [
 interface Props { activeTab?: ExtendedFinanceTab; }
 
 const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
-  const [activeTab, setActiveTab] = useState<ExtendedFinanceTab>(initialTab ?? 'disputes');
+  const [activeTab, setActiveTab] = useState<ExtendedFinanceTab>(initialTab ?? 'actionCenter');
 
   return (
     <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
@@ -52,7 +56,9 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
 
       {/* Tab content */}
       <div>
-        {activeTab === 'disputes'         && <DisputesTab />}
+        {activeTab === 'actionCenter'      && <ActionCenterTab />}
+        {activeTab === 'pipeline'          && <FinancePipelineTab />}
+        {activeTab === 'disputes'          && <DisputesTab />}
         {activeTab === 'invoices'          && <InvoicesTab />}
         {activeTab === 'overview'          && <OverviewTab />}
         {activeTab === 'monthlyReporting'  && <MonthlyReportingTab />}

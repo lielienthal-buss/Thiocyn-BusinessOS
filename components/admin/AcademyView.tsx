@@ -244,6 +244,11 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
     onRefresh();
   }
 
+  async function deleteTask(taskId: string) {
+    await supabase.from('intern_learning_log').delete().eq('id', taskId);
+    onRefresh();
+  }
+
   const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
 
   return (
@@ -329,16 +334,23 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
             ) : (
               <div className="space-y-1.5">
                 {intern.tasks.map(t => (
-                  <div key={t.id} className="flex items-start gap-2">
+                  <div key={t.id} className="flex items-start gap-2 group/task">
                     <input
                       type="checkbox"
                       checked={t.completed}
                       onChange={() => toggleTask(t.id, t.completed)}
                       className="mt-0.5 accent-amber-500"
                     />
-                    <span className={`text-sm ${t.completed ? 'line-through text-slate-500' : 'text-slate-300'}`}>
+                    <span className={`flex-1 text-sm ${t.completed ? 'line-through text-slate-500' : 'text-slate-300'}`}>
                       {t.title}
                     </span>
+                    <button
+                      onClick={() => deleteTask(t.id)}
+                      className="text-slate-600 hover:text-red-400 text-xs opacity-0 group-hover/task:opacity-100 transition-opacity"
+                      title="Delete task"
+                    >
+                      ×
+                    </button>
                   </div>
                 ))}
               </div>

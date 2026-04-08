@@ -34,6 +34,7 @@ import { useLang } from '@/lib/i18n';
 import { translations } from '@/lib/translations';
 import { LanguageProvider, useLang as useWorkspaceLang } from '@/lib/language';
 import BrandSwitcher from '@/components/ui/BrandSwitcher';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 // Lazy import with auto-reload on chunk load failure (stale deploy)
 function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
   return lazy(() =>
@@ -59,7 +60,7 @@ const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
 const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
 
-type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'financeOverview' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
+type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
 type Section = 'command' | 'creative' | 'revenue' | 'hiring' | 'finance' | 'support' | 'admin' | 'account' | 'workspace';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
@@ -129,6 +130,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     minRole: 'admin',
     tabs: [
       { id: 'financeOverview', label: 'Overview' },
+      { id: 'financePipeline', label: 'Pipeline' },
       { id: 'financeDisputesTab', label: 'Disputes' },
       { id: 'financeMails', label: 'Finance Mails' },
     ],
@@ -317,10 +319,11 @@ const Dashboard: React.FC = () => {
       return <TeamTasksView userEmail={session?.user?.email} />;
     }
 
-    if (tab === 'financeOverview' || tab === 'financeDisputesTab' || tab === 'financeMails' || tab === 'emmaPlanner') {
+    if (tab === 'financeOverview' || tab === 'financePipeline' || tab === 'financeDisputesTab' || tab === 'financeMails' || tab === 'emmaPlanner') {
       const financeTabMap: Record<string, string> = {
         financeDisputesTab: 'disputes',
         financeOverview: 'overview',
+        financePipeline: 'pipeline',
         financeMails: 'financeMails',
         emmaPlanner: 'emmaPlanner',
       };
@@ -631,11 +634,13 @@ const Dashboard: React.FC = () => {
               <p className="text-slate-600 text-sm mt-1">{t.dashboard.comingSoonDesc}</p>
             </div>
           ) : (
-            <Suspense fallback={<div className="text-center py-12 text-slate-500 text-sm">Loading...</div>}>
-              <div key={tab} className="animate-[fadeIn_0.2s_ease-out]">
-                {renderContent()}
-              </div>
-            </Suspense>
+            <ErrorBoundary key={tab}>
+              <Suspense fallback={<div className="text-center py-12 text-slate-500 text-sm">Loading...</div>}>
+                <div className="animate-[fadeIn_0.2s_ease-out]">
+                  {renderContent()}
+                </div>
+              </Suspense>
+            </ErrorBoundary>
           )}
         </main>
       </div>

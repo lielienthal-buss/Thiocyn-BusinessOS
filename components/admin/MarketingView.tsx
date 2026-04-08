@@ -199,6 +199,14 @@ const BrandsTab: React.FC = () => {
       });
   }, []);
 
+  const updateSopPhase = async (brandId: string, phase: number) => {
+    setMetrics(prev => ({
+      ...prev,
+      [brandId]: { ...prev[brandId], sop_phase: phase },
+    }));
+    await supabase.from('brand_metrics').update({ sop_phase: phase }).eq('brand_id', brandId);
+  };
+
   const alertCount = BRANDS.filter(b => b.engagementAlert && b.isActive).length;
 
   return (
@@ -307,10 +315,11 @@ const BrandsTab: React.FC = () => {
                   <span className="text-[10px] text-slate-500">{tb.sopLabel}</span>
                   <div className="flex gap-0.5">
                     {[1, 2, 3, 4, 5, 6, 7].map(p => (
-                      <div
+                      <button
                         key={p}
-                        className={`w-2 h-2 rounded-full ${p <= liveSopPhase ? SOP_PHASE_COLOR(liveSopPhase) : 'bg-white/[0.08]'}`}
-                        title={`Phase ${p}`}
+                        onClick={() => updateSopPhase(brand.id, p === liveSopPhase ? p - 1 : p)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all hover:scale-125 cursor-pointer ${p <= liveSopPhase ? SOP_PHASE_COLOR(liveSopPhase) : 'bg-white/[0.08] hover:bg-white/[0.15]'}`}
+                        title={`Set Phase ${p}`}
                       />
                     ))}
                   </div>

@@ -88,6 +88,28 @@ const ContentMachineView: React.FC = () => {
     fetchAll();
   }, []);
 
+  // ─── Mutations ─────────────────────────────────────────────────────
+  const updateHashtag = async (brand_slug: string, field: string, value: any) => {
+    setHashtags(prev => prev.map(h => h.brand_slug === brand_slug ? { ...h, [field]: value } : h));
+    await supabase.from('hashtag_strategies').update({ [field]: value }).eq('brand_slug', brand_slug);
+  };
+
+  const addTagToField = (brand_slug: string, field: keyof HashtagStrategy, tag: string) => {
+    const h = hashtags.find(x => x.brand_slug === brand_slug);
+    if (!h) return;
+    const current = (h[field] as string[]) ?? [];
+    if (current.includes(tag)) return;
+    const updated = [...current, tag];
+    updateHashtag(brand_slug, field, updated);
+  };
+
+  const removeTagFromField = (brand_slug: string, field: keyof HashtagStrategy, tag: string) => {
+    const h = hashtags.find(x => x.brand_slug === brand_slug);
+    if (!h) return;
+    const updated = ((h[field] as string[]) ?? []).filter(t => t !== tag);
+    updateHashtag(brand_slug, field, updated);
+  };
+
   const filteredHashtags = selectedBrand === 'all' ? hashtags : hashtags.filter(h => h.brand_slug === selectedBrand);
   const filteredDirections = selectedBrand === 'all' ? directions : directions.filter(d => d.brand_slug === selectedBrand);
   const filteredPipeline = selectedBrand === 'all' ? pipeline : pipeline.filter(p => p.brand_slug === selectedBrand);
@@ -208,41 +230,39 @@ const ContentMachineView: React.FC = () => {
                 <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-sm font-bold">{h.branded_hashtag}</span>
               </div>
               <div className="grid md:grid-cols-3 gap-3 mb-3">
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">High Volume</div>
-                  <div className="flex flex-wrap gap-1">
-                    {(h.niche_hashtags_high ?? []).map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs">{tag}</span>
-                    ))}
+                {([
+                  { field: 'niche_hashtags_high' as const, label: 'High Volume', color: 'green' },
+                  { field: 'niche_hashtags_mid' as const, label: 'Mid Volume', color: 'blue' },
+                  { field: 'niche_hashtags_micro' as const, label: 'Micro', color: 'purple' },
+                ] as const).map(({ field, label, color }) => (
+                  <div key={field}>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">{label}</div>
+                    <div className="flex flex-wrap gap-1">
+                      {((h as any)[field] ?? []).map((tag: string) => (
+                        <span key={tag} className={`px-2 py-0.5 bg-${color}-500/10 text-${color}-400 rounded text-xs group/tag cursor-pointer hover:bg-${color}-500/20`}>
+                          {tag}
+                          <button onClick={() => removeTagFromField(h.brand_slug, field, tag)}
+                            className="ml-1 opacity-0 group-hover/tag:opacity-100 text-red-400 transition-opacity">×</button>
+                        </span>
+                      ))}
+                      <HashtagInput onAdd={tag => addTagToField(h.brand_slug, field, tag)} />
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Mid Volume</div>
-                  <div className="flex flex-wrap gap-1">
-                    {(h.niche_hashtags_mid ?? []).map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-xs">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Micro</div>
-                  <div className="flex flex-wrap gap-1">
-                    {(h.niche_hashtags_micro ?? []).map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-purple-500/10 text-purple-400 rounded text-xs">{tag}</span>
-                    ))}
-                  </div>
+                ))}
+              </div>
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Banned</div>
+                <div className="flex flex-wrap gap-1">
+                  {(h.banned_hashtags ?? []).map(tag => (
+                    <span key={tag} className="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs line-through group/tag cursor-pointer hover:bg-red-500/20">
+                      {tag}
+                      <button onClick={() => removeTagFromField(h.brand_slug, 'banned_hashtags', tag)}
+                        className="ml-1 opacity-0 group-hover/tag:opacity-100 text-white transition-opacity">×</button>
+                    </span>
+                  ))}
+                  <HashtagInput onAdd={tag => addTagToField(h.brand_slug, 'banned_hashtags', tag)} />
                 </div>
               </div>
-              {(h.banned_hashtags ?? []).length > 0 && (
-                <div>
-                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Banned</div>
-                  <div className="flex flex-wrap gap-1">
-                    {h.banned_hashtags.map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs line-through">{tag}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
               {h.rotation_rules && (
                 <p className="text-xs text-slate-500 mt-2 italic">{h.rotation_rules}</p>
               )}
@@ -334,5 +354,34 @@ const ContentMachineView: React.FC = () => {
     </div>
   );
 };
+
+// ─── Hashtag Input ───────────────────────────────────────────────────────────
+
+function HashtagInput({ onAdd }: { onAdd: (tag: string) => void }) {
+  const [editing, setEditing] = React.useState(false);
+  const [value, setValue] = React.useState('');
+
+  const commit = () => {
+    const tag = value.trim().startsWith('#') ? value.trim() : value.trim() ? `#${value.trim()}` : '';
+    if (tag) { onAdd(tag); setValue(''); }
+    setEditing(false);
+  };
+
+  if (!editing) {
+    return (
+      <button onClick={() => setEditing(true)}
+        className="px-2 py-0.5 text-[10px] text-slate-600 border border-dashed border-slate-700 rounded hover:border-slate-500 hover:text-slate-400 transition-colors">
+        +
+      </button>
+    );
+  }
+
+  return (
+    <input autoFocus value={value} onChange={e => setValue(e.target.value)}
+      onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setValue(''); setEditing(false); } }}
+      className="w-20 px-2 py-0.5 text-xs bg-slate-800 border border-amber-500/30 rounded text-slate-300 outline-none"
+      placeholder="#tag" />
+  );
+}
 
 export default ContentMachineView;

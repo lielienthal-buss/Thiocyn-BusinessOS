@@ -105,6 +105,7 @@ export default function FinanceMailsTab() {
   const [syncResult, setSyncResult] = useState<{ inserted: number; total: number } | null>(null);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const loadMails = useCallback(async () => {
     setLoading(true);
@@ -172,6 +173,31 @@ export default function FinanceMailsTab() {
     setAnalyzingId(null);
   };
 
+  const deleteMail = async (id: string) => {
+    setMails(prev => prev.filter(m => m.id !== id));
+    setSelected(prev => { const next = new Set(prev); next.delete(id); return next; });
+    const { error } = await supabase.from('finance_mails').delete().eq('id', id);
+    if (error) loadMails(); // rollback
+  };
+
+  const bulkUpdateStatus = async (status: MailStatus) => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    setMails(prev => prev.map(m => ids.includes(m.id) ? { ...m, status } : m));
+    setSelected(new Set());
+    const { error } = await supabase.from('finance_mails').update({ status }).in('id', ids);
+    if (error) loadMails(); // rollback
+  };
+
+  const bulkDelete = async () => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    setMails(prev => prev.filter(m => !ids.includes(m.id)));
+    setSelected(new Set());
+    const { error } = await supabase.from('finance_mails').delete().in('id', ids);
+    if (error) loadMails(); // rollback
+  };
+
   const filtered = filter === 'all' ? mails : mails.filter((m) => m.status === filter);
 
   return (
@@ -207,6 +233,29 @@ export default function FinanceMailsTab() {
         </button>
       </div>
 
+      {/* Bulk actions */}
+      {selected.size > 0 && (
+        <div className="flex items-center gap-2 bg-amber-500/5 border border-amber-500/15 rounded-xl px-4 py-2">
+          <span className="text-xs font-bold text-amber-400">{selected.size} ausgewählt</span>
+          <select
+            defaultValue=""
+            onChange={e => {
+              if (e.target.value === '__delete__') { if (confirm(`${selected.size} Mails löschen?`)) bulkDelete(); }
+              else if (e.target.value) bulkUpdateStatus(e.target.value as MailStatus);
+              e.target.value = '';
+            }}
+            className="text-xs bg-surface-800 border border-white/[0.06] rounded-lg px-2 py-1 text-slate-300 cursor-pointer"
+          >
+            <option value="" disabled>Aktion...</option>
+            <option value="forwarded_vanessa">→ Weiterleiten</option>
+            <option value="needs_clarification">Klären</option>
+            <option value="no_action">Keine Aktion</option>
+            <option value="__delete__">Löschen</option>
+          </select>
+          <button onClick={() => setSelected(new Set())} className="text-xs text-slate-500 hover:text-slate-300 ml-1">Auswahl aufheben</button>
+        </div>
+      )}
+
       {/* Sync result */}
       {syncResult && (
         <p className="text-xs text-slate-400 bg-surface-900/60 border border-white/[0.06] rounded-lg px-3 py-2">
@@ -231,10 +280,25 @@ export default function FinanceMailsTab() {
           {filtered.map((mail) => (
             <div
               key={mail.id}
-              className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-4 shadow-sm space-y-3"
+              className={`bg-surface-800/60 border rounded-2xl p-4 shadow-sm space-y-3 ${
+                selected.has(mail.id) ? 'border-amber-500/30 bg-amber-500/[0.03]' : 'border-white/[0.06]'
+              }`}
             >
               {/* Top row */}
               <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="flex items-start gap-2 min-w-0">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(mail.id)}
+                    onChange={e => {
+                      setSelected(prev => {
+                        const next = new Set(prev);
+                        e.target.checked ? next.add(mail.id) : next.delete(mail.id);
+                        return next;
+                      });
+                    }}
+                    className="mt-1 w-3.5 h-3.5 rounded border-white/20 accent-amber-500 cursor-pointer shrink-0"
+                  />
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-slate-100 truncate">{mail.subject}</p>
                   <p className="text-xs text-slate-400 mt-0.5 truncate">{mail.sender}</p>
@@ -257,6 +321,14 @@ export default function FinanceMailsTab() {
                       Dringend
                     </span>
                   )}
+                  <button
+                    onClick={() => { if (confirm('Mail löschen?')) deleteMail(mail.id); }}
+                    className="text-slate-600 hover:text-red-400 transition-colors text-xs ml-1"
+                    title="Löschen"
+                  >
+                    🗑
+                  </button>
+                </div>
                 </div>
               </div>
 

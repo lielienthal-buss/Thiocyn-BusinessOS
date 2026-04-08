@@ -341,6 +341,19 @@ const OrdersTab: React.FC = () => {
 
   const ORDER_STATUSES: OrderStatus[] = ['pending', 'fulfilled', 'shipped', 'delivered', 'returned', 'cancelled'];
 
+  // Inline mutations (with rollback on error)
+  const updateOrder = async (id: string, changes: Partial<EcomOrder>) => {
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, ...changes } : o));
+    const { error } = await supabase.from('ecom_orders').update(changes).eq('id', id);
+    if (error) fetchOrders(); // rollback
+  };
+
+  const deleteOrder = async (id: string) => {
+    setOrders(prev => prev.filter(o => o.id !== id));
+    const { error } = await supabase.from('ecom_orders').delete().eq('id', id);
+    if (error) fetchOrders(); // rollback
+  };
+
   return (
     <div className="space-y-6">
       {/* Header + controls */}
@@ -530,6 +543,7 @@ const OrdersTab: React.FC = () => {
                 <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Date</th>
                 <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Notes</th>
+                <th className="w-8"></th>
               </tr>
             </thead>
             <tbody>
@@ -538,7 +552,7 @@ const OrdersTab: React.FC = () => {
                 return (
                   <tr
                     key={order.id}
-                    className={`border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors ${i % 2 === 1 ? 'bg-white/[0.02]' : ''}`}
+                    className={`group border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors ${i % 2 === 1 ? 'bg-white/[0.02]' : ''}`}
                   >
                     <td className="px-4 py-3 font-mono font-bold text-slate-300 whitespace-nowrap">
                       {order.order_id}
@@ -557,15 +571,34 @@ const OrdersTab: React.FC = () => {
                       {fmt(order.amount, order.currency)}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${ORDER_STATUS_STYLES[order.status]}`}>
-                        {order.status}
-                      </span>
+                      <select
+                        value={order.status}
+                        onChange={e => updateOrder(order.id, { status: e.target.value as OrderStatus })}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full border cursor-pointer bg-transparent outline-none capitalize ${ORDER_STATUS_STYLES[order.status]}`}
+                      >
+                        {ORDER_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
                     </td>
                     <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                       {fmtTs(order.created_at)}
                     </td>
-                    <td className="px-4 py-3 text-slate-500 max-w-[180px] truncate">
-                      {order.notes || '—'}
+                    <td className="px-4 py-3 max-w-[180px]">
+                      <input
+                        type="text"
+                        value={order.notes ?? ''}
+                        onChange={e => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, notes: e.target.value } : o))}
+                        onBlur={e => updateOrder(order.id, { notes: e.target.value || null })}
+                        placeholder="Note..."
+                        className="w-full text-xs bg-transparent border-none outline-none text-slate-500 placeholder-slate-700 hover:text-slate-300 focus:text-slate-200 transition-colors"
+                      />
+                    </td>
+                    <td className="px-2 py-3">
+                      <button
+                        onClick={() => { if (confirm('Delete order?')) deleteOrder(order.id); }}
+                        className="text-slate-600 hover:text-red-400 transition-colors text-xs opacity-0 group-hover:opacity-100"
+                      >
+                        🗑
+                      </button>
                     </td>
                   </tr>
                 );

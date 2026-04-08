@@ -94,6 +94,8 @@ const AdPerformanceTab: React.FC = () => {
   const [formData, setFormData] = useState(EMPTY_CAMPAIGN);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<AdCampaign>>({});
 
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
@@ -107,6 +109,39 @@ const AdPerformanceTab: React.FC = () => {
   }, []);
 
   useEffect(() => { fetchCampaigns(); }, [fetchCampaigns]);
+
+  // ─── Edit & Delete ───────────────────────────────────────────────────
+
+  const startEdit = (c: AdCampaign) => {
+    setEditingId(c.id);
+    setEditForm({ ...c });
+    setSaveError(null);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId) return;
+    setSaving(true);
+    setSaveError(null);
+    const { id, ...rest } = editForm as AdCampaign;
+    const { error } = await supabase.from('ad_campaigns').update(rest).eq('id', editingId);
+    if (error) { setSaveError(error.message); setSaving(false); return; }
+    setEditingId(null);
+    setSaving(false);
+    fetchCampaigns();
+  };
+
+  const handleDelete = async (id: string) => {
+    setCampaigns(prev => prev.filter(c => c.id !== id));
+    const { error } = await supabase.from('ad_campaigns').delete().eq('id', id);
+    if (error) fetchCampaigns(); // rollback
+  };
+
+  const handleStatusToggle = async (c: AdCampaign) => {
+    const next: CampaignStatus = c.status === 'active' ? 'paused' : c.status === 'paused' ? 'active' : c.status;
+    setCampaigns(prev => prev.map(x => x.id === c.id ? { ...x, status: next } : x));
+    const { error } = await supabase.from('ad_campaigns').update({ status: next }).eq('id', c.id);
+    if (error) fetchCampaigns(); // rollback
+  };
 
   const filtered = campaigns.filter(c =>
     filterPlatform === 'all' || c.platform === filterPlatform
@@ -354,6 +389,7 @@ const AdPerformanceTab: React.FC = () => {
                         <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">ROAS</th>
                         <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Status</th>
                         <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Period</th>
+                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider w-20">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -394,6 +430,38 @@ const AdPerformanceTab: React.FC = () => {
                               ? `${new Date(c.period_start).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}${c.period_end ? ` – ${new Date(c.period_end).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}` : ''}`
                               : '—'}
                           </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => handleStatusToggle(c)}
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${
+                                  c.status === 'active'
+                                    ? 'text-yellow-400 hover:bg-yellow-500/10'
+                                    : c.status === 'paused'
+                                    ? 'text-emerald-400 hover:bg-emerald-500/10'
+                                    : 'text-slate-600 cursor-not-allowed'
+                                }`}
+                                disabled={c.status === 'ended'}
+                                title={c.status === 'active' ? 'Pause' : c.status === 'paused' ? 'Activate' : ''}
+                              >
+                                {c.status === 'active' ? '⏸' : c.status === 'paused' ? '▶' : '—'}
+                              </button>
+                              <button
+                                onClick={() => startEdit(c)}
+                                className="text-[10px] text-slate-500 hover:text-amber-400 transition-colors px-1"
+                                title="Edit"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => { if (confirm('Delete this campaign?')) handleDelete(c.id); }}
+                                className="text-[10px] text-slate-500 hover:text-red-400 transition-colors px-1"
+                                title="Delete"
+                              >
+                                🗑
+                              </button>
+                            </div>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -402,6 +470,70 @@ const AdPerformanceTab: React.FC = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Edit Campaign Modal */}
+      {editingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md px-4">
+          <div className="bg-surface-800 rounded-2xl shadow-2xl border border-white/[0.08] w-full max-w-lg p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-slate-100">Edit Campaign</h3>
+              <button onClick={() => { setEditingId(null); setSaveError(null); }} className="text-slate-500 hover:text-slate-200 text-lg leading-none transition-colors">✕</button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2">
+                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Campaign Name</label>
+                <input
+                  type="text"
+                  value={(editForm as any).campaign_name ?? ''}
+                  onChange={e => setEditForm(f => ({ ...f, campaign_name: e.target.value }))}
+                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                />
+              </div>
+              {([
+                { key: 'budget_daily', label: 'Daily Budget (€)' },
+                { key: 'spend_mtd',    label: 'Spend MTD (€)' },
+                { key: 'impressions',  label: 'Impressions' },
+                { key: 'clicks',       label: 'Clicks' },
+                { key: 'ctr',          label: 'CTR (%)' },
+                { key: 'purchases',    label: 'Purchases' },
+                { key: 'roas',         label: 'ROAS' },
+              ] as const).map(field => (
+                <div key={field.key}>
+                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">{field.label}</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={(editForm as any)[field.key] ?? ''}
+                    onChange={e => setEditForm(f => ({ ...f, [field.key]: e.target.value === '' ? null : parseFloat(e.target.value) }))}
+                    className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Status</label>
+                <select
+                  value={(editForm as any).status ?? 'active'}
+                  onChange={e => setEditForm(f => ({ ...f, status: e.target.value as CampaignStatus }))}
+                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
+                >
+                  {CAMPAIGN_STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                </select>
+              </div>
+            </div>
+            {saveError && <p className="text-xs text-red-600 font-semibold mt-2">{saveError}</p>}
+            <div className="flex gap-2 pt-4">
+              <button onClick={handleSaveEdit} disabled={saving}
+                className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50">
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button onClick={() => { setEditingId(null); setSaveError(null); }}
+                className="px-4 py-2 bg-white/[0.05] text-slate-300 text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
