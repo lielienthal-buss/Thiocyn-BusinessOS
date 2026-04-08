@@ -19,6 +19,7 @@ interface Notification { id: string; title: string; body: string; created_at: st
 interface SupportTicket { id: string; brand_id: string; subject: string; status: string; priority: number; created_at: string; }
 interface AdCampaign { id: string; brand_id: string; campaign_name: string; spend_mtd: number | null; roas: number | null; status: string; platform: string; }
 interface PipelineItem { id: string; vendor: string; amount: number; currency: string; entity: string; status: string; due_date: string | null; }
+interface SyncEntry { id: string; source: string; status: string; records_synced: number; synced_at: string; details: string | null; }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -143,10 +144,11 @@ export default function HomeView() {
   const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
   const [pipeline, setPipeline] = useState<PipelineItem[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [syncs, setSyncs] = useState<SyncEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAll = useCallback(async () => {
-    const [m, d, t, s, c, p, n] = await Promise.all([
+    const [m, d, t, s, c, p, n, sy] = await Promise.all([
       supabase.from('brand_metrics').select('*').in('brand_id', BRANDS as unknown as string[]),
       supabase.from('disputes').select('*').neq('status', 'resolved').neq('status', 'closed').order('deadline'),
       supabase.from('team_tasks').select('*').neq('status', 'done').order('priority', { ascending: false }).limit(20),
@@ -154,6 +156,7 @@ export default function HomeView() {
       supabase.from('ad_campaigns').select('*').eq('status', 'active').order('spend_mtd', { ascending: false }),
       supabase.from('finance_pipeline').select('*').in('status', ['offen', 'ueberfaellig']).order('due_date'),
       supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(8),
+      supabase.from('sync_log').select('*').order('synced_at', { ascending: false }).limit(10),
     ]);
     setMetrics((m.data ?? []) as BrandMetric[]);
     setDisputes((d.data ?? []) as Dispute[]);
@@ -162,6 +165,7 @@ export default function HomeView() {
     setCampaigns((c.data ?? []) as AdCampaign[]);
     setPipeline((p.data ?? []) as PipelineItem[]);
     setNotifications((n.data ?? []) as Notification[]);
+    setSyncs((sy.data ?? []) as SyncEntry[]);
     setLoading(false);
   }, []);
 
@@ -355,6 +359,54 @@ export default function HomeView() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* ── Data Sources ── */}
+      <div className="rounded-2xl border border-white/[0.06] bg-surface-800/40 p-4">
+        <SectionHeader>Connected Data Sources</SectionHeader>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          {[
+            { name: 'Google Sheets', icon: '📊', status: 'connected' as const, detail: 'Offene Posten, KPIs' },
+            { name: 'Instagram', icon: '📸', status: 'connected' as const, detail: 'Thiocyn live' },
+            { name: 'Supabase', icon: '🗄️', status: 'connected' as const, detail: `${metrics.length} brands tracked` },
+            { name: 'Shopify', icon: '🛒', status: 'blocked' as const, detail: 'Permissions needed' },
+            { name: 'Meta Ads', icon: '📢', status: 'blocked' as const, detail: 'OAuth pending' },
+            { name: 'GetKlar', icon: '📈', status: 'blocked' as const, detail: 'API Key invalid' },
+            { name: 'Notion', icon: '📓', status: 'connected' as const, detail: 'Tasks + Wikis' },
+            { name: 'Apple Mail', icon: '📧', status: 'connected' as const, detail: '4 inboxen' },
+            { name: 'PayPal', icon: '💳', status: 'blocked' as const, detail: 'API Keys needed' },
+            { name: 'Klaviyo', icon: '✉️', status: 'planned' as const, detail: 'Email marketing' },
+            { name: 'Amazon', icon: '📦', status: 'planned' as const, detail: 'Marketplace orders' },
+            { name: 'Firecrawl', icon: '🔥', status: 'connected' as const, detail: 'Competitor scraping' },
+          ].map(src => (
+            <div key={src.name} className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+              src.status === 'connected' ? 'border-emerald-500/20 bg-emerald-500/5' :
+              src.status === 'blocked' ? 'border-amber-500/20 bg-amber-500/5' :
+              'border-white/[0.06] bg-white/[0.02]'
+            }`}>
+              <span className="text-sm">{src.icon}</span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold text-slate-200 truncate">{src.name}</p>
+                <p className={`text-[9px] truncate ${
+                  src.status === 'connected' ? 'text-emerald-400' :
+                  src.status === 'blocked' ? 'text-amber-400' :
+                  'text-slate-500'
+                }`}>
+                  {src.status === 'connected' ? '● ' : src.status === 'blocked' ? '⚠ ' : '○ '}
+                  {src.detail}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Last sync info */}
+        {syncs.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <p className="text-[9px] text-slate-600">
+              Last sync: {syncs[0].source.replace(/_/g, ' ')} — {relTime(syncs[0].synced_at)} ago ({syncs[0].records_synced} records)
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
