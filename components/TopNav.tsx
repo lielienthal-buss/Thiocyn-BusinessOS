@@ -17,22 +17,33 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
     { label: t.login, path: '/admin' },
   ];
 
+  const handleNav = (path: string) => {
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(() => navigate(path));
+    } else {
+      navigate(path);
+    }
+  };
+
   if (variant === 'dark') {
     return (
       <nav className="w-full">
-        {/* Desktop — dark variant */}
+        {/* Desktop — dark variant with liquid glass pill */}
         <div className="hidden md:flex justify-center">
-          <div className="flex justify-between items-center w-full max-w-5xl mx-auto px-6">
+          <div className="flex justify-between items-center w-full max-w-5xl mx-auto">
             <Logo className="h-8 w-auto brightness-0 invert opacity-90" />
-            <div className="flex items-center gap-1">
+            {/* Liquid glass nav pill */}
+            <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full bg-white/[0.05] backdrop-blur-2xl border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.07),0_8px_32px_rgba(0,0,0,0.3)]">
               {LINKS.map(({ label, path }) => {
                 const active = path === '/' ? pathname === '/' : pathname.startsWith(path);
                 return (
                   <button
                     key={path}
-                    onClick={() => navigate(path)}
+                    onClick={() => handleNav(path)}
                     className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
-                      active ? 'text-white' : 'text-gray-600 hover:text-gray-300'
+                      active
+                        ? 'bg-white/[0.1] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]'
+                        : 'text-gray-500 hover:text-gray-200'
                     }`}
                   >
                     {label}
@@ -41,9 +52,9 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
               })}
               <button
                 onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
-                className="ml-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 text-gray-600 hover:text-gray-300 transition-all duration-200"
+                className="ml-1 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/[0.08] text-gray-600 hover:text-gray-300 transition-all duration-200"
               >
-                {lang === 'de' ? 'DE | EN' : 'EN | DE'}
+                {lang === 'de' ? 'DE' : 'EN'}
               </button>
             </div>
           </div>
@@ -51,17 +62,17 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
 
         {/* Mobile — dark variant */}
         <div className="md:hidden overflow-x-auto">
-          <div className="flex justify-between items-center px-6">
+          <div className="flex justify-between items-center">
             <Logo className="h-7 w-auto brightness-0 invert opacity-90" />
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 px-2 py-1 rounded-full bg-white/[0.05] backdrop-blur-2xl border border-white/[0.08]">
               {LINKS.map(({ label, path }) => {
                 const active = path === '/' ? pathname === '/' : pathname.startsWith(path);
                 return (
                   <button
                     key={path}
-                    onClick={() => navigate(path)}
-                    className={`px-3 py-2 rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all duration-200 ${
-                      active ? 'text-white' : 'text-gray-600 hover:text-gray-300'
+                    onClick={() => handleNav(path)}
+                    className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all duration-200 ${
+                      active ? 'bg-white/[0.1] text-white' : 'text-gray-500 hover:text-gray-200'
                     }`}
                   >
                     {label}
@@ -87,7 +98,7 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
               return (
                 <button
                   key={path}
-                  onClick={() => navigate(path)}
+                  onClick={() => handleNav(path)}
                   className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
                     active
                       ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'
@@ -118,7 +129,7 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
               return (
                 <button
                   key={path}
-                  onClick={() => navigate(path)}
+                  onClick={() => handleNav(path)}
                   className={`px-3 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
                     active
                       ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'

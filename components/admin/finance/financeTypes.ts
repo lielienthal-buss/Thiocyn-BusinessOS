@@ -22,7 +22,53 @@ export type Currency = typeof CURRENCIES[number];
 export type DisputeStatus = typeof DISPUTE_STATUSES[number];
 export type InvoiceStatus = typeof INVOICE_STATUSES[number];
 export type InvoiceCategory = typeof INVOICE_CATEGORIES[number];
-export type FinanceTab = 'disputes' | 'invoices' | 'overview' | 'monthlyReporting';
+export type FinanceTab = 'disputes' | 'invoices' | 'overview' | 'monthlyReporting' | 'pipeline';
+
+// ─── Finance Pipeline ────────────────────────────────────────────────────────
+
+export const ENTITIES = [
+  'thiocyn',
+  'hart-limes',
+  'paigh',
+  'dr-severin',
+  'take-a-shot',
+  'wristr',
+  'timber-john',
+] as const;
+
+export const PAYMENT_METHODS = ['qonto', 'paypal', 'kreditkarte', 'wise', 'lastschrift', 'bar', 'other'] as const;
+export const PIPELINE_STATUSES = ['offen', 'bezahlt', 'beleg_fehlt', 'erledigt', 'ueberfaellig'] as const;
+
+export type Entity = typeof ENTITIES[number];
+export type PaymentMethod = typeof PAYMENT_METHODS[number];
+export type PipelineStatus = typeof PIPELINE_STATUSES[number];
+
+export interface PipelineItem {
+  id: string;
+  vendor: string;
+  invoice_number: string | null;
+  amount: number;
+  currency: Currency;
+  entity: Entity;
+  payment_method: PaymentMethod | null;
+  due_date: string | null;
+  notes: string | null;
+  received_at: string | null;
+  paid_at: string | null;
+  receipt_attached: boolean;
+  datev_exported: boolean;
+  status: PipelineStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export const PIPELINE_STATUS_STYLES: Record<PipelineStatus, string> = {
+  offen: 'bg-amber-500/15 text-amber-400 border border-amber-500/20',
+  bezahlt: 'bg-blue-500/15 text-blue-400 border border-blue-500/20',
+  beleg_fehlt: 'bg-orange-500/15 text-orange-400 border border-orange-500/20',
+  erledigt: 'bg-green-500/15 text-green-400 border border-green-500/20',
+  ueberfaellig: 'bg-red-500/15 text-red-400 border border-red-500/20',
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

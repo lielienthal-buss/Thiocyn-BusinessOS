@@ -125,4 +125,6 @@ export interface ProjectArea {
   created_at: string;
   name: string;
   description: string | null;
+  position_type: string | null;
+  is_active: boolean;
 }

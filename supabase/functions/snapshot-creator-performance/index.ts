@@ -73,30 +73,61 @@ serve(async (req: Request) => {
       }
     }
 
-    // Get creator tiers for snapshot
+    // Get creator tiers + sales data for snapshot
     const creatorIds = [...creatorMap.keys()];
     const { data: creators } = await supabase
       .from('creators')
-      .select('id, tier')
+      .select('id, tier, total_sales, total_revenue')
       .in('id', creatorIds);
 
-    const tierMap = new Map((creators ?? []).map((c: { id: string; tier: string }) => [c.id, c.tier]));
+    const creatorDataMap = new Map(
+      (creators ?? []).map((c: { id: string; tier: string; total_sales: number; total_revenue: number }) => [
+        c.id,
+        { tier: c.tier, total_sales: c.total_sales ?? 0, total_revenue: c.total_revenue ?? 0 },
+      ])
+    );
 
-    // Build snapshots
-    const snapshots = [...creatorMap.entries()].map(([creatorId, stats]) => ({
-      creator_id: creatorId,
-      week_number: weekNumber,
-      year,
-      tasks_sent: stats.tasks_sent,
-      tasks_delivered: stats.tasks_delivered,
-      delivery_rate: stats.tasks_sent > 0
-        ? Math.round((stats.tasks_delivered / stats.tasks_sent) * 10000) / 100
-        : 0,
-      top_videos: stats.top_videos,
-      sales: 0,     // Updated manually or via Shopify sync
-      revenue: 0,   // Updated manually or via Shopify sync
-      tier_at_snapshot: tierMap.get(creatorId) ?? 'starter',
-    }));
+    // Get previous week's snapshot to calculate sales delta
+    const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
+    const prevYear = weekNumber > 1 ? year : year - 1;
+    const { data: prevSnapshots } = await supabase
+      .from('creator_performance')
+      .select('creator_id, sales, revenue')
+      .eq('week_number', prevWeek)
+      .eq('year', prevYear)
+      .in('creator_id', creatorIds);
+
+    const prevMap = new Map(
+      (prevSnapshots ?? []).map((p: { creator_id: string; sales: number; revenue: number }) => [
+        p.creator_id,
+        { sales: p.sales ?? 0, revenue: p.revenue ?? 0 },
+      ])
+    );
+
+    // Build snapshots with actual sales data
+    const snapshots = [...creatorMap.entries()].map(([creatorId, stats]) => {
+      const cData = creatorDataMap.get(creatorId);
+      const prev = prevMap.get(creatorId);
+      const currentSales = cData?.total_sales ?? 0;
+      const currentRevenue = cData?.total_revenue ?? 0;
+      const salesDelta = Math.max(0, currentSales - (prev?.sales ?? 0));
+      const revenueDelta = Math.max(0, currentRevenue - (prev?.revenue ?? 0));
+
+      return {
+        creator_id: creatorId,
+        week_number: weekNumber,
+        year,
+        tasks_sent: stats.tasks_sent,
+        tasks_delivered: stats.tasks_delivered,
+        delivery_rate: stats.tasks_sent > 0
+          ? Math.round((stats.tasks_delivered / stats.tasks_sent) * 10000) / 100
+          : 0,
+        top_videos: stats.top_videos,
+        sales: salesDelta,
+        revenue: revenueDelta,
+        tier_at_snapshot: cData?.tier ?? 'gifting',
+      };
+    });
 
     // Upsert (unique on creator_id + year + week_number)
     let created = 0;

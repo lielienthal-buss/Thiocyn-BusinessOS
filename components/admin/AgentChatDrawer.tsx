@@ -182,7 +182,7 @@ const AgentChatDrawer: React.FC<Props> = ({
   const formatTime = (d: Date) =>
     d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  const sectionLabel = SECTION_LABELS[activeSection];
+  const sectionLabel = SECTION_LABELS[activeSection] ?? 'Dashboard';
   const sectionEmoji = SECTION_EMOJIS[activeSection];
 
   return (

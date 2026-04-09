@@ -5,14 +5,9 @@ import BigFiveVisualizer from './BigFiveVisualizer';
 import LinkedInIcon from '@/components/icons/LinkedInIcon';
 import { addNoteForApplication, updateApplicationStage } from '@/lib/actions';
 import Spinner from '@/components/ui/Spinner';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 // --- Notes Component ---
 const NotesSection: React.FC<{

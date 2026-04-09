@@ -1,32 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
-import Header from '@/components/Header';
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
   useNavigate,
 } from 'react-router-dom';
-import ApplicationForm from '@/components/ApplicationForm';
-import Footer from '@/components/Footer';
-import FAQ from '@/components/FAQ';
-import Dashboard from '@/components/admin/Dashboard';
-import AdminLogin from '@/components/admin/AdminLogin';
-const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
-const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
-import ForgotPassword from '@/components/admin/ForgotPassword';
-import Imprint from '@/components/legal/Imprint';
-import PrivacyPolicy from '@/components/legal/PrivacyPolicy';
-import LegalPage from '@/components/legal/LegalPage';
-import TaskSubmissionPage from '@/components/public/TaskSubmissionPage';
-import InternPortalPage from '@/components/public/InternPortalPage';
 import TopNav from '@/components/TopNav';
 import { Toaster } from 'sonner';
 import { LangProvider } from '@/lib/i18n';
 import { BrandProvider } from '@/lib/BrandContext';
 import { ConfigProvider } from '@/lib/ConfigContext';
 import CookieBanner from '@/components/CookieBanner';
+
+// Route-level lazy splits
+const Header = React.lazy(() => import('@/components/Header'));
+const ApplicationForm = React.lazy(() => import('@/components/ApplicationForm'));
+const Footer = React.lazy(() => import('@/components/Footer'));
+const FAQ = React.lazy(() => import('@/components/FAQ'));
+const Dashboard = React.lazy(() => import('@/components/admin/Dashboard'));
+const AdminLogin = React.lazy(() => import('@/components/admin/AdminLogin'));
+const ForgotPassword = React.lazy(() => import('@/components/admin/ForgotPassword'));
+const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
+const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
+const ApplicationSlidePanel = React.lazy(() => import('@/components/public/ApplicationSlidePanel'));
+const TaskSubmissionPage = React.lazy(() => import('@/components/public/TaskSubmissionPage'));
+const InternPortalPage = React.lazy(() => import('@/components/public/InternPortalPage'));
+const Imprint = React.lazy(() => import('@/components/legal/Imprint'));
+const PrivacyPolicy = React.lazy(() => import('@/components/legal/PrivacyPolicy'));
+const LegalPage = React.lazy(() => import('@/components/legal/LegalPage'));
 
 // --- Layout Component ---
 const AppLayout: React.FC = () => {
@@ -75,45 +78,76 @@ const AppLayout: React.FC = () => {
   );
 };
 
+// --- Cursor Glow ---
+function CursorGlow() {
+  const [pos, setPos] = React.useState({ x: -999, y: -999 });
+  React.useEffect(() => {
+    const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', move);
+    return () => window.removeEventListener('mousemove', move);
+  }, []);
+  return (
+    <div
+      className="fixed pointer-events-none z-[9998] w-[650px] h-[650px] rounded-full"
+      style={{
+        left: pos.x - 325,
+        top: pos.y - 325,
+        background: 'radial-gradient(circle, rgba(255,255,255,0.018) 0%, transparent 65%)',
+        transition: 'left 0.08s linear, top 0.08s linear',
+        willChange: 'left, top',
+      }}
+    />
+  );
+}
+
 // --- Main App Component ---
 const App: React.FC = () => {
+  const [applyPanelOpen, setApplyPanelOpen] = React.useState(false);
   const router = createBrowserRouter([
     // --- Standalone full-bleed pages (no AppLayout wrapper) ---
     {
       path: '/',
       element: (
-        <div className="min-h-screen bg-surface-950 px-4 py-12">
-          <div className="max-w-5xl mx-auto space-y-10 md:space-y-20">
-            <TopNav />
-            <Header />
-            <main className="space-y-10 md:space-y-20">
-              <React.Suspense fallback={<div>Loading...</div>}>
+        <React.Suspense fallback={<div />}>
+          <div className="min-h-screen bg-[#080808]">
+            <header className="sticky top-0 z-20 bg-[#080808]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4">
+              <TopNav variant="dark" />
+            </header>
+            <div className="max-w-5xl mx-auto px-4 space-y-10 md:space-y-20 pt-10 pb-12">
+              <Header />
+              <main className="space-y-10 md:space-y-20">
                 <ApplicationForm />
-              </React.Suspense>
-              <div className="space-y-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">
-                  Got Questions? Check our FAQs
-                </h2>
-                <FAQ />
-              </div>
-            </main>
-            <Footer />
+                <div className="space-y-6">
+                  <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">
+                    Got Questions? Check our FAQs
+                  </h2>
+                  <FAQ />
+                </div>
+              </main>
+              <Footer />
+            </div>
           </div>
-        </div>
+        </React.Suspense>
       ),
     },
     {
       path: 'admin',
       element: (
-        <div className="min-h-screen bg-[#080808] px-4 py-12">
-          <TopNav />
-          <AdminLogin />
-        </div>
+        <React.Suspense fallback={<div />}>
+          <div className="min-h-screen bg-[#080808] px-4 py-12">
+            <TopNav />
+            <AdminLogin />
+          </div>
+        </React.Suspense>
       ),
     },
     {
       path: 'admin/dashboard',
-      element: <ConfigProvider><BrandProvider><Dashboard /></BrandProvider></ConfigProvider>,
+      element: (
+        <React.Suspense fallback={<div />}>
+          <ConfigProvider><BrandProvider><Dashboard /></BrandProvider></ConfigProvider>
+        </React.Suspense>
+      ),
     },
     {
       path: 'company',
@@ -127,7 +161,7 @@ const App: React.FC = () => {
       path: 'creators',
       element: (
         <React.Suspense fallback={<div>Loading...</div>}>
-          <HartLimesLanding forceMode="influencer" />
+          <HartLimesLanding forceMode="influencer" onApplyClick={() => setApplyPanelOpen(true)} />
         </React.Suspense>
       ),
     },
@@ -146,7 +180,11 @@ const App: React.FC = () => {
       children: [
         {
           path: 'admin/forgot-password',
-          element: <ForgotPassword />,
+          element: (
+            <React.Suspense fallback={<div />}>
+              <ForgotPassword />
+            </React.Suspense>
+          ),
         },
         {
           path: 'task/:accessToken',
@@ -194,7 +232,9 @@ const App: React.FC = () => {
 
   return (
     <LangProvider>
+      <CursorGlow />
       <RouterProvider router={router} />
+      <ApplicationSlidePanel open={applyPanelOpen} onClose={() => setApplyPanelOpen(false)} />
       <Toaster position="top-right" richColors />
       <CookieBanner />
     </LangProvider>

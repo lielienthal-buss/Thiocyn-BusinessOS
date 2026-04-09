@@ -52,10 +52,10 @@ const CreatorApplicationPage: React.FC = () => {
           <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-primary-600/10 rounded-full blur-[150px]" />
           <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-600/8 rounded-full blur-[130px]" />
         </div>
-        <div className="relative bg-white rounded-[2.5rem] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.8)] px-10 py-12 w-full max-w-md text-center">
+        <div className="relative bg-white/[0.05] backdrop-blur-xl rounded-[2.5rem] border border-white/[0.1] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.8)] px-10 py-12 w-full max-w-md text-center">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
           <div className="text-5xl mb-6">🎉</div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-3">
+          <h2 className="text-2xl font-black text-white tracking-tight mb-3">
             {t.successHeadline}
           </h2>
           <p className="text-gray-500 text-sm mb-8">
@@ -63,7 +63,7 @@ const CreatorApplicationPage: React.FC = () => {
           </p>
           <Link
             to="/creators"
-            className="inline-block px-6 py-3 bg-gray-900 hover:bg-primary-600 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300"
+            className="inline-block px-6 py-3 bg-white text-gray-900 hover:bg-gray-100 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300"
           >
             {t.successBack}
           </Link>
@@ -91,19 +91,19 @@ const CreatorApplicationPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Card */}
-        <div className="relative bg-white rounded-[2.5rem] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.8)] overflow-hidden px-6 py-8 md:px-10 md:py-12">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px bg-gradient-to-r from-transparent via-primary-400/40 to-transparent" />
+        {/* Card — dark glass */}
+        <div className="relative bg-white/[0.04] backdrop-blur-xl rounded-[2.5rem] border border-white/[0.1] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.8)] overflow-hidden px-6 py-8 md:px-10 md:py-12">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
           {/* Logo + headline */}
           <div className="text-center mb-8">
             <div className="inline-block mb-5">
-              <Logo className="h-12 w-auto" />
+              <Logo className="h-12 w-auto brightness-0 invert opacity-90" />
             </div>
-            <h1 className="text-3xl font-black text-gray-900 tracking-tighter">
+            <h1 className="text-3xl font-black text-white tracking-tighter">
               {t.headline}
             </h1>
-            <p className="text-gray-400 text-sm mt-2 leading-relaxed">
+            <p className="text-gray-500 text-sm mt-2 leading-relaxed">
               {t.subline}
             </p>
           </div>
@@ -119,7 +119,7 @@ const CreatorApplicationPage: React.FC = () => {
                 required
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm placeholder:text-gray-300"
+                className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white text-sm placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 placeholder={t.namePlaceholder}
               />
             </div>
@@ -134,7 +134,7 @@ const CreatorApplicationPage: React.FC = () => {
                 required
                 value={form.instagram_url}
                 onChange={e => setForm(f => ({ ...f, instagram_url: e.target.value }))}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm placeholder:text-gray-300"
+                className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white text-sm placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 placeholder="https://www.instagram.com/deinprofil/"
               />
             </div>
@@ -149,9 +149,9 @@ const CreatorApplicationPage: React.FC = () => {
                   required
                   value={form.brand}
                   onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-                  className="w-full px-3 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm text-gray-700"
+                  className="w-full px-3 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 >
-                  {BRANDS.map(b => <option key={b}>{b}</option>)}
+                  {BRANDS.map(b => <option key={b} className="bg-[#111]">{b}</option>)}
                 </select>
               </div>
               <div>
@@ -161,9 +161,9 @@ const CreatorApplicationPage: React.FC = () => {
                 <select
                   value={form.follower_range}
                   onChange={e => setForm(f => ({ ...f, follower_range: e.target.value }))}
-                  className="w-full px-3 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm text-gray-700"
+                  className="w-full px-3 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 >
-                  {FOLLOWER_RANGES.map(r => <option key={r}>{r}</option>)}
+                  {FOLLOWER_RANGES.map(r => <option key={r} className="bg-[#111]">{r}</option>)}
                 </select>
               </div>
             </div>
@@ -178,10 +178,10 @@ const CreatorApplicationPage: React.FC = () => {
                 maxLength={300}
                 rows={4}
                 onChange={e => { setForm(f => ({ ...f, notes: e.target.value })); setCharCount(e.target.value.length); }}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm placeholder:text-gray-300 resize-none"
+                className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white text-sm placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all resize-none"
                 placeholder={t.notesPlaceholder}
               />
-              <p className="text-right text-[10px] text-gray-300 mt-1">{charCount}/300</p>
+              <p className="text-right text-[10px] text-gray-600 mt-1">{charCount}/300</p>
             </div>
 
             {/* Email */}
@@ -193,13 +193,13 @@ const CreatorApplicationPage: React.FC = () => {
                 type="email"
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500/40 focus:border-primary-400 outline-none transition-all text-sm placeholder:text-gray-300"
+                className="w-full px-4 py-3.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-white text-sm placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all"
                 placeholder={t.emailPlaceholder}
               />
             </div>
 
             {error && (
-              <div className="p-3.5 bg-red-500/8 border border-red-200 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl">
+              <div className="p-3.5 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-black uppercase tracking-widest rounded-xl">
                 {error}
               </div>
             )}
@@ -208,9 +208,9 @@ const CreatorApplicationPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full py-4 bg-gray-900 hover:bg-primary-600 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-primary-500/30 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2 disabled:opacity-50 overflow-hidden"
+                className="group relative w-full py-4 bg-white text-gray-900 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gray-100 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2 disabled:opacity-50 overflow-hidden"
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 {loading ? t.submitting : t.submitButton}
               </button>
             </div>

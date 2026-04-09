@@ -1,0 +1,86 @@
+{
+  "name": "Qonto → Finance Pipeline (Payment Matching)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "qonto:watchTransactions",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "status": "completed",
+        "side": "debit"
+      },
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "notes": "Trigger: watches for new completed debit transactions (outgoing payments). Connect your Qonto account first. Filter: only debit (outgoing) + completed."
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicFilter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "condition": "{{1.amount}} > 0"
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "notes": "Skip zero-amount transactions and internal transfers if needed. Add more filter conditions as necessary (e.g., exclude salary payments by label)."
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://dfzrkzvsdiiihoejfozn.supabase.co/functions/v1/finance-pipeline-webhook",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{FINANCE_WEBHOOK_SECRET}}"
+          }
+        ],
+        "body": {
+          "source": "qonto",
+          "vendor": "{{1.label}}",
+          "amount": "{{1.amount}}",
+          "currency": "{{1.currency}}",
+          "paid_at": "{{formatDate(1.settled_at; \"YYYY-MM-DD\")}}",
+          "transaction_id": "{{1.transaction_id}}"
+        }
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 },
+        "notes": "POST to Edge Function. The function matches by vendor name + amount against open pipeline entries. If no match found, it creates a new entry with status 'beleg_fehlt'."
+      }
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    }
+  },
+  "_setup_instructions": {
+    "step_1": "Import this blueprint in Make (Scenarios → Import Blueprint)",
+    "step_2": "Connect your Qonto account in Module 1 (API credentials from Qonto Settings → Integrations)",
+    "step_3": "Replace {{FINANCE_WEBHOOK_SECRET}} with the same secret used in the GMI scenario",
+    "step_4": "Optional: Add more filters in Module 2 to exclude salary payments, internal transfers, etc.",
+    "step_5": "Set schedule to every 15 minutes (or use Qonto webhook if available)",
+    "step_6": "Activate the scenario",
+    "matching_logic": "The Edge Function matches Qonto payments to open pipeline entries by: (1) exact vendor name + amount, (2) fuzzy vendor match + amount. If no match → creates new entry with entity='thiocyn' (correct manually in dashboard)."
+  }
+}

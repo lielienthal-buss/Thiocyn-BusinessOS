@@ -45,18 +45,21 @@ const Header: React.FC = () => {
 
   return (
     <header className="relative overflow-hidden rounded-[2.5rem] bg-[#0d0d0d] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.5)]">
-      {/* Ambient glows */}
+      {/* Animated mesh gradient */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-20 -left-20 w-96 h-96 bg-primary-600/20 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-indigo-600/15 rounded-full blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/8 rounded-full blur-[80px]" />
+        <div className="absolute -top-24 -left-20 w-[480px] h-[480px] bg-primary-600/[0.14] rounded-full blur-[150px] animate-mesh-1" />
+        <div className="absolute -bottom-20 -right-20 w-[380px] h-[380px] bg-indigo-600/[0.12] rounded-full blur-[130px] animate-mesh-2" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/[0.08] rounded-full blur-[90px] animate-mesh-3" />
+        <div className="absolute top-0 right-1/4 w-48 h-48 bg-violet-600/[0.07] rounded-full blur-[80px] animate-mesh-4" />
         {/* Dot grid */}
         <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '28px 28px' }}
         />
         {/* Top glow line */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-px bg-gradient-to-r from-transparent via-primary-400/60 to-transparent" />
+        {/* Vignette */}
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 90% 90% at 50% 50%, transparent 50%, #0d0d0d 100%)' }} />
       </div>
 
       <div className="relative z-10 px-6 py-12 md:px-20 md:py-24 flex flex-col items-center text-center gap-10">

@@ -1,39 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22black%22></rect><text x=%2250%%22 y=%2250%%22 font-size=%2260%22 text-anchor=%22middle%22 dominant-baseline=%22central%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>T</text></svg>" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22black%22></rect><text x=%2250%%22 y=%2250%%22 font-size=%2260%22 text-anchor=%22middle%22 dominant-baseline=%22central%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>T</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join the Team | Take A Shot by Thiocyn</title>
+    <meta name="theme-color" content="#080808" />
+    <title>Hart Limes — House of Sustainable Brands</title>
+    <meta name="description" content="Wir erwerben, bauen und skalieren nachhaltige D2C-Brands mit geteilter Infrastruktur, Creator-Netzwerk und Performance Marketing." />
 
-    <!-- LinkedIn / Open Graph Meta Tags -->
-    <meta
-      property="og:title"
-      content="Join Take A Shot | by Thiocyn"
-    />
-    <meta
-      property="og:description"
-      content="We build and scale D2C brands. Take A Shot is part of Hartlimes — an e-commerce aggregator. Join a team that moves fast and owns results."
-    />
-    <meta
-      property="og:image"
-      content="https://thiocyn.de/og-image-recruiting.jpg"
-    />
-    <meta property="og:url" content="https://jobs.thiocyn.de" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="Hart Limes — House of Sustainable Brands" />
+    <meta property="og:description" content="6 Brands. 200+ Creator. Ein System. Werde Teil der Crew." />
+    <meta property="og:image" content="https://thiocyn.de/og-image-recruiting.jpg" />
+    <meta property="og:url" content="https://hartlimes.de" />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:site_name" content="Hart Limes GmbH" />
 
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hart Limes — House of Sustainable Brands" />
+    <meta name="twitter:description" content="6 Brands. 200+ Creator. Ein System." />
+    <meta name="twitter:image" content="https://thiocyn.de/og-image-recruiting.jpg" />
+
+    <!-- View Transitions API -->
+    <style>
+      @keyframes vt-fade-in  { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes vt-fade-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+      ::view-transition-old(root) { animation: 180ms ease-in  vt-fade-out both; }
+      ::view-transition-new(root) { animation: 220ms ease-out vt-fade-in  both; }
+    </style>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
   </head>
-  <body
-    class="bg-white text-gray-900 min-h-screen font-sans"
-  >
+  <body class="bg-[#080808] text-gray-900 min-h-screen font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

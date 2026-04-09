@@ -1,0 +1,102 @@
+{
+  "name": "GMI → Finance Pipeline",
+  "flow": [
+    {
+      "id": 1,
+      "module": "getmyinvoices:watchDocuments",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "notes": "Trigger: polls GMI for new documents every 15 min. Connect your GMI account in Make first."
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "notes": "Route based on document company name"
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 3,
+              "module": "http:ActionSendData",
+              "version": 3,
+              "parameters": {},
+              "mapper": {
+                "url": "https://dfzrkzvsdiiihoejfozn.supabase.co/functions/v1/finance-pipeline-webhook",
+                "method": "POST",
+                "headers": [
+                  {
+                    "name": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "name": "Authorization",
+                    "value": "Bearer {{FINANCE_WEBHOOK_SECRET}}"
+                  }
+                ],
+                "body": {
+                  "source": "gmi",
+                  "vendor": "{{1.supplierName}}",
+                  "invoice_number": "{{1.documentNumber}}",
+                  "amount": "{{1.grossAmount}}",
+                  "currency": "{{1.currencyCode}}",
+                  "entity": "{{2.entity}}",
+                  "due_date": "{{1.dueDate}}",
+                  "notes": "GMI Doc #{{1.documentId}}",
+                  "received_at": "{{1.creationDate}}"
+                }
+              },
+              "metadata": {
+                "designer": { "x": 600, "y": 0 },
+                "notes": "POST to Supabase Edge Function. Entity mapping happens in the router filter below."
+              }
+            }
+          ],
+          "label": "Send to Pipeline"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    }
+  },
+  "_setup_instructions": {
+    "step_1": "Import this blueprint in Make (Scenarios → Import Blueprint)",
+    "step_2": "Connect your GetMyInvoices account in Module 1",
+    "step_3": "In Module 2 (Router), add filter conditions to map company names to entity values. Example filter: 1.companyName contains 'Thiocyn' → set variable entity = 'thiocyn'",
+    "step_4": "Replace {{FINANCE_WEBHOOK_SECRET}} with the actual secret (set in Supabase Edge Function secrets)",
+    "step_5": "Set schedule to every 15 minutes",
+    "step_6": "Activate the scenario",
+    "entity_mapping": {
+      "Thiocyn GmbH": "thiocyn",
+      "Hart Limes GmbH": "hart-limes",
+      "Paigh GmbH": "paigh",
+      "Dr. Severin": "dr-severin",
+      "Take A Shot": "take-a-shot",
+      "Wristr": "wristr",
+      "Timber & John": "timber-john"
+    }
+  }
+}

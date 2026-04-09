@@ -287,8 +287,8 @@ const Dashboard: React.FC = () => {
         if (applicant) {
           adaptedApplicant = {
             ...applicant,
-            // Map DB 'project_interest' to frontend 'preferred_project_areas'
-            preferred_project_areas: (applicant as any).project_interest || null,
+            // Prefer preferred_project_areas (new RPC), fallback to project_interest (legacy)
+            preferred_project_areas: applicant.preferred_project_areas || (applicant as any).project_interest || null,
             // Map DB 'status' to frontend 'stage'
             stage: (applicant as any).status || applicant.stage,
             // Ensure aiScore is present if it comes from the DB

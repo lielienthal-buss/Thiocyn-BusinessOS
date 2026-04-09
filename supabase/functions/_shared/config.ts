@@ -17,7 +17,7 @@ const DEFAULTS: AppConfig = {
   program_name: 'Internship Program',
   from_email: Deno.env.get('RESEND_FROM_EMAIL') || 'noreply@example.com',
   from_name: 'Hiring Team',
-  app_url: Deno.env.get('APP_URL') || 'https://localhost',
+  app_url: Deno.env.get('APP_URL') || 'https://thiocyn-businessos.vercel.app',
   logo_url: null,
   calendly_url: null,
   ai_instruction: null,
