@@ -131,7 +131,7 @@ const InsightsView: React.FC = () => {
       },
       {}
     );
-    const bigFiveAverages = Object.entries(psychSums).map(([trait, data]) => ({
+    const bigFiveAverages = (Object.entries(psychSums) as [string, { total: number; count: number }][]).map(([trait, data]) => ({
       trait,
       average: Math.round(data.total / data.count),
     }));

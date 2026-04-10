@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { submitApplicationAction, getProjectAreas } from '@/lib/actions';
 import { BFI_QUESTIONS, calculateBigFive } from '@/utils/bigFive';
 import { trackStep, trackStepCompleted, trackSubmission } from '@/lib/analytics';
+import { supabase } from '@/lib/supabaseClient';
 import Spinner from './ui/Spinner';
 import Card from './ui/Card';
 import ThankYouMessage from './ui/ThankYouMessage';
@@ -14,6 +15,13 @@ import { translations } from '@/lib/translations';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PROJECT_HIGHLIGHT_MAX = 500;
+// Welle 1b Item 7 — CV upload limits (mirrored from storage bucket policy)
+const CV_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const CV_ALLOWED_MIME = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 
 const ApplicationForm: React.FC = () => {
   const { lang } = useLang();
@@ -42,6 +50,45 @@ const ApplicationForm: React.FC = () => {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [availableProjectAreas, setAvailableProjectAreas] = useState<ProjectArea[]>([]);
   const [fetchingProjectAreas, setFetchingProjectAreas] = useState(false);
+
+  // Welle 1b Item 7 — CV upload state. Upload happens immediately on file select
+  // (not on submit) so the storage path is ready when submit_application fires.
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvPath, setCvPath] = useState<string | null>(null);
+  const [cvUploading, setCvUploading] = useState(false);
+  const [cvError, setCvError] = useState<string | null>(null);
+
+  const handleCvSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setCvError(null);
+    if (!file) return;
+    if (!CV_ALLOWED_MIME.includes(file.type)) {
+      setCvError(t.errorCvType ?? 'Only PDF, DOC, or DOCX files are allowed.');
+      return;
+    }
+    if (file.size > CV_MAX_BYTES) {
+      setCvError(t.errorCvSize ?? 'File too large. Max 5 MB.');
+      return;
+    }
+    setCvFile(file);
+    setCvUploading(true);
+    try {
+      const ext = file.name.split('.').pop() ?? 'pdf';
+      const path = `${crypto.randomUUID()}.${ext.toLowerCase()}`;
+      const { error: uploadError } = await supabase.storage
+        .from('applicant-cvs')
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+      setCvPath(path);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Upload failed';
+      setCvError(msg);
+      setCvFile(null);
+      setCvPath(null);
+    } finally {
+      setCvUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (step === 3 && availableProjectAreas.length === 0) {
@@ -77,6 +124,8 @@ const ApplicationForm: React.FC = () => {
         psychometrics,
         preferred_project_areas: selectedProjectAreas, // Include selected project areas
         turnstileToken, // Added Turnstile token
+        cv_url: cvPath, // Welle 1b Item 7 — uploaded storage path or null
+        cv_filename: cvFile?.name ?? null,
       };
 
       // 3. Send
@@ -241,6 +290,37 @@ const ApplicationForm: React.FC = () => {
               {experience.project_highlight.length}/{PROJECT_HIGHLIGHT_MAX}
             </p>
           </div>
+
+          {/* Welle 1b Item 7 — CV upload (optional) */}
+          <div>
+            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
+              {t.labelCv ?? 'CV (optional)'}
+            </label>
+            <p className="text-gray-500 text-xs mb-2">
+              {t.cvHint ?? 'PDF, DOC or DOCX. Max 5 MB.'}
+            </p>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleCvSelect}
+              disabled={cvUploading}
+              className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 disabled:opacity-50"
+            />
+            {cvUploading && (
+              <p className="mt-2 text-xs text-gray-500 flex items-center gap-2">
+                <Spinner className="w-3 h-3" /> {t.cvUploading ?? 'Uploading…'}
+              </p>
+            )}
+            {cvPath && cvFile && !cvUploading && (
+              <p className="mt-2 text-xs text-emerald-600 font-medium">
+                ✓ {cvFile.name}
+              </p>
+            )}
+            {cvError && (
+              <p className="mt-2 text-xs text-red-500">{cvError}</p>
+            )}
+          </div>
+
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => goToStep(1)}
@@ -401,7 +481,7 @@ const ApplicationForm: React.FC = () => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={Object.keys(bfiAnswers).length < 15 || loading || !turnstileToken} // Disabled if no token
+              disabled={Object.keys(bfiAnswers).length < 15 || loading || !turnstileToken || cvUploading} // Disabled if no token / CV still uploading
               className="flex-1 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all disabled:opacity-50 shadow-lg hover:shadow-green-500/30"
             >
               {loading ? <Spinner /> : t.submitApplication}

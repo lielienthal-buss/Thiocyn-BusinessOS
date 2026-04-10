@@ -446,6 +446,12 @@ const enPublic = {
     errorFallback: 'Submission failed. Please try again.',
     errorUnexpected: 'An unexpected error occurred.',
     errorLoadingAreas: 'Failed to load project areas.',
+    // Welle 1b Item 7 — CV upload
+    labelCv: 'CV / Resume (optional)',
+    cvHint: 'PDF, DOC or DOCX. Max 5 MB.',
+    cvUploading: 'Uploading…',
+    errorCvType: 'Only PDF, DOC, or DOCX files are allowed.',
+    errorCvSize: 'File too large. Max 5 MB.',
   },
   creator: {
     badge: 'Ambassador Program',
@@ -542,6 +548,12 @@ const dePublic: typeof enPublic = {
     errorFallback: 'Übermittlung fehlgeschlagen. Bitte erneut versuchen.',
     errorUnexpected: 'Ein unerwarteter Fehler ist aufgetreten.',
     errorLoadingAreas: 'Projektbereiche konnten nicht geladen werden.',
+    // Welle 1b Item 7 — CV upload
+    labelCv: 'Lebenslauf (optional)',
+    cvHint: 'PDF, DOC oder DOCX. Max 5 MB.',
+    cvUploading: 'Wird hochgeladen…',
+    errorCvType: 'Nur PDF, DOC oder DOCX erlaubt.',
+    errorCvSize: 'Datei zu groß. Max 5 MB.',
   },
   creator: {
     badge: 'Ambassador Program',

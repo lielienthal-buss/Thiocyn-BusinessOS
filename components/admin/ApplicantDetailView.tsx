@@ -3,7 +3,8 @@ import { Application, ApplicationNote } from '@/types';
 import Card from '@/components/ui/Card';
 import BigFiveVisualizer from './BigFiveVisualizer';
 import LinkedInIcon from '@/components/icons/LinkedInIcon';
-import { addNoteForApplication, updateApplicationStage } from '@/lib/actions';
+import { addNoteForApplication, updateApplicationStage, getSettings } from '@/lib/actions';
+import { trackOperationalMetric } from '@/lib/track-event';
 import Spinner from '@/components/ui/Spinner';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
@@ -84,6 +85,48 @@ const NotesSection: React.FC<{
   );
 };
 
+// --- Welle 1b Item 7 — CV Download (signed URL) ---
+const CvDownload: React.FC<{ path: string; filename?: string | null }> = ({ path, filename }) => {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchUrl = async () => {
+      setLoading(true);
+      const { data, error: signError } = await supabase.storage
+        .from('applicant-cvs')
+        .createSignedUrl(path, 3600); // 1 hour
+      if (cancelled) return;
+      if (signError || !data) {
+        setError(signError?.message ?? 'Could not generate download link');
+      } else {
+        setSignedUrl(data.signedUrl);
+      }
+      setLoading(false);
+    };
+    void fetchUrl();
+    return () => { cancelled = true; };
+  }, [path]);
+
+  if (loading) return <Spinner className="w-4 h-4" />;
+  if (error) return <p className="text-xs text-red-400">{error}</p>;
+  if (!signedUrl) return null;
+
+  return (
+    <a
+      href={signedUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      download={filename ?? undefined}
+      className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors"
+    >
+      📄 {filename ?? 'Download CV'}
+    </a>
+  );
+};
+
 // --- Helper: Status Badge ---
 const StatusBadge: React.FC<{ stage: string | null }> = ({ stage }) => {
   const stageStyles: { [key: string]: string } = {
@@ -130,6 +173,20 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailLang, setEmailLang] = useState<'de' | 'en'>('de');
+  // Welle 1b Item 5 — Coming-Soon flag. Defaults to disabled (Resend Domain blocker).
+  // Re-enabled by toggling recruiter_settings.feature_flags.email_send to true.
+  const [emailSendEnabled, setEmailSendEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadFlags = async () => {
+      const settings = await getSettings();
+      if (cancelled) return;
+      setEmailSendEnabled(settings?.feature_flags?.email_send === true);
+    };
+    void loadFlags();
+    return () => { cancelled = true; };
+  }, []);
   const [isHiring, setIsHiring] = useState(false);
   const [hireModal, setHireModal] = useState(false);
   const [hireDepartment, setHireDepartment] = useState('marketing');
@@ -144,6 +201,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
   const handleSendEmail = (templateSlug: string) => {
     if (!application) return;
+    // Welle 1b Item 5 — operational metric per click (regardless of flag state).
+    void trackOperationalMetric('send_email_button_clicked', 'hiring', {
+      itemRef: 'welle_1b_item_5',
+      notes: `template:${templateSlug}:lang:${emailLang}:enabled:${emailSendEnabled}`,
+    });
+    if (!emailSendEnabled) {
+      toast.error('Email-Versand ist aktuell deaktiviert (Resend Domain noch nicht verifiziert).');
+      return;
+    }
     const labels: Record<string, string> = {
       task_invite: 'Send Task Email',
       interview_invite: 'Send Interview Invite',
@@ -301,6 +367,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          {/* Welle 1b Item 5 — Coming-Soon pill while Resend Domain is unverified */}
+          {!emailSendEnabled && (
+            <span
+              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30"
+              title="Resend Domain verification pending — emails are queued but not sent"
+            >
+              🔒 Email Coming Soon
+            </span>
+          )}
           {/* Language toggle for outgoing emails */}
           <div className="flex items-center gap-0.5 bg-surface-800 border border-white/[0.08] rounded-lg p-0.5">
             <button onClick={() => setEmailLang('de')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'de' ? 'bg-amber-500 text-black' : 'text-slate-500 hover:text-slate-300'}`}>DE</button>
@@ -474,6 +549,12 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               {application.project_highlight}
             </p>
           </Card>
+
+          {application.cv_url && (
+            <Card title="CV / Resume">
+              <CvDownload path={application.cv_url} filename={application.cv_filename} />
+            </Card>
+          )}
 
           {application.work_sample_text && (
               <Card title="Work Sample Submission">

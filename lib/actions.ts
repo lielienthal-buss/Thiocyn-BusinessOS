@@ -23,6 +23,8 @@ export async function submitApplicationAction(formData: ApplicationFormData) {
       p_preferred_project_areas: formData.preferred_project_areas || [], // Pass new field
       p_stage: 'applied',
       p_captcha_token: formData.turnstileToken, // Pass Turnstile token
+      p_cv_url: formData.cv_url ?? null, // Welle 1b Item 7 — CV upload path
+      p_cv_filename: formData.cv_filename ?? null,
     });
 
     if (error) throw error;

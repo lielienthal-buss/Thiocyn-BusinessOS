@@ -3,6 +3,7 @@ import SettingsView from './SettingsView';
 import ApplicationListView from './ApplicationListView';
 import ApplicantDetailView from './ApplicantDetailView';
 import InsightsView from './InsightsView';
+import EvalDashboardView from './EvalDashboardView';
 import EmailTemplateManager from './EmailTemplateManager';
 import KanbanBoard from './KanbanBoard'; // Import the Kanban board
 import ProjectAreaManager from './ProjectAreaManager';
@@ -59,7 +60,7 @@ const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
 const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
 
-type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
+type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard' | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
 type Section = 'command' | 'creative' | 'revenue' | 'hiring' | 'finance' | 'support' | 'admin' | 'account' | 'workspace';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
@@ -117,6 +118,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'projectAreas', label: 'Project Areas' },
       { id: 'taskManager', label: 'Aufgaben' },
       { id: 'academy', label: 'Academy' },
+      { id: 'evalDashboard', label: 'Eval Dashboard' },
       { id: 'insights', label: 'Insights' },
       { id: 'emailTemplates', label: 'Email Templates' },
     ],
@@ -350,6 +352,25 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'insights') {
       return <InsightsView />;
+    }
+
+    if (tab === 'evalDashboard') {
+      if (selectedAppId) {
+        if (loadingApplicant) {
+          return (
+            <div className="flex justify-center py-20">
+              <Spinner className="w-10 h-10 text-primary-600" />
+            </div>
+          );
+        }
+        return (
+          <ApplicantDetailView
+            application={selectedApplicationData}
+            onReturn={() => setSelectedAppId(null)}
+          />
+        );
+      }
+      return <EvalDashboardView onSelectApplicant={setSelectedAppId} />;
     }
 
     if (tab === 'kanban') {

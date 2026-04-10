@@ -136,6 +136,9 @@ export interface ApplicationFormData {
   psychometrics: { [key: string]: number };
   preferred_project_areas?: string[]; // New field for applicant preferences
   turnstileToken?: string | null; // Added for captcha verification
+  // CV upload (Welle 1b Item 7) — storage path inside applicant-cvs bucket
+  cv_url?: string | null;
+  cv_filename?: string | null;
   // Optional: Stage ist technisch nicht im Formular, aber gut für Types
   stage?: ApplicationStage;
 }
@@ -154,6 +157,9 @@ export interface Application extends ApplicationFormData {
   task_submitted_at?: string | null;
   interview_at?: string | null;
   decided_at?: string | null;
+  // CV upload (Welle 1b Item 7)
+  cv_url?: string | null;
+  cv_filename?: string | null;
 }
 
 export interface ApplicationNote {
@@ -184,6 +190,9 @@ export interface RecruiterSettings {
   calendly_url: string | null;
   ai_instruction: string | null;
   landing_config: LandingConfig | null;
+  // Welle 1b Item 5 — feature flags for gradual rollout (e.g. email_send blocked
+  // until Resend Domain is verified)
+  feature_flags?: Record<string, boolean> | null;
 }
 
 export interface EmailTemplate {
