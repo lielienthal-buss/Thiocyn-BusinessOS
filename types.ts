@@ -149,6 +149,11 @@ export interface Application extends ApplicationFormData {
   preferred_project_areas: string[] | null;
   ai_analysis: string | null;
   aiScore: number | null;
+  // Stage transition timestamps (Welle 1b Item 6 — for funnel + median-time analytics)
+  task_sent_at?: string | null;
+  task_submitted_at?: string | null;
+  interview_at?: string | null;
+  decided_at?: string | null;
 }
 
 export interface ApplicationNote {

@@ -162,7 +162,75 @@ export async function updateApplicationStage(
     console.error('Error updating application stage:', error);
     return null;
   }
+
+  // Welle 1b Item 12: capture human verdict for AI-vs-Human comparison
+  // Per docs/foundation/05-ai-strategy.md §2.3 — Phase-2-activation needs ≥70%
+  // match-rate over 20 cases. Silent best-effort, never breaks the user flow.
+  void captureVerdictMatch(id, stage);
+
   return data;
+}
+
+/**
+ * Welle 1b Item 12 — Verdict-Match Hook
+ *
+ * Captures the human decision on a stage transition and snapshots the AI
+ * verdict (if any) for later behavioral comparison. Append-only.
+ *
+ * Stage → human_verdict mapping:
+ *   - hired           → STRONG_YES
+ *   - task_requested  → YES        (recruiter advanced past initial screen)
+ *   - rejected        → NO
+ *   - other stages    → no row written (no clear human verdict yet)
+ *
+ * AI verdict is parsed from applications.ai_analysis if present, else NULL.
+ *
+ * Failure mode: silent. Logged via console.error so dev tools can pick it up.
+ */
+async function captureVerdictMatch(applicationId: string, newStage: ApplicationStage) {
+  const stageToVerdict: Partial<Record<ApplicationStage, string>> = {
+    hired: 'STRONG_YES',
+    task_requested: 'YES',
+    rejected: 'NO',
+  };
+  const humanVerdict = stageToVerdict[newStage];
+  if (!humanVerdict) return;
+
+  try {
+    const [{ data: app }, { data: session }] = await Promise.all([
+      supabase
+        .from('applications')
+        .select('aiScore, ai_analysis')
+        .eq('id', applicationId)
+        .maybeSingle(),
+      supabase.auth.getSession(),
+    ]);
+
+    // Try to extract verdict from ai_analysis text (loose match — analyze-applicant
+    // returns "STRONG YES" / "YES" / "MAYBE" / "NO" near the start of the response).
+    let aiVerdict: string | null = null;
+    const analysis = (app?.ai_analysis ?? '') as string;
+    const match = analysis.match(/\b(STRONG[ _]?YES|YES|MAYBE|NO)\b/i);
+    if (match) {
+      aiVerdict = match[1].toUpperCase().replace(/\s+/, '_');
+    }
+
+    const { error } = await supabase.from('analyze_applicant_verdict_match').insert({
+      application_id: applicationId,
+      ai_score: app?.aiScore ?? null,
+      ai_verdict: aiVerdict,
+      ai_reasoning: analysis || null,
+      human_verdict: humanVerdict,
+      human_decided_by: session?.session?.user?.email ?? null,
+      notes: `auto:stage_transition:${newStage}`,
+    });
+
+    if (error) {
+      console.error('[verdict-match] insert failed:', error.message);
+    }
+  } catch (err) {
+    console.error('[verdict-match] threw:', err);
+  }
 }
 
 /**
