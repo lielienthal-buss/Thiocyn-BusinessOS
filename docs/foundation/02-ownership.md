@@ -169,72 +169,60 @@ Pro Welle-1-Item: Wer macht was, wer reviewt.
 
 ---
 
-## 5. team_members Tabelle — Cleanup-Plan
+## 5. team_members Tabelle — APPLIED 2026-04-10 (Welle 1 Item 14)
 
-**Aktueller Stand (Live):**
-| email | role | status | sections |
+**Status:** ✅ Applied. 8 rows live (7 active, 1 deactivated).
+
+### 5.1 Live-Stand nach Apply
+
+| email | full_name | role | status | has_auth | Notiz |
+|---|---|---|---|---|---|
+| jll@hartlimesgmbh.de | Jan-Luis Lielienthal | owner | active | ❌ | Alias, dormant bis Login mit jll@ |
+| luis@mail.hartlimesgmbh.de | Luis Lielienthal | owner | active | ✅ | Existing, Luis' aktueller Login |
+| tlroelants@gmail.com | Tom Roelants | intern_lead | active | ✅ | Tom's Gmail Login (per auth.users) |
+| mainak4869@gmail.com | Mainak Patra | staff | active | ❌ | Dormant bis Resend Domain works |
+| vp@hartlimesgmbh.de | Vanessa Petrova | admin | active | ❌ | Dormant |
+| ph@hartlimesgmbh.de | Peter Hart | admin | active | ❌ | Dormant |
+| vb@hartlimesgmbh.de | Valentin Bohnhardt | admin | active | ❌ | Dormant |
+| sameerpaulsam@gmail.com | (null) | support | deactivated | ❌ | Per Luis 10.04.: nie eingeloggt |
+
+### 5.2 Korrekturen am Ursprungs-Plan (Doc 02 v1, gelernt während Apply)
+
+| Korrektur | Was es war | Was es ist | Begründung |
 |---|---|---|---|
-| luis@mail.hartlimesgmbh.de | owner | active | all 7 |
-| sameerpaulsam@gmail.com | support | deactivated | (leer) |
+| Tom-Email | `tom@hartlimesgmbh.de` | `tlroelants@gmail.com` | Dashboard.tsx matched `team_members.email = session.user.email`. Tom's Login-Email per `auth.users` ist Gmail. |
+| Tom-Rolle | `'hiring'` | `'intern_lead'` | UserRole enum in Dashboard.tsx kennt nur `owner\|admin\|staff\|intern_lead\|viewer`. `'hiring'` würde auf ROLE_LEVEL=0 fallen (= viewer). |
+| Mainak-Rolle | `'creative'` | `'staff'` | Gleiche Begründung. `'staff'` gibt ihm Hiring + Creative + Revenue Access, aber NICHT Finance/Admin (Money-Boundary erhalten). |
+| Sameer | reaktivieren | unverändert lassen | Per Luis 10.04.: Sameer ist nicht aktiv (nie eingeloggt, Resend blockt). team_members.status='deactivated' bleibt. |
 
-**Probleme:**
-- Tom hat OS-Login seit 09.04., aber NICHT in `team_members`
-- Sameer ist `deactivated` in `team_members`, aber `is_active=true` in `intern_accounts` → Doppel-Eintrag-Inkonsistenz
-- Owner-Email `luis@mail.hartlimesgmbh.de` ≠ primäre Email `jll@hartlimesgmbh.de` (beide gehören Luis, aber Owner-Lookup matched nicht beim Login mit `jll@`)
-- Mainak, Vanessa, Peter, Valentin, Matic — alle nicht in `team_members`
+### 5.3 Wichtige Architektur-Erkenntnis
 
-**Cleanup-Plan (als Welle-1-Item, Item 16):**
+**`team_members.allowed_sections` ist heute NICHT load-bearing.** Dashboard.tsx prüft section-Sichtbarkeit via `minRole` (`SECTIONS[].minRole`), nicht via `allowed_sections`. Die Spalte wird nur in `AccountView.tsx` zur Anzeige genutzt.
 
-```sql
--- 1. Owner: Luis (beide Emails als zwei Einträge mit role=owner)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('jll@hartlimesgmbh.de', 'Jan-Luis Lielienthal', 'owner', ARRAY['command','creative','revenue','hiring','finance','support','admin'], 'active', 'system'),
-  ('luis@mail.hartlimesgmbh.de', 'Jan-Luis Lielienthal (alt)', 'owner', ARRAY['command','creative','revenue','hiring','finance','support','admin'], 'active', 'system')
-ON CONFLICT (email) DO UPDATE SET role='owner', status='active';
+**Tom-Permission-Check Live:**
+- Tom = `intern_lead` → ROLE_LEVEL=1
+- Sichtbar: command (no minRole), creative (no minRole), hiring (no minRole), support (no minRole)
+- NICHT sichtbar: revenue (minRole=staff), finance (minRole=admin), admin (minRole=admin)
+- ✅ Money-Boundary: erhalten
 
--- 2. Tom als Hiring-Owner (Tom darf NICHT Finance, NICHT Money)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('tom@hartlimesgmbh.de', 'Tom Roelants', 'hiring', ARRAY['command','hiring'], 'active', 'jll@hartlimesgmbh.de')
-ON CONFLICT (email) DO UPDATE SET role='hiring', status='active';
+**Mainak-Permission-Check Live:**
+- Mainak = `staff` → ROLE_LEVEL=2
+- Sichtbar: command, creative, hiring, support, **revenue** (für Ad Performance)
+- NICHT sichtbar: finance, admin
+- ✅ Money-Boundary: erhalten
 
--- 3. Sameer reaktivieren (sollte 'support' aktiv sein, parallel zu intern_accounts)
-UPDATE team_members
-SET status='active', allowed_sections=ARRAY['command','support']
-WHERE email='sameerpaulsam@gmail.com';
+### 5.4 Tom hat heute schon Access via Fallback
 
--- 4. Mainak (Marketing/Creator)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('mainak4869@gmail.com', 'Mainak Patra', 'creative', ARRAY['command','creative','hiring'], 'active', 'jll@hartlimesgmbh.de')
-ON CONFLICT (email) DO UPDATE;
+Dashboard.tsx fällt auf `intern_accounts WHERE department='lead'` zurück, wenn `team_members` keinen Eintrag hat. Tom ist mit `department='lead'` in intern_accounts → bekommt automatisch `intern_lead` Rolle. Der team_members-Eintrag von heute ist also **redundant für aktuellen Zugriff**, aber wichtig für:
+- Source-of-Truth-Klarheit (single lookup statt fallback chain)
+- Spätere Removal des intern_accounts Fallback
+- Audit-Trail (`invited_by`, `created_at`)
 
--- 5. Vanessa (Read-only Finance — Sparring)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('vp@hartlimesgmbh.de', 'Vanessa Petrova', 'viewer', ARRAY['command','finance'], 'active', 'jll@hartlimesgmbh.de')
-ON CONFLICT (email) DO UPDATE;
+### 5.5 Open Discoveries für Folge-Wellen
 
--- 6. Peter (MD, Admin-Level)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('ph@hartlimesgmbh.de', 'Peter Hart', 'admin', ARRAY['command','creative','revenue','hiring','finance','support','admin'], 'active', 'jll@hartlimesgmbh.de')
-ON CONFLICT (email) DO UPDATE;
-
--- 7. Valentin (Admin für Tech-Setup)
-INSERT INTO team_members (email, full_name, role, allowed_sections, status, invited_by)
-VALUES
-  ('valentin@hartlimesgmbh.de', 'Valentin Bohnhardt', 'admin', ARRAY['command','creative','revenue','hiring','finance','support','admin'], 'active', 'jll@hartlimesgmbh.de')
-ON CONFLICT (email) DO UPDATE;
-```
-
-**Vorbehalt:** Diese SQL ist ein VORSCHLAG, kein Auto-Apply. Wird in Welle 1 (Item 16) ausgeführt, NACH explizitem Luis-Go. Vor Apply: Schema-Check `team_members.role` CHECK constraint — sind die Rollen `owner`, `admin`, `creative`, `hiring`, `support`, `viewer` alle erlaubt? Wenn nein, anpassen.
-
-**WARTET AUF (Welle 1):**
-- Luis-Go für SQL-Apply
-- Korrekte Email für Valentin (Vermutung: `valentin@hartlimesgmbh.de` — verifizieren)
-- Entscheidung: Vanessa als `viewer` oder `admin`?
+1. **Sameer-role 'support'** ist nicht in UserRole-Enum. Wenn er je reaktiviert wird → Cast `'support' as UserRole` → ROLE_LEVEL=0 = viewer. Funktioniert technisch, sollte aber gefixt werden.
+2. **`team_members.role` hat KEINEN CHECK constraint** trotz `-- role: 'owner' | 'admin' | ...` Comment in `supabase_team_members.sql`. Free-text. Sollte in Layer-2-Hardening enforced werden.
+3. **`allowed_sections` Section-Vokabular ist veraltet** in `supabase_team_members.sql` Seed (`'marketing','ecommerce','analytics'`) vs Live-Code (`'command','creative','revenue'`). SQL-Seed-File ist drift, sollte gepatched werden wenn jemand davon Migrationen ableitet.
 
 ---
 
@@ -292,11 +280,9 @@ Diese Doc beschreibt den IST-Zustand (Luis-Single-Owner). Die folgenden Bedingun
 
 ---
 
-## 9. Offene Fragen für Luis (Welle 1 SQL-Cleanup)
+## 9. Offene Fragen — RESOLVED 2026-04-10
 
-1. **Valentin's Email:** Ist `valentin@hartlimesgmbh.de` korrekt? (in `weekly-team-2026-03-24.log` steht „Valentin Bohnhardt" — keine Email-Verifikation)
-2. **Vanessa's Rolle in team_members:** `viewer` (nur Read) oder `admin` (Schreib-Zugriff für Sparring)?
-3. **`team_members.role` CHECK constraint:** Sind die Rollen `owner | admin | creative | hiring | support | viewer` alle erlaubt? Bei `team_members` Stichprobe in Doc B war es offen — vor SQL-Apply prüfen.
-4. **Sameer-Konflikt:** `intern_accounts.is_active=true` aber `team_members.status='deactivated'`. Welcher Status ist richtig? Vermutung: aktiv, der `team_members`-Eintrag ist Legacy.
-
-Diese 4 sind WELLE-1-blockierend, NICHT Foundation-blockierend. Doc A kann ohne Antworten geschrieben werden.
+1. ✅ **Valentin's Email:** `vb@hartlimesgmbh.de` (Luis 10.04.)
+2. ✅ **Vanessa's Rolle:** `admin` (Luis 10.04.)
+3. ✅ **`team_members.role` CHECK constraint:** Existiert NICHT (Live-DB-Check). Free-text. Convention bleibt aber `owner | admin | staff | intern_lead | viewer` (per Dashboard.tsx UserRole enum).
+4. ✅ **Sameer-Konflikt:** Per Luis: nicht aktiv, nie eingeloggt. team_members.status='deactivated' bleibt. intern_accounts.is_active=true ist Legacy/unused.

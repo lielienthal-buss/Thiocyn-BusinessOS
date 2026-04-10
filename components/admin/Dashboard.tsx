@@ -7,7 +7,6 @@ import EmailTemplateManager from './EmailTemplateManager';
 import KanbanBoard from './KanbanBoard'; // Import the Kanban board
 import ProjectAreaManager from './ProjectAreaManager';
 import TaskManager from './TaskManager';
-import OnboardingView from './OnboardingView';
 import AcademyView from './AcademyView';
 import CustomerSupportView from './CustomerSupportView';
 import PostsTrackerView from './PostsTrackerView';
@@ -117,7 +116,6 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'kanban', label: 'Kanban Board' },
       { id: 'projectAreas', label: 'Project Areas' },
       { id: 'taskManager', label: 'Aufgaben' },
-      { id: 'onboarding', label: 'Onboarding' },
       { id: 'academy', label: 'Academy' },
       { id: 'insights', label: 'Insights' },
       { id: 'emailTemplates', label: 'Email Templates' },
@@ -387,10 +385,6 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'emailTemplates') {
       return <EmailTemplateManager />;
-    }
-
-    if (tab === 'onboarding') {
-      return <OnboardingView />;
     }
 
     if (tab === 'academy') {

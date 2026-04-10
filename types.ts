@@ -10,9 +10,78 @@ export type ApplicationStage =
   | 'rejected';
 
 // Academy types
+export type AcademyPhase = 'onboarding' | 'foundation' | 'specialisation' | 'ownership' | 'completed';
+export type AcademyLevel = 1 | 2 | 3 | 4 | 5;
+export type AcademyTrack = 'growth_marketing' | 'creative_brand' | 'ops_cs' | 'ai_automation' | 'finance_analytics';
+export type MilestoneKey = 'rookie' | 'explorer' | 'contributor' | 'builder' | 'owner' | 'graduated';
+export type AssignmentStatus = 'pending' | 'in_progress' | 'submitted' | 'approved' | 'rejected';
+export type DeliverableFormat = 'text' | 'presentation' | 'document' | 'url' | 'checkbox' | 'none';
+
+export interface InternAccount {
+  id: string;
+  auth_user_id: string | null;
+  full_name: string;
+  email: string;
+  department: string;
+  assigned_brand: string | null;
+  budget_tokens_monthly: number;
+  model: string;
+  is_active: boolean;
+  created_at: string;
+  cohort: string | null;
+  phase: AcademyPhase;
+  level: AcademyLevel;
+  track: AcademyTrack | null;
+  start_date: string | null;
+  buddy_user_id: string | null;
+  admin_notes: string | null;
+}
+
+export interface InternGoal {
+  id: string;
+  intern_id: string;
+  goal_text: string;
+  category: 'skill' | 'portfolio' | 'career' | 'other' | null;
+  status: 'active' | 'achieved' | 'dropped';
+  reviewed_at: string | null;
+  review_notes: string | null;
+  created_at: string;
+}
+
+export interface InternMilestone {
+  id: string;
+  intern_id: string;
+  milestone_key: MilestoneKey;
+  unlocked_at: string;
+  unlocked_by: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface InternAssignment {
+  id: string;
+  intern_id: string;
+  template_id: string | null;
+  template_key: string | null;
+  phase: AcademyPhase;
+  week_number: number | null;
+  title: string;
+  description: string | null;
+  deliverable_format: DeliverableFormat | null;
+  status: AssignmentStatus;
+  submitted_at: string | null;
+  submission_text: string | null;
+  submission_url: string | null;
+  reviewed_at: string | null;
+  review_score: number | null;
+  review_feedback: string | null;
+  reviewed_by: string | null;
+  created_at: string;
+}
+
 export interface WeeklyReview {
   id: string;
-  application_id: string;
+  intern_id: string;
   week_number: number;
   highlight: string | null;
   challenge: string | null;
@@ -25,7 +94,7 @@ export interface WeeklyReview {
 
 export interface LearningLogEntry {
   id: string;
-  application_id: string;
+  intern_id: string;
   type: 'task' | 'learning' | 'resource' | 'achievement';
   title: string;
   body: string | null;
@@ -36,7 +105,7 @@ export interface LearningLogEntry {
 
 export interface FinalReview {
   id: string;
-  application_id: string;
+  intern_id: string;
   overall_rating: number | null;
   key_contributions: string | null;
   growth_areas: string | null;
@@ -48,7 +117,7 @@ export interface FinalReview {
 }
 
 export interface OnboardingChecklist {
-  application_id: string;
+  intern_id: string;
   items: Record<string, boolean>;
   updated_at: string;
 }

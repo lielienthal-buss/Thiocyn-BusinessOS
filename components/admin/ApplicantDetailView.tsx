@@ -422,20 +422,25 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           </div>
           <div>
             <p className="text-slate-500 font-bold">Profile</p>
-            {application.linkedin_url && application.linkedin_url.startsWith('http') ? (
-              <a
-                href={application.linkedin_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="View Profile"
-                className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold hover:underline"
-              >
-                <LinkedInIcon />
-                View Profile
-              </a>
-            ) : (
-              <p className="text-slate-500">Not provided</p>
-            )}
+            {(() => {
+              const raw = application.linkedin_url?.trim();
+              if (!raw) return <p className="text-slate-500">Not provided</p>;
+              // Normalize: auto-prefix https:// if missing (fixes Welle 1 Item 3 — many applicants
+              // submit `www.linkedin.com/...` or `linkedin.com/...` which become 404 as relative links)
+              const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+              return (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View Profile"
+                  className="flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold hover:underline"
+                >
+                  <LinkedInIcon />
+                  View Profile
+                </a>
+              );
+            })()}
           </div>
           {application.preferred_project_areas && application.preferred_project_areas.length > 0 && (
             <div className="col-span-full mt-4">

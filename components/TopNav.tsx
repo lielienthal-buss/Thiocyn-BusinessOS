@@ -91,7 +91,9 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
       {/* Desktop — pill nav */}
       <div className="hidden md:flex justify-center">
         <div className="px-2 py-1.5 rounded-full flex items-center gap-2 bg-white border border-gray-200 shadow-sm">
-          <Logo className="h-9 w-auto ml-1" />
+          {/* Welle 1 Item 4: Logo SVG is white-on-transparent (Thiocyn CDN), invisible on white BG.
+              Filter `brightness-0` makes it solid black, opacity adds polish. */}
+          <Logo className="h-9 w-auto ml-1 brightness-0 opacity-90" />
           <div className="flex gap-1">
             {LINKS.map(({ label, path }) => {
               const active = path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -122,7 +124,8 @@ const TopNav: React.FC<{ variant?: 'light' | 'dark' }> = ({ variant }) => {
       {/* Mobile — scrollable pill */}
       <div className="md:hidden overflow-x-auto">
         <div className="px-2 py-1.5 rounded-full flex items-center gap-1 bg-white border border-gray-200 shadow-sm w-max mx-auto">
-          <Logo className="h-7 w-auto ml-1 shrink-0" />
+          {/* Welle 1 Item 4: same fix as desktop variant — make white SVG visible on white BG */}
+          <Logo className="h-7 w-auto ml-1 shrink-0 brightness-0 opacity-90" />
           <div className="flex gap-0.5">
             {LINKS.map(({ label, path }) => {
               const active = path === '/' ? pathname === '/' : pathname.startsWith(path);

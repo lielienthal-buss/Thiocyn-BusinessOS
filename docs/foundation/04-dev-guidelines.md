@@ -592,6 +592,32 @@ Per `feedback_business_os_phasing.md`:
 7. Monorepo-Tooling falls Layer 2 mehrere Frontends braucht (aktuell single-repo)
 8. Storybook für UI-Components (für Mainak/Tom als Demo)
 
+### 13.1 Welle „Layer-2-Hardening" (Trigger: Layer-2-Sales beginnt)
+
+**Aufnahme aus Supabase Advisor 2026-04-10** (60 lints, keine durch heutige Welle 1 Items verursacht):
+
+| Count | Level | Lint | Welle-1-Severity | Welle-Layer-2-Severity |
+|---|---|---|---|---|
+| 42 | WARN | `rls_policy_always_true` | LOW (Phase-1-default per §5.2) | HIGH — muss section-gated werden |
+| 9 | ERROR | `security_definer_view` | LOW (Creator Module out-of-scope) | HIGH — bypassed Tenant-Isolation |
+| 8 | WARN | `function_search_path_mutable` | LOW | MEDIUM — Hardening recommended |
+| 1 | WARN | `auth_leaked_password_protection` | LOW | LOW — 1-Klick Toggle im Dashboard |
+
+**SECURITY DEFINER Views (alle in Modul 7 Creator Program, out-of-scope Welle 1):**
+- `cross_brand_creators`
+- `creator_scoreboard`
+- `creator_operator_dashboard`
+- `usage_rights_overview`
+- `qualified_prospects`
+- `gifting_pipeline`
+- `monthly_commission_summary`
+- `weekly_pulse`
+- `brand_creator_quotas`
+
+**Pflicht vor Layer-2-Activation:** Alle 9 Views umstellen auf `SECURITY INVOKER` oder als Edge-Function-only umbauen. Per Doc 03 §4 Activation Trigger #3 ("Quality-Standard Code").
+
+**Sofort-Action heute:** keine. Tracking via diese Sektion + Wave-Review-Item bei Welle-Ende.
+
 ---
 
 **Nächster Schritt:** Doc C (AI Strategy) — Pro AI-Function: Activation Trigger + Kill Criteria + Fallback.

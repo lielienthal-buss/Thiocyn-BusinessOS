@@ -162,35 +162,48 @@ Diese werden **automatisch** durch Frontend-Events erfasst, sobald Welle-1-Items
 | AcademyView | weekly_review_writes_per_week | onSave handler |
 | Onboarding Checklist | items_checked_per_week | onCheckboxToggle handler |
 
-**Implementation:** Helper-Function in `lib/track-event.ts`:
+**Implementation:** Helper-Function in `lib/track-event.ts` (✅ APPLIED 2026-04-10 Welle 1 Item D2).
+
+Aktuelle Signatur (8-col Schema, kein `source`-Feld — wurde in Patch P7 gestrichen, Convention: `notes` Prefix `auto:` / `manual:` / `baseline:` / `review:`):
 
 ```typescript
-// lib/track-event.ts
+// lib/track-event.ts (excerpt — see actual file for full types + outcome variant)
 import { supabase } from './supabaseClient';
 
 export async function trackOperationalMetric(
   metricName: string,
-  module: string,
-  value: number = 1,
-  unit: string = 'count'
-) {
-  await supabase.from('os_metrics').insert({
-    metric_layer: 'operational',
-    metric_name: metricName,
-    module,
-    value,
-    unit,
-    source: 'auto_event',
-  });
+  module: MetricModule,
+  options: { value?: number; unit?: string; itemRef?: string; notes?: string } = {}
+): Promise<void> {
+  const { value = 1, unit = 'count', itemRef, notes } = options;
+  try {
+    const { error } = await supabase.from('os_metrics').insert({
+      metric_layer: 'operational',
+      metric_name: metricName,
+      module,
+      role: null,
+      value,
+      unit,
+      item_ref: itemRef ?? null,
+      notes: notes ? `auto:${notes}` : 'auto',
+    });
+    if (error) console.error('[track-event] operational insert failed:', error.message);
+  } catch (err) {
+    console.error('[track-event] operational threw:', err);
+  }
 }
 ```
 
 Aufruf in Components:
 ```tsx
+import { trackOperationalMetric } from '@/lib/track-event';
+
 useEffect(() => {
-  trackOperationalMetric('application_list_view_opened', 'hiring');
+  void trackOperationalMetric('application_list_view_opened', 'hiring');
 }, []);
 ```
+
+**Pendant `trackOutcomeMetric(metricName, module, role, value, options)`** existiert für manuelle Outcome-Captures (Sunday Snapshot, Wave Review).
 
 **Risk:** Hochfrequente Events (jeder Klick) könnten os_metrics aufblähen. Gegenmaßnahme: nur „bedeutsame" Events tracken (View Open, Save, Submit), nicht jeder Hover.
 

@@ -57,7 +57,7 @@ serve(async (req) => {
 
     const emailHtml = `
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
@@ -67,34 +67,34 @@ serve(async (req) => {
           <tr>
             <td style="background:#0f172a;padding:32px 40px;text-align:center;">
               <p style="margin:0;color:#94a3b8;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">${config.program_name}</p>
-              <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:700;">Du wurdest aufgenommen.</h1>
+              <h1 style="margin:8px 0 0;color:#ffffff;font-size:22px;font-weight:700;">You've been accepted.</h1>
             </td>
           </tr>
           <tr>
             <td style="padding:40px 40px 32px;">
               <p style="margin:0 0 16px;color:#1e293b;font-size:16px;font-weight:600;">Hey ${intern.full_name},</p>
               <p style="margin:0 0 16px;color:#475569;font-size:15px;line-height:1.6;">
-                wir freuen uns, dich als <strong>${dept}-Intern</strong> bei <strong>${config.company_name}</strong> begrüßen zu dürfen.
+                We're excited to welcome you as a <strong>${dept} Intern</strong> at <strong>${config.company_name}</strong>.
               </p>
               <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.6;">
-                Über den folgenden Link kannst du deinen Account aktivieren und direkt loslegen.
+                Click the link below to activate your account and get started.
               </p>
               <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
                 <tr>
                   <td style="background:#2563eb;border-radius:8px;">
                     <a href="${magicLink}" style="display:inline-block;padding:14px 32px;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;">
-                      Account aktivieren →
+                      Activate Account →
                     </a>
                   </td>
                 </tr>
               </table>
               <div style="background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;margin-bottom:24px;">
                 <p style="margin:0;color:#92400e;font-size:13px;line-height:1.5;">
-                  Dieser Link ist <strong>einmalig</strong> und <strong>24 Stunden gültig</strong>.
+                  This link is <strong>single-use</strong> and <strong>valid for 24 hours</strong>.
                 </p>
               </div>
               <p style="margin:0;color:#64748b;font-size:13px;">
-                Dein Portal:<br>
+                Your portal:<br>
                 <a href="${config.app_url}/intern/${intern.id}" style="color:#2563eb;text-decoration:none;">${config.app_url}/intern/${intern.id}</a>
               </p>
             </td>
@@ -120,7 +120,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: `${config.from_name} <${config.from_email}>`,
         to: intern.email,
-        subject: 'Du bist dabei — Account aktivieren',
+        subject: "You're in — Activate your account",
         html: emailHtml,
       }),
     });
