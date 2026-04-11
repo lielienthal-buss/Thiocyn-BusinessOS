@@ -8,12 +8,14 @@ import EmmaPlannerTab from './finance/EmmaPlannerTab';
 import MonthlyReportingTab from './finance/MonthlyReportingTab';
 import FinancePipelineTab from './finance/FinancePipelineTab';
 import CashTab from './finance/CashTab';
+import PaymentPlanTab from './finance/PaymentPlanTab';
 import type { FinanceTab } from './finance/financeTypes';
 
 type ExtendedFinanceTab = FinanceTab | 'actionCenter' | 'financeMails' | 'emmaPlanner';
 
 const TABS: { id: ExtendedFinanceTab; label: string }[] = [
   { id: 'actionCenter',     label: '🚨 Action Center' },
+  { id: 'paymentPlan',      label: '🧮 Payment Plan' },
   { id: 'cash',             label: '💰 Cash' },
   { id: 'pipeline',         label: '📋 Pipeline' },
   { id: 'disputes',         label: 'Disputes' },
@@ -59,6 +61,7 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
       {/* Tab content */}
       <div>
         {activeTab === 'actionCenter'      && <ActionCenterTab />}
+        {activeTab === 'paymentPlan'       && <PaymentPlanTab />}
         {activeTab === 'cash'              && <CashTab />}
         {activeTab === 'pipeline'          && <FinancePipelineTab />}
         {activeTab === 'disputes'          && <DisputesTab />}
