@@ -18,7 +18,7 @@ export type Brand = typeof BRANDS[number];
 export type Platform = typeof PLATFORMS[number];
 export type Currency = typeof CURRENCIES[number];
 export type DisputeStatus = typeof DISPUTE_STATUSES[number];
-export type FinanceTab = 'disputes' | 'invoices' | 'overview' | 'monthlyReporting' | 'pipeline';
+export type FinanceTab = 'disputes' | 'invoices' | 'overview' | 'monthlyReporting' | 'pipeline' | 'cash';
 
 // ─── Finance Pipeline ────────────────────────────────────────────────────────
 
