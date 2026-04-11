@@ -3,40 +3,41 @@ import { supabase } from '@/lib/supabaseClient';
 import {
   type Currency,
   type Dispute,
-  type Invoice,
+  type PipelineItem,
 } from './financeTypes';
 import { daysUntil, formatDate, formatAmount } from './financeHelpers';
 import { EmptyState } from './StatusBadge';
 
 // ─── Overview Tab ─────────────────────────────────────────────────────────────
+// Reads disputes + finance_pipeline (canonical Eingangsrechnungen).
 
 function OverviewTab() {
   const [disputes, setDisputes] = useState<Dispute[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [pipeline, setPipeline] = useState<PipelineItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const [dResult, iResult] = await Promise.all([
+      const [dResult, pResult] = await Promise.all([
         supabase.from('disputes').select('*'),
-        supabase.from('invoices').select('*'),
+        supabase.from('finance_pipeline').select('*'),
       ]);
       if (dResult.data) setDisputes(dResult.data as Dispute[]);
-      if (iResult.data) setInvoices(iResult.data as Invoice[]);
+      if (pResult.data) setPipeline(pResult.data as PipelineItem[]);
       setLoading(false);
     };
     load();
   }, []);
 
   const openDisputes = disputes.filter((d) => d.status === 'open' || d.status === 'escalated');
-  const outstandingInvoices = invoices.filter((inv) => inv.status === 'pending' || inv.status === 'overdue');
-  const overdueInvoices = invoices.filter((inv) => inv.status === 'overdue');
+  const outstandingItems = pipeline.filter((item) => item.paid_at === null);
+  const overdueItems = pipeline.filter((item) => item.status === 'ueberfaellig');
 
   const sumByCurrency = (items: { amount: number; currency: Currency }[]) => {
-    const groups = items.reduce((acc: Record<Currency, number>, item) => {
+    const groups = items.reduce((acc: Record<string, number>, item) => {
       acc[item.currency] = (acc[item.currency] ?? 0) + item.amount;
       return acc;
-    }, {} as Record<Currency, number>);
+    }, {});
     const entries = Object.entries(groups);
     if (entries.length === 0) return '—';
     return entries.map(([cur, val]) => formatAmount(val, cur as Currency)).join(' + ');
@@ -49,7 +50,7 @@ function OverviewTab() {
     amount: string;
     deadline: string | null;
     status: string;
-    brand: string;
+    entity: string;
     daysLeft: number | null;
   }
 
@@ -65,22 +66,22 @@ function OverviewTab() {
         amount: formatAmount(d.amount, d.currency),
         deadline: d.deadline,
         status: d.status,
-        brand: d.brand,
+        entity: d.brand,
         daysLeft: daysUntil(d.deadline),
       })),
-    ...outstandingInvoices
-      .filter((inv) => {
-        const days = daysUntil(inv.due_date);
+    ...outstandingItems
+      .filter((item) => {
+        const days = daysUntil(item.due_date);
         return days !== null && days <= 7;
       })
-      .map((inv) => ({
+      .map((item) => ({
         type: 'invoice' as const,
-        label: `Invoice: ${inv.vendor}`,
-        amount: formatAmount(inv.amount, inv.currency),
-        deadline: inv.due_date,
-        status: inv.status,
-        brand: inv.brand,
-        daysLeft: daysUntil(inv.due_date),
+        label: `Rechnung: ${item.vendor}`,
+        amount: formatAmount(item.amount, item.currency),
+        deadline: item.due_date,
+        status: item.status,
+        entity: item.entity,
+        daysLeft: daysUntil(item.due_date),
       })),
   ].sort((a, b) => (a.daysLeft ?? 999) - (b.daysLeft ?? 999));
 
@@ -98,11 +99,11 @@ function OverviewTab() {
       ),
     },
     {
-      label: 'Outstanding Invoices',
-      value: sumByCurrency(outstandingInvoices),
-      sub: `${outstandingInvoices.length} items`,
-      color: outstandingInvoices.length > 0 ? 'text-amber-400' : 'text-emerald-400',
-      bg: outstandingInvoices.length > 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
+      label: 'Offene Rechnungen',
+      value: sumByCurrency(outstandingItems),
+      sub: `${outstandingItems.length} Posten`,
+      color: outstandingItems.length > 0 ? 'text-amber-400' : 'text-emerald-400',
+      bg: outstandingItems.length > 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -110,11 +111,11 @@ function OverviewTab() {
       ),
     },
     {
-      label: 'Overdue Invoices',
-      value: sumByCurrency(overdueInvoices),
-      sub: `${overdueInvoices.length} items`,
-      color: overdueInvoices.length > 0 ? 'text-red-400' : 'text-emerald-400',
-      bg: overdueInvoices.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
+      label: 'Überfällig',
+      value: sumByCurrency(overdueItems),
+      sub: `${overdueItems.length} Posten`,
+      color: overdueItems.length > 0 ? 'text-red-400' : 'text-emerald-400',
+      bg: overdueItems.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -156,15 +157,15 @@ function OverviewTab() {
           <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h3 className="text-sm font-bold text-slate-100">Due within 7 days</h3>
+          <h3 className="text-sm font-bold text-slate-100">Fällig in 7 Tagen</h3>
           {urgentItems.length > 0 && (
             <span className="ml-auto text-xs font-semibold text-red-400 bg-red-500/15 border border-red-500/20 px-2 py-0.5 rounded-full">
-              {urgentItems.length} item{urgentItems.length !== 1 ? 's' : ''}
+              {urgentItems.length} Posten
             </span>
           )}
         </div>
         {urgentItems.length === 0 ? (
-          <EmptyState message="No items due within 7 days." />
+          <EmptyState message="Keine fälligen Posten in 7 Tagen." />
         ) : (
           <ul className="divide-y divide-white/[0.06]">
             {urgentItems.map((item, idx) => (
@@ -175,7 +176,7 @@ function OverviewTab() {
                   }`} />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-100 truncate">{item.label}</p>
-                    <p className="text-xs text-slate-500 capitalize">{item.brand} · {item.type}</p>
+                    <p className="text-xs text-slate-500 capitalize">{item.entity} · {item.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
@@ -187,8 +188,8 @@ function OverviewTab() {
                   }`}>
                     {item.daysLeft !== null
                       ? item.daysLeft <= 0
-                        ? 'Today / Overdue'
-                        : `${item.daysLeft}d left`
+                        ? 'Heute / Überfällig'
+                        : `${item.daysLeft}d`
                       : '—'}
                   </span>
                 </div>

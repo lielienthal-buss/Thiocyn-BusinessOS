@@ -1,9 +1,31 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import type { Brand, Currency, Dispute, Invoice } from './financeTypes';
-import { BRANDS, INVOICE_STATUS_STYLES, CATEGORY_STYLES } from './financeTypes';
+import type { Currency, Dispute, Entity, PipelineItem, PipelineStatus } from './financeTypes';
+import { ENTITIES, PIPELINE_STATUS_STYLES } from './financeTypes';
 import { daysUntil, formatDate, formatAmount } from './financeHelpers';
 import { EmptyState } from './StatusBadge';
+
+// ─── ActionCenterTab ──────────────────────────────────────────────────────────
+// Unified view of disputes + finance_pipeline (Eingangsrechnungen).
+// Welle 2 will add Mahnstufen + Cash-Optimizer as additional layers.
+
+const ENTITY_LABELS: Record<Entity, string> = {
+  'thiocyn': 'Thiocyn',
+  'hart-limes': 'Hart Limes',
+  'paigh': 'Paigh',
+  'dr-severin': 'Dr. Severin',
+  'take-a-shot': 'Take A Shot',
+  'wristr': 'Wristr',
+  'timber-john': 'Timber & John',
+};
+
+const STATUS_LABELS: Record<PipelineStatus, string> = {
+  offen: 'Offen',
+  bezahlt: 'Bezahlt',
+  beleg_fehlt: 'Beleg fehlt',
+  erledigt: 'Erledigt',
+  ueberfaellig: 'Überfällig',
+};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -11,15 +33,14 @@ interface ActionItem {
   id: string;
   type: 'dispute' | 'invoice';
   label: string;
-  brand: Brand;
+  entity: Entity | string;
   amount: number;
   currency: Currency;
   daysLeft: number | null;
   status: string;
-  category?: string;
   notes?: string | null;
   deadlineStr?: string | null;
-  raw: Dispute | Invoice;
+  raw: Dispute | PipelineItem;
 }
 
 interface Section {
@@ -99,18 +120,18 @@ function DueBadge({ daysLeft }: { daysLeft: number | null }) {
   );
 }
 
-function TypePill({ type, category }: { type: 'dispute' | 'invoice'; category?: string }) {
+function TypePill({ type, status }: { type: 'dispute' | 'invoice'; status?: string }) {
   if (type === 'dispute')
     return (
       <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/20">
         Dispute
       </span>
     );
-  const cat = category ?? 'invoice';
-  const cls = CATEGORY_STYLES[cat as keyof typeof CATEGORY_STYLES] ?? 'bg-slate-50 text-slate-500 border-slate-100';
+  const cls = (status && PIPELINE_STATUS_STYLES[status as PipelineStatus]) ?? 'bg-slate-500/15 text-slate-400 border border-slate-500/20';
+  const label = (status && STATUS_LABELS[status as PipelineStatus]) ?? 'Rechnung';
   return (
-    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded border capitalize ${cls}`}>
-      {cat}
+    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded border ${cls}`}>
+      {label}
     </span>
   );
 }
@@ -119,20 +140,20 @@ function TypePill({ type, category }: { type: 'dispute' | 'invoice'; category?: 
 
 function ActionCenterTab() {
   const [disputes, setDisputes] = useState<Dispute[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [pipeline, setPipeline] = useState<PipelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
-  const [brandFilter, setBrandFilter] = useState<Brand | 'all'>('all');
+  const [entityFilter, setEntityFilter] = useState<Entity | 'all'>('all');
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [dRes, iRes] = await Promise.all([
+    const [dRes, pRes] = await Promise.all([
       supabase.from('disputes').select('*').in('status', ['open', 'escalated']),
-      supabase.from('invoices').select('*').in('status', ['pending', 'overdue']),
+      supabase.from('finance_pipeline').select('*').is('paid_at', null),
     ]);
     if (dRes.data) setDisputes(dRes.data as Dispute[]);
-    if (iRes.data) setInvoices(iRes.data as Invoice[]);
+    if (pRes.data) setPipeline(pRes.data as PipelineItem[]);
     setLoading(false);
   }, []);
 
@@ -144,7 +165,7 @@ function ActionCenterTab() {
       id: d.id,
       type: 'dispute',
       label: d.case_id,
-      brand: d.brand,
+      entity: d.brand,
       amount: d.amount,
       currency: d.currency,
       daysLeft: daysUntil(d.deadline),
@@ -153,21 +174,20 @@ function ActionCenterTab() {
       deadlineStr: d.deadline,
       raw: d,
     })),
-    ...invoices.map((inv): ActionItem => ({
-      id: inv.id,
+    ...pipeline.map((item): ActionItem => ({
+      id: item.id,
       type: 'invoice',
-      label: inv.vendor,
-      brand: inv.brand,
-      amount: inv.amount,
-      currency: inv.currency,
-      daysLeft: daysUntil(inv.due_date),
-      status: inv.status,
-      category: inv.category,
-      notes: inv.notes,
-      deadlineStr: inv.due_date,
-      raw: inv,
+      label: item.vendor,
+      entity: item.entity,
+      amount: item.amount,
+      currency: item.currency,
+      daysLeft: daysUntil(item.due_date),
+      status: item.status,
+      notes: item.notes,
+      deadlineStr: item.due_date,
+      raw: item,
     })),
-  ].filter((item) => brandFilter === 'all' || item.brand === brandFilter)
+  ].filter((item) => entityFilter === 'all' || item.entity === entityFilter)
    .sort((a, b) => (a.daysLeft ?? 999) - (b.daysLeft ?? 999));
 
   const bySection = SECTIONS.reduce((acc, s) => {
@@ -186,7 +206,11 @@ function ActionCenterTab() {
     if (item.type === 'dispute') {
       await supabase.from('disputes').update({ status: 'resolved' }).eq('id', item.id);
     } else {
-      await supabase.from('invoices').update({ status: 'paid' }).eq('id', item.id);
+      const today = new Date().toISOString().slice(0, 10);
+      await supabase
+        .from('finance_pipeline')
+        .update({ status: 'bezahlt', paid_at: today })
+        .eq('id', item.id);
     }
     await load();
     setUpdating(null);
@@ -219,19 +243,19 @@ function ActionCenterTab() {
           </div>
         </div>
 
-        {/* Brand filter */}
+        {/* Entity filter */}
         <div className="flex flex-wrap gap-1">
-          {(['all', ...BRANDS] as const).map((b) => (
+          {(['all', ...ENTITIES] as const).map((e) => (
             <button
-              key={b}
-              onClick={() => setBrandFilter(b)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all capitalize ${
-                brandFilter === b
+              key={e}
+              onClick={() => setEntityFilter(e as Entity | 'all')}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                entityFilter === e
                   ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
                   : 'text-slate-500 hover:text-slate-300 border border-transparent'
               }`}
             >
-              {b === 'all' ? 'All Brands' : b}
+              {e === 'all' ? 'All Entities' : ENTITY_LABELS[e as Entity]}
             </button>
           ))}
         </div>
@@ -286,8 +310,10 @@ function ActionCenterTab() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-semibold text-slate-100 truncate">{item.label}</span>
-                          <TypePill type={item.type} category={item.category} />
-                          <span className="text-xs text-slate-500 capitalize">{item.brand}</span>
+                          <TypePill type={item.type} status={item.type === 'invoice' ? item.status : undefined} />
+                          <span className="text-xs text-slate-500">
+                            {ENTITY_LABELS[item.entity as Entity] ?? item.entity}
+                          </span>
                         </div>
                         {item.notes && (
                           <p className="text-xs text-slate-500 mt-0.5 truncate">{item.notes}</p>
@@ -316,7 +342,7 @@ function ActionCenterTab() {
                             ? '...'
                             : item.type === 'dispute'
                             ? 'Resolve'
-                            : 'Mark Paid'}
+                            : 'Bezahlt'}
                         </button>
                       </div>
                     </li>

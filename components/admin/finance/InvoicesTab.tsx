@@ -1,74 +1,89 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {
-  BRANDS,
+  ENTITIES,
   CURRENCIES,
-  INVOICE_STATUSES,
-  INVOICE_CATEGORIES,
-  INVOICE_STATUS_STYLES,
-  CATEGORY_STYLES,
-  type Brand,
+  PIPELINE_STATUSES,
+  PIPELINE_STATUS_STYLES,
+  type Entity,
   type Currency,
-  type InvoiceStatus,
-  type InvoiceCategory,
-  type Invoice,
+  type PipelineStatus,
+  type PipelineItem,
 } from './financeTypes';
 import { daysUntil, deadlineColor, deadlineBg, formatDate, formatAmount } from './financeHelpers';
-import { StatusBadge, EmptyState, SummaryBar } from './StatusBadge';
+import { EmptyState, SummaryBar } from './StatusBadge';
 
-// ─── Invoices Tab ─────────────────────────────────────────────────────────────
+// ─── Invoices & Mahnungen Tab ─────────────────────────────────────────────────
+// Reads + writes the canonical `finance_pipeline` table (manual entry layer).
+// Mahnstufen-Tracking + Cash-Optimizer kommen in Welle 2 als separate Schicht.
 
-const DEFAULT_INVOICE_FORM = {
-  brand: BRANDS[0] as Brand,
+const ENTITY_LABELS: Record<Entity, string> = {
+  'thiocyn': 'Thiocyn',
+  'hart-limes': 'Hart Limes',
+  'paigh': 'Paigh',
+  'dr-severin': 'Dr. Severin',
+  'take-a-shot': 'Take A Shot',
+  'wristr': 'Wristr',
+  'timber-john': 'Timber & John',
+};
+
+const STATUS_LABELS: Record<PipelineStatus, string> = {
+  offen: 'Offen',
+  bezahlt: 'Bezahlt',
+  beleg_fehlt: 'Beleg fehlt',
+  erledigt: 'Erledigt',
+  ueberfaellig: 'Überfällig',
+};
+
+const DEFAULT_FORM = {
+  entity: ENTITIES[0] as Entity,
   vendor: '',
   amount: '',
   currency: 'EUR' as Currency,
-  invoice_date: '',
   due_date: '',
-  status: 'pending' as InvoiceStatus,
-  category: 'invoice' as InvoiceCategory,
+  status: 'offen' as PipelineStatus,
   notes: '',
 };
 
 function InvoicesTab() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [items, setItems] = useState<PipelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState(DEFAULT_INVOICE_FORM);
+  const [form, setForm] = useState(DEFAULT_FORM);
   const [error, setError] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<InvoiceStatus | 'all'>('all');
-  const [filterBrand, setFilterBrand] = useState<Brand | 'all'>('all');
+  const [filterStatus, setFilterStatus] = useState<PipelineStatus | 'all'>('all');
+  const [filterEntity, setFilterEntity] = useState<Entity | 'all'>('all');
 
-  const fetch = useCallback(async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('invoices')
+      .from('finance_pipeline')
       .select('*')
-      .order('due_date', { ascending: true });
-    if (!error && data) setInvoices(data as Invoice[]);
+      .order('due_date', { ascending: true, nullsFirst: false });
+    if (!error && data) setItems(data as PipelineItem[]);
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { load(); }, [load]);
 
-  const filtered = invoices.filter((inv) => {
-    if (filterStatus !== 'all' && inv.status !== filterStatus) return false;
-    if (filterBrand !== 'all' && inv.brand !== filterBrand) return false;
+  const filtered = items.filter((item) => {
+    if (filterStatus !== 'all' && item.status !== filterStatus) return false;
+    if (filterEntity !== 'all' && item.entity !== filterEntity) return false;
     return true;
   });
 
-  const outstanding = invoices.filter((inv) => inv.status === 'pending' || inv.status === 'overdue');
-  const overdueOnly = invoices.filter((inv) => inv.status === 'overdue');
+  const outstanding = items.filter((item) => item.paid_at === null);
+  const overdueOnly = items.filter((item) => item.status === 'ueberfaellig');
 
-  const sumByCurrency = (items: Invoice[]) =>
-    items.reduce((groups: Record<Currency, number>, inv) => {
-      groups[inv.currency] = (groups[inv.currency] ?? 0) + inv.amount;
+  const sumByCurrency = (list: PipelineItem[]) =>
+    list.reduce((groups: Record<string, number>, item) => {
+      groups[item.currency] = (groups[item.currency] ?? 0) + item.amount;
       return groups;
-    }, {} as Record<Currency, number>);
+    }, {});
 
-  const fmtSum = (items: Invoice[]) => {
-    const groups = sumByCurrency(items);
+  const fmtSum = (list: PipelineItem[]) => {
+    const groups = sumByCurrency(list);
     const entries = Object.entries(groups);
     if (entries.length === 0) return '—';
     return entries.map(([cur, val]) => formatAmount(val, cur as Currency)).join(' + ');
@@ -76,35 +91,37 @@ function InvoicesTab() {
 
   const handleAdd = async () => {
     if (!form.vendor.trim() || !form.amount) {
-      setError('Vendor and amount are required.');
+      setError('Lieferant und Betrag sind Pflicht.');
       return;
     }
     setSubmitting(true);
     setError(null);
-    const { error } = await supabase.from('invoices').insert({
-      brand: form.brand,
+    const { error } = await supabase.from('finance_pipeline').insert({
+      entity: form.entity,
       vendor: form.vendor.trim(),
       amount: parseFloat(form.amount),
       currency: form.currency,
-      invoice_date: form.invoice_date || null,
       due_date: form.due_date || null,
       status: form.status,
-      category: form.category,
       notes: form.notes || null,
     });
     if (error) {
       setError(error.message);
     } else {
-      setForm(DEFAULT_INVOICE_FORM);
+      setForm(DEFAULT_FORM);
       setShowAddForm(false);
-      await fetch();
+      await load();
     }
     setSubmitting(false);
   };
 
   const handleMarkPaid = async (id: string) => {
-    await supabase.from('invoices').update({ status: 'paid' }).eq('id', id);
-    await fetch();
+    const today = new Date().toISOString().slice(0, 10);
+    await supabase
+      .from('finance_pipeline')
+      .update({ status: 'bezahlt', paid_at: today })
+      .eq('id', id);
+    await load();
   };
 
   return (
@@ -112,9 +129,9 @@ function InvoicesTab() {
       {/* Summary */}
       <SummaryBar
         items={[
-          { label: 'Outstanding', value: fmtSum(outstanding), color: outstanding.length > 0 ? 'text-amber-600' : 'text-green-600' },
-          { label: 'Overdue', value: fmtSum(overdueOnly), color: overdueOnly.length > 0 ? 'text-red-600' : 'text-green-600' },
-          { label: 'Total invoices', value: String(invoices.length) },
+          { label: 'Offen', value: fmtSum(outstanding), color: outstanding.length > 0 ? 'text-amber-600' : 'text-green-600' },
+          { label: 'Überfällig', value: fmtSum(overdueOnly), color: overdueOnly.length > 0 ? 'text-red-600' : 'text-green-600' },
+          { label: 'Gesamt', value: String(items.length) },
         ]}
       />
 
@@ -124,18 +141,18 @@ function InvoicesTab() {
           <select
             className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as InvoiceStatus | 'all')}
+            onChange={(e) => setFilterStatus(e.target.value as PipelineStatus | 'all')}
           >
-            <option value="all">All statuses</option>
-            {INVOICE_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+            <option value="all">Alle Status</option>
+            {PIPELINE_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
           </select>
           <select
             className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-            value={filterBrand}
-            onChange={(e) => setFilterBrand(e.target.value as Brand | 'all')}
+            value={filterEntity}
+            onChange={(e) => setFilterEntity(e.target.value as Entity | 'all')}
           >
-            <option value="all">All brands</option>
-            {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+            <option value="all">Alle Firmen</option>
+            {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
           </select>
         </div>
         <button
@@ -145,14 +162,14 @@ function InvoicesTab() {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Add Invoice
+          Rechnung hinzufügen
         </button>
       </div>
 
       {/* Add Form */}
       {showAddForm && (
         <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-100">New Invoice / Mahnung</h3>
+          <h3 className="text-sm font-bold text-slate-100">Neue Rechnung</h3>
           {error && (
             <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
               {error}
@@ -160,36 +177,26 @@ function InvoicesTab() {
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Brand</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Firma</label>
               <select
                 className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.brand}
-                onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value as Brand }))}
+                value={form.entity}
+                onChange={(e) => setForm((f) => ({ ...f, entity: e.target.value as Entity }))}
               >
-                {BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+                {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Vendor *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Lieferant *</label>
               <input
                 className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder="e.g. Shopify, Meta"
+                placeholder="z.B. Shopify, Meta"
                 value={form.vendor}
                 onChange={(e) => setForm((f) => ({ ...f, vendor: e.target.value }))}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Category</label>
-              <select
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as InvoiceCategory }))}
-              >
-                {INVOICE_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Amount *</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Betrag *</label>
               <input
                 type="number"
                 min="0"
@@ -201,7 +208,7 @@ function InvoicesTab() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Currency</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Währung</label>
               <select
                 className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.currency}
@@ -215,22 +222,13 @@ function InvoicesTab() {
               <select
                 className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
                 value={form.status}
-                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as InvoiceStatus }))}
+                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as PipelineStatus }))}
               >
-                {INVOICE_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                {PIPELINE_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Invoice Date</label>
-              <input
-                type="date"
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.invoice_date}
-                onChange={(e) => setForm((f) => ({ ...f, invoice_date: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Due Date</label>
+              <label className="block text-xs font-medium text-slate-300 mb-1">Fällig am</label>
               <input
                 type="date"
                 className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
@@ -240,11 +238,11 @@ function InvoicesTab() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Notes</label>
+            <label className="block text-xs font-medium text-slate-300 mb-1">Notizen</label>
             <textarea
               rows={2}
               className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
-              placeholder="Optional notes..."
+              placeholder="Optionale Notizen..."
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             />
@@ -254,14 +252,14 @@ function InvoicesTab() {
               onClick={() => { setShowAddForm(false); setError(null); }}
               className="px-4 py-2 text-sm text-slate-300 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
             >
-              Cancel
+              Abbrechen
             </button>
             <button
               onClick={handleAdd}
               disabled={submitting}
               className="px-4 py-2 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors"
             >
-              {submitting ? 'Saving…' : 'Save Invoice'}
+              {submitting ? 'Speichere…' : 'Speichern'}
             </button>
           </div>
         </div>
@@ -273,14 +271,14 @@ function InvoicesTab() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyState message="No invoices match the current filters." />
+        <EmptyState message="Keine Rechnungen für diese Filter." />
       ) : (
         <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/[0.06] bg-surface-900/60">
-                  {['Brand', 'Vendor', 'Category', 'Amount', 'Invoice Date', 'Due Date', 'Status', 'Notes', ''].map((h) => (
+                  {['Firma', 'Lieferant', 'Betrag', 'Eingang', 'Fällig am', 'Status', 'Notizen', ''].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
@@ -288,37 +286,44 @@ function InvoicesTab() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.06]">
-                {filtered.map((inv) => {
-                  const isPaid = inv.status === 'paid';
+                {filtered.map((item) => {
+                  const isPaid = item.status === 'bezahlt' || item.status === 'erledigt';
                   return (
                     <tr
-                      key={inv.id}
-                      className={`hover:bg-white/[0.03] transition-colors ${deadlineBg(inv.due_date, isPaid)}`}
+                      key={item.id}
+                      className={`hover:bg-white/[0.03] transition-colors ${deadlineBg(item.due_date, isPaid)}`}
                     >
-                      <td className="px-4 py-3 font-medium text-slate-100 capitalize whitespace-nowrap">{inv.brand}</td>
-                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{inv.vendor}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <StatusBadge status={inv.category} styles={CATEGORY_STYLES} />
+                      <td className="px-4 py-3 font-medium text-slate-100 whitespace-nowrap">
+                        {ENTITY_LABELS[item.entity] ?? item.entity}
                       </td>
-                      <td className="px-4 py-3 font-semibold text-slate-100 whitespace-nowrap">{formatAmount(inv.amount, inv.currency)}</td>
-                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(inv.invoice_date)}</td>
-                      <td className={`px-4 py-3 whitespace-nowrap ${deadlineColor(inv.due_date, isPaid)}`}>
-                        {formatDate(inv.due_date)}
-                        {!isPaid && daysUntil(inv.due_date) !== null && (
-                          <span className="ml-1 text-xs opacity-70">({daysUntil(inv.due_date)}d)</span>
+                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{item.vendor}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-100 whitespace-nowrap">
+                        {formatAmount(item.amount, item.currency)}
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(item.received_at)}</td>
+                      <td className={`px-4 py-3 whitespace-nowrap ${deadlineColor(item.due_date, isPaid)}`}>
+                        {formatDate(item.due_date)}
+                        {!isPaid && daysUntil(item.due_date) !== null && (
+                          <span className="ml-1 text-xs opacity-70">({daysUntil(item.due_date)}d)</span>
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <StatusBadge status={inv.status} styles={INVOICE_STATUS_STYLES} />
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
+                            PIPELINE_STATUS_STYLES[item.status] ?? 'bg-slate-500/15 text-slate-400'
+                          }`}
+                        >
+                          {STATUS_LABELS[item.status] ?? item.status}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs max-w-[160px] truncate">{inv.notes ?? '—'}</td>
+                      <td className="px-4 py-3 text-slate-500 text-xs max-w-[160px] truncate">{item.notes ?? '—'}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         {!isPaid && (
                           <button
-                            onClick={() => handleMarkPaid(inv.id)}
+                            onClick={() => handleMarkPaid(item.id)}
                             className="text-xs text-green-600 font-semibold hover:text-green-700 hover:underline"
                           >
-                            Mark Paid
+                            Bezahlt markieren
                           </button>
                         )}
                       </td>
