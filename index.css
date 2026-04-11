@@ -179,3 +179,635 @@ body {
 /* ─── Animation delays ──────────────────────────────────────────────────────── */
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   LIGHT THEME — Welle 3 Foundation Hardening Pilot (2026-04-11)
+   ──────────────────────────────────────────────────────────────────────────
+   Apple/macOS-style Light Glass mit Thiocyn Gold/Blau Brand Colors.
+   Portiert von aura-oneboard. Scope: Wrap parent in `.light-section` to
+   activate. Dark theme bleibt default überall sonst.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.light-section {
+  /* Thiocyn Brand */
+  --tc-gold:        #E09B37;
+  --tc-gold-soft:   rgba(224, 155, 55, 0.12);
+  --tc-gold-glow:   rgba(224, 155, 55, 0.25);
+  --tc-blue:        #334FB4;
+  --tc-blue-soft:   rgba(51, 79, 180, 0.10);
+
+  /* Light Surface */
+  --light-bg:       #f0f0f5;
+  --light-card:     rgba(255, 255, 255, 0.72);
+  --light-card-strong: rgba(255, 255, 255, 0.85);
+  --light-border:   rgba(255, 255, 255, 0.9);
+  --light-divider:  rgba(0, 0, 0, 0.06);
+
+  /* Text — WCAG AA compliant on white/light glass backgrounds */
+  --light-text:           #1d1d1f;  /* primary — 16.1:1 contrast */
+  --light-text-secondary: #515154;  /* secondary — 8.2:1 contrast (was 6e6e73 = 5.4:1) */
+  --light-text-muted:     #6e6e73;  /* muted — 5.4:1 contrast (was 86868b = 3.2:1 FAIL) */
+
+  /* Semantic */
+  --light-success:  #34c759;
+  --light-success-soft: rgba(52, 199, 89, 0.10);
+  --light-danger:   #ff3b30;
+  --light-danger-soft: rgba(255, 59, 48, 0.10);
+  --light-danger-strong: rgba(255, 59, 48, 0.20);
+  --light-warning:  #ff9500;
+  --light-warning-soft: rgba(255, 149, 0, 0.12);
+
+  /* Section background — light with subtle Gold/Blue mesh */
+  background-color: var(--light-bg);
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(224, 155, 55, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 10%, rgba(51, 79, 180, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 60% 80%, rgba(224, 155, 55, 0.06) 0%, transparent 45%);
+  color: var(--light-text);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* Glass cards — Apple/macOS style with backdrop blur + saturation */
+.glass-card-light {
+  background: var(--light-card);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid var(--light-border);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.04);
+}
+
+.glass-card-light-strong {
+  background: var(--light-card-strong);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid var(--light-border);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    0 16px 48px rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Light Section Type Scale ──────────────────────────────────────────────
+   Strict 3-tier system. No more sizes than this.
+   ───────────────────────────────────────────────────────────────────────── */
+.light-section .lt-text-h1 {
+  font-size: 1rem;        /* 16px */
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--light-text);
+}
+.light-section .lt-text-body {
+  font-size: 0.875rem;    /* 14px */
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--light-text);
+}
+.light-section .lt-text-meta {
+  font-size: 0.75rem;     /* 12px */
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--light-text-secondary);
+}
+.light-section .lt-text-label {
+  font-size: 0.6875rem;   /* 11px */
+  line-height: 1.3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--light-text-muted);
+}
+
+/* Color overrides — apply on top of any size class */
+.light-section .lt-text-primary    { color: var(--light-text); }
+.light-section .lt-text-secondary  { color: var(--light-text-secondary); }
+.light-section .lt-text-muted      { color: var(--light-text-muted); }
+.light-section .lt-text-danger     { color: var(--light-danger); }
+.light-section .lt-text-success    { color: #1a8a2e; }
+
+/* Tabular nums utility (für Beträge in Tabellen) */
+.light-section .lt-tabular { font-variant-numeric: tabular-nums; }
+
+/* Brand color helpers */
+.light-section .lt-text-gold       { color: var(--tc-gold); }
+.light-section .lt-text-blue       { color: var(--tc-blue); }
+.light-section .lt-bg-gold-soft    { background-color: var(--tc-gold-soft); }
+.light-section .lt-bg-blue-soft    { background-color: var(--tc-blue-soft); }
+.light-section .lt-border-gold     { border-color: var(--tc-gold); }
+
+/* ─── Badges ────────────────────────────────────────────────────────────────
+   Unified badge system. All badges share the same shape, padding, weight.
+   Only color changes per variant.
+   ───────────────────────────────────────────────────────────────────────── */
+.light-section .lt-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.6875rem;     /* 11px */
+  font-weight: 700;
+  padding: 0.25rem 0.625rem;  /* 4px 10px */
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+/* Mahnstufen variants — all use solid backgrounds with white text for max readability */
+.light-section .lt-badge-stufe-1 {
+  background: #b35900;       /* Dark gold for max readability */
+  color: #ffffff;
+  border-color: #8a4500;
+}
+.light-section .lt-badge-stufe-2 {
+  background: #d97706;       /* Solid orange */
+  color: #ffffff;
+  border-color: #b35900;
+}
+.light-section .lt-badge-stufe-3 {
+  background: #dc2626;       /* Solid red */
+  color: #ffffff;
+  border-color: #b91c1c;
+}
+.light-section .lt-badge-stufe-4 {
+  background: #991b1b;       /* Dark red — Inkasso */
+  color: #ffffff;
+  border-color: #7f1d1d;
+  box-shadow: 0 2px 8px rgba(153, 27, 27, 0.35);
+}
+
+/* Neutral subtle badge (for "orphan" etc) */
+.light-section .lt-badge-neutral {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--light-text-secondary);
+  border-color: rgba(0, 0, 0, 0.10);
+}
+
+/* Alert pill (the "INKASSO — SOFORT zahlen" callout) */
+.light-section .lt-badge-alert {
+  background: #991b1b;
+  color: #ffffff;
+  border-color: #7f1d1d;
+  box-shadow: 0 2px 8px rgba(153, 27, 27, 0.35);
+}
+
+/* Buttons */
+.light-section .lt-btn-success {
+  background: var(--light-success-soft);
+  color: #1a8a2e;
+  border: 1px solid rgba(52, 199, 89, 0.35);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 150ms ease;
+}
+.light-section .lt-btn-success:hover {
+  background: rgba(52, 199, 89, 0.18);
+  border-color: var(--light-success);
+}
+
+.light-section .lt-btn-danger {
+  background: var(--light-danger);
+  color: #ffffff;
+  border: 1px solid #d00012;
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 12px rgba(255, 59, 48, 0.35);
+  transition: all 150ms ease;
+}
+.light-section .lt-btn-danger:hover {
+  background: #d00012;
+  box-shadow: 0 4px 16px rgba(255, 59, 48, 0.5);
+  transform: translateY(-1px);
+}
+
+.light-section .lt-btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Section divider for lists inside glass cards */
+.light-section .lt-divide > * + * {
+  border-top: 1px solid var(--light-divider);
+}
+
+/* Header divider (between glass-card header and body) */
+.light-section .lt-header-divider {
+  border-bottom: 1px solid var(--light-divider);
+}
+
+/* Icon container — semantic background pill */
+.light-section .lt-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;       /* 36px */
+  height: 2.25rem;
+  border-radius: 0.75rem;
+}
+.light-section .lt-icon-pill-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+.light-section .lt-icon-pill-warning {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+/* Pulse animation for urgent badges (CSS, not Tailwind, for portability) */
+@keyframes ltPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+.light-section .lt-pulse {
+  animation: ltPulse 2s ease-in-out infinite;
+}
+
+/* ─── Stat Cards (für SummaryBar etc) ─────────────────────────────────────── */
+.light-section .lt-stat-card {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  background: var(--light-card);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid var(--light-border);
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.125rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.light-section .lt-stat-card-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--light-text-muted);
+}
+.light-section .lt-stat-card-value {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--light-text);
+  font-variant-numeric: tabular-nums;
+}
+.light-section .lt-stat-card-value-success { color: #1a8a2e; }
+.light-section .lt-stat-card-value-warning { color: #b35900; }
+.light-section .lt-stat-card-value-danger  { color: var(--light-danger); }
+
+/* ─── Form Inputs / Selects ───────────────────────────────────────────────── */
+.light-section .lt-input,
+.light-section .lt-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--light-text);
+  transition: all 150ms ease;
+}
+.light-section .lt-input::placeholder {
+  color: var(--light-text-muted);
+}
+.light-section .lt-input:focus,
+.light-section .lt-select:focus {
+  outline: none;
+  border-color: var(--tc-gold);
+  box-shadow: 0 0 0 3px var(--tc-gold-soft);
+}
+.light-section .lt-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--light-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+/* ─── Primary Button (Thiocyn Gold) ───────────────────────────────────────── */
+.light-section .lt-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--tc-gold);
+  color: #ffffff;
+  border: 1px solid #b8801f;
+  border-radius: 0.625rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: 0 2px 12px var(--tc-gold-glow);
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+.light-section .lt-btn-primary:hover {
+  background: #c8832a;
+  box-shadow: 0 4px 16px rgba(224, 155, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+/* ─── Table (für Pipeline-Liste etc) ──────────────────────────────────────── */
+.light-section .lt-table-wrapper {
+  background: var(--light-card);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid var(--light-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.light-section .lt-table {
+  width: 100%;
+  font-size: 0.875rem;
+}
+.light-section .lt-table thead {
+  background: rgba(0, 0, 0, 0.025);
+  border-bottom: 1px solid var(--light-divider);
+}
+.light-section .lt-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--light-text-muted);
+  white-space: nowrap;
+}
+.light-section .lt-table tbody tr {
+  border-top: 1px solid var(--light-divider);
+  transition: background 120ms ease;
+}
+.light-section .lt-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+.light-section .lt-table td {
+  padding: 0.75rem 1rem;
+  color: var(--light-text);
+  white-space: nowrap;
+}
+.light-section .lt-table .lt-td-vendor   { font-weight: 600; }
+.light-section .lt-table .lt-td-meta     { color: var(--light-text-secondary); font-size: 0.8125rem; }
+.light-section .lt-table .lt-td-amount   { font-weight: 700; font-variant-numeric: tabular-nums; }
+.light-section .lt-table .lt-td-action {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1a8a2e;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.light-section .lt-table .lt-td-action:hover { text-decoration: underline; }
+
+/* Status pills (für Pipeline status column) */
+.light-section .lt-status-offen        { background: rgba(217, 119, 6, 0.12); color: #b35900; border: 1px solid rgba(217, 119, 6, 0.25); }
+.light-section .lt-status-bezahlt      { background: rgba(52, 199, 89, 0.12); color: #1a8a2e; border: 1px solid rgba(52, 199, 89, 0.25); }
+.light-section .lt-status-beleg_fehlt  { background: rgba(255, 149, 0, 0.12); color: #b35900; border: 1px solid rgba(255, 149, 0, 0.25); }
+.light-section .lt-status-erledigt     { background: rgba(52, 199, 89, 0.18); color: #156d24; border: 1px solid rgba(52, 199, 89, 0.35); }
+.light-section .lt-status-ueberfaellig { background: rgba(220, 38, 38, 0.12); color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.25); }
+
+/* Empty state */
+.light-section .lt-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--light-text-muted);
+  font-size: 0.875rem;
+}
+
+/* ─── Plain Card (solid white, no glass) ──────────────────────────────────── */
+.light-section .lt-card-plain {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ─── Stat Card additions ─────────────────────────────────────────────────── */
+.light-section .lt-stat-card-sm {
+  padding: 0.625rem 0.875rem;
+}
+.light-section .lt-stat-card-md {
+  padding: 0.875rem 1.125rem;
+}
+.light-section .lt-stat-card-lg {
+  padding: 1.25rem 1.5rem;
+}
+.light-section .lt-stat-card-lg .lt-stat-card-value {
+  font-size: 1.375rem;
+}
+.light-section .lt-stat-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-text-muted);
+}
+.light-section .lt-stat-card-sub {
+  font-size: 0.6875rem;
+  color: var(--light-text-muted);
+  margin-top: 0.125rem;
+}
+
+/* ─── Button — sizes + remaining variants ─────────────────────────────────── */
+.light-section .lt-btn-size-sm {
+  font-size: 0.6875rem;
+  padding: 0.375rem 0.75rem;
+}
+.light-section .lt-btn-size-md {
+  font-size: 0.8125rem;
+  padding: 0.5rem 1rem;
+}
+.light-section .lt-btn-size-lg {
+  font-size: 0.875rem;
+  padding: 0.625rem 1.25rem;
+}
+
+/* Ensure all buttons are inline-flex with icon support */
+.light-section .lt-btn-primary,
+.light-section .lt-btn-success,
+.light-section .lt-btn-danger,
+.light-section .lt-btn-ghost,
+.light-section .lt-btn-neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.625rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.light-section .lt-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-section .lt-btn-ghost {
+  background: transparent;
+  color: var(--light-text-secondary);
+  border: 1px solid transparent;
+}
+.light-section .lt-btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--light-text);
+}
+
+.light-section .lt-btn-neutral {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--light-text);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.light-section .lt-btn-neutral:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* ─── Badge — additional variants ─────────────────────────────────────────── */
+.light-section .lt-badge-success {
+  background: #1a8a2e;
+  color: #ffffff;
+  border-color: #156d24;
+}
+.light-section .lt-badge-warning {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b35900;
+}
+.light-section .lt-badge-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #b91c1c;
+}
+.light-section .lt-badge-gold {
+  background: var(--tc-gold);
+  color: #ffffff;
+  border-color: #b8801f;
+}
+.light-section .lt-badge-blue {
+  background: var(--tc-blue);
+  color: #ffffff;
+  border-color: #233875;
+}
+
+.light-section .lt-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.25rem;
+}
+
+/* ─── SlideOver ───────────────────────────────────────────────────────────── */
+@keyframes ltSlideoverFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes ltSlideoverPanelIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+.lt-slideover-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  animation: ltSlideoverFadeIn 200ms ease-out;
+}
+
+.lt-slideover-panel {
+  background: rgba(255, 255, 255, 0.96);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  backdrop-filter: blur(40px) saturate(1.8);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.18);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  animation: ltSlideoverPanelIn 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  color: #1d1d1f;
+}
+
+.lt-slideover-sm { width: 100%; max-width: 380px; }
+.lt-slideover-md { width: 100%; max-width: 520px; }
+.lt-slideover-lg { width: 100%; max-width: 720px; }
+
+.lt-slideover-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.lt-slideover-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #6e6e73;
+  cursor: pointer;
+  transition: all 150ms ease;
+  flex-shrink: 0;
+}
+.lt-slideover-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #1d1d1f;
+}
+
+.lt-slideover-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem;
+}
+
+.lt-slideover-footer {
+  padding: 1rem 1.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* SlideOver text helpers (inherits because not inside .light-section wrapper) */
+.lt-slideover-panel .lt-text-h1 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+.lt-slideover-panel .lt-text-meta {
+  font-size: 0.75rem;
+  color: #6e6e73;
+}
+.lt-slideover-panel .lt-text-body {
+  font-size: 0.875rem;
+  color: #1d1d1f;
+}
+.lt-slideover-panel .lt-text-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6e6e73;
+}
+.lt-slideover-panel .lt-text-danger { color: #dc2626; }
+.lt-slideover-panel .lt-text-secondary { color: #515154; }
+.lt-slideover-panel .lt-tabular { font-variant-numeric: tabular-nums; }

@@ -5,7 +5,6 @@ import {
   CURRENCIES,
   PAYMENT_METHODS,
   PIPELINE_STATUSES,
-  PIPELINE_STATUS_STYLES,
   type Entity,
   type Currency,
   type PaymentMethod,
@@ -13,7 +12,19 @@ import {
   type PipelineItem,
 } from './financeTypes';
 import { formatDate, formatAmount, daysUntil } from './financeHelpers';
-import { StatusBadge, EmptyState, SummaryBar } from './StatusBadge';
+import {
+  Section,
+  Card,
+  Button,
+  Input,
+  Select,
+  StatCard,
+  Table,
+  IconPlus,
+  IconCheck,
+  IconTrash,
+  IconDocument,
+} from '@/components/ui/light';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -78,8 +89,6 @@ function exportCSV(items: PipelineItem[]) {
   URL.revokeObjectURL(url);
 }
 
-// ─── Default form ────────────────────────────────────────────────────────────
-
 const DEFAULT_FORM = {
   vendor: '',
   invoice_number: '',
@@ -119,14 +128,12 @@ function FinancePipelineTab() {
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
-  // Filtered list
   const filtered = items.filter((i) => {
     if (filterStatus !== 'all' && i.status !== filterStatus) return false;
     if (filterEntity !== 'all' && i.entity !== filterEntity) return false;
     return true;
   });
 
-  // Summary stats
   const offen = items.filter((i) => i.status === 'offen' || i.status === 'ueberfaellig');
   const belegFehlt = items.filter((i) => i.status === 'beleg_fehlt');
   const erledigt = items.filter((i) => i.status === 'erledigt');
@@ -145,7 +152,6 @@ function FinancePipelineTab() {
     return parts.length > 0 ? parts.join(' + ') : '0,00 €';
   };
 
-  // Add handler
   const handleAdd = async () => {
     if (!form.vendor.trim() || !form.amount) {
       setError('Lieferant und Betrag sind Pflichtfelder.');
@@ -177,7 +183,6 @@ function FinancePipelineTab() {
     setSubmitting(false);
   };
 
-  // Inline toggle for checkpoints
   const toggleField = async (id: string, field: 'receipt_attached' | 'datev_exported', current: boolean) => {
     await supabase.from('finance_pipeline').update({ [field]: !current }).eq('id', id);
     await fetchItems();
@@ -188,27 +193,23 @@ function FinancePipelineTab() {
     await fetchItems();
   };
 
-  // Quick mark paid
   const markPaid = async (id: string) => {
     await supabase.from('finance_pipeline').update({ paid_at: new Date().toISOString().slice(0, 10) }).eq('id', id);
     await fetchItems();
   };
 
-  // Inline status change (with rollback)
   const updateStatus = async (id: string, status: PipelineStatus) => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i));
     const { error } = await supabase.from('finance_pipeline').update({ status }).eq('id', id);
     if (error) fetchItems();
   };
 
-  // Inline notes edit (with rollback)
   const updateNotes = async (id: string, notes: string) => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, notes: notes || null } : i));
     const { error } = await supabase.from('finance_pipeline').update({ notes: notes || null }).eq('id', id);
     if (error) fetchItems();
   };
 
-  // Delete (with rollback)
   const deleteItem = async (id: string) => {
     setItems(prev => prev.filter(i => i.id !== id));
     const { error } = await supabase.from('finance_pipeline').delete().eq('id', id);
@@ -216,324 +217,334 @@ function FinancePipelineTab() {
   };
 
   return (
-    <div className="space-y-5">
+    <Section className="space-y-5">
       {/* Summary */}
-      <SummaryBar
-        items={[
-          { label: 'Offen', value: `${offen.length} (${fmtSum(offen)})`, color: offen.length > 0 ? 'text-amber-400' : 'text-green-400' },
-          { label: 'Beleg fehlt', value: String(belegFehlt.length), color: belegFehlt.length > 0 ? 'text-orange-400' : 'text-green-400' },
-          { label: 'Erledigt', value: String(erledigt.length), color: 'text-green-400' },
-          { label: 'Gesamt', value: String(items.length), color: 'text-white' },
-        ]}
-      />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCard
+          label="Offen"
+          value={`${offen.length}`}
+          sub={fmtSum(offen)}
+          variant={offen.length > 0 ? 'warning' : 'success'}
+        />
+        <StatCard
+          label="Beleg fehlt"
+          value={String(belegFehlt.length)}
+          sub="ohne Beleg"
+          variant={belegFehlt.length > 0 ? 'warning' : 'success'}
+        />
+        <StatCard
+          label="Erledigt"
+          value={String(erledigt.length)}
+          sub="DATEV ready"
+          variant="success"
+        />
+        <StatCard label="Gesamt" value={String(items.length)} sub="alle Posten" />
+      </div>
 
       {/* Filters + Actions */}
       <div className="flex flex-wrap items-center gap-3 justify-between">
         <div className="flex items-center gap-2">
-          <select
-            className="bg-surface-800 border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+          <Select
+            width="auto"
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as PipelineStatus | 'all')}
-          >
-            <option value="all">Alle Status</option>
-            {PIPELINE_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-          </select>
-          <select
-            className="bg-surface-800 border border-white/[0.06] rounded-xl px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            onChange={(v) => setFilterStatus(v as PipelineStatus | 'all')}
+            options={[
+              { value: 'all', label: 'Alle Status' },
+              ...PIPELINE_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] })),
+            ]}
+          />
+          <Select
+            width="auto"
             value={filterEntity}
-            onChange={(e) => setFilterEntity(e.target.value as Entity | 'all')}
-          >
-            <option value="all">Alle Firmen</option>
-            {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
-          </select>
+            onChange={(v) => setFilterEntity(v as Entity | 'all')}
+            options={[
+              { value: 'all', label: 'Alle Firmen' },
+              ...ENTITIES.map((e) => ({ value: e, label: ENTITY_LABELS[e] })),
+            ]}
+          />
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => exportCSV(filtered)}
-            className="flex items-center gap-2 px-4 py-2 bg-surface-800 border border-white/[0.06] text-slate-300 text-sm font-semibold rounded-xl hover:bg-white/[0.06] transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+          <Button variant="neutral" icon={<IconDocument />} onClick={() => exportCSV(filtered)}>
             CSV Export
-          </button>
-          <button
-            onClick={() => setShowAddForm((v) => !v)}
-            className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-sm font-semibold rounded-xl hover:bg-amber-500/20 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Rechnung hinzufugen
-          </button>
+          </Button>
+          <Button variant="primary" icon={<IconPlus />} onClick={() => setShowAddForm((v) => !v)}>
+            Rechnung hinzufügen
+          </Button>
         </div>
       </div>
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-100">Neue Rechnung erfassen</h3>
+        <Card padding="md">
+          <h3 className="lt-text-h1 mb-4">Neue Rechnung erfassen</h3>
           {error && (
-            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{error}</p>
+            <p
+              className="lt-text-meta lt-text-danger mb-3"
+              style={{
+                background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.2)',
+                padding: '0.625rem 0.875rem',
+                borderRadius: '0.625rem',
+              }}
+            >
+              {error}
+            </p>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Lieferant *</label>
-              <input
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                placeholder="z.B. Klaviyo, Meta"
-                value={form.vendor}
-                onChange={(e) => setForm((f) => ({ ...f, vendor: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Rechnungsnr.</label>
-              <input
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                placeholder="INV-2026-04"
-                value={form.invoice_number}
-                onChange={(e) => setForm((f) => ({ ...f, invoice_number: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Betrag *</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                placeholder="0,00"
-                value={form.amount}
-                onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Wahrung</label>
-              <select
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                value={form.currency}
-                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as Currency }))}
-              >
-                {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Firma</label>
-              <select
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                value={form.entity}
-                onChange={(e) => setForm((f) => ({ ...f, entity: e.target.value as Entity }))}
-              >
-                {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Zahlungsweg</label>
-              <select
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                value={form.payment_method}
-                onChange={(e) => setForm((f) => ({ ...f, payment_method: e.target.value }))}
-              >
-                <option value="">-- auswahlen --</option>
-                {PAYMENT_METHODS.map((m) => <option key={m} value={m}>{PAYMENT_LABELS[m]}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Fallig am</label>
-              <input
-                type="date"
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                value={form.due_date}
-                onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Eingang (GMI)</label>
-              <input
-                type="date"
-                className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                value={form.received_at}
-                onChange={(e) => setForm((f) => ({ ...f, received_at: e.target.value }))}
-              />
-            </div>
+            <Input
+              label="Lieferant"
+              required
+              placeholder="z.B. Klaviyo, Meta"
+              value={form.vendor}
+              onChange={(v) => setForm((f) => ({ ...f, vendor: v }))}
+            />
+            <Input
+              label="Rechnungsnr."
+              placeholder="INV-2026-04"
+              value={form.invoice_number}
+              onChange={(v) => setForm((f) => ({ ...f, invoice_number: v }))}
+            />
+            <Input
+              label="Betrag"
+              required
+              type="number"
+              step="0.01"
+              min={0}
+              placeholder="0,00"
+              value={form.amount}
+              onChange={(v) => setForm((f) => ({ ...f, amount: v }))}
+            />
+            <Select
+              label="Währung"
+              value={form.currency}
+              onChange={(v) => setForm((f) => ({ ...f, currency: v as Currency }))}
+              options={CURRENCIES.map((c) => ({ value: c, label: c }))}
+            />
+            <Select
+              label="Firma"
+              value={form.entity}
+              onChange={(v) => setForm((f) => ({ ...f, entity: v as Entity }))}
+              options={ENTITIES.map((e) => ({ value: e, label: ENTITY_LABELS[e] }))}
+            />
+            <Select
+              label="Zahlungsweg"
+              value={form.payment_method}
+              onChange={(v) => setForm((f) => ({ ...f, payment_method: v }))}
+              options={[
+                { value: '', label: '— auswählen —' },
+                ...PAYMENT_METHODS.map((m) => ({ value: m, label: PAYMENT_LABELS[m] })),
+              ]}
+            />
+            <Input
+              label="Fällig am"
+              type="date"
+              value={form.due_date}
+              onChange={(v) => setForm((f) => ({ ...f, due_date: v }))}
+            />
+            <Input
+              label="Eingang (GMI)"
+              type="date"
+              value={form.received_at}
+              onChange={(v) => setForm((f) => ({ ...f, received_at: v }))}
+            />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">Notizen</label>
+          <div className="mt-3">
+            <label className="lt-label">Notizen</label>
             <textarea
               rows={2}
-              className="w-full bg-surface-900 border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40 resize-none"
+              className="lt-input resize-none"
               placeholder="Optional..."
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             />
           </div>
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => { setShowAddForm(false); setError(null); }}
-              className="px-4 py-2 text-sm text-slate-400 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
-            >
+          <div className="flex gap-2 justify-end mt-4">
+            <Button variant="ghost" onClick={() => { setShowAddForm(false); setError(null); }}>
               Abbrechen
-            </button>
-            <button
-              onClick={handleAdd}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-xl hover:bg-amber-500/20 disabled:opacity-50 transition-colors"
-            >
+            </Button>
+            <Button variant="primary" onClick={handleAdd} disabled={submitting}>
               {submitting ? 'Speichern...' : 'Speichern'}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <EmptyState message="Keine Rechnungen gefunden." />
-      ) : (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/[0.06] bg-surface-900/60">
-                  {['Firma', 'Lieferant', 'Rechnungsnr.', 'Betrag', 'Fallig', 'Eingang', 'Bezahlt', 'Beleg', 'DATEV', 'Status', 'Notizen', ''].map((h) => (
-                    <th key={h} className="px-3 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {filtered.map((item) => {
-                  const days = daysUntil(item.due_date);
-                  const isOverdue = days !== null && days < 0 && !item.paid_at;
-                  return (
-                    <tr key={item.id} className={`group hover:bg-white/[0.03] transition-colors ${isOverdue ? 'bg-red-500/[0.04]' : ''}`}>
-                      <td className="px-3 py-3 text-slate-300 whitespace-nowrap text-xs">
-                        {ENTITY_LABELS[item.entity]}
-                      </td>
-                      <td className="px-3 py-3 font-medium text-slate-100 whitespace-nowrap">{item.vendor}</td>
-                      <td className="px-3 py-3 text-slate-500 whitespace-nowrap text-xs">{item.invoice_number ?? '—'}</td>
-                      <td className="px-3 py-3 font-semibold text-slate-100 whitespace-nowrap">
-                        {formatAmount(item.amount, item.currency)}
-                      </td>
-                      <td className={`px-3 py-3 whitespace-nowrap text-xs ${isOverdue ? 'text-red-400 font-semibold' : 'text-slate-400'}`}>
-                        {formatDate(item.due_date)}
-                        {days !== null && !item.paid_at && (
-                          <span className="ml-1 opacity-70">({days}d)</span>
-                        )}
-                      </td>
-
-                      {/* Checkpoint: Eingang */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        {item.received_at ? (
-                          <span className="text-green-400 text-xs font-medium">{formatDate(item.received_at)}</span>
-                        ) : (
-                          <button
-                            onClick={() => setDate(item.id, 'received_at', new Date().toISOString().slice(0, 10))}
-                            className="text-xs text-slate-500 hover:text-amber-400 transition-colors"
-                          >
-                            + setzen
-                          </button>
-                        )}
-                      </td>
-
-                      {/* Checkpoint: Bezahlt */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        {item.paid_at ? (
-                          <span className="text-green-400 text-xs font-medium">{formatDate(item.paid_at)}</span>
-                        ) : (
-                          <button
-                            onClick={() => markPaid(item.id)}
-                            className="text-xs text-slate-500 hover:text-green-400 transition-colors"
-                          >
-                            + bezahlt
-                          </button>
-                        )}
-                      </td>
-
-                      {/* Checkpoint: Beleg */}
-                      <td className="px-3 py-3 text-center">
-                        <button
-                          onClick={() => toggleField(item.id, 'receipt_attached', item.receipt_attached)}
-                          className={`w-5 h-5 rounded border transition-colors ${
-                            item.receipt_attached
-                              ? 'bg-green-500/20 border-green-500/40 text-green-400'
-                              : 'border-white/[0.12] text-transparent hover:border-amber-500/40'
-                          }`}
-                        >
-                          {item.receipt_attached && (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </button>
-                      </td>
-
-                      {/* Checkpoint: DATEV */}
-                      <td className="px-3 py-3 text-center">
-                        <button
-                          onClick={() => toggleField(item.id, 'datev_exported', item.datev_exported)}
-                          className={`w-5 h-5 rounded border transition-colors ${
-                            item.datev_exported
-                              ? 'bg-green-500/20 border-green-500/40 text-green-400'
-                              : 'border-white/[0.12] text-transparent hover:border-amber-500/40'
-                          }`}
-                        >
-                          {item.datev_exported && (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </button>
-                      </td>
-
-                      {/* Status — inline dropdown */}
-                      <td className="px-3 py-3 whitespace-nowrap">
-                        <select
-                          value={item.status}
-                          onChange={(e) => updateStatus(item.id, e.target.value as PipelineStatus)}
-                          className="text-[10px] font-bold bg-transparent border-none outline-none cursor-pointer text-slate-300 hover:text-amber-400 transition-colors"
-                        >
-                          {PIPELINE_STATUSES.map((s) => (
-                            <option key={s} value={s}>{STATUS_LABELS[s]}</option>
-                          ))}
-                        </select>
-                      </td>
-
-                      {/* Notes — inline editable */}
-                      <td className="px-3 py-3 max-w-[150px]">
-                        <input
-                          type="text"
-                          value={item.notes ?? ''}
-                          onChange={(e) => setItems(prev => prev.map(i => i.id === item.id ? { ...i, notes: e.target.value } : i))}
-                          onBlur={(e) => updateNotes(item.id, e.target.value)}
-                          placeholder="Notiz..."
-                          className="w-full text-xs bg-transparent border-none outline-none text-slate-500 placeholder-slate-700 hover:text-slate-300 focus:text-slate-200 transition-colors"
-                        />
-                      </td>
-
-                      {/* Delete */}
-                      <td className="px-2 py-3 whitespace-nowrap">
-                        <button
-                          onClick={() => { if (confirm('Rechnung löschen?')) deleteItem(item.id); }}
-                          className="text-slate-600 hover:text-red-400 transition-colors text-xs opacity-0 group-hover:opacity-100"
-                          title="Löschen"
-                        >
-                          🗑
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <Card padding="lg">
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
           </div>
-        </div>
+        </Card>
+      ) : filtered.length === 0 ? (
+        <Card padding="lg">
+          <div className="lt-empty">Keine Rechnungen gefunden.</div>
+        </Card>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              <th>Firma</th>
+              <th>Lieferant</th>
+              <th>Rg-Nr</th>
+              <th>Betrag</th>
+              <th>Fällig</th>
+              <th>Eingang</th>
+              <th>Bezahlt</th>
+              <th style={{ textAlign: 'center' }}>Beleg</th>
+              <th style={{ textAlign: 'center' }}>DATEV</th>
+              <th>Status</th>
+              <th>Notizen</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((item) => {
+              const days = daysUntil(item.due_date);
+              const isOverdue = days !== null && days < 0 && !item.paid_at;
+              return (
+                <tr key={item.id} className="group">
+                  <td className="lt-td-meta">{ENTITY_LABELS[item.entity]}</td>
+                  <td className="lt-td-vendor">{item.vendor}</td>
+                  <td className="lt-td-meta">{item.invoice_number ?? '—'}</td>
+                  <td className="lt-td-amount">
+                    {formatAmount(item.amount, item.currency)}
+                  </td>
+                  <td className="lt-td-meta" style={isOverdue ? { color: '#dc2626', fontWeight: 600 } : undefined}>
+                    {formatDate(item.due_date)}
+                    {days !== null && !item.paid_at && (
+                      <span style={{ marginLeft: '0.375rem', opacity: 0.7, fontSize: '0.75rem' }}>
+                        ({days}d)
+                      </span>
+                    )}
+                  </td>
+
+                  <td>
+                    {item.received_at ? (
+                      <span className="lt-text-success" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                        {formatDate(item.received_at)}
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => setDate(item.id, 'received_at', new Date().toISOString().slice(0, 10))}
+                        className="lt-text-meta lt-text-muted"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
+                      >
+                        + setzen
+                      </button>
+                    )}
+                  </td>
+
+                  <td>
+                    {item.paid_at ? (
+                      <span className="lt-text-success" style={{ fontSize: '0.75rem', fontWeight: 600 }}>
+                        {formatDate(item.paid_at)}
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => markPaid(item.id)}
+                        className="lt-text-meta lt-text-muted"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
+                      >
+                        + bezahlt
+                      </button>
+                    )}
+                  </td>
+
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      onClick={() => toggleField(item.id, 'receipt_attached', item.receipt_attached)}
+                      style={{
+                        width: '1.25rem',
+                        height: '1.25rem',
+                        borderRadius: '0.25rem',
+                        border: item.receipt_attached ? '1px solid #1a8a2e' : '1px solid rgba(0,0,0,0.15)',
+                        background: item.receipt_attached ? 'rgba(26,138,46,0.15)' : 'transparent',
+                        color: '#1a8a2e',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {item.receipt_attached && <IconCheck size={14} />}
+                    </button>
+                  </td>
+
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      onClick={() => toggleField(item.id, 'datev_exported', item.datev_exported)}
+                      style={{
+                        width: '1.25rem',
+                        height: '1.25rem',
+                        borderRadius: '0.25rem',
+                        border: item.datev_exported ? '1px solid #1a8a2e' : '1px solid rgba(0,0,0,0.15)',
+                        background: item.datev_exported ? 'rgba(26,138,46,0.15)' : 'transparent',
+                        color: '#1a8a2e',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {item.datev_exported && <IconCheck size={14} />}
+                    </button>
+                  </td>
+
+                  <td>
+                    <select
+                      value={item.status}
+                      onChange={(e) => updateStatus(item.id, e.target.value as PipelineStatus)}
+                      className="lt-select"
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', width: 'auto' }}
+                    >
+                      {PIPELINE_STATUSES.map((s) => (
+                        <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                      ))}
+                    </select>
+                  </td>
+
+                  <td style={{ maxWidth: '150px' }}>
+                    <input
+                      type="text"
+                      value={item.notes ?? ''}
+                      onChange={(e) => setItems(prev => prev.map(i => i.id === item.id ? { ...i, notes: e.target.value } : i))}
+                      onBlur={(e) => updateNotes(item.id, e.target.value)}
+                      placeholder="Notiz..."
+                      style={{
+                        width: '100%',
+                        background: 'transparent',
+                        border: 'none',
+                        outline: 'none',
+                        fontSize: '0.75rem',
+                        color: 'var(--light-text-secondary)',
+                      }}
+                    />
+                  </td>
+
+                  <td>
+                    <button
+                      onClick={() => { if (confirm('Rechnung löschen?')) deleteItem(item.id); }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#dc2626',
+                        padding: '0.25rem',
+                      }}
+                      title="Löschen"
+                    >
+                      <IconTrash />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
       )}
-    </div>
+    </Section>
   );
 }
 

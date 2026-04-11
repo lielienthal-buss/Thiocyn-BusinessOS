@@ -6,10 +6,19 @@ import {
   type PipelineItem,
 } from './financeTypes';
 import { daysUntil, formatDate, formatAmount } from './financeHelpers';
-import { EmptyState } from './StatusBadge';
+import {
+  Section,
+  Card,
+  StatCard,
+  Pill,
+  IconAlert,
+  IconDocument,
+  IconClock,
+} from '@/components/ui/light';
 
 // ─── Overview Tab ─────────────────────────────────────────────────────────────
 // Reads disputes + finance_pipeline (canonical Eingangsrechnungen).
+// Welle 3 Stage 3 — Light Glass refactor.
 
 function OverviewTab() {
   const [disputes, setDisputes] = useState<Dispute[]>([]);
@@ -85,120 +94,91 @@ function OverviewTab() {
       })),
   ].sort((a, b) => (a.daysLeft ?? 999) - (b.daysLeft ?? 999));
 
-  const statCards = [
-    {
-      label: 'Open Disputes',
-      value: String(openDisputes.length),
-      sub: sumByCurrency(openDisputes),
-      color: openDisputes.length > 0 ? 'text-red-400' : 'text-emerald-400',
-      bg: openDisputes.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Offene Rechnungen',
-      value: sumByCurrency(outstandingItems),
-      sub: `${outstandingItems.length} Posten`,
-      color: outstandingItems.length > 0 ? 'text-amber-400' : 'text-emerald-400',
-      bg: outstandingItems.length > 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-      ),
-    },
-    {
-      label: 'Überfällig',
-      value: sumByCurrency(overdueItems),
-      sub: `${overdueItems.length} Posten`,
-      color: overdueItems.length > 0 ? 'text-red-400' : 'text-emerald-400',
-      bg: overdueItems.length > 0 ? 'bg-red-500/10 border-red-500/20' : 'bg-emerald-500/10 border-emerald-500/20',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    },
-  ];
-
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-      </div>
+      <Section>
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
+        </div>
+      </Section>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Section className="space-y-6">
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {statCards.map((card) => (
-          <div
-            key={card.label}
-            className={`flex items-start gap-4 p-5 border rounded-2xl ${card.bg}`}
-          >
-            <div className={`mt-0.5 ${card.color}`}>{card.icon}</div>
-            <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{card.label}</p>
-              <p className={`text-xl font-black mt-0.5 ${card.color}`}>{card.value}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{card.sub}</p>
-            </div>
-          </div>
-        ))}
+        <StatCard
+          label="Open Disputes"
+          value={String(openDisputes.length)}
+          sub={sumByCurrency(openDisputes)}
+          variant={openDisputes.length > 0 ? 'danger' : 'success'}
+          icon={<IconAlert size={18} />}
+          size="lg"
+        />
+        <StatCard
+          label="Offene Rechnungen"
+          value={sumByCurrency(outstandingItems)}
+          sub={`${outstandingItems.length} Posten`}
+          variant={outstandingItems.length > 0 ? 'warning' : 'success'}
+          icon={<IconDocument size={18} />}
+          size="lg"
+        />
+        <StatCard
+          label="Überfällig"
+          value={sumByCurrency(overdueItems)}
+          sub={`${overdueItems.length} Posten`}
+          variant={overdueItems.length > 0 ? 'danger' : 'success'}
+          icon={<IconClock size={18} />}
+          size="lg"
+        />
       </div>
 
       {/* Urgent items */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
-          <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h3 className="text-sm font-bold text-slate-100">Fällig in 7 Tagen</h3>
+      <Card padding="none">
+        <div className="px-5 py-4 lt-header-divider flex items-center gap-2">
+          <span className="lt-text-danger">
+            <IconClock size={18} />
+          </span>
+          <h3 className="lt-text-h1">Fällig in 7 Tagen</h3>
           {urgentItems.length > 0 && (
-            <span className="ml-auto text-xs font-semibold text-red-400 bg-red-500/15 border border-red-500/20 px-2 py-0.5 rounded-full">
+            <Pill variant="danger" className="ml-auto">
               {urgentItems.length} Posten
-            </span>
+            </Pill>
           )}
         </div>
         {urgentItems.length === 0 ? (
-          <EmptyState message="Keine fälligen Posten in 7 Tagen." />
+          <div className="lt-empty">Keine fälligen Posten in 7 Tagen.</div>
         ) : (
-          <ul className="divide-y divide-white/[0.06]">
+          <ul className="lt-divide">
             {urgentItems.map((item, idx) => (
-              <li key={idx} className="flex items-center justify-between px-5 py-3.5 hover:bg-white/[0.03] transition-colors">
+              <li key={idx} className="flex items-center justify-between px-5 py-3.5 hover:bg-black/[0.02] transition-colors">
                 <div className="flex items-center gap-3 min-w-0">
-                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    item.type === 'dispute' ? 'bg-orange-400' : 'bg-amber-400'
-                  }`} />
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ background: item.type === 'dispute' ? '#d97706' : '#b35900' }}
+                  />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-100 truncate">{item.label}</p>
-                    <p className="text-xs text-slate-500 capitalize">{item.entity} · {item.type}</p>
+                    <p className="lt-text-body truncate">{item.label}</p>
+                    <p className="lt-text-meta capitalize">{item.entity} · {item.type}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-                  <span className="text-sm font-bold text-slate-300">{item.amount}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${
-                    (item.daysLeft ?? 0) <= 0
-                      ? 'bg-red-500/15 text-red-400 border-red-500/20'
-                      : 'bg-amber-500/15 text-amber-400 border-amber-500/20'
-                  }`}>
+                  <span className="lt-text-body lt-tabular">{item.amount}</span>
+                  <Pill variant={(item.daysLeft ?? 0) <= 0 ? 'danger' : 'warning'}>
                     {item.daysLeft !== null
                       ? item.daysLeft <= 0
                         ? 'Heute / Überfällig'
                         : `${item.daysLeft}d`
                       : '—'}
-                  </span>
+                  </Pill>
                 </div>
               </li>
             ))}
           </ul>
         )}
-      </div>
-    </div>
+      </Card>
+    </Section>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { Section, Card, Button, Pill, IconCheck, IconDocument } from '@/components/ui/light';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -38,22 +39,22 @@ const B2B_ENTRIES: B2bEntry[] = [
   { brand: 'dr-severin', platform: 'ankorstore',  label: 'Dr. Severin (Ankorstore)', hint: 'Ankorstore Monatsübersicht' },
 ];
 
-const SOURCE_BADGES: Record<InventorySource, string> = {
-  jtl:     'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  fullmex: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
-  shopify: 'bg-green-500/15 text-green-400 border-green-500/20',
+const SOURCE_VARIANT: Record<InventorySource, 'blue' | 'gold' | 'success'> = {
+  jtl: 'blue',
+  fullmex: 'gold',
+  shopify: 'success',
 };
 
-const PLATFORM_BADGES: Record<B2bPlatform, string> = {
-  billbee:    'bg-amber-500/15 text-amber-400 border-amber-500/20',
-  ankorstore: 'bg-teal-500/15 text-teal-400 border-teal-500/20',
-  lightspeed: 'bg-orange-500/15 text-orange-400 border-orange-500/20',
+const PLATFORM_VARIANT: Record<B2bPlatform, 'gold' | 'blue' | 'warning'> = {
+  billbee: 'gold',
+  ankorstore: 'blue',
+  lightspeed: 'warning',
 };
 
-const STATUS_CONFIG: Record<ReportStatus, { label: string; color: string }> = {
-  collecting: { label: 'Collecting',       color: 'bg-slate-500/15 text-slate-400 border-slate-500/20' },
-  review:     { label: 'In Review',        color: 'bg-amber-500/15 text-amber-400 border-amber-500/20' },
-  sent:       { label: 'Sent to Amanda',   color: 'bg-green-500/15 text-green-400 border-green-500/20' },
+const STATUS_CONFIG: Record<ReportStatus, { label: string; variant: 'neutral' | 'warning' | 'success' }> = {
+  collecting: { label: 'Collecting',     variant: 'neutral' },
+  review:     { label: 'In Review',      variant: 'warning' },
+  sent:       { label: 'Sent to Amanda', variant: 'success' },
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -220,8 +221,7 @@ function MonthlyReportingTab() {
     setReport(prev => prev ? { ...prev, ...patch } : prev);
   }
 
-  // ─── Completeness ─────────────────────────────────────────────────────────
-
+  // Completeness
   const invFilled = INVENTORY_BRANDS.filter(b => inventory[b.brand]?.inventory_value != null).length;
   const b2bFilled = B2B_ENTRIES.filter(e => b2b[`${e.brand}__${e.platform}`]?.total_revenue != null).length;
   const paypalDone = report?.paypal_statement_received ?? false;
@@ -229,8 +229,6 @@ function MonthlyReportingTab() {
   const doneItems  = invFilled + b2bFilled + (paypalDone ? 1 : 0);
   const progress   = Math.round((doneItems / totalItems) * 100);
   const isComplete = doneItems === totalItems;
-
-  // ─── Amanda mail ──────────────────────────────────────────────────────────
 
   function generateMail(): string {
     const label = monthLabel(selectedMonth);
@@ -270,69 +268,70 @@ function MonthlyReportingTab() {
     setTimeout(() => setMailCopied(false), 2500);
   }
 
-  // ─── Render ───────────────────────────────────────────────────────────────
-
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400" />
-      </div>
+      <Section>
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
+        </div>
+      </Section>
     );
   }
 
   return (
-    <div className="space-y-6">
-
+    <Section className="space-y-6">
       {/* Header row */}
       <div className="flex flex-wrap items-center gap-3">
         <select
           value={selectedMonth}
           onChange={e => setSelectedMonth(e.target.value)}
-          className="text-sm font-semibold bg-white/[0.07] border border-white/[0.1] rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500/50"
+          className="lt-select"
+          style={{ width: 'auto', minWidth: '180px' }}
         >
           {monthOptions().map(o => (
-            <option key={o.value} value={o.value} className="bg-slate-900">{o.label}</option>
+            <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
 
         {report?.status && (
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${STATUS_CONFIG[report.status].color}`}>
+          <Pill variant={STATUS_CONFIG[report.status].variant}>
             {STATUS_CONFIG[report.status].label}
-          </span>
+          </Pill>
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-xs text-slate-500">{doneItems}/{totalItems}</span>
-          <div className="w-24 h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
+          <span className="lt-text-meta">{doneItems}/{totalItems}</span>
+          <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.08)' }}>
             <div
-              className={`h-full rounded-full transition-all duration-300 ${isComplete ? 'bg-green-400' : 'bg-amber-400'}`}
-              style={{ width: `${progress}%` }}
+              className="h-full rounded-full transition-all duration-300"
+              style={{
+                width: `${progress}%`,
+                background: isComplete ? '#1a8a2e' : 'var(--tc-gold)',
+              }}
             />
           </div>
-          <span className="text-xs font-bold text-slate-400">{progress}%</span>
+          <span className="lt-text-body lt-tabular">{progress}%</span>
         </div>
       </div>
 
-      {/* ─── Warenwert ───────────────────────────────────────────────────── */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-white/[0.06] flex items-center">
-          <span className="text-sm font-bold text-slate-100">Warenwert (Inventarwert)</span>
-          <span className="ml-auto text-xs text-slate-500">{invFilled}/{INVENTORY_BRANDS.length} Brands</span>
+      {/* Warenwert */}
+      <Card padding="none">
+        <div className="px-5 py-3.5 lt-header-divider flex items-center">
+          <span className="lt-text-h1">Warenwert (Inventarwert)</span>
+          <span className="ml-auto lt-text-meta">{invFilled}/{INVENTORY_BRANDS.length} Brands</span>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="lt-divide">
           {INVENTORY_BRANDS.map(({ brand, source, label, hint }) => {
             const row = inventory[brand];
             const isSaving = saving === `inv_${brand}`;
             const hasValue = row?.inventory_value != null;
             return (
-              <div key={brand} className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02]">
+              <div key={brand} className="flex items-center gap-3 px-5 py-3 hover:bg-black/[0.02]">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-200">{label}</p>
-                  <p className="text-xs text-slate-500">{hint}</p>
+                  <p className="lt-text-body">{label}</p>
+                  <p className="lt-text-meta">{hint}</p>
                 </div>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border uppercase tracking-wide ${SOURCE_BADGES[source]}`}>
-                  {source}
-                </span>
+                <Pill variant={SOURCE_VARIANT[source]}>{source}</Pill>
                 <div className="relative">
                   <input
                     type="text"
@@ -341,40 +340,42 @@ function MonthlyReportingTab() {
                     onBlur={e => saveInventory(brand, source, e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     placeholder="0,00"
-                    className="w-28 text-right text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-1.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+                    className="lt-input lt-tabular text-right"
+                    style={{ width: '8rem' }}
                   />
                   {isSaving && (
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-amber-400">•••</span>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 lt-text-meta" style={{ color: 'var(--tc-gold)' }}>•••</span>
                   )}
                 </div>
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${hasValue ? 'bg-green-400' : 'bg-slate-600'}`} />
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: hasValue ? '#1a8a2e' : 'rgba(0,0,0,0.15)' }}
+                />
               </div>
             );
           })}
         </div>
-      </div>
+      </Card>
 
-      {/* ─── B2B Rechnungen ──────────────────────────────────────────────── */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-white/[0.06] flex items-center">
-          <span className="text-sm font-bold text-slate-100">B2B-Rechnungen</span>
-          <span className="ml-auto text-xs text-slate-500">{b2bFilled}/{B2B_ENTRIES.length} Einträge</span>
+      {/* B2B Rechnungen */}
+      <Card padding="none">
+        <div className="px-5 py-3.5 lt-header-divider flex items-center">
+          <span className="lt-text-h1">B2B-Rechnungen</span>
+          <span className="ml-auto lt-text-meta">{b2bFilled}/{B2B_ENTRIES.length} Einträge</span>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="lt-divide">
           {B2B_ENTRIES.map(({ brand, platform, label, hint }) => {
             const key = `${brand}__${platform}`;
             const row = b2b[key];
             const isSaving = saving === `b2b_${key}`;
             const hasValue = row?.total_revenue != null;
             return (
-              <div key={key} className="flex items-center gap-3 px-5 py-3 hover:bg-white/[0.02]">
+              <div key={key} className="flex items-center gap-3 px-5 py-3 hover:bg-black/[0.02]">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-200">{label}</p>
-                  <p className="text-xs text-slate-500">{hint}</p>
+                  <p className="lt-text-body">{label}</p>
+                  <p className="lt-text-meta">{hint}</p>
                 </div>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md border uppercase tracking-wide ${PLATFORM_BADGES[platform]}`}>
-                  {platform}
-                </span>
+                <Pill variant={PLATFORM_VARIANT[platform]}>{platform}</Pill>
                 <input
                   type="text"
                   defaultValue={row?.invoice_count || ''}
@@ -383,7 +384,8 @@ function MonthlyReportingTab() {
                   onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                   placeholder="#"
                   title="Anzahl Rechnungen"
-                  className="w-14 text-center text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg px-2 py-1.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+                  className="lt-input text-center"
+                  style={{ width: '3.5rem' }}
                 />
                 <div className="relative">
                   <input
@@ -394,103 +396,99 @@ function MonthlyReportingTab() {
                     onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                     placeholder="0,00"
                     title="Umsatz (€)"
-                    className="w-28 text-right text-sm bg-white/[0.06] border border-white/[0.08] rounded-lg px-3 py-1.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+                    className="lt-input lt-tabular text-right"
+                    style={{ width: '8rem' }}
                   />
                   {isSaving && (
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-amber-400">•••</span>
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 lt-text-meta" style={{ color: 'var(--tc-gold)' }}>•••</span>
                   )}
                 </div>
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${hasValue ? 'bg-green-400' : 'bg-slate-600'}`} />
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: hasValue ? '#1a8a2e' : 'rgba(0,0,0,0.15)' }}
+                />
               </div>
             );
           })}
         </div>
-      </div>
+      </Card>
 
-      {/* ─── Abschluss ───────────────────────────────────────────────────── */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-white/[0.06]">
-          <span className="text-sm font-bold text-slate-100">Abschluss & Versand</span>
+      {/* Abschluss */}
+      <Card padding="none">
+        <div className="px-5 py-3.5 lt-header-divider">
+          <span className="lt-text-h1">Abschluss & Versand</span>
         </div>
         <div className="p-5 space-y-3">
-
           {/* PayPal toggle */}
           <button
             onClick={togglePayPal}
-            className={`flex items-center gap-3 w-full text-left p-3 rounded-xl border transition-all ${
-              paypalDone
-                ? 'bg-green-500/10 border-green-500/20'
-                : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05]'
-            }`}
+            className="flex items-center gap-3 w-full text-left p-3 rounded-xl border transition-all hover:bg-black/[0.02]"
+            style={{
+              background: paypalDone ? 'rgba(26,138,46,0.08)' : 'transparent',
+              borderColor: paypalDone ? 'rgba(26,138,46,0.25)' : 'rgba(0,0,0,0.08)',
+            }}
           >
-            <div className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-all ${
-              paypalDone ? 'bg-green-500 border-green-500' : 'border-slate-600'
-            }`}>
+            <div
+              className="w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0"
+              style={{
+                background: paypalDone ? '#1a8a2e' : 'transparent',
+                border: paypalDone ? '1px solid #156d24' : '1px solid rgba(0,0,0,0.2)',
+              }}
+            >
               {paypalDone && (
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
+                <span style={{ color: '#ffffff' }}>
+                  <IconCheck size={12} />
+                </span>
               )}
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-200">PayPal-Kontoauszug bereit</p>
-              <p className="text-xs text-slate-500">Anfangs- + Endbestand als PDF — 1 Datei</p>
+              <p className="lt-text-body">PayPal-Kontoauszug bereit</p>
+              <p className="lt-text-meta">Anfangs- + Endbestand als PDF — 1 Datei</p>
             </div>
           </button>
 
           {report?.status !== 'sent' && (
             <div className="flex gap-2">
               {report?.status !== 'review' && (
-                <button
-                  onClick={() => setStatus('review')}
-                  className="flex-1 text-sm font-semibold px-4 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl hover:bg-amber-500/20 transition-colors"
-                >
+                <Button variant="neutral" onClick={() => setStatus('review')} fullWidth>
                   Zur Prüfung
-                </button>
+                </Button>
               )}
-              <button
+              <Button
+                variant={mailCopied ? 'success' : 'neutral'}
+                icon={<IconDocument />}
                 onClick={copyMail}
-                className={`flex-1 text-sm font-semibold px-4 py-2 rounded-xl border transition-all ${
-                  mailCopied
-                    ? 'bg-green-500/10 border-green-500/20 text-green-400'
-                    : 'bg-white/[0.05] border-white/[0.08] text-slate-300 hover:bg-white/[0.08]'
-                }`}
+                fullWidth
               >
-                {mailCopied ? '✓ Kopiert!' : '📋 Amanda-Mail kopieren'}
-              </button>
+                {mailCopied ? 'Kopiert!' : 'Amanda-Mail kopieren'}
+              </Button>
             </div>
           )}
 
           {report?.status !== 'sent' && (
-            <button
+            <Button
+              variant={isComplete ? 'success' : 'neutral'}
               onClick={() => setStatus('sent')}
               disabled={!isComplete}
-              className={`w-full text-sm font-bold px-4 py-2.5 rounded-xl border transition-all ${
-                isComplete
-                  ? 'bg-green-500/15 border-green-500/25 text-green-400 hover:bg-green-500/25 cursor-pointer'
-                  : 'bg-white/[0.03] border-white/[0.06] text-slate-600 cursor-not-allowed'
-              }`}
+              fullWidth
+              icon={isComplete ? <IconCheck /> : undefined}
             >
               {isComplete
-                ? '✓ Als gesendet markieren'
+                ? 'Als gesendet markieren'
                 : `${totalItems - doneItems} Einträge noch ausstehend`}
-            </button>
+            </Button>
           )}
 
           {report?.status === 'sent' && (
-            <div className="flex items-center gap-2 text-sm text-green-400">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+            <div className="flex items-center gap-2 lt-text-body lt-text-success">
+              <IconCheck size={16} />
               Gesendet an {report.sent_to}
               {report.sent_at && ` · ${new Date(report.sent_at).toLocaleDateString('de-DE')}`}
             </div>
           )}
-
         </div>
-      </div>
-
-    </div>
+      </Card>
+    </Section>
   );
 }
 

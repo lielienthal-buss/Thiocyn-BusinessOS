@@ -1,13 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import type { Currency, Dispute, Entity, PipelineItem, PipelineStatus } from './financeTypes';
-import { ENTITIES, PIPELINE_STATUS_STYLES } from './financeTypes';
+import { ENTITIES } from './financeTypes';
 import { daysUntil, formatDate, formatAmount } from './financeHelpers';
-import { EmptyState } from './StatusBadge';
+import {
+  Section,
+  Card,
+  Button,
+  Pill,
+  IconCheck,
+  IconChevronDown,
+} from '@/components/ui/light';
 
 // ─── ActionCenterTab ──────────────────────────────────────────────────────────
 // Unified view of disputes + finance_pipeline (Eingangsrechnungen).
-// Welle 2 will add Mahnstufen + Cash-Optimizer as additional layers.
+// Welle 3 Stage 3 — Light Glass refactor.
 
 const ENTITY_LABELS: Record<Entity, string> = {
   'thiocyn': 'Thiocyn',
@@ -43,49 +50,39 @@ interface ActionItem {
   raw: Dispute | PipelineItem;
 }
 
-interface Section {
+interface SectionDef {
   key: string;
   label: string;
   emptyMsg: string;
-  badge: string;
-  headerBg: string;
-  dot: string;
+  dotColor: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SECTIONS: Section[] = [
+const SECTION_DEFS: SectionDef[] = [
   {
     key: 'overdue',
-    label: '🔴 Overdue / Today',
-    emptyMsg: 'No overdue items.',
-    badge: 'bg-red-500/15 text-red-400 border-red-500/20',
-    headerBg: 'bg-red-500/5 border-b border-red-500/10',
-    dot: 'bg-red-400',
+    label: 'Overdue / Heute',
+    emptyMsg: 'Keine überfälligen Posten.',
+    dotColor: '#dc2626',
   },
   {
     key: 'week',
-    label: '🟡 This Week',
-    emptyMsg: 'Nothing due this week.',
-    badge: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-    headerBg: 'bg-amber-500/5 border-b border-amber-500/10',
-    dot: 'bg-amber-400',
+    label: 'Diese Woche',
+    emptyMsg: 'Nichts diese Woche fällig.',
+    dotColor: '#d97706',
   },
   {
     key: 'month',
-    label: '🔵 This Month',
-    emptyMsg: 'Nothing due this month.',
-    badge: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-    headerBg: 'bg-blue-500/5 border-b border-blue-500/10',
-    dot: 'bg-blue-400',
+    label: 'Diesen Monat',
+    emptyMsg: 'Nichts diesen Monat fällig.',
+    dotColor: '#334FB4',
   },
   {
     key: 'pending',
-    label: '⚪ No Deadline',
-    emptyMsg: 'No pending items without deadline.',
-    badge: 'bg-slate-500/15 text-slate-400 border-slate-500/20',
-    headerBg: 'bg-slate-500/5 border-b border-slate-500/10',
-    dot: 'bg-slate-500',
+    label: 'Ohne Deadline',
+    emptyMsg: 'Keine Posten ohne Deadline.',
+    dotColor: '#86868b',
   },
 ];
 
@@ -100,40 +97,22 @@ function classify(daysLeft: number | null): string {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function DueBadge({ daysLeft }: { daysLeft: number | null }) {
-  if (daysLeft === null) return <span className="text-xs text-slate-500">No date</span>;
+  if (daysLeft === null) return <span className="lt-text-meta lt-text-muted">No date</span>;
   if (daysLeft <= 0)
     return (
-      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-red-500/15 text-red-400 border-red-500/20">
+      <Pill variant="danger">
         {daysLeft === 0 ? 'Today' : `${Math.abs(daysLeft)}d overdue`}
-      </span>
+      </Pill>
     );
   if (daysLeft <= 7)
-    return (
-      <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-amber-500/15 text-amber-400 border-amber-500/20">
-        {daysLeft}d left
-      </span>
-    );
-  return (
-    <span className="text-xs font-semibold px-2 py-0.5 rounded-full border bg-blue-500/15 text-blue-400 border-blue-500/20">
-      {daysLeft}d
-    </span>
-  );
+    return <Pill variant="warning">{daysLeft}d left</Pill>;
+  return <Pill variant="blue">{daysLeft}d</Pill>;
 }
 
 function TypePill({ type, status }: { type: 'dispute' | 'invoice'; status?: string }) {
-  if (type === 'dispute')
-    return (
-      <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/20">
-        Dispute
-      </span>
-    );
-  const cls = (status && PIPELINE_STATUS_STYLES[status as PipelineStatus]) ?? 'bg-slate-500/15 text-slate-400 border border-slate-500/20';
+  if (type === 'dispute') return <Pill variant="warning">Dispute</Pill>;
   const label = (status && STATUS_LABELS[status as PipelineStatus]) ?? 'Rechnung';
-  return (
-    <span className={`text-xs font-semibold px-1.5 py-0.5 rounded border ${cls}`}>
-      {label}
-    </span>
-  );
+  return <Pill variant="neutral">{label}</Pill>;
 }
 
 // ─── ActionCenterTab ──────────────────────────────────────────────────────────
@@ -190,12 +169,11 @@ function ActionCenterTab() {
   ].filter((item) => entityFilter === 'all' || item.entity === entityFilter)
    .sort((a, b) => (a.daysLeft ?? 999) - (b.daysLeft ?? 999));
 
-  const bySection = SECTIONS.reduce((acc, s) => {
+  const bySection = SECTION_DEFS.reduce((acc, s) => {
     acc[s.key] = allItems.filter((item) => classify(item.daysLeft) === s.key);
     return acc;
   }, {} as Record<string, ActionItem[]>);
 
-  // Also collect items beyond 30 days and append to pending display (optional later view)
   const laterItems = allItems.filter((item) => classify(item.daysLeft) === 'later');
 
   const totalOpen = allItems.length + laterItems.length;
@@ -222,25 +200,23 @@ function ActionCenterTab() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
-      </div>
+      <Section>
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
+        </div>
+      </Section>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <Section className="space-y-4">
       {/* Summary header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-white">{totalOpen} open items</span>
-            {urgentCount > 0 && (
-              <span className="text-xs font-bold px-2 py-0.5 rounded-full border bg-red-500/15 text-red-400 border-red-500/20 animate-pulse">
-                {urgentCount} urgent
-              </span>
-            )}
-          </div>
+          <span className="lt-text-h1">{totalOpen} open items</span>
+          {urgentCount > 0 && (
+            <Pill variant="danger" pulse>{urgentCount} urgent</Pill>
+          )}
         </div>
 
         {/* Entity filter */}
@@ -249,143 +225,140 @@ function ActionCenterTab() {
             <button
               key={e}
               onClick={() => setEntityFilter(e as Entity | 'all')}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
-                entityFilter === e
-                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
-                  : 'text-slate-500 hover:text-slate-300 border border-transparent'
+              className={`px-3 py-1.5 rounded-lg transition-all ${
+                entityFilter === e ? 'lt-btn-primary' : 'lt-btn-ghost'
               }`}
+              style={{ fontSize: '0.75rem', fontWeight: 600 }}
             >
-              {e === 'all' ? 'All Entities' : ENTITY_LABELS[e as Entity]}
+              {e === 'all' ? 'Alle' : ENTITY_LABELS[e as Entity]}
             </button>
           ))}
         </div>
       </div>
 
       {/* Sections */}
-      {SECTIONS.map((section) => {
+      {SECTION_DEFS.map((section) => {
         const items = bySection[section.key] ?? [];
         const isCollapsed = collapsed[section.key];
 
         return (
-          <div
-            key={section.key}
-            className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden"
-          >
+          <Card key={section.key} padding="none">
             {/* Section header */}
             <button
               onClick={() => toggleSection(section.key)}
-              className={`w-full flex items-center justify-between px-5 py-3.5 ${section.headerBg} hover:bg-white/[0.02] transition-colors`}
+              className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-black/[0.02] transition-colors lt-header-divider"
+              style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-slate-100">{section.label}</h3>
+                <span
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ background: section.dotColor }}
+                />
+                <h3 className="lt-text-h1">{section.label}</h3>
                 {items.length > 0 && (
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${section.badge}`}>
-                    {items.length}
-                  </span>
+                  <Pill variant="neutral">{items.length}</Pill>
                 )}
               </div>
-              <svg
-                className={`w-4 h-4 text-slate-500 transition-transform ${isCollapsed ? '-rotate-90' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
+              <span style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 200ms', color: 'var(--light-text-muted)' }}>
+                <IconChevronDown />
+              </span>
             </button>
 
             {/* Items */}
             {!isCollapsed && (
               items.length === 0 ? (
-                <div className="px-5 py-4 text-sm text-slate-500 italic">{section.emptyMsg}</div>
+                <div className="px-5 py-4 lt-text-meta italic">{section.emptyMsg}</div>
               ) : (
-                <ul className="divide-y divide-white/[0.04]">
+                <ul className="lt-divide">
                   {items.map((item) => (
                     <li
                       key={item.id}
-                      className="flex items-center gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group"
+                      className="flex items-center gap-3 px-5 py-3.5 hover:bg-black/[0.02] transition-colors group"
                     >
                       {/* Dot */}
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${section.dot}`} />
+                      <span
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: section.dotColor }}
+                      />
 
                       {/* Main info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold text-slate-100 truncate">{item.label}</span>
+                          <span className="lt-text-body truncate">{item.label}</span>
                           <TypePill type={item.type} status={item.type === 'invoice' ? item.status : undefined} />
-                          <span className="text-xs text-slate-500">
+                          <span className="lt-text-meta">
                             {ENTITY_LABELS[item.entity as Entity] ?? item.entity}
                           </span>
                         </div>
                         {item.notes && (
-                          <p className="text-xs text-slate-500 mt-0.5 truncate">{item.notes}</p>
+                          <p className="lt-text-meta mt-1 truncate">{item.notes}</p>
                         )}
                       </div>
 
                       {/* Amount + date + actions */}
                       <div className="flex items-center gap-3 flex-shrink-0">
                         {item.amount > 0 && (
-                          <span className="text-sm font-bold text-slate-300 tabular-nums">
+                          <span className="lt-text-body lt-tabular">
                             {formatAmount(item.amount, item.currency)}
                           </span>
                         )}
                         {item.deadlineStr && (
-                          <span className="text-xs text-slate-500 hidden sm:block">
+                          <span className="lt-text-meta hidden sm:block">
                             {formatDate(item.deadlineStr)}
                           </span>
                         )}
                         <DueBadge daysLeft={item.daysLeft} />
-                        <button
-                          onClick={() => markResolved(item)}
-                          disabled={updating === item.id}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/25 disabled:opacity-50"
-                        >
-                          {updating === item.id
-                            ? '...'
-                            : item.type === 'dispute'
-                            ? 'Resolve'
-                            : 'Bezahlt'}
-                        </button>
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="success"
+                            size="sm"
+                            icon={<IconCheck />}
+                            onClick={() => markResolved(item)}
+                            disabled={updating === item.id}
+                          >
+                            {updating === item.id ? '...' : item.type === 'dispute' ? 'Resolve' : 'Bezahlt'}
+                          </Button>
+                        </div>
                       </div>
                     </li>
                   ))}
                 </ul>
               )
             )}
-          </div>
+          </Card>
         );
       })}
 
       {/* Later items (collapsed by default) */}
       {laterItems.length > 0 && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+        <Card padding="none">
           <button
             onClick={() => toggleSection('later')}
-            className="w-full flex items-center justify-between px-5 py-3.5 bg-slate-500/5 border-b border-slate-500/10 hover:bg-white/[0.02] transition-colors"
+            className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-black/[0.02] transition-colors"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
           >
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-100">📅 Later (&gt;30 days)</h3>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full border bg-slate-500/15 text-slate-400 border-slate-500/20">
-                {laterItems.length}
-              </span>
+              <h3 className="lt-text-h1">Später (&gt;30 Tage)</h3>
+              <Pill variant="neutral">{laterItems.length}</Pill>
             </div>
-            <svg
-              className={`w-4 h-4 text-slate-500 transition-transform ${collapsed['later'] ? '' : '-rotate-90'}`}
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+            <span style={{ transform: collapsed['later'] ? 'rotate(-90deg)' : 'none', transition: 'transform 200ms', color: 'var(--light-text-muted)' }}>
+              <IconChevronDown />
+            </span>
           </button>
           {!collapsed['later'] && (
-            <div className="px-5 py-4 text-sm text-slate-500 italic">
-              {laterItems.length} item{laterItems.length !== 1 ? 's' : ''} due in &gt;30 days — no immediate action needed.
+            <div className="px-5 py-4 lt-text-meta italic">
+              {laterItems.length} Posten in &gt;30 Tagen — keine sofortige Aktion nötig.
             </div>
           )}
-        </div>
+        </Card>
       )}
 
       {totalOpen === 0 && laterItems.length === 0 && (
-        <EmptyState message="All clear — no open finance items." />
+        <Card padding="lg">
+          <div className="lt-empty">All clear — keine offenen Finance Items.</div>
+        </Card>
       )}
-    </div>
+    </Section>
   );
 }
 

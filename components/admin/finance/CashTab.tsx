@@ -3,11 +3,21 @@ import { supabase } from '@/lib/supabaseClient';
 import type { CashSnapshot, Currency } from './financeTypes';
 import { CURRENCIES } from './financeTypes';
 import { formatAmount, formatDate, daysUntil } from './financeHelpers';
-import { EmptyState } from './StatusBadge';
+import {
+  Section,
+  Card,
+  Button,
+  Input,
+  Select,
+  Pill,
+  Table,
+  IconPlus,
+  IconTrash,
+} from '@/components/ui/light';
 
 // ─── Cash Position Tab ────────────────────────────────────────────────────────
-// Welle 2 Code-Block 1 — Manuelle Saldo-Snapshots pro Konto.
-// Phase 2 (später): Qonto API automatischer Push für Qonto-Konten.
+// Welle 2 — Manuelle Saldo-Snapshots pro Konto.
+// Welle 3 Stage 3 — Light Glass refactor.
 
 interface AccountConfig {
   id: string;
@@ -30,10 +40,10 @@ const SOURCE_LABELS: Record<string, string> = {
   paypal_api: 'PayPal API',
 };
 
-const SOURCE_STYLES: Record<string, string> = {
-  manual: 'bg-slate-500/15 text-slate-400 border-slate-500/20',
-  qonto_api: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  paypal_api: 'bg-purple-500/15 text-purple-400 border-purple-500/20',
+const SOURCE_VARIANT: Record<string, 'neutral' | 'blue' | 'gold'> = {
+  manual: 'neutral',
+  qonto_api: 'blue',
+  paypal_api: 'gold',
 };
 
 const DEFAULT_FORM = {
@@ -74,19 +84,6 @@ function CashTab() {
     if (!acc[s.account]) acc[s.account] = s;
     return acc;
   }, {});
-
-  // Previous snapshot per account (für Delta-Anzeige)
-  const previousByAccount = snapshots.reduce((acc: Record<string, CashSnapshot>, s) => {
-    if (!acc[s.account]) {
-      // first hit = latest, skip
-      acc[`__seen_${s.account}`] = s;
-    } else if (!acc[s.account]) {
-      // never reached
-    } else if (acc[`__seen_${s.account}`] && !acc[s.account]) {
-      acc[s.account] = s;
-    }
-    return acc;
-  }, {} as Record<string, CashSnapshot>);
 
   // Cleaner delta calc: get the second-most-recent per account
   const deltaByAccount: Record<string, number> = {};
@@ -154,67 +151,72 @@ function CashTab() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
-      </div>
+      <Section>
+        <div className="flex justify-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
+        </div>
+      </Section>
     );
   }
 
   const accountIds = Object.keys(latestByAccount);
 
   return (
-    <div className="space-y-6">
+    <Section className="space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-black text-white tracking-tight">Cash Position</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h2 className="lt-text-h1" style={{ fontSize: '1.25rem' }}>Cash Position</h2>
+          <p className="lt-text-meta mt-1">
             Saldo-Tracking pro Konto. Manuell oder über API-Sync (Phase 2).
           </p>
         </div>
-        <button
-          onClick={() => setShowForm((v) => !v)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-sm flex-shrink-0"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+        <Button variant="primary" icon={<IconPlus />} onClick={() => setShowForm((v) => !v)}>
           Saldo eintragen
-        </button>
+        </Button>
       </div>
 
       {/* Total Card */}
       {Object.keys(totalByCurrency).length > 0 && (
-        <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-2xl p-5">
-          <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
-            Gesamt verfügbar (latest snapshots)
-          </p>
-          <p className="text-2xl font-black text-emerald-400 mt-1 tabular-nums">
+        <Card padding="lg" className="lt-card-total">
+          <div className="lt-text-label">Gesamt verfügbar (latest snapshots)</div>
+          <div
+            className="lt-tabular mt-1"
+            style={{ fontSize: '2rem', fontWeight: 800, color: '#1a8a2e', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+          >
             {Object.entries(totalByCurrency)
               .map(([cur, val]) => formatAmount(val, cur as Currency))
               .join(' + ')}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">
+          </div>
+          <div className="lt-text-meta mt-1">
             {accountIds.length} Konto{accountIds.length !== 1 ? 's' : ''} mit Snapshot
-          </p>
-        </div>
+          </div>
+        </Card>
       )}
 
       {/* Add Form */}
       {showForm && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-100">Neuer Saldo-Snapshot</h3>
+        <Card padding="md">
+          <h3 className="lt-text-h1 mb-4">Neuer Saldo-Snapshot</h3>
           {error && (
-            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+            <p
+              className="lt-text-meta lt-text-danger mb-3"
+              style={{
+                background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.2)',
+                padding: '0.625rem 0.875rem',
+                borderRadius: '0.625rem',
+              }}
+            >
               {error}
             </p>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-slate-300 mb-1">Konto</label>
+              <label className="lt-label">Konto</label>
               {!form.use_custom ? (
                 <select
-                  className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
+                  className="lt-select"
                   value={form.account}
                   onChange={(e) => {
                     const acc = PREDEFINED_ACCOUNTS.find((a) => a.id === e.target.value);
@@ -233,7 +235,7 @@ function CashTab() {
                 </select>
               ) : (
                 <input
-                  className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
+                  className="lt-input"
                   placeholder="z.B. wise_thiocyn"
                   value={form.custom_account}
                   onChange={(e) => setForm((f) => ({ ...f, custom_account: e.target.value }))}
@@ -241,77 +243,57 @@ function CashTab() {
               )}
               <button
                 onClick={() => setForm((f) => ({ ...f, use_custom: !f.use_custom }))}
-                className="text-[10px] text-slate-500 hover:text-slate-300 mt-1"
+                className="lt-text-meta mt-1"
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
               >
                 {form.use_custom ? '← Vordefiniert wählen' : '+ Eigener Account-Identifier'}
               </button>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Saldo *</label>
-              <input
-                type="number"
-                step="0.01"
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
-                placeholder="0.00"
-                value={form.balance}
-                onChange={(e) => setForm((f) => ({ ...f, balance: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Währung</label>
-              <select
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
-                value={form.currency}
-                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as Currency }))}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Stand vom</label>
-              <input
-                type="date"
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
-                value={form.snapshot_date}
-                onChange={(e) => setForm((f) => ({ ...f, snapshot_date: e.target.value }))}
-              />
-            </div>
+            <Input
+              label="Saldo"
+              required
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              value={form.balance}
+              onChange={(v) => setForm((f) => ({ ...f, balance: v }))}
+            />
+            <Select
+              label="Währung"
+              value={form.currency}
+              onChange={(v) => setForm((f) => ({ ...f, currency: v as Currency }))}
+              options={CURRENCIES.map((c) => ({ value: c, label: c }))}
+            />
+            <Input
+              label="Stand vom"
+              type="date"
+              value={form.snapshot_date}
+              onChange={(v) => setForm((f) => ({ ...f, snapshot_date: v }))}
+            />
             <div className="col-span-2 sm:col-span-3">
-              <label className="block text-xs font-medium text-slate-300 mb-1">Notiz (optional)</label>
-              <input
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-surface-900/60 text-slate-100"
+              <Input
+                label="Notiz (optional)"
                 placeholder="z.B. nach Sammelüberweisung"
                 value={form.notes}
-                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                onChange={(v) => setForm((f) => ({ ...f, notes: v }))}
               />
             </div>
           </div>
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => { setShowForm(false); setError(null); }}
-              className="px-4 py-2 text-sm text-slate-300 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
-            >
+          <div className="flex gap-2 justify-end mt-4">
+            <Button variant="ghost" onClick={() => { setShowForm(false); setError(null); }}>
               Abbrechen
-            </button>
-            <button
-              onClick={handleAdd}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors"
-            >
+            </Button>
+            <Button variant="primary" onClick={handleAdd} disabled={submitting}>
               {submitting ? 'Speichere…' : 'Snapshot speichern'}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Account Cards */}
       {accountIds.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-            Aktuelle Salden
-          </h3>
+          <h3 className="lt-text-label mb-3">Aktuelle Salden</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {accountIds.map((accountId) => {
               const latest = latestByAccount[accountId];
@@ -320,28 +302,20 @@ function CashTab() {
               const stale = daysOld !== null && daysOld < -7;
 
               return (
-                <div
-                  key={accountId}
-                  className={`border rounded-2xl p-4 ${
-                    stale
-                      ? 'bg-amber-500/5 border-amber-500/20'
-                      : 'bg-surface-800/60 border-white/[0.06]'
-                  }`}
-                >
+                <Card key={accountId} padding="md">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-xs font-medium text-slate-500 truncate">
+                      <p className="lt-text-meta truncate">
                         {latest.account_label ?? latest.account}
                       </p>
-                      <p className="text-lg font-black text-slate-100 mt-1 tabular-nums">
+                      <p className="lt-text-h1 lt-tabular mt-1" style={{ fontSize: '1.25rem' }}>
                         {formatAmount(latest.balance, latest.currency as Currency)}
                       </p>
                     </div>
                     {delta !== undefined && delta !== 0 && (
                       <span
-                        className={`text-xs font-bold tabular-nums whitespace-nowrap ${
-                          delta > 0 ? 'text-emerald-400' : 'text-red-400'
-                        }`}
+                        className="lt-text-body lt-tabular whitespace-nowrap"
+                        style={{ color: delta > 0 ? '#1a8a2e' : '#dc2626' }}
                       >
                         {delta > 0 ? '+' : ''}
                         {formatAmount(delta, latest.currency as Currency)}
@@ -349,16 +323,12 @@ function CashTab() {
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-[10px] text-slate-500">
+                    <span className="lt-text-meta lt-text-muted">
                       Stand: {formatDate(latest.snapshot_date)}
                     </span>
-                    {stale && (
-                      <span className="text-[10px] font-bold text-amber-400">
-                        ⚠️ &gt;7d alt
-                      </span>
-                    )}
+                    {stale && <Pill variant="warning">&gt;7d alt</Pill>}
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
@@ -367,70 +337,65 @@ function CashTab() {
 
       {/* History Table */}
       <div>
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
+        <h3 className="lt-text-label mb-3">
           Snapshot-Historie ({snapshots.length})
         </h3>
         {snapshots.length === 0 ? (
-          <EmptyState message="Noch keine Cash-Snapshots eingetragen." />
+          <Card padding="lg">
+            <div className="lt-empty">Noch keine Cash-Snapshots eingetragen.</div>
+          </Card>
         ) : (
-          <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-white/[0.06] bg-surface-900/60">
-                    {['Datum', 'Konto', 'Saldo', 'Quelle', 'Notiz', ''].map((h) => (
-                      <th
-                        key={h}
-                        className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06]">
-                  {snapshots.map((s) => (
-                    <tr key={s.id} className="hover:bg-white/[0.03] transition-colors group">
-                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">
-                        {formatDate(s.snapshot_date)}
-                      </td>
-                      <td className="px-4 py-3 text-slate-100 font-medium whitespace-nowrap">
-                        {s.account_label ?? s.account}
-                      </td>
-                      <td className="px-4 py-3 font-bold text-slate-100 tabular-nums whitespace-nowrap">
-                        {formatAmount(s.balance, s.currency as Currency)}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                            SOURCE_STYLES[s.source] ?? SOURCE_STYLES.manual
-                          }`}
-                        >
-                          {SOURCE_LABELS[s.source] ?? s.source}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs max-w-[200px] truncate">
-                        {s.notes ?? '—'}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <button
-                          onClick={() => handleDelete(s.id)}
-                          disabled={deleting === s.id}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-red-400 hover:text-red-300 disabled:opacity-30"
-                          title="Löschen"
-                        >
-                          {deleting === s.id ? '…' : '🗑'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Konto</th>
+                <th>Saldo</th>
+                <th>Quelle</th>
+                <th>Notiz</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {snapshots.map((s) => (
+                <tr key={s.id} className="group">
+                  <td className="lt-td-meta">{formatDate(s.snapshot_date)}</td>
+                  <td className="lt-td-vendor">{s.account_label ?? s.account}</td>
+                  <td className="lt-td-amount">
+                    {formatAmount(s.balance, s.currency as Currency)}
+                  </td>
+                  <td>
+                    <Pill variant={SOURCE_VARIANT[s.source] ?? 'neutral'}>
+                      {SOURCE_LABELS[s.source] ?? s.source}
+                    </Pill>
+                  </td>
+                  <td className="lt-td-meta" style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {s.notes ?? '—'}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button
+                      onClick={() => handleDelete(s.id)}
+                      disabled={deleting === s.id}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#dc2626',
+                        padding: '0.25rem',
+                      }}
+                      title="Löschen"
+                    >
+                      {deleting === s.id ? '…' : <IconTrash />}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         )}
       </div>
-    </div>
+    </Section>
   );
 }
 

@@ -4,19 +4,31 @@ import {
   ENTITIES,
   CURRENCIES,
   PIPELINE_STATUSES,
-  PIPELINE_STATUS_STYLES,
   type Entity,
   type Currency,
   type PipelineStatus,
   type PipelineItem,
 } from './financeTypes';
-import { daysUntil, deadlineColor, deadlineBg, formatDate, formatAmount } from './financeHelpers';
-import { EmptyState, SummaryBar } from './StatusBadge';
+import { daysUntil, formatDate, formatAmount } from './financeHelpers';
 import MahnungenBanner from './MahnungenBanner';
+import {
+  Section,
+  StatCard,
+  Button,
+  Input,
+  Select,
+  Card,
+  Table,
+  Pill,
+  IconPlus,
+  IconCheck,
+} from '@/components/ui/light';
 
 // ─── Invoices & Mahnungen Tab ─────────────────────────────────────────────────
-// Reads + writes the canonical `finance_pipeline` table (manual entry layer).
-// Mahnstufen-Tracking + Cash-Optimizer kommen in Welle 2 als separate Schicht.
+// Welle 3 Stage 2 — Light Glass + Bento layout pilot.
+// Layout: Mahnungen-Banner (groß) + StatCard-Stack (rechts) → Filter Bar →
+// Pipeline Table.
+// Reads finance_pipeline. Mahnungen sind in eigener Tabelle (finance_mahnungen).
 
 const ENTITY_LABELS: Record<Entity, string> = {
   'thiocyn': 'Thiocyn',
@@ -34,6 +46,14 @@ const STATUS_LABELS: Record<PipelineStatus, string> = {
   beleg_fehlt: 'Beleg fehlt',
   erledigt: 'Erledigt',
   ueberfaellig: 'Überfällig',
+};
+
+const STATUS_VARIANT: Record<PipelineStatus, 'warning' | 'success' | 'danger' | 'neutral'> = {
+  offen: 'warning',
+  bezahlt: 'success',
+  beleg_fehlt: 'warning',
+  erledigt: 'success',
+  ueberfaellig: 'danger',
 };
 
 const DEFAULT_FORM = {
@@ -126,220 +146,217 @@ function InvoicesTab() {
   };
 
   return (
-    <div className="space-y-5">
-      {/* Welle 2 — Mahnungen Banner (auto-hides if no open mahnungen) */}
-      <MahnungenBanner onChange={load} />
-
-      {/* Summary */}
-      <SummaryBar
-        items={[
-          { label: 'Offen', value: fmtSum(outstanding), color: outstanding.length > 0 ? 'text-amber-600' : 'text-green-600' },
-          { label: 'Überfällig', value: fmtSum(overdueOnly), color: overdueOnly.length > 0 ? 'text-red-600' : 'text-green-600' },
-          { label: 'Gesamt', value: String(items.length) },
-        ]}
-      />
-
-      {/* Filters + Add */}
-      <div className="flex flex-wrap items-center gap-3 justify-between">
-        <div className="flex items-center gap-2">
-          <select
-            className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as PipelineStatus | 'all')}
-          >
-            <option value="all">Alle Status</option>
-            {PIPELINE_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-          </select>
-          <select
-            className="border border-white/[0.06] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-            value={filterEntity}
-            onChange={(e) => setFilterEntity(e.target.value as Entity | 'all')}
-          >
-            <option value="all">Alle Firmen</option>
-            {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
-          </select>
+    <Section className="space-y-5">
+      {/* ─── Top Row: Mahnungen Banner (left) + StatCard Stack (right) ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <MahnungenBanner onChange={load} />
         </div>
-        <button
-          onClick={() => setShowAddForm((v) => !v)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Rechnung hinzufügen
-        </button>
+        <div className="grid grid-cols-1 gap-3">
+          <StatCard
+            label="Offen"
+            value={fmtSum(outstanding)}
+            sub={`${outstanding.length} Posten`}
+            variant={outstanding.length > 0 ? 'warning' : 'success'}
+            size="md"
+          />
+          <StatCard
+            label="Überfällig"
+            value={fmtSum(overdueOnly)}
+            sub={`${overdueOnly.length} Posten`}
+            variant={overdueOnly.length > 0 ? 'danger' : 'success'}
+            size="md"
+          />
+          <StatCard
+            label="Gesamt"
+            value={items.length}
+            sub="alle Posten"
+            size="md"
+          />
+        </div>
       </div>
 
-      {/* Add Form */}
+      {/* ─── Filter Bar + Add Button ─── */}
+      <div className="flex flex-wrap items-center gap-3 justify-between">
+        <div className="flex items-center gap-2">
+          <Select
+            width="auto"
+            value={filterStatus}
+            onChange={(v) => setFilterStatus(v as PipelineStatus | 'all')}
+            options={[
+              { value: 'all', label: 'Alle Status' },
+              ...PIPELINE_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] })),
+            ]}
+          />
+          <Select
+            width="auto"
+            value={filterEntity}
+            onChange={(v) => setFilterEntity(v as Entity | 'all')}
+            options={[
+              { value: 'all', label: 'Alle Firmen' },
+              ...ENTITIES.map((e) => ({ value: e, label: ENTITY_LABELS[e] })),
+            ]}
+          />
+        </div>
+        <Button
+          variant="primary"
+          icon={<IconPlus />}
+          onClick={() => setShowAddForm((v) => !v)}
+        >
+          Rechnung hinzufügen
+        </Button>
+      </div>
+
+      {/* ─── Add Form ─── */}
       {showAddForm && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-100">Neue Rechnung</h3>
+        <Card padding="md">
+          <h3 className="lt-text-h1 mb-4">Neue Rechnung</h3>
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+            <p
+              className="lt-text-meta lt-text-danger mb-3"
+              style={{
+                background: 'rgba(220,38,38,0.08)',
+                border: '1px solid rgba(220,38,38,0.2)',
+                padding: '0.625rem 0.875rem',
+                borderRadius: '0.625rem',
+              }}
+            >
               {error}
             </p>
           )}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Firma</label>
-              <select
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.entity}
-                onChange={(e) => setForm((f) => ({ ...f, entity: e.target.value as Entity }))}
-              >
-                {ENTITIES.map((e) => <option key={e} value={e}>{ENTITY_LABELS[e]}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Lieferant *</label>
-              <input
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder="z.B. Shopify, Meta"
-                value={form.vendor}
-                onChange={(e) => setForm((f) => ({ ...f, vendor: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Betrag *</label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                placeholder="0.00"
-                value={form.amount}
-                onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Währung</label>
-              <select
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.currency}
-                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value as Currency }))}
-              >
-                {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Status</label>
-              <select
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.status}
-                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as PipelineStatus }))}
-              >
-                {PIPELINE_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Fällig am</label>
-              <input
-                type="date"
-                className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-                value={form.due_date}
-                onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-              />
-            </div>
+            <Select
+              label="Firma"
+              value={form.entity}
+              onChange={(v) => setForm((f) => ({ ...f, entity: v as Entity }))}
+              options={ENTITIES.map((e) => ({ value: e, label: ENTITY_LABELS[e] }))}
+            />
+            <Input
+              label="Lieferant"
+              required
+              placeholder="z.B. Shopify, Meta"
+              value={form.vendor}
+              onChange={(v) => setForm((f) => ({ ...f, vendor: v }))}
+            />
+            <Input
+              label="Betrag"
+              required
+              type="number"
+              step="0.01"
+              min={0}
+              placeholder="0.00"
+              value={form.amount}
+              onChange={(v) => setForm((f) => ({ ...f, amount: v }))}
+            />
+            <Select
+              label="Währung"
+              value={form.currency}
+              onChange={(v) => setForm((f) => ({ ...f, currency: v as Currency }))}
+              options={CURRENCIES.map((c) => ({ value: c, label: c }))}
+            />
+            <Select
+              label="Status"
+              value={form.status}
+              onChange={(v) => setForm((f) => ({ ...f, status: v as PipelineStatus }))}
+              options={PIPELINE_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] }))}
+            />
+            <Input
+              label="Fällig am"
+              type="date"
+              value={form.due_date}
+              onChange={(v) => setForm((f) => ({ ...f, due_date: v }))}
+            />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">Notizen</label>
+          <div className="mt-3">
+            <label className="lt-label">Notizen</label>
             <textarea
               rows={2}
-              className="w-full border border-white/[0.06] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
+              className="lt-input resize-none"
               placeholder="Optionale Notizen..."
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             />
           </div>
-          <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => { setShowAddForm(false); setError(null); }}
-              className="px-4 py-2 text-sm text-slate-300 font-medium hover:bg-white/[0.06] rounded-xl transition-colors"
-            >
+          <div className="flex gap-2 justify-end mt-4">
+            <Button variant="ghost" onClick={() => { setShowAddForm(false); setError(null); }}>
               Abbrechen
-            </button>
-            <button
-              onClick={handleAdd}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors"
-            >
+            </Button>
+            <Button variant="primary" onClick={handleAdd} disabled={submitting}>
               {submitting ? 'Speichere…' : 'Speichern'}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
 
-      {/* Table */}
+      {/* ─── Pipeline Table ─── */}
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <EmptyState message="Keine Rechnungen für diese Filter." />
-      ) : (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/[0.06] bg-surface-900/60">
-                  {['Firma', 'Lieferant', 'Betrag', 'Eingang', 'Fällig am', 'Status', 'Notizen', ''].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.06]">
-                {filtered.map((item) => {
-                  const isPaid = item.status === 'bezahlt' || item.status === 'erledigt';
-                  return (
-                    <tr
-                      key={item.id}
-                      className={`hover:bg-white/[0.03] transition-colors ${deadlineBg(item.due_date, isPaid)}`}
-                    >
-                      <td className="px-4 py-3 font-medium text-slate-100 whitespace-nowrap">
-                        {ENTITY_LABELS[item.entity] ?? item.entity}
-                      </td>
-                      <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{item.vendor}</td>
-                      <td className="px-4 py-3 font-semibold text-slate-100 whitespace-nowrap">
-                        {formatAmount(item.amount, item.currency)}
-                      </td>
-                      <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{formatDate(item.received_at)}</td>
-                      <td className={`px-4 py-3 whitespace-nowrap ${deadlineColor(item.due_date, isPaid)}`}>
-                        {formatDate(item.due_date)}
-                        {!isPaid && daysUntil(item.due_date) !== null && (
-                          <span className="ml-1 text-xs opacity-70">({daysUntil(item.due_date)}d)</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                            PIPELINE_STATUS_STYLES[item.status] ?? 'bg-slate-500/15 text-slate-400'
-                          }`}
-                        >
-                          {STATUS_LABELS[item.status] ?? item.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-500 text-xs max-w-[160px] truncate">{item.notes ?? '—'}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        {!isPaid && (
-                          <button
-                            onClick={() => handleMarkPaid(item.id)}
-                            className="text-xs text-green-600 font-semibold hover:text-green-700 hover:underline"
-                          >
-                            Bezahlt markieren
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <Card padding="lg">
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8" style={{ borderBottom: '2px solid var(--tc-gold)' }} />
           </div>
-        </div>
+        </Card>
+      ) : filtered.length === 0 ? (
+        <Card padding="lg">
+          <div className="lt-empty">Keine Rechnungen für diese Filter.</div>
+        </Card>
+      ) : (
+        <Table>
+          <thead>
+            <tr>
+              <th>Firma</th>
+              <th>Lieferant</th>
+              <th>Betrag</th>
+              <th>Eingang</th>
+              <th>Fällig</th>
+              <th>Status</th>
+              <th>Notizen</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((item) => {
+              const isPaid = item.status === 'bezahlt' || item.status === 'erledigt';
+              const days = daysUntil(item.due_date);
+              const isOverdue = days !== null && days < 0 && !isPaid;
+              return (
+                <tr key={item.id}>
+                  <td className="lt-td-meta">{ENTITY_LABELS[item.entity] ?? item.entity}</td>
+                  <td className="lt-td-vendor">{item.vendor}</td>
+                  <td className="lt-td-amount">{formatAmount(item.amount, item.currency)}</td>
+                  <td className="lt-td-meta">{formatDate(item.received_at)}</td>
+                  <td className="lt-td-meta" style={isOverdue ? { color: '#dc2626', fontWeight: 600 } : undefined}>
+                    {formatDate(item.due_date)}
+                    {!isPaid && days !== null && (
+                      <span style={{ marginLeft: '0.375rem', opacity: 0.7, fontSize: '0.75rem' }}>
+                        ({days}d)
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <Pill variant={STATUS_VARIANT[item.status]}>{STATUS_LABELS[item.status]}</Pill>
+                  </td>
+                  <td className="lt-td-meta" style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {item.notes ?? '—'}
+                  </td>
+                  <td>
+                    {!isPaid && (
+                      <Button
+                        variant="success"
+                        size="sm"
+                        icon={<IconCheck />}
+                        onClick={() => handleMarkPaid(item.id)}
+                      >
+                        Bezahlt
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
       )}
-    </div>
+    </Section>
   );
 }
 
