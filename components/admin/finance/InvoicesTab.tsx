@@ -12,6 +12,7 @@ import {
 } from './financeTypes';
 import { daysUntil, deadlineColor, deadlineBg, formatDate, formatAmount } from './financeHelpers';
 import { EmptyState, SummaryBar } from './StatusBadge';
+import MahnungenBanner from './MahnungenBanner';
 
 // ─── Invoices & Mahnungen Tab ─────────────────────────────────────────────────
 // Reads + writes the canonical `finance_pipeline` table (manual entry layer).
@@ -126,6 +127,9 @@ function InvoicesTab() {
 
   return (
     <div className="space-y-5">
+      {/* Welle 2 — Mahnungen Banner (auto-hides if no open mahnungen) */}
+      <MahnungenBanner onChange={load} />
+
       {/* Summary */}
       <SummaryBar
         items={[
