@@ -703,6 +703,82 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   );
 };
 
+// ─── Welle 1b Item 9 — Monday Meeting #1 setup modal ─────────────────────
+const MondayMeetingSetupModal: React.FC<{
+  interns: InternWithData[];
+  onClose: () => void;
+  onCreate: (meetingDate: string, ledById: string) => Promise<void>;
+}> = ({ interns, onClose, onCreate }) => {
+  // Default to next Monday
+  const nextMonday = (() => {
+    const d = new Date();
+    const day = d.getDay();
+    const daysUntilMonday = (8 - day) % 7 || 7;
+    d.setDate(d.getDate() + daysUntilMonday);
+    return d.toISOString().slice(0, 10);
+  })();
+  const [date, setDate] = useState(nextMonday);
+  const tom = interns.find(i => i.full_name.toLowerCase().includes('tom'));
+  const [ledBy, setLedBy] = useState(tom?.id ?? interns[0]?.id ?? '');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCreate = async () => {
+    if (!ledBy || !date) return;
+    setSubmitting(true);
+    await onCreate(date, ledBy);
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-surface-800 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <h3 className="text-lg font-black text-white">Monday Meeting #1</h3>
+        <p className="text-xs text-slate-400">
+          Welcome + Intros Kickoff. Agenda wird automatisch aus dem Template
+          (docs/intern-academy/monday-meeting-template.md) befüllt — danach in der
+          Academy-View editierbar.
+        </p>
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Datum</label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 bg-white/[0.06] border border-white/10 rounded-lg text-white text-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Geleitet von</label>
+          <select
+            value={ledBy}
+            onChange={(e) => setLedBy(e.target.value)}
+            className="w-full px-3 py-2 bg-white/[0.06] border border-white/10 rounded-lg text-white text-sm"
+          >
+            {interns.map(i => (
+              <option key={i.id} value={i.id}>{i.full_name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-3 pt-2">
+          <button
+            onClick={handleCreate}
+            disabled={submitting || !date || !ledBy}
+            className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-sm font-bold rounded-lg transition-colors"
+          >
+            {submitting ? 'Erstelle…' : 'Meeting anlegen'}
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 bg-white/[0.06] hover:bg-white/10 text-slate-300 text-sm font-bold rounded-lg transition-colors"
+          >
+            Abbrechen
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main AcademyView ─────────────────────────────────────────────────────
 const AcademyView: React.FC = () => {
   const [interns, setInterns] = useState<InternWithData[]>([]);
@@ -710,6 +786,73 @@ const AcademyView: React.FC = () => {
   const [filter, setFilter] = useState<'all' | AcademyPhase>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [sendingBatch, setSendingBatch] = useState(false);
+  // Welle 1b Item 9 — feature flag for batch invites (Resend Domain blocker, Open Task #36).
+  // Defaults to false until recruiter_settings.feature_flags.intern_invite_send is flipped on.
+  const [inviteSendEnabled, setInviteSendEnabled] = useState(false);
+  // Welle 1b Item 9 — Monday Meeting #1 setup helper (one-time creation modal)
+  const [showMondayModal, setShowMondayModal] = useState(false);
+  const [hasFirstMonday, setHasFirstMonday] = useState<boolean | null>(null);
+  // Welle 1b Item 9 — buddy pairing assignment in-flight state
+  const [savingBuddyFor, setSavingBuddyFor] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from('recruiter_settings')
+        .select('feature_flags')
+        .eq('id', 1)
+        .maybeSingle();
+      if (cancelled) return;
+      setInviteSendEnabled(data?.feature_flags?.intern_invite_send === true);
+
+      const { count } = await supabase
+        .from('monday_meetings')
+        .select('id', { count: 'exact', head: true });
+      if (cancelled) return;
+      setHasFirstMonday((count ?? 0) > 0);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  async function assignBuddy(internId: string, buddyId: string | null) {
+    setSavingBuddyFor(internId);
+    const { error } = await supabase
+      .from('intern_accounts')
+      .update({ buddy_user_id: buddyId })
+      .eq('id', internId);
+    if (error) {
+      console.error('[buddy-assign] failed:', error.message);
+      alert(`Buddy assign failed: ${error.message}`);
+    } else {
+      setInterns(prev => prev.map(i => i.id === internId ? { ...i, buddy_user_id: buddyId } : i));
+    }
+    setSavingBuddyFor(null);
+  }
+
+  async function createFirstMondayMeeting(meetingDate: string, ledById: string) {
+    const { error } = await supabase.from('monday_meetings').insert({
+      meeting_date: meetingDate,
+      week_number: 1,
+      format: 'themed',
+      topic: 'Welcome + Intros — Hartlimes Intern Academy Kickoff',
+      agenda: [
+        { item: 'Welcome from Tom (Programme Lead)', minutes: 5 },
+        { item: 'Round of intros (everyone — name, track interest, one fact)', minutes: 15 },
+        { item: 'Programme overview: 4 phases, 5 levels, milestones', minutes: 10 },
+        { item: 'Buddy pairings reveal + intros', minutes: 5 },
+        { item: 'Tools tour: Business OS, where to find what', minutes: 10 },
+        { item: 'Q&A', minutes: 10 },
+      ],
+      led_by: ledById,
+    });
+    if (error) {
+      alert(`Meeting create failed: ${error.message}`);
+      return;
+    }
+    setHasFirstMonday(true);
+    setShowMondayModal(false);
+  }
 
   async function load() {
     setLoading(true);
@@ -830,8 +973,13 @@ const AcademyView: React.FC = () => {
                 Copy All Emails
               </button>
               <button
-                disabled={sendingBatch}
+                disabled={sendingBatch || !inviteSendEnabled}
+                title={!inviteSendEnabled ? 'Resend Domain noch nicht verifiziert — Mass-Invite ist gesperrt' : ''}
                 onClick={async () => {
+                  if (!inviteSendEnabled) {
+                    alert('Mass-Invite ist deaktiviert (Resend Domain noch nicht verifiziert).');
+                    return;
+                  }
                   if (!window.confirm(`Alle ${pendingInvites.length} ausstehenden Interns erhalten jetzt ihre Magic Link Einladung. Fortfahren?`)) return;
                   setSendingBatch(true);
                   for (const i of pendingInvites) {
@@ -840,9 +988,9 @@ const AcademyView: React.FC = () => {
                   setSendingBatch(false);
                   alert(`${pendingInvites.length} Einladungen verschickt! 🚀`);
                 }}
-                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
               >
-                {sendingBatch ? 'Sende…' : '🚀 Send all invites'}
+                {sendingBatch ? 'Sende…' : inviteSendEnabled ? '🚀 Send all invites' : '🔒 Invites Coming Soon'}
               </button>
             </div>
           </div>
@@ -857,6 +1005,70 @@ const AcademyView: React.FC = () => {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Welle 1b Item 9 — Buddy Pairings setup banner */}
+      {interns.some(i => i.buddy_user_id === null) && interns.length > 1 && (
+        <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+          <div className="mb-3">
+            <p className="text-sm font-bold text-purple-400">
+              🤝 Buddy Pairings ({interns.filter(i => i.buddy_user_id === null).length} unpaired)
+            </p>
+            <p className="text-xs text-purple-500/80 mt-0.5">
+              Per docs/intern-academy/buddy-program.md — jeder Intern braucht einen Buddy. Wähle aus den anderen aktiven Interns. Tom Roelants ist Programme Lead und kann mehrere Buddies haben.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {interns.filter(i => i.buddy_user_id === null).map(i => {
+              const candidates = interns.filter(c => c.id !== i.id && c.is_active);
+              return (
+                <div key={i.id} className="flex items-center gap-2 bg-purple-500/5 border border-purple-500/15 rounded-lg px-3 py-2">
+                  <span className="text-xs font-semibold text-purple-300 flex-1 truncate">{i.full_name}</span>
+                  <select
+                    disabled={savingBuddyFor === i.id}
+                    defaultValue=""
+                    onChange={(e) => {
+                      if (e.target.value) void assignBuddy(i.id, e.target.value);
+                    }}
+                    className="text-xs bg-surface-900 border border-purple-500/30 text-purple-200 rounded px-2 py-1 max-w-[160px]"
+                  >
+                    <option value="" disabled>Buddy wählen…</option>
+                    {candidates.map(c => (
+                      <option key={c.id} value={c.id}>{c.full_name}</option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Welle 1b Item 9 — Monday Meeting #1 setup banner (one-shot) */}
+      {hasFirstMonday === false && interns.length > 0 && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold text-amber-400">📅 Monday Meeting #1 ansetzen</p>
+            <p className="text-xs text-amber-500/80 mt-0.5">
+              Erstes Welcome-Meeting für die {interns.length} Interns. Template mit Welcome + Intros + Programm-Übersicht ist vorgefertigt.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowMondayModal(true)}
+            className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+          >
+            Schedule Meeting #1
+          </button>
+        </div>
+      )}
+
+      {/* Welle 1b Item 9 — Monday Meeting #1 modal */}
+      {showMondayModal && (
+        <MondayMeetingSetupModal
+          interns={interns}
+          onClose={() => setShowMondayModal(false)}
+          onCreate={createFirstMondayMeeting}
+        />
       )}
 
       {/* Submissions to review banner */}
