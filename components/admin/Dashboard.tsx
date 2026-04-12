@@ -192,8 +192,8 @@ function LangToggle() {
 
 const Dashboard: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
-  const [authReady, setAuthReady] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(() => sessionStorage.getItem('demo-mode') === '1');
+  const [authReady, setAuthReady] = useState(() => sessionStorage.getItem('demo-mode') === '1');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -202,7 +202,7 @@ const Dashboard: React.FC = () => {
       setAuthReady(true);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    const handleDemo = () => { setIsDemoMode(true); setAuthReady(true); };
+    const handleDemo = () => { setIsDemoMode(true); setAuthReady(true); sessionStorage.setItem('demo-mode', '1'); };
     window.addEventListener('start-demo-mode', handleDemo);
     return () => { subscription.unsubscribe(); window.removeEventListener('start-demo-mode', handleDemo); };
   }, []);
@@ -268,6 +268,7 @@ const Dashboard: React.FC = () => {
   const handleLogout = async () => {
     if (isDemoMode) {
       setIsDemoMode(false);
+      sessionStorage.removeItem('demo-mode');
       navigate('/admin');
     } else {
       await supabase.auth.signOut();
