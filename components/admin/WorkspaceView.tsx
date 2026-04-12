@@ -81,19 +81,19 @@ function fmtDate(iso: string) {
 
 const CATEGORY_STYLES: Record<string, string> = {
   invoice: 'bg-violet-500/15 text-violet-400', reminder: 'bg-orange-500/15 text-orange-400',
-  dispute: 'bg-red-500/15 text-red-400', info: 'bg-slate-500/15 text-slate-400',
-  other: 'bg-slate-500/15 text-slate-400', task: 'bg-blue-500/15 text-blue-400',
+  dispute: 'bg-red-500/15 text-red-400', info: 'bg-slate-500/15 text-[#515154]',
+  other: 'bg-slate-500/15 text-[#515154]', task: 'bg-blue-500/15 text-blue-400',
   question: 'bg-teal-500/15 text-teal-400',
 };
 
 const STATUS_STYLES: Record<string, string> = {
   new: 'bg-blue-500/15 text-blue-400',
   actioned: 'bg-emerald-500/15 text-emerald-400',
-  archived: 'bg-slate-500/15 text-slate-500',
+  archived: 'bg-slate-500/15 text-[#6e6e73]',
 };
 
 const ACCESS_STATUS: Record<string, string> = {
-  open: 'bg-slate-500/15 text-slate-400', requested: 'bg-blue-500/15 text-blue-400',
+  open: 'bg-slate-500/15 text-[#515154]', requested: 'bg-blue-500/15 text-blue-400',
   granted: 'bg-emerald-500/15 text-emerald-400', denied: 'bg-red-500/15 text-red-400',
 };
 
@@ -124,20 +124,20 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
 
   return (
     <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
-      <div className="bg-surface-800 border border-white/[0.08] rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
+      <div className="bg-white/80 border border-black/[0.08] rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white">{t('cp.title')}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-white text-lg leading-none">✕</button>
+          <h3 className="text-sm font-bold text-[#1d1d1f]">{t('cp.title')}</h3>
+          <button onClick={onClose} className="text-[#6e6e73] hover:text-[#1d1d1f] text-lg leading-none">✕</button>
         </div>
 
         {/* Module toggles */}
         <div>
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{t('cp.modules')}</p>
+          <p className="text-xs font-semibold text-[#6e6e73] uppercase tracking-wide mb-2">{t('cp.modules')}</p>
           <div className="grid grid-cols-2 gap-2">
             {ALL_MODULES.map(m => (
               <button key={m} onClick={() => toggleModule(m)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.enabled_modules.includes(m) ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-white/[0.04] border-white/[0.06] text-slate-500'}`}>
-                <span className={`w-4 h-4 rounded border flex items-center justify-center text-xs ${form.enabled_modules.includes(m) ? 'bg-amber-500 border-amber-500 text-white' : 'border-white/[0.20]'}`}>
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.enabled_modules.includes(m) ? 'bg-[#E09B37]/12 border-[#E09B37]/25 text-[#E09B37]' : 'bg-black/[0.03] border-black/[0.06] text-[#6e6e73]'}`}>
+                <span className={`w-4 h-4 rounded border flex items-center justify-center text-xs ${form.enabled_modules.includes(m) ? 'bg-amber-500 border-amber-500 text-[#1d1d1f]' : 'border-white/[0.20]'}`}>
                   {form.enabled_modules.includes(m) ? '✓' : ''}
                 </span>
                 {MODULE_LABELS[m]}
@@ -147,9 +147,9 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-slate-500 rounded-xl hover:bg-white/[0.06] transition-colors">{t('ap.cancel')}</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04] transition-colors">{t('ap.cancel')}</button>
           <button onClick={() => onSave(form)}
-            className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
+            className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
             {t('ap.save')}
           </button>
         </div>
@@ -223,23 +223,23 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
 
   return (
     <div className="fixed inset-0 bg-black/30 z-50 flex items-end md:items-center justify-center p-4">
-      <div className="bg-surface-800 border border-white/[0.08] rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
+      <div className="bg-white/80 border border-black/[0.08] rounded-2xl shadow-xl w-full max-w-md space-y-5 p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white">{t('ap.title')}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-white text-lg leading-none">✕</button>
+          <h3 className="text-sm font-bold text-[#1d1d1f]">{t('ap.title')}</h3>
+          <button onClick={onClose} className="text-[#6e6e73] hover:text-[#1d1d1f] text-lg leading-none">✕</button>
         </div>
 
         {/* Existing accounts */}
         {accounts.length > 0 ? (
           <div className="space-y-2">
             {accounts.map(account => (
-              <div key={account.id} className="flex items-center justify-between gap-3 bg-white/[0.04] border border-white/[0.06] rounded-xl px-3 py-2.5">
+              <div key={account.id} className="flex items-center justify-between gap-3 bg-black/[0.03] border border-black/[0.06] rounded-xl px-3 py-2.5">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{account.label}</p>
-                  <p className="text-xs text-slate-500 truncate">{account.imap_user}</p>
+                  <p className="text-sm font-semibold text-[#1d1d1f] truncate">{account.label}</p>
+                  <p className="text-xs text-[#6e6e73] truncate">{account.imap_user}</p>
                 </div>
                 <button onClick={() => handleDelete(account)} disabled={deletingId === account.id}
-                  className="p-1 text-slate-500 hover:text-red-400 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-500/10 shrink-0">
+                  className="p-1 text-[#6e6e73] hover:text-red-400 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-500/10 shrink-0">
                   {deletingId === account.id
                     ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                     : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -249,57 +249,57 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 text-center py-2">{t('ap.noAccounts')}</p>
+          <p className="text-xs text-[#6e6e73] text-center py-2">{t('ap.noAccounts')}</p>
         )}
 
         {/* Add form */}
         {showAdd ? (
-          <div className="space-y-3 border-t border-white/[0.06] pt-4">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('ap.addAccount')}</p>
+          <div className="space-y-3 border-t border-black/[0.06] pt-4">
+            <p className="text-xs font-semibold text-[#6e6e73] uppercase tracking-wide">{t('ap.addAccount')}</p>
             <div>
-              <label className="text-xs text-slate-500 block mb-1">{t('ap.label')}</label>
+              <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.label')}</label>
               <input value={label} onChange={e => setLabel(e.target.value)}
-                className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 placeholder-slate-600"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
                 placeholder="z.B. CS Support, Mein Postfach" />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
-                <label className="text-xs text-slate-500 block mb-1">{t('ap.host')}</label>
+                <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.host')}</label>
                 <input value={imapHost} onChange={e => setImapHost(e.target.value)}
-                  className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 placeholder-slate-600"
+                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
                   placeholder="mail.domain.de" />
               </div>
               <div>
-                <label className="text-xs text-slate-500 block mb-1">{t('ap.port')}</label>
+                <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.port')}</label>
                 <input type="number" value={imapPort} onChange={e => setImapPort(parseInt(e.target.value) || 993)}
-                  className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30" />
+                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30" />
               </div>
             </div>
             <div>
-              <label className="text-xs text-slate-500 block mb-1">{t('ap.user')}</label>
+              <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.user')}</label>
               <input value={imapUser} onChange={e => setImapUser(e.target.value)}
-                className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 placeholder-slate-600"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
                 placeholder="name@domain.de" />
             </div>
             <div>
-              <label className="text-xs text-slate-500 block mb-1">
-                {t('ap.password')} <span className="text-slate-600 font-normal">({t('ap.passwordHint')})</span>
+              <label className="text-xs text-[#6e6e73] block mb-1">
+                {t('ap.password')} <span className="text-[#86868b] font-normal">({t('ap.passwordHint')})</span>
               </label>
               <input type="password" value={imapPass} onChange={e => setImapPass(e.target.value)}
-                className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 placeholder-slate-600"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
                 placeholder="App-Passwort eingeben" />
             </div>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-slate-500 rounded-xl hover:bg-white/[0.06] transition-colors">{t('ap.cancel')}</button>
+              <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04] transition-colors">{t('ap.cancel')}</button>
               <button onClick={handleAdd} disabled={saving || !imapHost || !imapUser}
-                className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 transition-colors">
+                className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
                 {saving ? '…' : t('ap.save')}
               </button>
             </div>
           </div>
         ) : (
           <button onClick={() => setShowAdd(true)}
-            className="w-full py-2.5 border border-dashed border-white/[0.12] text-xs font-semibold text-slate-500 rounded-xl hover:bg-white/[0.04] hover:border-white/[0.20] transition-colors">
+            className="w-full py-2.5 border border-dashed border-white/[0.12] text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.03] hover:border-white/[0.20] transition-colors">
             + {t('ap.addAccount')}
           </button>
         )}
@@ -457,28 +457,28 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary-500/20 rounded-2xl flex items-center justify-center text-xl">📬</div>
           <div>
-            <p className="text-sm font-bold text-white">{t('mt.setupTitle')}</p>
-            <p className="text-xs text-slate-500">{t('mt.setupSubtitle')}</p>
+            <p className="text-sm font-bold text-[#1d1d1f]">{t('mt.setupTitle')}</p>
+            <p className="text-xs text-[#6e6e73]">{t('mt.setupSubtitle')}</p>
           </div>
         </div>
 
         <div className="space-y-3">
           {steps.map(s => (
-            <div key={s.num} className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-4 flex gap-4 backdrop-blur-sm">
-              <div className="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+            <div key={s.num} className="bg-white/70 border border-black/[0.06] rounded-2xl p-4 flex gap-4 backdrop-blur-sm">
+              <div className="w-7 h-7 rounded-full bg-[#E09B37] text-[#1d1d1f] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {s.num}
               </div>
               <div className="space-y-1 min-w-0">
-                <p className="text-sm font-semibold text-white">{s.title}</p>
-                <p className="text-xs text-slate-400 leading-relaxed">{s.body}</p>
-                <p className="text-xs text-amber-400 bg-amber-500/10 rounded-lg px-2.5 py-1 inline-block mt-1">{s.tip}</p>
+                <p className="text-sm font-semibold text-[#1d1d1f]">{s.title}</p>
+                <p className="text-xs text-[#515154] leading-relaxed">{s.body}</p>
+                <p className="text-xs text-[#E09B37] bg-[#E09B37]/12 rounded-lg px-2.5 py-1 inline-block mt-1">{s.tip}</p>
               </div>
             </div>
           ))}
         </div>
 
         <button onClick={onNeedAccounts}
-          className="w-full py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors">
+          className="w-full py-2.5 bg-[#E09B37] text-[#1d1d1f] text-sm font-semibold rounded-xl hover:bg-[#c8832a] transition-colors">
           {t('mt.setupBtn')}
         </button>
       </div>
@@ -497,28 +497,28 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
       {/* Account filter row */}
       <div className="flex items-center gap-2 flex-wrap">
         <button onClick={() => setActiveAccount('all')}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-primary-600 text-white border-primary-600' : 'bg-white/[0.04] text-slate-500 border-white/[0.06] hover:border-white/[0.12]'}`}>
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-[#E09B37] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
           {t('mt.all')}
         </button>
         {accounts.map(account => (
           <button key={account.id} onClick={() => setActiveAccount(account.id)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === account.id ? 'bg-primary-600 text-white border-primary-600' : 'bg-white/[0.04] text-slate-500 border-white/[0.06] hover:border-white/[0.12]'}`}>
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === account.id ? 'bg-[#E09B37] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
             {account.label}
           </button>
         ))}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 bg-white/[0.05] border border-white/[0.06] p-1 rounded-xl">
+        <div className="flex gap-1 bg-black/[0.03] border border-black/[0.06] p-1 rounded-xl">
           {(['all', 'new', 'actioned', 'archived'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white/[0.10] text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${filter === f ? 'bg-white/[0.10] text-[#1d1d1f] shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>
               {f === 'all' ? `${t('mt.all')} (${accountMailsAll.length})` : f === 'new' ? `${t('mt.new')} (${accountMailsAll.filter(m => m.status === 'new').length})` : STATUS_LABELS[f]}
             </button>
           ))}
         </div>
         <button onClick={syncMails} disabled={syncing}
-          className="flex items-center gap-2 px-3 py-1.5 bg-primary-600 text-white text-xs font-semibold rounded-xl hover:bg-primary-700 disabled:opacity-60 transition-colors">
+          className="flex items-center gap-2 px-3 py-1.5 bg-[#E09B37] text-[#1d1d1f] text-xs font-semibold rounded-xl hover:bg-[#c8832a] disabled:opacity-60 transition-colors">
           {syncing ? <span className="inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -534,7 +534,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         </p>
       )}
       {syncResult && (
-        <p className="text-xs text-slate-400 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
+        <p className="text-xs text-[#515154] bg-black/[0.03] border border-black/[0.06] rounded-lg px-3 py-2">
           Sync: <strong>{syncResult.inserted}</strong> {t('mt.syncResult')} ({syncResult.total} {t('mt.syncChecked')})
         </p>
       )}
@@ -542,7 +542,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
       {loading ? (
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-slate-500">
+        <div className="flex flex-col items-center justify-center py-12 text-[#6e6e73]">
           <p className="text-sm">{t('mt.noMails')}</p>
         </div>
       ) : (
@@ -550,18 +550,18 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
           {filtered.map(mail => {
             const mailAccount = accounts.find(a => a.id === mail.account_id);
             return (
-              <div key={mail.id} className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-4 backdrop-blur-sm space-y-3">
+              <div key={mail.id} className="bg-white/70 border border-black/[0.06] rounded-2xl p-4 backdrop-blur-sm space-y-3">
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-white truncate">{mail.subject}</p>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{mail.sender}</p>
-                    {mail.preview && <p className="text-xs text-slate-500 mt-1 line-clamp-2">{mail.preview}</p>}
+                    <p className="text-sm font-semibold text-[#1d1d1f] truncate">{mail.subject}</p>
+                    <p className="text-xs text-[#6e6e73] mt-0.5 truncate">{mail.sender}</p>
+                    {mail.preview && <p className="text-xs text-[#6e6e73] mt-1 line-clamp-2">{mail.preview}</p>}
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
-                    <span className="text-xs text-slate-500">{fmt(mail.received_at)}</span>
+                    <span className="text-xs text-[#6e6e73]">{fmt(mail.received_at)}</span>
                     {mailAccount && (
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-slate-400">
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-[#515154]">
                         {mailAccount.label}
                       </span>
                     )}
@@ -569,7 +569,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                       {STATUS_LABELS[mail.status]}
                     </span>
                     {mail.category && (
-                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category] ?? 'bg-slate-500/15 text-slate-400'}`}>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${CATEGORY_STYLES[mail.category] ?? 'bg-slate-500/15 text-[#515154]'}`}>
                         {mail.category}
                       </span>
                     )}
@@ -577,7 +577,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                       <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-400">{t('mt.urgent')}</span>
                     )}
                     <button onClick={() => deleteMail(mail.id)} disabled={deletingId === mail.id}
-                      className="ml-1 p-1 text-slate-500 hover:text-red-400 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-500/10" title={t('zt.delete')}>
+                      className="ml-1 p-1 text-[#6e6e73] hover:text-red-400 disabled:opacity-40 transition-colors rounded-lg hover:bg-red-500/10" title={t('zt.delete')}>
                       {deletingId === mail.id
                         ? <span className="inline-block w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
                         : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -602,13 +602,13 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                 )}
 
                 {/* Actions */}
-                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-white/[0.06]">
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-black/[0.06]">
                   <button onClick={() => updateStatus(mail.id, 'actioned')} disabled={mail.status === 'actioned'}
                     className="px-3 py-1.5 text-xs font-semibold bg-emerald-500/15 text-emerald-400 rounded-lg hover:bg-emerald-500/25 disabled:opacity-40 transition-colors">
                     {t('mt.markDone')}
                   </button>
                   <button onClick={() => updateStatus(mail.id, 'archived')} disabled={mail.status === 'archived'}
-                    className="px-3 py-1.5 text-xs font-semibold bg-white/[0.04] text-slate-400 rounded-lg hover:bg-white/[0.08] disabled:opacity-40 transition-colors">
+                    className="px-3 py-1.5 text-xs font-semibold bg-black/[0.03] text-[#515154] rounded-lg hover:bg-white/[0.08] disabled:opacity-40 transition-colors">
                     {t('mt.archive')}
                   </button>
                   <button onClick={() => updateStatus(mail.id, 'new')} disabled={mail.status === 'new'}
@@ -619,9 +619,9 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                     <input type="text" placeholder={t('mt.notePlaceholder')}
                       value={noteValues[mail.id] ?? ''}
                       onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
-                      className="border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/30 w-36 placeholder-slate-600" />
+                      className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 w-36 placeholder-[#86868b]" />
                     <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
-                      className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors">
+                      className="px-3 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-lg hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
                       {savingNote === mail.id ? '…' : t('mt.noteSave')}
                     </button>
                   </div>
@@ -650,28 +650,28 @@ function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps)
   const [pass, setPass] = useState('');
   return (
     <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
-      <div className="bg-surface-800 border border-white/[0.08] rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-white/80 border border-black/[0.08] rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white">{t('pp.title')}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-white">✕</button>
+          <h3 className="text-sm font-bold text-[#1d1d1f]">{t('pp.title')}</h3>
+          <button onClick={onClose} className="text-[#6e6e73] hover:text-[#1d1d1f]">✕</button>
         </div>
         <div>
-          <p className="text-xs text-slate-300 font-medium">{label}</p>
-          <p className="text-xs text-slate-500">{user}</p>
+          <p className="text-xs text-[#1d1d1f] font-medium">{label}</p>
+          <p className="text-xs text-[#6e6e73]">{user}</p>
         </div>
         <div>
-          <label className="text-xs text-slate-500 block mb-1">
-            {t('pp.label')} <span className="text-slate-600">({t('pp.hint')})</span>
+          <label className="text-xs text-[#6e6e73] block mb-1">
+            {t('pp.label')} <span className="text-[#86868b]">({t('pp.hint')})</span>
           </label>
           <input type="password" value={pass} onChange={e => setPass(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && pass && onSubmit(pass)}
             autoFocus
-            className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30" />
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30" />
         </div>
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-slate-500 rounded-xl hover:bg-white/[0.06]">{t('pp.cancel')}</button>
+          <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04]">{t('pp.cancel')}</button>
           <button onClick={() => pass && onSubmit(pass)} disabled={!pass}
-            className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
+            className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
             {t('pp.connect')}
           </button>
         </div>
@@ -701,7 +701,7 @@ function ToolsTab() {
 
   const STATUS: Record<string, string> = {
     active: 'bg-emerald-500/15 text-emerald-400', review: 'bg-yellow-500/15 text-yellow-400',
-    cancelling: 'bg-orange-500/15 text-orange-400', cancelled: 'bg-slate-500/15 text-slate-500', free: 'bg-blue-500/15 text-blue-400',
+    cancelling: 'bg-orange-500/15 text-orange-400', cancelled: 'bg-slate-500/15 text-[#6e6e73]', free: 'bg-blue-500/15 text-blue-400',
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
@@ -714,24 +714,24 @@ function ToolsTab() {
           { label: t('tt.active'), value: String(active.length) },
           { label: t('tt.review'), value: String(review.length), warn: review.length > 0 },
         ].map(s => (
-          <div key={s.label} className={`border rounded-2xl p-4 ${s.warn ? 'bg-yellow-500/10 border-yellow-500/20' : 'bg-surface-800/60 border-white/[0.06]'}`}>
-            <p className="text-xs text-slate-500 mb-1">{s.label}</p>
-            <p className={`text-lg font-bold ${s.warn ? 'text-yellow-400' : 'text-white'}`}>{s.value}</p>
+          <div key={s.label} className={`border rounded-2xl p-4 ${s.warn ? 'bg-yellow-500/10 border-yellow-500/20' : 'bg-white/70 border-black/[0.06]'}`}>
+            <p className="text-xs text-[#6e6e73] mb-1">{s.label}</p>
+            <p className={`text-lg font-bold ${s.warn ? 'text-yellow-400' : 'text-[#1d1d1f]'}`}>{s.value}</p>
           </div>
         ))}
       </div>
       <div className="space-y-2">
         {tools.map(tool => (
-          <div key={tool.id} className="bg-surface-800/60 border border-white/[0.06] rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div key={tool.id} className="bg-white/70 border border-black/[0.06] rounded-xl px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-white">{tool.name}</p>
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS[tool.status] ?? 'bg-slate-500/15 text-slate-400'}`}>{tool.status}</span>
+                <p className="text-sm font-semibold text-[#1d1d1f]">{tool.name}</p>
+                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${STATUS[tool.status] ?? 'bg-slate-500/15 text-[#515154]'}`}>{tool.status}</span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">{tool.category}</p>
+              <p className="text-xs text-[#6e6e73] mt-0.5">{tool.category}</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {tool.monthly_cost !== null && <p className="text-sm font-semibold text-slate-300">{tool.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {tool.currency}/mo</p>}
+              {tool.monthly_cost !== null && <p className="text-sm font-semibold text-[#1d1d1f]">{tool.monthly_cost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} {tool.currency}/mo</p>}
               {tool.url && <a href={tool.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary-600 hover:text-primary-800 font-medium">{t('tt.open')}</a>}
             </div>
           </div>
@@ -760,33 +760,33 @@ function ProjekteTab() {
     return acc;
   }, {});
 
-  const PRIO = (p: number) => p >= 4 ? 'text-red-500' : p >= 2 ? 'text-yellow-500' : 'text-slate-500';
+  const PRIO = (p: number) => p >= 4 ? 'text-red-500' : p >= 2 ? 'text-yellow-500' : 'text-[#6e6e73]';
   const ST: Record<string, string> = {
-    todo: 'bg-slate-500/15 text-slate-400', in_progress: 'bg-blue-500/15 text-blue-400',
+    todo: 'bg-slate-500/15 text-[#515154]', in_progress: 'bg-blue-500/15 text-blue-400',
     review: 'bg-yellow-500/15 text-yellow-400', blocked: 'bg-red-500/15 text-red-400',
   };
 
   if (loading) return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-7 w-7 border-b-2 border-primary-600" /></div>;
-  if (!tasks.length) return <div className="flex flex-col items-center py-12 text-slate-500"><p className="text-sm">{t('pt.noTasks')}</p></div>;
+  if (!tasks.length) return <div className="flex flex-col items-center py-12 text-[#6e6e73]"><p className="text-sm">{t('pt.noTasks')}</p></div>;
 
   return (
     <div className="space-y-5">
       {(Object.entries(byBrand) as [string, TeamTask[]][]).sort().map(([brand, bt]) => (
         <div key={brand}>
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{brand}</h4>
-            <span className="text-xs text-slate-500">({bt.length})</span>
+            <h4 className="text-xs font-bold text-[#6e6e73] uppercase tracking-wider">{brand}</h4>
+            <span className="text-xs text-[#6e6e73]">({bt.length})</span>
           </div>
           <div className="space-y-1.5">
             {bt.map(task => (
-              <div key={task.id} className="bg-surface-800/60 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
+              <div key={task.id} className="bg-white/70 border border-black/[0.06] rounded-xl px-4 py-2.5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className={`text-sm ${PRIO(task.priority)}`}>●</span>
-                  <p className="text-sm text-slate-100 truncate">{task.title}</p>
+                  <p className="text-sm text-[#1d1d1f] truncate">{task.title}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  {task.due_date && <span className="text-xs text-slate-500">{fmtDate(task.due_date)}</span>}
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ST[task.status] ?? 'bg-slate-500/15 text-slate-400'}`}>{task.status}</span>
+                  {task.due_date && <span className="text-xs text-[#6e6e73]">{fmtDate(task.due_date)}</span>}
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ST[task.status] ?? 'bg-slate-500/15 text-[#515154]'}`}>{task.status}</span>
                 </div>
               </div>
             ))}
@@ -854,48 +854,48 @@ function ZugaengeTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs text-slate-500">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} {t('zt.open')}</p>
-        <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors">
+        <p className="text-xs text-[#6e6e73]">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} {t('zt.open')}</p>
+        <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
           {t('zt.addBtn')}
         </button>
       </div>
 
       {showAdd && (
-        <div className="bg-surface-900/60 border border-white/[0.06] rounded-2xl p-4 space-y-3">
+        <div className="bg-white/50 border border-black/[0.06] rounded-2xl p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-500 block mb-1">{t('zt.tool')} *</label>
+              <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.tool')} *</label>
               <input value={form.tool_or_service ?? ''} onChange={e => setForm(f => ({ ...f, tool_or_service: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40" />
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40" />
             </div>
             <div>
-              <label className="text-xs text-slate-500 block mb-1">{t('zt.responsible')}</label>
+              <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.responsible')}</label>
               <input value={form.responsible_person ?? ''} onChange={e => setForm(f => ({ ...f, responsible_person: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40" />
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-slate-500 block mb-1">{t('zt.description')}</label>
+            <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.description')}</label>
             <textarea value={form.description ?? ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 resize-none" rows={2} />
+              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 resize-none" rows={2} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AccessRequest['priority'] }))}
-              className="border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30">
               <option value="high">{t('zt.highPrio')}</option>
               <option value="normal">{t('zt.normal')}</option>
               <option value="low">{t('zt.low')}</option>
             </select>
             <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AccessRequest['status'] }))}
-              className="border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30">
               <option value="open">{t('zt.statusOpen')}</option>
               <option value="requested">{t('zt.statusRequested')}</option>
             </select>
           </div>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-slate-500 rounded-xl hover:bg-white/[0.06]">{t('zt.cancel')}</button>
+            <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04]">{t('zt.cancel')}</button>
             <button onClick={handleSave} disabled={saving || !form.tool_or_service}
-              className="px-4 py-1.5 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50">
+              className="px-4 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
               {saving ? '…' : t('zt.save')}
             </button>
           </div>
@@ -904,27 +904,27 @@ function ZugaengeTab() {
 
       <div className="space-y-2">
         {requests.map(req => (
-          <div key={req.id} className={`bg-surface-800/60 border rounded-2xl p-4 space-y-2 backdrop-blur-sm ${req.status === 'granted' ? 'border-white/[0.04] opacity-60' : 'border-white/[0.06]'}`}>
+          <div key={req.id} className={`bg-white/70 border rounded-2xl p-4 space-y-2 backdrop-blur-sm ${req.status === 'granted' ? 'border-black/[0.04] opacity-60' : 'border-black/[0.06]'}`}>
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-white">{req.tool_or_service}</p>
+                  <p className="text-sm font-semibold text-[#1d1d1f]">{req.tool_or_service}</p>
                   <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${ACCESS_STATUS[req.status]}`}>{ACCESS_LABELS[req.status]}</span>
                   {req.priority === 'high' && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-400">{t('zt.urgent')}</span>}
                 </div>
-                {req.description && <p className="text-xs text-slate-500 mt-0.5">{req.description}</p>}
-                {req.responsible_person && <p className="text-xs text-slate-500 mt-0.5">→ {req.responsible_person}</p>}
-                {req.notes && <p className="text-xs text-slate-500 mt-0.5 font-mono text-[10px]">{req.notes}</p>}
+                {req.description && <p className="text-xs text-[#6e6e73] mt-0.5">{req.description}</p>}
+                {req.responsible_person && <p className="text-xs text-[#6e6e73] mt-0.5">→ {req.responsible_person}</p>}
+                {req.notes && <p className="text-xs text-[#6e6e73] mt-0.5 font-mono text-[10px]">{req.notes}</p>}
               </div>
               <div className="flex items-center gap-1 shrink-0">
-                <span className="text-xs text-slate-500">{fmtDate(req.requested_at)}</span>
-                <button onClick={() => deleteReq(req.id)} className="p-1 text-slate-500 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10">
+                <span className="text-xs text-[#6e6e73]">{fmtDate(req.requested_at)}</span>
+                <button onClick={() => deleteReq(req.id)} className="p-1 text-[#6e6e73] hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </button>
               </div>
             </div>
             {req.status !== 'granted' && req.status !== 'denied' && (
-              <div className="flex gap-2 pt-1 border-t border-white/[0.06]">
+              <div className="flex gap-2 pt-1 border-t border-black/[0.06]">
                 {req.status === 'open' && (
                   <button onClick={() => updateStatus(req.id, 'requested')}
                     className="px-3 py-1 text-xs font-semibold bg-blue-500/15 text-blue-400 rounded-lg hover:bg-blue-500/25 transition-colors">{t('zt.markRequested')}</button>
@@ -1063,21 +1063,21 @@ export default function WorkspaceView() {
       <div className="space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex gap-1 bg-white/[0.05] border border-white/[0.06] p-1 rounded-2xl w-fit flex-wrap">
+          <div className="flex gap-1 bg-black/[0.03] border border-black/[0.06] p-1 rounded-2xl w-fit flex-wrap">
             {visibleTabs.map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id as WorkspaceTab)}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === tab.id ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === tab.id ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25 shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>
                 <span>{tab.emoji}</span>{TAB_LABELS[tab.id]}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => setShowAccountsPanel(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#6e6e73] bg-black/[0.03] border border-black/[0.06] rounded-xl hover:bg-black/[0.04] transition-colors">
               📬 {t('ws.mailboxes')}
             </button>
             <button onClick={() => setShowConfig(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#6e6e73] bg-black/[0.03] border border-black/[0.06] rounded-xl hover:bg-black/[0.04] transition-colors">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />

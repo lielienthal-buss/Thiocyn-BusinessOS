@@ -88,11 +88,11 @@ const TaskManager: React.FC = () => {
     <div className="space-y-8 animate-[fadeIn_0.5s_ease-out]">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-black text-white tracking-tighter">Aufgaben verwalten</h2>
-          <p className="text-slate-500 text-sm mt-1">Die aktive Aufgabe wird Bewerbern auf der Task-Seite angezeigt.</p>
+          <h2 className="text-3xl font-black text-[#1d1d1f] tracking-tighter">Aufgaben verwalten</h2>
+          <p className="text-[#6e6e73] text-sm mt-1">Die aktive Aufgabe wird Bewerbern auf der Task-Seite angezeigt.</p>
         </div>
         <button onClick={startNew}
-          className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-500/20">
+          className="px-5 py-2.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-500/20">
           + Neue Aufgabe
         </button>
       </div>
@@ -103,13 +103,13 @@ const TaskManager: React.FC = () => {
       ) : (
         <div className="space-y-3">
           {tasks.length === 0 && (
-            <div className="text-center py-16 text-slate-500 text-sm">Noch keine Aufgaben. Erstelle eine.</div>
+            <div className="text-center py-16 text-[#6e6e73] text-sm">Noch keine Aufgaben. Erstelle eine.</div>
           )}
           {tasks.map(task => (
             <div key={task.id} className={`glass-card rounded-2xl p-6 flex items-start gap-4 transition-all ${task.is_active ? 'ring-1 ring-emerald-500/40' : ''}`}>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-1 flex-wrap">
-                  <span className="text-white font-bold">{task.title}</span>
+                  <span className="text-[#1d1d1f] font-bold">{task.title}</span>
                   {task.is_active && (
                     <span className="px-2.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-500/20">
                       Aktiv
@@ -117,9 +117,9 @@ const TaskManager: React.FC = () => {
                   )}
                 </div>
                 {task.description && (
-                  <p className="text-slate-500 text-xs mt-0.5">{task.description}</p>
+                  <p className="text-[#6e6e73] text-xs mt-0.5">{task.description}</p>
                 )}
-                <p className="text-slate-600 text-[10px] mt-2 uppercase tracking-widest">
+                <p className="text-[#86868b] text-[10px] mt-2 uppercase tracking-widest">
                   Erstellt {new Date(task.created_at).toLocaleDateString('de-DE')}
                 </p>
               </div>
@@ -131,7 +131,7 @@ const TaskManager: React.FC = () => {
                   </button>
                 )}
                 <button onClick={() => startEdit(task)}
-                  className="px-3 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 text-xs font-bold rounded-lg border border-white/[0.08] transition-all">
+                  className="px-3 py-1.5 bg-black/[0.03] hover:bg-white/[0.08] text-[#1d1d1f] text-xs font-bold rounded-lg border border-black/[0.08] transition-all">
                   Bearbeiten
                 </button>
                 {!task.is_active && (
@@ -148,34 +148,34 @@ const TaskManager: React.FC = () => {
 
       {/* Editor */}
       <div ref={formRef} className={`glass-card rounded-[2.5rem] p-8 transition-all ${!isEditing ? 'opacity-40 pointer-events-none' : ''}`}>
-        <h3 className="text-xl font-black text-white tracking-tighter mb-6">
+        <h3 className="text-xl font-black text-[#1d1d1f] tracking-tighter mb-6">
           {editing ? `Bearbeiten: ${editing.title}` : 'Neue Aufgabe'}
         </h3>
         <form onSubmit={handleSave} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Titel *</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2 ml-1">Titel *</label>
               <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                 placeholder="z.B. Customer Conflict Case Study"
-                className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.10] text-slate-100 placeholder-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
+                className="w-full px-4 py-3 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] placeholder-[#86868b] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Kurzbeschreibung</label>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2 ml-1">Kurzbeschreibung</label>
               <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 placeholder="Interne Notiz (wird Bewerbern nicht gezeigt)"
-                className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.10] text-slate-100 placeholder-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
+                className="w-full px-4 py-3 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] placeholder-[#86868b] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/50 outline-none transition-all" />
             </div>
           </div>
 
           {/* Instructions editor with preview toggle */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Aufgabenstellung (HTML) *</label>
-              <div className="flex gap-1 bg-white/[0.04] border border-white/[0.08] rounded-lg p-0.5">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] ml-1">Aufgabenstellung (HTML) *</label>
+              <div className="flex gap-1 bg-black/[0.03] border border-black/[0.08] rounded-lg p-0.5">
                 {(['editor', 'preview'] as const).map(m => (
                   <button key={m} type="button" onClick={() => setPreview(m === 'preview')}
                     className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest transition-all ${
-                      (m === 'preview') === preview ? 'bg-primary-600 text-white' : 'text-slate-500 hover:text-slate-300'
+                      (m === 'preview') === preview ? 'bg-[#E09B37] text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                     }`}>
                     {m === 'editor' ? 'HTML Editor' : 'Vorschau'}
                   </button>
@@ -184,8 +184,8 @@ const TaskManager: React.FC = () => {
             </div>
             {preview ? (
               <div className="rounded-xl border border-white/[0.10] overflow-hidden">
-                <div className="px-3 py-1.5 bg-white/[0.03] border-b border-white/[0.08]">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">Vorschau — so sehen Bewerber die Aufgabe</span>
+                <div className="px-3 py-1.5 bg-black/[0.03] border-b border-black/[0.08]">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">Vorschau — so sehen Bewerber die Aufgabe</span>
                 </div>
                 <div className="bg-white p-8 min-h-[200px] text-slate-900 text-sm leading-relaxed prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{ __html: form.instructions }} />
@@ -194,17 +194,17 @@ const TaskManager: React.FC = () => {
               <textarea value={form.instructions} onChange={e => setForm(f => ({ ...f, instructions: e.target.value }))}
                 rows={12} placeholder="<p>Deine Aufgabenstellung in HTML...</p>"
                 spellCheck={false}
-                className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.10] text-slate-100 placeholder-slate-600 rounded-xl text-xs font-mono leading-relaxed focus:ring-2 focus:ring-primary-500/50 outline-none resize-y transition-all" />
+                className="w-full px-4 py-3 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] placeholder-[#86868b] rounded-xl text-xs font-mono leading-relaxed focus:ring-2 focus:ring-primary-500/50 outline-none resize-y transition-all" />
             )}
           </div>
 
           <div className="flex justify-between items-center pt-2">
             <button type="button" onClick={() => { setEditing(null); setForm(EMPTY_FORM); }}
-              className="px-5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 text-xs font-bold rounded-xl border border-white/[0.08] transition-all">
+              className="px-5 py-2.5 bg-black/[0.03] hover:bg-white/[0.08] text-[#515154] text-xs font-bold rounded-xl border border-black/[0.08] transition-all">
               Abbrechen
             </button>
             <button type="submit" disabled={saving}
-              className="px-8 py-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all">
+              className="px-8 py-3 bg-[#E09B37] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all">
               {saving && <Spinner className="w-4 h-4" />}
               {editing ? 'Änderungen speichern' : 'Task erstellen'}
             </button>

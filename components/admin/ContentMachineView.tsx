@@ -128,15 +128,15 @@ const ContentMachineView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Content Machine</h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <h2 className="text-xl font-semibold text-[#1d1d1f]">Content Machine</h2>
+          <p className="text-sm text-[#515154] mt-1">
             AI Creatives + Creator Content — Angles, Hashtags, Content-Richtungen
           </p>
         </div>
         <select
           value={selectedBrand}
           onChange={e => setSelectedBrand(e.target.value)}
-          className="bg-slate-800 text-sm text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5"
+          className="bg-slate-800 text-sm text-[#1d1d1f] border border-slate-700 rounded-lg px-3 py-1.5"
         >
           <option value="all">All Brands</option>
           {BRANDS.filter(b => b !== 'all').map(b => <option key={b} value={b}>{b}</option>)}
@@ -155,7 +155,7 @@ const ContentMachineView: React.FC = () => {
             key={tab.key}
             onClick={() => setSubTab(tab.key)}
             className={`px-4 py-1.5 rounded-md text-sm transition-colors ${
-              subTab === tab.key ? 'bg-amber-500/20 text-amber-400' : 'text-slate-400 hover:text-slate-200'
+              subTab === tab.key ? 'bg-amber-500/20 text-[#E09B37]' : 'text-[#515154] hover:text-[#1d1d1f]'
             }`}
           >
             {tab.label}
@@ -167,9 +167,9 @@ const ContentMachineView: React.FC = () => {
       {subTab === 'overview' && (
         <div className="space-y-6">
           {/* Current week direction */}
-          <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4">
-            <div className="text-xs text-amber-400 font-bold mb-1">Diese Woche: Content-Richtung {currentWeekInCycle}/4</div>
-            <div className="text-white font-bold text-lg">
+          <div className="bg-amber-500/5 border border-[#E09B37]/25 rounded-xl p-4">
+            <div className="text-xs text-[#E09B37] font-bold mb-1">Diese Woche: Content-Richtung {currentWeekInCycle}/4</div>
+            <div className="text-[#1d1d1f] font-bold text-lg">
               {DIRECTION_LABELS[['problem_solution', 'storytelling', 'aesthetic', 'myth_buster'][currentWeekInCycle - 1]]?.emoji}{' '}
               {DIRECTION_LABELS[['problem_solution', 'storytelling', 'aesthetic', 'myth_buster'][currentWeekInCycle - 1]]?.label}
             </div>
@@ -180,10 +180,10 @@ const ContentMachineView: React.FC = () => {
             {health.map(h => (
               <div key={h.brand_slug} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-white font-medium">{h.brand_name}</h3>
+                  <h3 className="text-[#1d1d1f] font-medium">{h.brand_name}</h3>
                   <div className="flex gap-2 text-xs">
-                    <span className="text-slate-400">Coverage: <span className="text-amber-400">{h.test_coverage_pct ?? 0}%</span></span>
-                    <span className="text-slate-400">Win: <span className="text-green-400">{h.overall_win_rate_pct ?? 0}%</span></span>
+                    <span className="text-[#515154]">Coverage: <span className="text-[#E09B37]">{h.test_coverage_pct ?? 0}%</span></span>
+                    <span className="text-[#515154]">Win: <span className="text-green-400">{h.overall_win_rate_pct ?? 0}%</span></span>
                   </div>
                 </div>
                 <div className="flex h-2.5 rounded-full overflow-hidden bg-slate-700">
@@ -192,11 +192,11 @@ const ContentMachineView: React.FC = () => {
                   {h.losers > 0 && <div className="bg-red-500" style={{ width: `${(h.losers / h.total_angles) * 100}%` }} />}
                   {h.untested > 0 && <div className="bg-slate-600" style={{ width: `${(h.untested / h.total_angles) * 100}%` }} />}
                 </div>
-                <div className="flex gap-3 mt-1.5 text-xs text-slate-500">
+                <div className="flex gap-3 mt-1.5 text-xs text-[#6e6e73]">
                   <span>{h.total_angles} Angles</span>
                   <span className="text-green-400">{h.winners}W</span>
                   <span className="text-red-400">{h.losers}L</span>
-                  <span className="text-slate-400">{h.untested}U</span>
+                  <span className="text-[#515154]">{h.untested}U</span>
                 </div>
               </div>
             ))}
@@ -205,16 +205,16 @@ const ContentMachineView: React.FC = () => {
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center">
-              <div className="text-2xl font-bold text-white">{hashtags.length}</div>
-              <div className="text-xs text-slate-500">Hashtag Strategies</div>
+              <div className="text-2xl font-bold text-[#1d1d1f]">{hashtags.length}</div>
+              <div className="text-xs text-[#6e6e73]">Hashtag Strategies</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center">
-              <div className="text-2xl font-bold text-white">{pipeline.filter(p => p.source === 'ai').length}</div>
-              <div className="text-xs text-slate-500">AI Creatives</div>
+              <div className="text-2xl font-bold text-[#1d1d1f]">{pipeline.filter(p => p.source === 'ai').length}</div>
+              <div className="text-xs text-[#6e6e73]">AI Creatives</div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center">
-              <div className="text-2xl font-bold text-white">{pipeline.filter(p => p.source === 'creator').length}</div>
-              <div className="text-xs text-slate-500">Creator Content</div>
+              <div className="text-2xl font-bold text-[#1d1d1f]">{pipeline.filter(p => p.source === 'creator').length}</div>
+              <div className="text-xs text-[#6e6e73]">Creator Content</div>
             </div>
           </div>
         </div>
@@ -226,8 +226,8 @@ const ContentMachineView: React.FC = () => {
           {filteredHashtags.map(h => (
             <div key={h.brand_slug} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white font-bold">{h.brand_slug}</h3>
-                <span className="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-sm font-bold">{h.branded_hashtag}</span>
+                <h3 className="text-[#1d1d1f] font-bold">{h.brand_slug}</h3>
+                <span className="px-3 py-1 bg-[#E09B37]/12 text-[#E09B37] rounded-full text-sm font-bold">{h.branded_hashtag}</span>
               </div>
               <div className="grid md:grid-cols-3 gap-3 mb-3">
                 {([
@@ -236,7 +236,7 @@ const ContentMachineView: React.FC = () => {
                   { field: 'niche_hashtags_micro' as const, label: 'Micro', color: 'purple' },
                 ] as const).map(({ field, label, color }) => (
                   <div key={field}>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">{label}</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">{label}</div>
                     <div className="flex flex-wrap gap-1">
                       {((h as any)[field] ?? []).map((tag: string) => (
                         <span key={tag} className={`px-2 py-0.5 bg-${color}-500/10 text-${color}-400 rounded text-xs group/tag cursor-pointer hover:bg-${color}-500/20`}>
@@ -251,20 +251,20 @@ const ContentMachineView: React.FC = () => {
                 ))}
               </div>
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Banned</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Banned</div>
                 <div className="flex flex-wrap gap-1">
                   {(h.banned_hashtags ?? []).map(tag => (
                     <span key={tag} className="px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs line-through group/tag cursor-pointer hover:bg-red-500/20">
                       {tag}
                       <button onClick={() => removeTagFromField(h.brand_slug, 'banned_hashtags', tag)}
-                        className="ml-1 opacity-0 group-hover/tag:opacity-100 text-white transition-opacity">×</button>
+                        className="ml-1 opacity-0 group-hover/tag:opacity-100 text-[#1d1d1f] transition-opacity">×</button>
                     </span>
                   ))}
                   <HashtagInput onAdd={tag => addTagToField(h.brand_slug, 'banned_hashtags', tag)} />
                 </div>
               </div>
               {h.rotation_rules && (
-                <p className="text-xs text-slate-500 mt-2 italic">{h.rotation_rules}</p>
+                <p className="text-xs text-[#6e6e73] mt-2 italic">{h.rotation_rules}</p>
               )}
             </div>
           ))}
@@ -277,7 +277,7 @@ const ContentMachineView: React.FC = () => {
           {/* Group by brand */}
           {[...new Set(filteredDirections.map(d => d.brand_slug))].map(brand => (
             <div key={brand} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
-              <h3 className="text-white font-bold mb-3">{brand}</h3>
+              <h3 className="text-[#1d1d1f] font-bold mb-3">{brand}</h3>
               <div className="grid md:grid-cols-4 gap-3">
                 {filteredDirections.filter(d => d.brand_slug === brand).map(d => {
                   const dir = DIRECTION_LABELS[d.direction_key];
@@ -285,12 +285,12 @@ const ContentMachineView: React.FC = () => {
                   return (
                     <div key={d.week_in_cycle}
                       className={`rounded-lg p-3 border ${isThisWeek ? 'border-amber-500/40 bg-amber-500/5' : 'border-slate-700/50'}`}>
-                      <div className="text-xs text-slate-500 mb-1">Woche {d.week_in_cycle}{isThisWeek ? ' ← jetzt' : ''}</div>
-                      <div className="text-white font-medium text-sm">{dir?.emoji} {d.title}</div>
-                      <p className="text-xs text-slate-400 mt-1">{d.description}</p>
+                      <div className="text-xs text-[#6e6e73] mb-1">Woche {d.week_in_cycle}{isThisWeek ? ' ← jetzt' : ''}</div>
+                      <div className="text-[#1d1d1f] font-medium text-sm">{dir?.emoji} {d.title}</div>
+                      <p className="text-xs text-[#515154] mt-1">{d.description}</p>
                       <div className="flex gap-1 mt-2">
                         {d.angle_categories.map(cat => (
-                          <span key={cat} className="px-1.5 py-0.5 bg-slate-700 text-slate-300 rounded text-[10px]">{cat}</span>
+                          <span key={cat} className="px-1.5 py-0.5 bg-slate-700 text-[#1d1d1f] rounded text-[10px]">{cat}</span>
                         ))}
                       </div>
                     </div>
@@ -305,14 +305,14 @@ const ContentMachineView: React.FC = () => {
       {/* ─── Content Pipeline Tab ────────────────────────────────────── */}
       {subTab === 'pipeline' && (
         filteredPipeline.length === 0 ? (
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-[#6e6e73]">
             Noch kein Content in der Pipeline. Erstelle AI Creatives oder verteile Creator Tasks.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-slate-500 text-xs border-b border-slate-700">
+                <tr className="text-[#6e6e73] text-xs border-b border-slate-700">
                   <th className="text-left py-2 px-2">Source</th>
                   <th className="text-left py-2 px-2">Brand</th>
                   <th className="text-left py-2 px-2">Content</th>
@@ -333,15 +333,15 @@ const ContentMachineView: React.FC = () => {
                         {p.source === 'ai' ? 'AI' : 'Creator'}
                       </span>
                     </td>
-                    <td className="py-2 px-2 text-slate-300">{p.brand_slug}</td>
-                    <td className="py-2 px-2 text-slate-300 truncate max-w-[200px]">{p.content_name}</td>
-                    <td className="py-2 px-2 text-slate-400 text-xs">{p.format ?? '—'}</td>
-                    <td className="py-2 px-2 font-mono text-amber-400 text-xs">{p.angle_code ?? '—'}</td>
-                    <td className="py-2 px-2 text-slate-300 text-xs">{p.status}</td>
-                    <td className="py-2 px-2 text-right text-slate-300">
+                    <td className="py-2 px-2 text-[#1d1d1f]">{p.brand_slug}</td>
+                    <td className="py-2 px-2 text-[#1d1d1f] truncate max-w-[200px]">{p.content_name}</td>
+                    <td className="py-2 px-2 text-[#515154] text-xs">{p.format ?? '—'}</td>
+                    <td className="py-2 px-2 font-mono text-[#E09B37] text-xs">{p.angle_code ?? '—'}</td>
+                    <td className="py-2 px-2 text-[#1d1d1f] text-xs">{p.status}</td>
+                    <td className="py-2 px-2 text-right text-[#1d1d1f]">
                       {p.ctr ? `${(p.ctr * 100).toFixed(2)}%` : '—'}
                     </td>
-                    <td className="py-2 px-2 text-right text-slate-300">
+                    <td className="py-2 px-2 text-right text-[#1d1d1f]">
                       {p.roas ? `${p.roas.toFixed(1)}x` : '—'}
                     </td>
                   </tr>
@@ -370,7 +370,7 @@ function HashtagInput({ onAdd }: { onAdd: (tag: string) => void }) {
   if (!editing) {
     return (
       <button onClick={() => setEditing(true)}
-        className="px-2 py-0.5 text-[10px] text-slate-600 border border-dashed border-slate-700 rounded hover:border-slate-500 hover:text-slate-400 transition-colors">
+        className="px-2 py-0.5 text-[10px] text-[#86868b] border border-dashed border-slate-700 rounded hover:border-slate-500 hover:text-[#515154] transition-colors">
         +
       </button>
     );
@@ -379,7 +379,7 @@ function HashtagInput({ onAdd }: { onAdd: (tag: string) => void }) {
   return (
     <input autoFocus value={value} onChange={e => setValue(e.target.value)}
       onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setValue(''); setEditing(false); } }}
-      className="w-20 px-2 py-0.5 text-xs bg-slate-800 border border-amber-500/30 rounded text-slate-300 outline-none"
+      className="w-20 px-2 py-0.5 text-xs bg-slate-800 border border-amber-500/30 rounded text-[#1d1d1f] outline-none"
       placeholder="#tag" />
   );
 }

@@ -162,7 +162,7 @@ const BRANDS: BrandCard[] = [
 const STATUS_CLASSES = {
   ready: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
   partial: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
-  pending: 'bg-slate-500/15 text-slate-400 border-slate-500/20',
+  pending: 'bg-slate-500/15 text-[#515154] border-slate-500/20',
 };
 
 const SOP_PHASE_COLOR = (phase: number) => {
@@ -213,14 +213,14 @@ const BrandsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-black text-white">{tb.title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{tb.subtitle}</p>
+          <h3 className="text-base font-black text-[#1d1d1f]">{tb.title}</h3>
+          <p className="text-xs text-[#6e6e73] mt-0.5">{tb.subtitle}</p>
         </div>
         <a
           href="https://notion.so/2fff0c8570b480cbb251ca124c1e6685"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-300 bg-surface-800/60 border border-white/[0.06] rounded-lg hover:bg-white/[0.03] transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#1d1d1f] bg-white/70 border border-black/[0.06] rounded-lg hover:bg-black/[0.03] transition-colors"
         >
           <span>📓</span> {tb.notionBtn} ↗
         </a>
@@ -254,27 +254,27 @@ const BrandsTab: React.FC = () => {
           return (
             <div
               key={brand.id}
-              className={`group flex flex-col gap-3 p-5 bg-surface-800/60 border-2 rounded-2xl backdrop-blur-sm transition-all duration-200 ${brand.color} ${!brand.isActive ? 'opacity-60' : ''}`}
+              className={`group flex flex-col gap-3 p-5 bg-white/70 border-2 rounded-2xl backdrop-blur-sm transition-all duration-200 ${brand.color} ${!brand.isActive ? 'opacity-60' : ''}`}
             >
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-2xl">{brand.emoji}</span>
                   <div>
-                    <p className="font-black text-white text-sm">{brand.name}</p>
-                    <p className="text-[11px] text-slate-500 leading-tight">{brand.tagline}</p>
+                    <p className="font-black text-[#1d1d1f] text-sm">{brand.name}</p>
+                    <p className="text-[11px] text-[#6e6e73] leading-tight">{brand.tagline}</p>
                   </div>
                 </div>
                 {!brand.isActive && (
-                  <span className="text-[9px] font-black uppercase tracking-wider bg-slate-500/15 text-slate-400 px-2 py-0.5 rounded-full">Pausiert</span>
+                  <span className="text-[9px] font-black uppercase tracking-wider bg-slate-500/15 text-[#515154] px-2 py-0.5 rounded-full">Pausiert</span>
                 )}
               </div>
 
               {/* Instagram + Engagement */}
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-medium">{brand.instagram}</span>
+                <span className="text-[#6e6e73] font-medium">{brand.instagram}</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-slate-500">{liveFollowers}</span>
+                  <span className="text-[#6e6e73]">{liveFollowers}</span>
                   {brand.engagementAlert ? (
                     <span className="text-red-600 font-bold flex items-center gap-0.5">
                       ⚠️ {liveEngagement}
@@ -282,37 +282,37 @@ const BrandsTab: React.FC = () => {
                   ) : liveEngagement !== '—' ? (
                     <span className="text-green-600 font-bold">✅ {liveEngagement}</span>
                   ) : (
-                    <span className="text-slate-500">{liveEngagement}</span>
+                    <span className="text-[#6e6e73]">{liveEngagement}</span>
                   )}
                 </div>
               </div>
 
               {/* 2026 Theme */}
-              <div className="bg-surface-900/60 rounded-xl px-3 py-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">{tb.theme2026Label}</p>
-                <p className="text-xs font-semibold text-slate-300 italic">{brand.theme2026}</p>
+              <div className="bg-white/50 rounded-xl px-3 py-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#6e6e73] mb-0.5">{tb.theme2026Label}</p>
+                <p className="text-xs font-semibold text-[#1d1d1f] italic">{brand.theme2026}</p>
               </div>
 
               {/* Content Format + Hook */}
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-[11px]">
-                  <span className="text-slate-500">{tb.formatLabel}</span>
-                  <span className="font-semibold text-slate-300">{brand.primaryFormat}</span>
+                  <span className="text-[#6e6e73]">{tb.formatLabel}</span>
+                  <span className="font-semibold text-[#1d1d1f]">{brand.primaryFormat}</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px]">
-                  <span className="text-slate-500">{tb.hookLabel}</span>
-                  <span className="font-semibold text-slate-300">{brand.hookType}</span>
+                  <span className="text-[#6e6e73]">{tb.hookLabel}</span>
+                  <span className="font-semibold text-[#1d1d1f]">{brand.hookType}</span>
                 </div>
               </div>
 
               {/* Meta + SOP Phase */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-xs text-slate-500">
+                <div className="flex items-center gap-1 text-xs text-[#6e6e73]">
                   <span>📆</span>
                   <span className="font-semibold">{brand.cadence}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] text-slate-500">{tb.sopLabel}</span>
+                  <span className="text-[10px] text-[#6e6e73]">{tb.sopLabel}</span>
                   <div className="flex gap-0.5">
                     {[1, 2, 3, 4, 5, 6, 7].map(p => (
                       <button
@@ -323,12 +323,12 @@ const BrandsTab: React.FC = () => {
                       />
                     ))}
                   </div>
-                  <span className="text-[10px] text-slate-500">{liveSopPhase}/7</span>
+                  <span className="text-[10px] text-[#6e6e73]">{liveSopPhase}/7</span>
                 </div>
               </div>
 
               {/* Plan status */}
-              <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/[0.06]">
+              <div className="flex items-center justify-between mt-auto pt-2 border-t border-black/[0.06]">
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_CLASSES[brand.planStatus]}`}>
                   {brand.planStatus === 'ready' ? tb.planReady : brand.planStatus === 'partial' ? tb.planPartial : tb.planPending}
                 </span>
@@ -344,7 +344,7 @@ const BrandsTab: React.FC = () => {
 
               {/* Urgency hint */}
               {brand.isActive && tb.urgencyLabels[brand.id] && (
-                <p className="text-[10px] text-slate-500 italic leading-snug">{tb.urgencyLabels[brand.id]}</p>
+                <p className="text-[10px] text-[#6e6e73] italic leading-snug">{tb.urgencyLabels[brand.id]}</p>
               )}
             </div>
           );
@@ -362,31 +362,31 @@ const SOPTrackerTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-black text-white">{ts.title}</h3>
-        <p className="text-xs text-slate-500 mt-0.5">{ts.subtitle}</p>
+        <h3 className="text-base font-black text-[#1d1d1f]">{ts.title}</h3>
+        <p className="text-xs text-[#6e6e73] mt-0.5">{ts.subtitle}</p>
       </div>
 
       {/* Phase Legend */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {ts.phases.map(({ phase, name, description }) => (
-          <div key={phase} className="p-3 bg-surface-900/60 rounded-xl border border-white/[0.06]">
+          <div key={phase} className="p-3 bg-white/50 rounded-xl border border-black/[0.06]">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-black text-slate-500">P{phase}</span>
-              <span className="text-xs font-bold text-slate-100">{name}</span>
+              <span className="text-xs font-black text-[#6e6e73]">P{phase}</span>
+              <span className="text-xs font-bold text-[#1d1d1f]">{name}</span>
             </div>
-            <p className="text-[10px] text-slate-500 leading-snug">{description}</p>
+            <p className="text-[10px] text-[#6e6e73] leading-snug">{description}</p>
           </div>
         ))}
       </div>
 
       {/* Brand Progress Table — desktop */}
-      <div className="hidden md:block bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-x-auto backdrop-blur-sm">
+      <div className="hidden md:block bg-white/70 border border-black/[0.06] rounded-2xl overflow-x-auto backdrop-blur-sm">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-white/[0.06] bg-surface-900/60">
-              <th className="text-left px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Brand</th>
+            <tr className="border-b border-black/[0.06] bg-white/50">
+              <th className="text-left px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Brand</th>
               {ts.phases.map(({ phase, name }) => (
-                <th key={phase} className="text-center px-2 py-3 font-black text-slate-500 uppercase tracking-wider">
+                <th key={phase} className="text-center px-2 py-3 font-black text-[#6e6e73] uppercase tracking-wider">
                   P{phase}<br /><span className="font-normal normal-case text-[9px]">{name}</span>
                 </th>
               ))}
@@ -394,8 +394,8 @@ const SOPTrackerTab: React.FC = () => {
           </thead>
           <tbody>
             {BRANDS.filter(b => b.isActive).map((brand, i) => (
-              <tr key={brand.id} className={`border-b border-white/[0.06] ${i % 2 === 0 ? '' : 'bg-white/[0.02]'}`}>
-                <td className="px-4 py-3 font-bold text-slate-100 whitespace-nowrap">
+              <tr key={brand.id} className={`border-b border-black/[0.06] ${i % 2 === 0 ? '' : 'bg-black/[0.02]'}`}>
+                <td className="px-4 py-3 font-bold text-[#1d1d1f] whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span>{brand.emoji}</span>
                     <span>{brand.name}</span>
@@ -406,9 +406,9 @@ const SOPTrackerTab: React.FC = () => {
                     {phase <= brand.sopPhase ? (
                       <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px]">✓</span>
                     ) : phase === brand.sopPhase + 1 ? (
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/15 text-amber-400 text-[10px]">→</span>
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#E09B37]/15 text-[#E09B37] text-[10px]">→</span>
                     ) : (
-                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/[0.05] text-slate-600 text-[10px]">○</span>
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-black/[0.03] text-[#86868b] text-[10px]">○</span>
                     )}
                   </td>
                 ))}
@@ -421,21 +421,21 @@ const SOPTrackerTab: React.FC = () => {
       {/* Brand Progress Cards — mobile */}
       <div className="md:hidden space-y-3">
         {BRANDS.filter(b => b.isActive).map(brand => (
-          <div key={brand.id} className="bg-surface-800/60 border border-white/[0.06] rounded-2xl p-4 space-y-3 backdrop-blur-sm">
+          <div key={brand.id} className="bg-white/70 border border-black/[0.06] rounded-2xl p-4 space-y-3 backdrop-blur-sm">
             <div className="flex items-center gap-2">
               <span className="text-lg">{brand.emoji}</span>
-              <span className="font-bold text-slate-100 text-sm">{brand.name}</span>
+              <span className="font-bold text-[#1d1d1f] text-sm">{brand.name}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
               {[1, 2, 3, 4, 5, 6, 7].map(phase => (
                 <div key={phase} className="flex flex-col items-center gap-0.5">
-                  <span className="text-[9px] text-slate-500 font-bold">P{phase}</span>
+                  <span className="text-[9px] text-[#6e6e73] font-bold">P{phase}</span>
                   {phase <= brand.sopPhase ? (
                     <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px]">✓</span>
                   ) : phase === brand.sopPhase + 1 ? (
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/15 text-amber-400 text-[10px]">→</span>
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#E09B37]/15 text-[#E09B37] text-[10px]">→</span>
                   ) : (
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/[0.05] text-slate-600 text-[10px]">○</span>
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black/[0.03] text-[#86868b] text-[10px]">○</span>
                   )}
                 </div>
               ))}
@@ -445,7 +445,7 @@ const SOPTrackerTab: React.FC = () => {
       </div>
 
       {/* Principles */}
-      <div className="p-4 bg-gray-900 rounded-2xl text-white space-y-2">
+      <div className="p-4 bg-gray-900 rounded-2xl text-[#1d1d1f] space-y-2">
         <p className="text-xs font-black uppercase tracking-wider text-gray-400">{ts.principlesTitle}</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {ts.principles.map((p, i) => (
@@ -468,13 +468,13 @@ const ContentPlaybookTab: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h3 className="text-base font-black text-white">{tc.title}</h3>
-        <p className="text-xs text-slate-500 mt-0.5">{tc.subtitle}</p>
+        <h3 className="text-base font-black text-[#1d1d1f]">{tc.title}</h3>
+        <p className="text-xs text-[#6e6e73] mt-0.5">{tc.subtitle}</p>
       </div>
 
       {/* KPI Hierarchy */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.kpiTitle}</h4>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.kpiTitle}</h4>
         <div className="flex flex-wrap gap-2">
           {tc.kpis.map(({ kpi, priority, color }) => (
             <div key={kpi} className={`px-3 py-2 rounded-xl border text-xs font-bold ${color}`}>
@@ -482,17 +482,17 @@ const ContentPlaybookTab: React.FC = () => {
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-slate-500 italic">{tc.kpiNote}</p>
+        <p className="text-[11px] text-[#6e6e73] italic">{tc.kpiNote}</p>
       </section>
 
       {/* 5 Content Formats */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.formatsTitle}</h4>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.formatsTitle}</h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {tc.formats.map(({ format, fn, example }) => (
-            <div key={format} className="p-3 bg-surface-800/60 border border-white/[0.06] rounded-xl space-y-1 backdrop-blur-sm">
-              <p className="text-xs font-black text-white">{format}</p>
-              <p className="text-[11px] text-slate-500">{fn}</p>
+            <div key={format} className="p-3 bg-white/70 border border-black/[0.06] rounded-xl space-y-1 backdrop-blur-sm">
+              <p className="text-xs font-black text-[#1d1d1f]">{format}</p>
+              <p className="text-[11px] text-[#6e6e73]">{fn}</p>
               <p className="text-[10px] text-primary-600 italic">{example}</p>
             </div>
           ))}
@@ -501,16 +501,16 @@ const ContentPlaybookTab: React.FC = () => {
 
       {/* Hook Framework */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.hookTitle}</h4>
-        <div className="p-3 bg-surface-900/60 rounded-xl border border-white/[0.06] text-xs font-mono text-slate-300">
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.hookTitle}</h4>
+        <div className="p-3 bg-white/50 rounded-xl border border-black/[0.06] text-xs font-mono text-[#1d1d1f]">
           {tc.hookFormula}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {tc.hooks.map(({ type, pattern, example }) => (
-            <div key={type} className="p-3 bg-surface-800/60 border border-white/[0.06] rounded-xl backdrop-blur-sm">
+            <div key={type} className="p-3 bg-white/70 border border-black/[0.06] rounded-xl backdrop-blur-sm">
               <p className="text-[10px] font-black uppercase tracking-wider text-primary-500 mb-1">{type} Hook</p>
-              <p className="text-[11px] text-slate-500 mb-1">{pattern}</p>
-              <p className="text-xs font-semibold text-slate-100 italic">"{example}"</p>
+              <p className="text-[11px] text-[#6e6e73] mb-1">{pattern}</p>
+              <p className="text-xs font-semibold text-[#1d1d1f] italic">"{example}"</p>
             </div>
           ))}
         </div>
@@ -526,13 +526,13 @@ const ContentPlaybookTab: React.FC = () => {
 
       {/* Video Script Structure */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.scriptTitle}</h4>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.scriptTitle}</h4>
         <div className="space-y-1">
           {tc.scriptSteps.map(({ time, label, desc }) => (
-            <div key={label} className="flex items-start gap-3 p-2.5 bg-surface-800/60 border border-white/[0.06] rounded-lg backdrop-blur-sm">
-              <span className="text-[10px] font-mono text-slate-500 w-16 shrink-0 mt-0.5">{time}</span>
+            <div key={label} className="flex items-start gap-3 p-2.5 bg-white/70 border border-black/[0.06] rounded-lg backdrop-blur-sm">
+              <span className="text-[10px] font-mono text-[#6e6e73] w-16 shrink-0 mt-0.5">{time}</span>
               <span className="text-[10px] font-black uppercase tracking-wider text-primary-600 w-16 shrink-0 mt-0.5">{label}</span>
-              <span className="text-[11px] text-slate-300">{desc}</span>
+              <span className="text-[11px] text-[#1d1d1f]">{desc}</span>
             </div>
           ))}
         </div>
@@ -540,16 +540,16 @@ const ContentPlaybookTab: React.FC = () => {
 
       {/* Copy Angles */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.anglesTitle}</h4>
-        <p className="text-[11px] text-slate-500">{tc.anglesNote}</p>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.anglesTitle}</h4>
+        <p className="text-[11px] text-[#6e6e73]">{tc.anglesNote}</p>
         <div className="space-y-2">
           {tc.angles.map(({ angle, pattern, when, example }) => (
-            <div key={angle} className="p-3 bg-surface-800/60 border border-white/[0.06] rounded-xl backdrop-blur-sm">
+            <div key={angle} className="p-3 bg-white/70 border border-black/[0.06] rounded-xl backdrop-blur-sm">
               <div className="flex items-start justify-between gap-2 mb-1">
-                <p className="text-xs font-black text-white">{angle}</p>
-                <span className="text-[9px] text-slate-500 bg-surface-900/60 px-2 py-0.5 rounded-full shrink-0">{when}</span>
+                <p className="text-xs font-black text-[#1d1d1f]">{angle}</p>
+                <span className="text-[9px] text-[#6e6e73] bg-white/50 px-2 py-0.5 rounded-full shrink-0">{when}</span>
               </div>
-              <p className="text-[11px] text-slate-500 font-mono mb-1">"{pattern}"</p>
+              <p className="text-[11px] text-[#6e6e73] font-mono mb-1">"{pattern}"</p>
               <p className="text-[10px] text-primary-600 italic">{example}</p>
             </div>
           ))}
@@ -558,12 +558,12 @@ const ContentPlaybookTab: React.FC = () => {
 
       {/* Weekly Rhythm */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.rhythmTitle}</h4>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.rhythmTitle}</h4>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
           {tc.weeklyRhythm.map(({ day, focus }) => (
-            <div key={day} className="p-3 bg-surface-900/60 border border-white/[0.06] rounded-xl text-center">
-              <p className="text-sm font-black text-white mb-1">{day}</p>
-              <p className="text-[10px] text-slate-500 leading-snug">{focus}</p>
+            <div key={day} className="p-3 bg-white/50 border border-black/[0.06] rounded-xl text-center">
+              <p className="text-sm font-black text-[#1d1d1f] mb-1">{day}</p>
+              <p className="text-[10px] text-[#6e6e73] leading-snug">{focus}</p>
             </div>
           ))}
         </div>
@@ -571,12 +571,12 @@ const ContentPlaybookTab: React.FC = () => {
 
       {/* Intern Roles */}
       <section className="space-y-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-slate-500">{tc.rolesTitle}</h4>
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#6e6e73]">{tc.rolesTitle}</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {tc.internRoles.map(({ role, tasks }) => (
-            <div key={role} className="p-3 bg-surface-800/60 border border-white/[0.06] rounded-xl backdrop-blur-sm">
-              <p className="text-xs font-black text-white mb-1">{role}</p>
-              <p className="text-[11px] text-slate-500">{tasks}</p>
+            <div key={role} className="p-3 bg-white/70 border border-black/[0.06] rounded-xl backdrop-blur-sm">
+              <p className="text-xs font-black text-[#1d1d1f] mb-1">{role}</p>
+              <p className="text-[11px] text-[#6e6e73]">{tasks}</p>
             </div>
           ))}
         </div>
@@ -594,8 +594,8 @@ const ResourcesTab: React.FC<ResourcesTabProps> = ({ isAdmin }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-black text-white">{tr.title}</h3>
-        <p className="text-xs text-slate-500 mt-0.5">{tr.subtitle}</p>
+        <h3 className="text-base font-black text-[#1d1d1f]">{tr.title}</h3>
+        <p className="text-xs text-[#6e6e73] mt-0.5">{tr.subtitle}</p>
       </div>
       <ResourceCardList section="marketing" isAdmin={isAdmin} />
     </div>

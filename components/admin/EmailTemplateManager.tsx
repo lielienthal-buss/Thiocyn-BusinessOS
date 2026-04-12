@@ -171,8 +171,8 @@ const EmailTemplateManager: React.FC = () => {
                 onClick={() => setSelectedSlug(slug)}
                 className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                   isActive
-                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/25'
-                    : 'bg-white/[0.04] border border-white/[0.10] text-slate-400 hover:text-slate-100 hover:bg-white/[0.08]'
+                    ? 'bg-[#E09B37] text-[#1d1d1f] shadow-lg shadow-primary-500/25'
+                    : 'bg-black/[0.03] border border-white/[0.10] text-[#515154] hover:text-[#1d1d1f] hover:bg-white/[0.08]'
                 }`}
               >
                 {SLUG_LABELS[slug]}
@@ -190,16 +190,16 @@ const EmailTemplateManager: React.FC = () => {
             {/* Header row */}
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h3 className="text-xl font-black text-white tracking-tighter">
+                <h3 className="text-xl font-black text-[#1d1d1f] tracking-tighter">
                   {SLUG_LABELS[selectedSlug]}
                 </h3>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
+                <p className="text-[10px] text-[#6e6e73] font-bold uppercase tracking-widest mt-0.5">
                   slug: {selectedSlug}
                 </p>
               </div>
 
               {/* Editor / Preview toggle */}
-              <div className="flex gap-1 bg-white/[0.04] border border-white/[0.10] rounded-xl p-1">
+              <div className="flex gap-1 bg-black/[0.03] border border-white/[0.10] rounded-xl p-1">
                 {(['editor', 'preview'] as const).map((m) => (
                   <button
                     key={m}
@@ -207,8 +207,8 @@ const EmailTemplateManager: React.FC = () => {
                     onClick={() => setMode(m)}
                     className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                       mode === m
-                        ? 'bg-primary-600 text-white'
-                        : 'text-slate-400 hover:text-slate-100'
+                        ? 'bg-[#E09B37] text-[#1d1d1f]'
+                        : 'text-[#515154] hover:text-[#1d1d1f]'
                     }`}
                   >
                     {m === 'editor' ? 'HTML Editor' : 'Preview'}
@@ -219,7 +219,7 @@ const EmailTemplateManager: React.FC = () => {
 
             {/* Subject field */}
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2 ml-1">
                 Subject
               </label>
               <input
@@ -227,13 +227,13 @@ const EmailTemplateManager: React.FC = () => {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Email subject line…"
-                className="w-full px-5 py-3.5 bg-white/[0.04] border border-white/[0.10] text-slate-100 placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 outline-none text-sm font-medium transition-all"
+                className="w-full px-5 py-3.5 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] placeholder-[#86868b] rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 outline-none text-sm font-medium transition-all"
               />
             </div>
 
             {/* Variable picker */}
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2 ml-1">
                 Insert Variable
               </p>
               <div className="flex gap-2 flex-wrap">
@@ -242,7 +242,7 @@ const EmailTemplateManager: React.FC = () => {
                     key={v}
                     type="button"
                     onClick={() => insertVariable(v)}
-                    className="px-3 py-1.5 bg-white/[0.04] border border-white/[0.10] text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 hover:border-primary-500/30 rounded-lg text-[10px] font-black font-mono tracking-wide transition-all"
+                    className="px-3 py-1.5 bg-black/[0.03] border border-white/[0.10] text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 hover:border-primary-500/30 rounded-lg text-[10px] font-black font-mono tracking-wide transition-all"
                   >
                     {v}
                   </button>
@@ -252,7 +252,7 @@ const EmailTemplateManager: React.FC = () => {
 
             {/* Body: editor or preview */}
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2 ml-1">
                 {mode === 'editor' ? 'Body (HTML)' : 'Rendered Preview'}
               </label>
 
@@ -264,12 +264,12 @@ const EmailTemplateManager: React.FC = () => {
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="<p>Hello {{full_name}},</p>"
                   spellCheck={false}
-                  className="w-full px-5 py-4 bg-white/[0.04] border border-white/[0.10] text-slate-100 placeholder-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 outline-none text-xs font-mono leading-relaxed transition-all resize-y"
+                  className="w-full px-5 py-4 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] placeholder-[#86868b] rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 outline-none text-xs font-mono leading-relaxed transition-all resize-y"
                 />
               ) : (
                 <div className="rounded-xl border border-white/[0.10] overflow-hidden">
-                  <div className="px-3 py-1.5 bg-white/[0.03] border-b border-white/[0.08] flex items-center gap-2">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">
+                  <div className="px-3 py-1.5 bg-black/[0.03] border-b border-black/[0.08] flex items-center gap-2">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[#86868b]">
                       Preview — sample values applied
                     </span>
                   </div>
@@ -288,7 +288,7 @@ const EmailTemplateManager: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-8 py-3.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all"
+                className="px-8 py-3.5 bg-[#E09B37] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all"
               >
                 {saving && <Spinner className="w-4 h-4" />}
                 Save Changes
@@ -298,7 +298,7 @@ const EmailTemplateManager: React.FC = () => {
         ) : (
           <div className="glass-card p-20 rounded-[2.5rem] text-center flex flex-col items-center justify-center opacity-40">
             <svg
-              className="w-14 h-14 text-slate-600 mb-5"
+              className="w-14 h-14 text-[#86868b] mb-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -310,7 +310,7 @@ const EmailTemplateManager: React.FC = () => {
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-            <p className="text-xs font-black uppercase tracking-[0.3em] text-slate-500">
+            <p className="text-xs font-black uppercase tracking-[0.3em] text-[#6e6e73]">
               No template found for this slug
             </p>
           </div>

@@ -17,7 +17,7 @@ const STAGE_LABELS: Record<string, string> = {
 // Stage badge color map
 const stageBadgeClasses: Record<string, string> = {
   applied: 'bg-blue-500/15 text-blue-400',
-  task_requested: 'bg-amber-500/15 text-amber-400',
+  task_requested: 'bg-[#E09B37]/15 text-[#E09B37]',
   task_submitted: 'bg-emerald-500/15 text-emerald-400',
   interview: 'bg-indigo-500/15 text-indigo-400',
   hired: 'bg-violet-500/15 text-violet-400',
@@ -43,13 +43,13 @@ const KanbanCard: React.FC<{
   return (
     <div
       onClick={onClick}
-      className="bg-surface-800/60 p-4 rounded-lg shadow border border-white/[0.06] mb-4 cursor-pointer hover:bg-surface-800/80 backdrop-blur-sm"
+      className="bg-white/70 p-4 rounded-lg shadow border border-black/[0.06] mb-4 cursor-pointer hover:bg-white/80/80 backdrop-blur-sm"
     >
-      <h4 className="font-bold text-sm text-white">
+      <h4 className="font-bold text-sm text-[#1d1d1f]">
         {application.full_name}
       </h4>
-      <p className="text-xs text-slate-500">{application.email}</p>
-      <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${stageBadgeClasses[application.stage] ?? 'bg-slate-500/15 text-slate-400'}`}>
+      <p className="text-xs text-[#6e6e73]">{application.email}</p>
+      <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ${stageBadgeClasses[application.stage] ?? 'bg-slate-500/15 text-[#515154]'}`}>
         {STAGE_LABELS[application.stage] ?? application.stage}
       </span>
     </div>
@@ -81,19 +81,19 @@ const UpdateStageModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-surface-800 border border-white/[0.08] rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h2 className="text-xl font-bold text-white mb-4">
+      <div className="bg-white/80 border border-black/[0.08] rounded-lg shadow-xl p-8 w-full max-w-md">
+        <h2 className="text-xl font-bold text-[#1d1d1f] mb-4">
           Update Stage for {application.full_name}
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[#1d1d1f] mb-2">
               New Stage
             </label>
             <select
               value={newStage}
               onChange={(e) => setNewStage(e.target.value as ApplicationStage)}
-              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md"
+              className="w-full px-3 py-2 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] rounded-md"
             >
               {columns.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -106,14 +106,14 @@ const UpdateStageModal: React.FC<{
         <div className="mt-6 flex justify-end gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-white/[0.08] text-slate-100 rounded-md"
+            className="px-4 py-2 bg-white/[0.08] text-[#1d1d1f] rounded-md"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center"
+            className="px-4 py-2 bg-blue-600 text-[#1d1d1f] rounded-md flex items-center"
           >
             {isSaving && <Spinner className="w-4 h-4 mr-2" />}
             Save
@@ -168,17 +168,17 @@ const KanbanBoard: React.FC = () => {
           return (
           <div
             key={column.id}
-            className="w-64 bg-surface-900/60 rounded-xl flex-shrink-0 flex flex-col"
+            className="w-64 bg-white/50 rounded-xl flex-shrink-0 flex flex-col"
           >
-            <div className="p-3 border-b border-white/[0.06] flex items-center justify-between">
-              <h3 className="font-bold text-sm text-white">{column.title}</h3>
-              <span className="text-xs font-semibold bg-white/[0.08] text-slate-400 rounded-full px-2 py-0.5">
+            <div className="p-3 border-b border-black/[0.06] flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#1d1d1f]">{column.title}</h3>
+              <span className="text-xs font-semibold bg-white/[0.08] text-[#515154] rounded-full px-2 py-0.5">
                 {colApps.length}
               </span>
             </div>
             <div className="p-3 flex-1">
               {colApps.length === 0 && (
-                <p className="text-xs text-slate-600 text-center pt-4">—</p>
+                <p className="text-xs text-[#86868b] text-center pt-4">—</p>
               )}
               {colApps.map((app) => (
                   <KanbanCard

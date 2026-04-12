@@ -44,7 +44,7 @@ const riskBadge = (level: string) => {
     low: 'bg-emerald-500/15 text-emerald-400', medium: 'bg-yellow-500/15 text-yellow-400',
     high: 'bg-orange-500/15 text-orange-400', critical: 'bg-red-500/15 text-red-400',
   };
-  return map[level] ?? 'bg-slate-500/15 text-slate-400';
+  return map[level] ?? 'bg-slate-500/15 text-[#515154]';
 };
 
 const statusBadge = (status: string) => {
@@ -206,8 +206,8 @@ export default function ISOComplianceView() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-black text-white tracking-tight">Risk & ISO Compliance</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Risk Register, Incidents, Business Risks, Non-Conformances</p>
+          <h2 className="text-xl font-black text-[#1d1d1f] tracking-tight">Risk & ISO Compliance</h2>
+          <p className="text-sm text-[#6e6e73] mt-0.5">Risk Register, Incidents, Business Risks, Non-Conformances</p>
         </div>
         <div className="flex items-center gap-2">
           <RefreshButton onClick={() => load(true)} refreshing={refreshing} />
@@ -221,15 +221,15 @@ export default function ISOComplianceView() {
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 bg-white/[0.05] border border-white/[0.06] rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-black/[0.03] border border-black/[0.06] rounded-xl p-1 w-fit">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               tab === t.key
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+                : 'text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}
           >
             {t.label}
@@ -244,42 +244,42 @@ export default function ISOComplianceView() {
         <>
           {/* Risk Register */}
           {tab === 'risks' && (
-            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] overflow-hidden">
+            <div className="bg-white/70 rounded-2xl border border-black/[0.06] overflow-hidden">
               {risks.length === 0 ? (
                 <EmptyState icon="🛡️" title="No risks registered" action={{ label: '+ Add Risk', onClick: addRisk }} />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead>
-                      <tr className="text-xs text-slate-500 border-b border-white/[0.06] bg-surface-900/40">
+                      <tr className="text-xs text-[#6e6e73] border-b border-black/[0.06] bg-white/60/40">
                         {['Asset', 'Threat', 'Risk Level', 'Score', 'Mitigation Status', 'Owner', 'Next Review', ''].map(h => (
                           <th key={h} className="px-3 py-2.5 font-medium">{h}</th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/[0.06]">
+                    <tbody className="divide-y divide-black/[0.06]">
                       {risks.map(r => (
-                        <tr key={r.id} className="group hover:bg-white/[0.03] transition-colors">
+                        <tr key={r.id} className="group hover:bg-black/[0.03] transition-colors">
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.asset} onSave={v => updateRisk(r.id, 'asset', v)} className="font-medium text-slate-200" />
-                            <div className="text-xs text-slate-500">{r.asset_category}</div>
+                            <InlineEdit value={r.asset} onSave={v => updateRisk(r.id, 'asset', v)} className="font-medium text-[#1d1d1f]" />
+                            <div className="text-xs text-[#6e6e73]">{r.asset_category}</div>
                           </td>
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.threat} onSave={v => updateRisk(r.id, 'threat', v)} className="text-slate-400" />
+                            <InlineEdit value={r.threat} onSave={v => updateRisk(r.id, 'threat', v)} className="text-[#515154]" />
                           </td>
                           <td className="px-3 py-2.5">
                             <InlineStatusSelect value={r.risk_level} options={RISK_LEVELS} onChange={v => updateRisk(r.id, 'risk_level', v)} />
                           </td>
-                          <td className="px-3 py-2.5 text-slate-300 font-medium">{r.risk_score}</td>
+                          <td className="px-3 py-2.5 text-[#1d1d1f] font-medium">{r.risk_score}</td>
                           <td className="px-3 py-2.5">
                             <InlineStatusSelect value={r.mitigation_status} options={MIT_STATUSES} onChange={v => updateRisk(r.id, 'mitigation_status', v)} />
                           </td>
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.owner_email} onSave={v => updateRisk(r.id, 'owner_email', v)} className="text-slate-500 text-xs" placeholder="owner@..." />
+                            <InlineEdit value={r.owner_email} onSave={v => updateRisk(r.id, 'owner_email', v)} className="text-[#6e6e73] text-xs" placeholder="owner@..." />
                           </td>
-                          <td className="px-3 py-2.5 text-slate-500 text-xs">{fmt(r.next_review_date)}</td>
+                          <td className="px-3 py-2.5 text-[#6e6e73] text-xs">{fmt(r.next_review_date)}</td>
                           <td className="px-2 py-2.5">
-                            <button onClick={() => { if (confirm('Delete this risk?')) deleteRisk(r.id); }} className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete risk">🗑</button>
+                            <button onClick={() => { if (confirm('Delete this risk?')) deleteRisk(r.id); }} className="text-[#86868b] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete risk">🗑</button>
                           </td>
                         </tr>
                       ))}
@@ -296,27 +296,27 @@ export default function ISOComplianceView() {
               {incidents.length === 0 ? (
                 <EmptyState icon="🚨" title="No incidents" action={{ label: '+ Report Incident', onClick: addIncident }} />
               ) : incidents.map(inc => (
-                <div key={inc.id} className="group bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4">
+                <div key={inc.id} className="group bg-white/70 rounded-2xl border border-black/[0.06] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <InlineEdit value={inc.title} onSave={v => updateIncident(inc.id, 'title', v)} className="font-semibold text-slate-200 text-sm" />
+                        <InlineEdit value={inc.title} onSave={v => updateIncident(inc.id, 'title', v)} className="font-semibold text-[#1d1d1f] text-sm" />
                         <InlineStatusSelect value={inc.severity} options={SEVERITIES} onChange={v => updateIncident(inc.id, 'severity', v)} />
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                      <div className="flex items-center gap-3 text-xs text-[#6e6e73] flex-wrap">
                         <select value={inc.incident_type} onChange={e => updateIncident(inc.id, 'incident_type', e.target.value)}
-                          className="bg-transparent text-xs text-slate-500 outline-none cursor-pointer">
+                          className="bg-transparent text-xs text-[#6e6e73] outline-none cursor-pointer">
                           {INCIDENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
                         <span>·</span>
                         <span>Detected: {fmt(inc.detected_at)}</span>
                         {inc.resolved_at && <><span>·</span><span>Resolved: {fmt(inc.resolved_at)}</span></>}
                       </div>
-                      {inc.description && <p className="text-xs text-slate-500 mt-2">{inc.description}</p>}
+                      {inc.description && <p className="text-xs text-[#6e6e73] mt-2">{inc.description}</p>}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <InlineStatusSelect value={inc.status} options={STATUSES} onChange={v => updateIncident(inc.id, 'status', v)} />
-                      <button onClick={() => { if (confirm('Delete this incident?')) deleteIncident(inc.id); }} className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete incident">🗑</button>
+                      <button onClick={() => { if (confirm('Delete this incident?')) deleteIncident(inc.id); }} className="text-[#86868b] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete incident">🗑</button>
                     </div>
                   </div>
                 </div>
@@ -326,43 +326,43 @@ export default function ISOComplianceView() {
 
           {/* Business Risks */}
           {tab === 'bizRisks' && (
-            <div className="bg-surface-800/60 rounded-2xl border border-white/[0.06] overflow-hidden">
+            <div className="bg-white/70 rounded-2xl border border-black/[0.06] overflow-hidden">
               {bizRisks.length === 0 ? (
                 <EmptyState icon="📉" title="No business risks" action={{ label: '+ Add Risk', onClick: addBizRisk }} />
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
                     <thead>
-                      <tr className="text-xs text-slate-500 border-b border-white/[0.06] bg-surface-900/40">
+                      <tr className="text-xs text-[#6e6e73] border-b border-black/[0.06] bg-white/60/40">
                         {['Title', 'Category', 'Risk Level', 'Score', 'Mitigation', 'Owner', 'Status', ''].map(h => (
                           <th key={h} className="px-3 py-2.5 font-medium">{h}</th>
                         ))}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/[0.06]">
+                    <tbody className="divide-y divide-black/[0.06]">
                       {bizRisks.map(r => (
-                        <tr key={r.id} className="group hover:bg-white/[0.03] transition-colors">
+                        <tr key={r.id} className="group hover:bg-black/[0.03] transition-colors">
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.title} onSave={v => updateBizRisk(r.id, 'title', v)} className="font-medium text-slate-200" />
+                            <InlineEdit value={r.title} onSave={v => updateBizRisk(r.id, 'title', v)} className="font-medium text-[#1d1d1f]" />
                           </td>
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.category} onSave={v => updateBizRisk(r.id, 'category', v)} className="text-slate-500 text-xs" />
+                            <InlineEdit value={r.category} onSave={v => updateBizRisk(r.id, 'category', v)} className="text-[#6e6e73] text-xs" />
                           </td>
                           <td className="px-3 py-2.5">
                             <InlineStatusSelect value={r.risk_level} options={RISK_LEVELS} onChange={v => updateBizRisk(r.id, 'risk_level', v)} />
                           </td>
-                          <td className="px-3 py-2.5 text-slate-300 font-medium">{r.risk_score}</td>
+                          <td className="px-3 py-2.5 text-[#1d1d1f] font-medium">{r.risk_score}</td>
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.mitigation_strategy} onSave={v => updateBizRisk(r.id, 'mitigation_strategy', v)} className="text-slate-500 text-xs" placeholder="Strategy..." />
+                            <InlineEdit value={r.mitigation_strategy} onSave={v => updateBizRisk(r.id, 'mitigation_strategy', v)} className="text-[#6e6e73] text-xs" placeholder="Strategy..." />
                           </td>
                           <td className="px-3 py-2.5">
-                            <InlineEdit value={r.owner_email} onSave={v => updateBizRisk(r.id, 'owner_email', v)} className="text-slate-500 text-xs" placeholder="owner@..." />
+                            <InlineEdit value={r.owner_email} onSave={v => updateBizRisk(r.id, 'owner_email', v)} className="text-[#6e6e73] text-xs" placeholder="owner@..." />
                           </td>
                           <td className="px-3 py-2.5">
                             <InlineStatusSelect value={r.status} options={STATUSES} onChange={v => updateBizRisk(r.id, 'status', v)} />
                           </td>
                           <td className="px-2 py-2.5">
-                            <button onClick={() => { if (confirm('Delete this risk?')) deleteBizRisk(r.id); }} className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete risk">🗑</button>
+                            <button onClick={() => { if (confirm('Delete this risk?')) deleteBizRisk(r.id); }} className="text-[#86868b] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete risk">🗑</button>
                           </td>
                         </tr>
                       ))}
@@ -379,22 +379,22 @@ export default function ISOComplianceView() {
               {nonConfs.length === 0 ? (
                 <EmptyState icon="⚠️" title="No non-conformances" action={{ label: '+ Add', onClick: addNC }} />
               ) : nonConfs.map(nc => (
-                <div key={nc.id} className="group bg-surface-800/60 rounded-2xl border border-white/[0.06] p-4">
+                <div key={nc.id} className="group bg-white/70 rounded-2xl border border-black/[0.06] p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <InlineEdit value={nc.title} onSave={v => updateNC(nc.id, 'title', v)} className="font-semibold text-slate-200 text-sm" />
+                        <InlineEdit value={nc.title} onSave={v => updateNC(nc.id, 'title', v)} className="font-semibold text-[#1d1d1f] text-sm" />
                         <InlineStatusSelect value={nc.severity} options={SEVERITIES} onChange={v => updateNC(nc.id, 'severity', v)} />
                         {nc.brand_slug && (
-                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-slate-400">{nc.brand_slug}</span>
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-[#515154]">{nc.brand_slug}</span>
                         )}
                       </div>
-                      <div className="text-xs text-slate-500 mb-1">Detected: {fmt(nc.detected_at)}</div>
-                      <InlineEdit value={nc.root_cause ?? ''} onSave={v => updateNC(nc.id, 'root_cause', v)} className="text-xs text-slate-500" placeholder="Root cause..." />
+                      <div className="text-xs text-[#6e6e73] mb-1">Detected: {fmt(nc.detected_at)}</div>
+                      <InlineEdit value={nc.root_cause ?? ''} onSave={v => updateNC(nc.id, 'root_cause', v)} className="text-xs text-[#6e6e73]" placeholder="Root cause..." />
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <InlineStatusSelect value={nc.status} options={STATUSES} onChange={v => updateNC(nc.id, 'status', v)} />
-                      <button onClick={() => { if (confirm('Delete this entry?')) deleteNC(nc.id); }} className="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete entry">🗑</button>
+                      <button onClick={() => { if (confirm('Delete this entry?')) deleteNC(nc.id); }} className="text-[#86868b] hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs" aria-label="Delete entry">🗑</button>
                     </div>
                   </div>
                 </div>
@@ -426,8 +426,8 @@ function InlineEdit({ value, onSave, className = '', placeholder }: {
   if (!editing) {
     return (
       <span onClick={() => { setDraft(value); setEditing(true); }}
-        className={`cursor-text hover:bg-white/[0.04] rounded px-1 -mx-1 transition-colors ${className}`}>
-        {value || <span className="text-slate-600 italic">{placeholder ?? 'Click to add'}</span>}
+        className={`cursor-text hover:bg-black/[0.03] rounded px-1 -mx-1 transition-colors ${className}`}>
+        {value || <span className="text-[#86868b] italic">{placeholder ?? 'Click to add'}</span>}
       </span>
     );
   }
@@ -435,7 +435,7 @@ function InlineEdit({ value, onSave, className = '', placeholder }: {
   return (
     <input autoFocus value={draft} onChange={e => setDraft(e.target.value)}
       onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') setEditing(false); }}
-      className={`bg-white/[0.06] border border-amber-500/30 rounded px-1.5 py-0.5 outline-none -mx-1 ${className}`}
+      className={`bg-black/[0.04] border border-amber-500/30 rounded px-1.5 py-0.5 outline-none -mx-1 ${className}`}
       placeholder={placeholder} />
   );
 }

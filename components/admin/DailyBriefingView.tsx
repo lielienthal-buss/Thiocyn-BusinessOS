@@ -29,14 +29,14 @@ interface Briefing {
 
 const PRIO: Record<string, string> = {
   high: 'bg-red-500/10 border-red-500/20 text-red-400',
-  normal: 'bg-surface-800/60 border-white/[0.06] text-slate-300',
-  low: 'bg-white/[0.02] border-white/[0.04] text-slate-500',
+  normal: 'bg-white/70 border-black/[0.06] text-[#1d1d1f]',
+  low: 'bg-black/[0.02] border-black/[0.04] text-[#6e6e73]',
 };
 
 const PRIO_BADGE: Record<string, string> = {
   high: 'bg-red-500/15 text-red-400',
-  normal: 'bg-slate-500/15 text-slate-400',
-  low: 'bg-white/[0.04] text-slate-500',
+  normal: 'bg-slate-500/15 text-[#515154]',
+  low: 'bg-black/[0.03] text-[#6e6e73]',
 };
 
 const PRIO_LABEL: Record<string, string> = {
@@ -61,13 +61,13 @@ function Section({ title, emoji, items, emptyText, renderItem }: {
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <span className="text-base">{emoji}</span>
-        <h3 className="text-sm font-bold text-slate-200">{title}</h3>
+        <h3 className="text-sm font-bold text-[#1d1d1f]">{title}</h3>
         {high.length > 0 && (
           <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/15 text-red-400">{high.length} dringend</span>
         )}
       </div>
       {items.length === 0 ? (
-        <p className="text-xs text-slate-500 py-4 text-center">{emptyText}</p>
+        <p className="text-xs text-[#6e6e73] py-4 text-center">{emptyText}</p>
       ) : (
         <div className="space-y-2">
           {[...high, ...rest].map(item => renderItem(item))}
@@ -118,13 +118,13 @@ export default function DailyBriefingView() {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${PRIO_BADGE[item.priority]}`}>{PRIO_LABEL[item.priority]}</span>
-          {item.category && <span className="text-xs text-slate-500">{item.category}</span>}
+          {item.category && <span className="text-xs text-[#6e6e73]">{item.category}</span>}
         </div>
         <p className="text-sm font-semibold mt-1 truncate">{item.title}</p>
-        {item.from && <p className="text-xs text-slate-500 truncate">{item.from}</p>}
+        {item.from && <p className="text-xs text-[#6e6e73] truncate">{item.from}</p>}
         <p className="text-xs font-medium text-primary-400 mt-1">→ {item.recommendation}</p>
       </div>
-      {item.date && <span className="text-xs text-slate-500 shrink-0 mt-1">{fmt(item.date)}</span>}
+      {item.date && <span className="text-xs text-[#6e6e73] shrink-0 mt-1">{fmt(item.date)}</span>}
     </div>
   );
 
@@ -133,13 +133,13 @@ export default function DailyBriefingView() {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${PRIO_BADGE[item.priority]}`}>{PRIO_LABEL[item.priority]}</span>
-          {item.category && <span className="text-xs text-slate-500">{item.category}</span>}
+          {item.category && <span className="text-xs text-[#6e6e73]">{item.category}</span>}
         </div>
         <p className="text-sm font-semibold mt-1 truncate">{item.title}</p>
-        {item.from && <p className="text-xs text-slate-500 truncate">{item.from}</p>}
+        {item.from && <p className="text-xs text-[#6e6e73] truncate">{item.from}</p>}
         <p className="text-xs font-medium text-primary-400 mt-1">→ {item.recommendation}</p>
       </div>
-      {item.date && <span className="text-xs text-slate-500 shrink-0 mt-1">{fmt(item.date)}</span>}
+      {item.date && <span className="text-xs text-[#6e6e73] shrink-0 mt-1">{fmt(item.date)}</span>}
     </div>
   );
 
@@ -147,18 +147,18 @@ export default function DailyBriefingView() {
     const isBlocked = item.status === 'blocked';
     const isOverdue = item.due_date && new Date(item.due_date) < new Date();
     return (
-      <div key={item.id} className={`border rounded-xl px-4 py-3 flex items-start justify-between gap-3 ${isBlocked || isOverdue ? 'bg-red-500/10 border-red-500/20' : 'bg-surface-800/60 border-white/[0.06]'}`}>
+      <div key={item.id} className={`border rounded-xl px-4 py-3 flex items-start justify-between gap-3 ${isBlocked || isOverdue ? 'bg-red-500/10 border-red-500/20' : 'bg-white/70 border-black/[0.06]'}`}>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             {isBlocked && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/15 text-red-400">Geblockt</span>}
             {isOverdue && !isBlocked && <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-orange-500/15 text-orange-400">Überfällig</span>}
-            {item.brand && <span className="text-xs text-slate-500">{item.brand}</span>}
+            {item.brand && <span className="text-xs text-[#6e6e73]">{item.brand}</span>}
           </div>
           <p className="text-sm font-semibold mt-1 truncate">{item.title}</p>
-          {item.assignee && <p className="text-xs text-slate-500 truncate">{item.assignee}</p>}
+          {item.assignee && <p className="text-xs text-[#6e6e73] truncate">{item.assignee}</p>}
           <p className="text-xs font-medium text-primary-400 mt-1">→ {item.recommendation}</p>
         </div>
-        {item.due_date && <span className={`text-xs shrink-0 mt-1 ${isOverdue ? 'text-red-400 font-semibold' : 'text-slate-500'}`}>{fmt(item.due_date)}</span>}
+        {item.due_date && <span className={`text-xs shrink-0 mt-1 ${isOverdue ? 'text-red-400 font-semibold' : 'text-[#6e6e73]'}`}>{fmt(item.due_date)}</span>}
       </div>
     );
   };
@@ -166,7 +166,7 @@ export default function DailyBriefingView() {
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-      <p className="text-xs text-slate-500">Briefing wird generiert…</p>
+      <p className="text-xs text-[#6e6e73]">Briefing wird generiert…</p>
     </div>
   );
 
@@ -174,7 +174,7 @@ export default function DailyBriefingView() {
     <div className="flex flex-col items-center justify-center py-20 gap-3">
       <p className="text-sm text-red-600">{error}</p>
       <button onClick={() => { setError(null); setLoading(true); load(true); }}
-        className="px-4 py-2 text-xs font-semibold bg-primary-600 text-white rounded-xl hover:bg-primary-700">
+        className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a]">
         Nochmal versuchen
       </button>
     </div>
@@ -185,15 +185,15 @@ export default function DailyBriefingView() {
       {/* Header */}
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <h2 className="text-sm font-bold text-slate-200">
+          <h2 className="text-sm font-bold text-[#1d1d1f]">
             {new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long' })}
           </h2>
           {briefing?.summary && (
-            <p className="text-xs text-slate-500 mt-0.5">{briefing.summary}</p>
+            <p className="text-xs text-[#6e6e73] mt-0.5">{briefing.summary}</p>
           )}
         </div>
         <button onClick={refresh} disabled={refreshing}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 bg-white/[0.04] border border-white/[0.06] rounded-xl hover:bg-white/[0.07] disabled:opacity-50 transition-colors">
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#515154] bg-black/[0.03] border border-black/[0.06] rounded-xl hover:bg-black/[0.04] disabled:opacity-50 transition-colors">
           {refreshing
             ? <span className="inline-block w-3 h-3 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
             : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>

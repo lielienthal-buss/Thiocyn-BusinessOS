@@ -14,7 +14,7 @@ const PHASE_INFO: Record<AcademyPhase, { label: string; color: string; chip: str
   onboarding:     { label: 'Onboarding',     color: 'sky',     chip: 'bg-sky-500/15 text-sky-400 border-sky-500/30' },
   foundation:     { label: 'Foundation',     color: 'cyan',    chip: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' },
   specialisation: { label: 'Specialisation', color: 'violet',  chip: 'bg-violet-500/15 text-violet-400 border-violet-500/30' },
-  ownership:      { label: 'Ownership',      color: 'amber',   chip: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+  ownership:      { label: 'Ownership',      color: 'amber',   chip: 'bg-[#E09B37]/15 text-[#E09B37] border-amber-500/30' },
   completed:      { label: 'Completed',      color: 'emerald', chip: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
 };
 
@@ -46,7 +46,7 @@ const DEPARTMENT_LABELS: Record<string, string> = {
 };
 
 const ASSIGNMENT_STATUS_COLORS: Record<AssignmentStatus, string> = {
-  pending:     'bg-slate-500/15 text-slate-400 border-slate-500/30',
+  pending:     'bg-slate-500/15 text-[#515154] border-slate-500/30',
   in_progress: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/30',
   submitted:   'bg-blue-500/15 text-blue-400 border-blue-500/30',
   approved:    'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
@@ -133,13 +133,13 @@ const PhaseStatusCard: React.FC<{ intern: InternWithData; onRefresh: () => void 
   }
 
   return (
-    <div className="bg-surface-900/60 rounded-lg p-4 border border-white/[0.06] space-y-3">
+    <div className="bg-white/50 rounded-lg p-4 border border-black/[0.06] space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-full border ${phaseInfo.chip}`}>
             {phaseInfo.label}
           </span>
-          <span className="text-xs text-slate-300">
+          <span className="text-xs text-[#1d1d1f]">
             {levelInfo.emoji} L{intern.level} · {levelInfo.name}
           </span>
         </div>
@@ -147,13 +147,13 @@ const PhaseStatusCard: React.FC<{ intern: InternWithData; onRefresh: () => void 
           <button
             onClick={advance}
             disabled={advancing}
-            className="text-xs bg-primary-600 hover:bg-primary-700 text-white font-semibold px-3 py-1 rounded transition-colors disabled:opacity-50"
+            className="text-xs bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1 rounded transition-colors disabled:opacity-50"
           >
             {advancing ? 'Advancing…' : `Advance →`}
           </button>
         )}
       </div>
-      <div className="text-xs text-slate-500">
+      <div className="text-xs text-[#6e6e73]">
         {phaseAssignments.length > 0
           ? `${phaseDone}/${phaseAssignments.length} phase assignments done`
           : 'No phase assignments yet'}
@@ -165,16 +165,16 @@ const PhaseStatusCard: React.FC<{ intern: InternWithData; onRefresh: () => void 
 // ─── Goals Display ────────────────────────────────────────────────────────
 const GoalsDisplay: React.FC<{ goals: InternGoal[] }> = ({ goals }) => {
   if (goals.length === 0) {
-    return <p className="text-xs text-slate-500 italic">Goals not set yet (intern sets in Week 1).</p>;
+    return <p className="text-xs text-[#6e6e73] italic">Goals not set yet (intern sets in Week 1).</p>;
   }
   return (
     <div className="space-y-2">
       {goals.map((g, i) => (
-        <div key={g.id} className="text-xs flex gap-2 bg-surface-900/60 rounded p-2 border border-white/[0.06]">
+        <div key={g.id} className="text-xs flex gap-2 bg-white/50 rounded p-2 border border-black/[0.06]">
           <span className="text-primary-400 font-bold">{i + 1}.</span>
           <div className="flex-1">
-            <p className="text-slate-200">{g.goal_text}</p>
-            {g.category && <span className="text-[9px] text-slate-500 uppercase">{g.category}</span>}
+            <p className="text-[#1d1d1f]">{g.goal_text}</p>
+            {g.category && <span className="text-[9px] text-[#6e6e73] uppercase">{g.category}</span>}
           </div>
           {g.status === 'achieved' && <span className="text-emerald-400">✓</span>}
         </div>
@@ -209,32 +209,32 @@ const AssignmentReviewCard: React.FC<{
   }
 
   return (
-    <div className="bg-surface-900/60 rounded-lg border border-white/[0.06] overflow-hidden">
-      <button onClick={() => setExpanded(p => !p)} className="w-full p-3 text-left flex items-start gap-2 hover:bg-white/[0.03]">
+    <div className="bg-white/50 rounded-lg border border-black/[0.06] overflow-hidden">
+      <button onClick={() => setExpanded(p => !p)} className="w-full p-3 text-left flex items-start gap-2 hover:bg-black/[0.03]">
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-slate-200">{assignment.title}</p>
+          <p className="text-xs font-semibold text-[#1d1d1f]">{assignment.title}</p>
           <div className="flex items-center gap-2 mt-1">
             <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full border ${ASSIGNMENT_STATUS_COLORS[assignment.status]}`}>
               {assignment.status.replace('_', ' ')}
             </span>
             {assignment.review_score && (
-              <span className="text-[9px] text-amber-400">★ {assignment.review_score}/5</span>
+              <span className="text-[9px] text-[#E09B37]">★ {assignment.review_score}/5</span>
             )}
           </div>
         </div>
-        <span className="text-slate-600 text-xs">{expanded ? '▲' : '▼'}</span>
+        <span className="text-[#86868b] text-xs">{expanded ? '▲' : '▼'}</span>
       </button>
 
       {expanded && (
         <div className="px-3 pb-3 border-t border-white/5 pt-3 space-y-2">
           {assignment.description && (
-            <p className="text-[11px] text-slate-400">{assignment.description}</p>
+            <p className="text-[11px] text-[#515154]">{assignment.description}</p>
           )}
 
           {assignment.submission_text && (
             <div className="bg-slate-900/60 rounded p-2 border border-white/5">
-              <p className="text-[9px] font-bold text-slate-500 uppercase mb-1">Submission</p>
-              <p className="text-[11px] text-slate-200 whitespace-pre-wrap">{assignment.submission_text}</p>
+              <p className="text-[9px] font-bold text-[#6e6e73] uppercase mb-1">Submission</p>
+              <p className="text-[11px] text-[#1d1d1f] whitespace-pre-wrap">{assignment.submission_text}</p>
             </div>
           )}
           {assignment.submission_url && (
@@ -247,14 +247,14 @@ const AssignmentReviewCard: React.FC<{
           {(isSubmitted || isReviewed) && (
             <div className="space-y-2 pt-2 border-t border-white/5">
               <div>
-                <label className="block text-[10px] text-slate-500 uppercase mb-1">Score</label>
+                <label className="block text-[10px] text-[#6e6e73] uppercase mb-1">Score</label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map(n => (
                     <button
                       key={n}
                       onClick={() => setScore(n)}
                       className={`w-7 h-7 rounded text-xs font-bold transition-all ${
-                        score === n ? 'bg-amber-500 text-white' : 'bg-white/[0.05] text-slate-500 hover:text-slate-300'
+                        score === n ? 'bg-amber-500 text-[#1d1d1f]' : 'bg-black/[0.03] text-[#6e6e73] hover:text-[#1d1d1f]'
                       }`}
                     >
                       {n}
@@ -267,20 +267,20 @@ const AssignmentReviewCard: React.FC<{
                 value={feedback}
                 onChange={e => setFeedback(e.target.value)}
                 placeholder="Reviewer feedback (optional)"
-                className="w-full text-[11px] bg-white/[0.04] border border-white/10 rounded px-2 py-1.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+                className="w-full text-[11px] bg-black/[0.03] border border-white/10 rounded px-2 py-1.5 text-[#1d1d1f] focus:outline-none focus:ring-2 focus:ring-primary-500/30"
               />
               <div className="flex gap-2">
                 <button
                   onClick={() => review(true)}
                   disabled={saving}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded disabled:opacity-50"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-[#1d1d1f] text-xs font-semibold py-2 rounded disabled:opacity-50"
                 >
                   ✓ Approve
                 </button>
                 <button
                   onClick={() => review(false)}
                   disabled={saving}
-                  className="flex-1 bg-red-600/80 hover:bg-red-600 text-white text-xs font-semibold py-2 rounded disabled:opacity-50"
+                  className="flex-1 bg-red-600/80 hover:bg-red-600 text-[#1d1d1f] text-xs font-semibold py-2 rounded disabled:opacity-50"
                 >
                   ✗ Reject
                 </button>
@@ -317,12 +317,12 @@ const AdminNotesEditor: React.FC<{ intern: InternWithData; onRefresh: () => void
 
   if (!editing && intern.admin_notes) {
     return (
-      <div className="text-xs bg-amber-500/5 border border-amber-500/20 rounded-lg p-3">
+      <div className="text-xs bg-amber-500/5 border border-[#E09B37]/25 rounded-lg p-3">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="text-[10px] font-bold text-amber-400 uppercase">Admin Notes</p>
+          <p className="text-[10px] font-bold text-[#E09B37] uppercase">Admin Notes</p>
           <button onClick={() => setEditing(true)} className="text-[10px] text-primary-500 hover:underline">edit</button>
         </div>
-        <p className="text-slate-300 whitespace-pre-wrap">{intern.admin_notes}</p>
+        <p className="text-[#1d1d1f] whitespace-pre-wrap">{intern.admin_notes}</p>
       </div>
     );
   }
@@ -334,13 +334,13 @@ const AdminNotesEditor: React.FC<{ intern: InternWithData; onRefresh: () => void
         value={notes}
         onChange={e => setNotes(e.target.value)}
         placeholder="Internal notes about this intern (exceptions, context, etc.)"
-        className="w-full text-xs bg-white/[0.04] border border-white/10 rounded px-2 py-1.5 text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500/30"
+        className="w-full text-xs bg-black/[0.03] border border-white/10 rounded px-2 py-1.5 text-[#1d1d1f] focus:outline-none focus:ring-2 focus:ring-primary-500/30"
       />
       <div className="flex gap-2">
-        <button onClick={save} disabled={saving} className="text-xs bg-primary-600 hover:bg-primary-700 text-white font-semibold px-3 py-1.5 rounded">
+        <button onClick={save} disabled={saving} className="text-xs bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1.5 rounded">
           {saving ? 'Saving…' : 'Save'}
         </button>
-        <button onClick={() => { setNotes(intern.admin_notes ?? ''); setEditing(false); }} className="text-xs text-slate-500 hover:text-slate-300">
+        <button onClick={() => { setNotes(intern.admin_notes ?? ''); setEditing(false); }} className="text-xs text-[#6e6e73] hover:text-[#1d1d1f]">
           Cancel
         </button>
       </div>
@@ -371,8 +371,8 @@ const WeeklyReviewForm: React.FC<{
   }
 
   return (
-    <div className="mt-4 p-4 bg-surface-900/60 rounded-lg border border-white/[0.06] space-y-3">
-      <p className="font-semibold text-sm text-slate-300">Week {weekNumber} Check-in</p>
+    <div className="mt-4 p-4 bg-white/50 rounded-lg border border-black/[0.06] space-y-3">
+      <p className="font-semibold text-sm text-[#1d1d1f]">Week {weekNumber} Check-in</p>
       {[
         ['highlight', 'Highlight this week'],
         ['challenge', 'Biggest challenge'],
@@ -380,17 +380,17 @@ const WeeklyReviewForm: React.FC<{
         ['next_goal', 'Goal for next week'],
       ].map(([key, label]) => (
         <div key={key}>
-          <label className="block text-xs text-slate-500 mb-1">{label}</label>
+          <label className="block text-xs text-[#6e6e73] mb-1">{label}</label>
           <textarea
             rows={2}
             value={form[key as keyof typeof form] as string}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            className="w-full text-sm border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+            className="w-full text-sm border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
           />
         </div>
       ))}
       <div>
-        <label className="block text-xs text-slate-500 mb-1">Mood</label>
+        <label className="block text-xs text-[#6e6e73] mb-1">Mood</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(n => (
             <button
@@ -406,7 +406,7 @@ const WeeklyReviewForm: React.FC<{
       <button
         onClick={save}
         disabled={saving}
-        className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+        className="bg-[#E09B37] text-[#1d1d1f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
       >
         {saving ? 'Saving…' : 'Save Check-in'}
       </button>
@@ -445,7 +445,7 @@ const FinalReviewForm: React.FC<{
     <div className="p-4 bg-violet-500/10 rounded-lg border border-violet-500/20 space-y-3">
       <p className="font-semibold text-sm text-violet-400">Exit Assessment</p>
       <div>
-        <label className="block text-xs text-slate-500 mb-1">Overall Rating</label>
+        <label className="block text-xs text-[#6e6e73] mb-1">Overall Rating</label>
         <div className="flex gap-2">
           {[1, 2, 3, 4, 5].map(n => (
             <button
@@ -453,7 +453,7 @@ const FinalReviewForm: React.FC<{
               onClick={() => setForm(p => ({ ...p, overall_rating: n }))}
               className={`w-8 h-8 rounded-full font-bold text-sm transition-all ${
                 form.overall_rating === n
-                  ? 'bg-violet-500 text-white scale-110'
+                  ? 'bg-violet-500 text-[#1d1d1f] scale-110'
                   : 'bg-violet-500/15 text-violet-400'
               }`}
             >
@@ -468,16 +468,16 @@ const FinalReviewForm: React.FC<{
         ['admin_notes', 'Internal notes'],
       ].map(([key, label]) => (
         <div key={key}>
-          <label className="block text-xs text-slate-500 mb-1">{label}</label>
+          <label className="block text-xs text-[#6e6e73] mb-1">{label}</label>
           <textarea
             rows={2}
             value={form[key as keyof typeof form] as string}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            className="w-full text-sm border border-white/[0.10] bg-white/[0.04] text-slate-100 rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/30"
+            className="w-full text-sm border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/30"
           />
         </div>
       ))}
-      <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+      <label className="flex items-center gap-2 text-sm text-[#1d1d1f] cursor-pointer">
         <input
           type="checkbox"
           checked={form.recommend_for_hire}
@@ -489,7 +489,7 @@ const FinalReviewForm: React.FC<{
       <button
         onClick={save}
         disabled={saving}
-        className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+        className="bg-purple-600 text-[#1d1d1f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
       >
         {saving ? 'Saving…' : existing ? 'Update Review' : 'Complete Internship'}
       </button>
@@ -516,10 +516,10 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
 
   return (
-    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] backdrop-blur-sm overflow-hidden">
+    <div className="bg-white/70 rounded-xl border border-black/[0.06] backdrop-blur-sm overflow-hidden">
       {/* Header */}
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-white/[0.03]"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-black/[0.03]"
         onClick={() => setExpanded(p => !p)}
       >
         <div className="flex items-center gap-3">
@@ -527,8 +527,8 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
             {intern.full_name.charAt(0)}
           </div>
           <div>
-            <p className="font-semibold text-white">{intern.full_name}</p>
-            <p className="text-xs text-slate-500">{intern.email}</p>
+            <p className="font-semibold text-[#1d1d1f]">{intern.full_name}</p>
+            <p className="text-xs text-[#6e6e73]">{intern.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -542,7 +542,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${phaseInfo.chip}`}>
             {phaseInfo.label}
           </span>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-[#6e6e73]">
             {levelInfo.emoji} L{intern.level}
           </span>
           {submittedAssignments.length > 0 && (
@@ -550,12 +550,12 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               {submittedAssignments.length} to review
             </span>
           )}
-          <span className="text-slate-500 text-sm">{expanded ? '▲' : '▼'}</span>
+          <span className="text-[#6e6e73] text-sm">{expanded ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {expanded && (
-        <div className="border-t border-white/[0.06] px-4 pb-4 space-y-4">
+        <div className="border-t border-black/[0.06] px-4 pb-4 space-y-4">
           {/* Phase Status */}
           <div className="mt-4">
             <PhaseStatusCard intern={intern} onRefresh={onRefresh} />
@@ -568,14 +568,14 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
 
           {/* Personal Goals */}
           <div>
-            <p className="text-sm font-semibold text-slate-300 mb-2">🎯 Personal Goals</p>
+            <p className="text-sm font-semibold text-[#1d1d1f] mb-2">🎯 Personal Goals</p>
             <GoalsDisplay goals={intern.goals} />
           </div>
 
           {/* Phase Assignments — Review */}
           {phaseAssignments.length > 0 && (
             <div>
-              <p className="text-sm font-semibold text-slate-300 mb-2">
+              <p className="text-sm font-semibold text-[#1d1d1f] mb-2">
                 📝 {phaseInfo.label} Assignments ({phaseAssignments.filter(a => a.status === 'submitted' || a.status === 'approved').length}/{phaseAssignments.length})
               </p>
               <div className="space-y-1.5">
@@ -589,7 +589,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           {/* Weekly Reviews */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-semibold text-slate-300">Weekly Check-ins</p>
+              <p className="text-sm font-semibold text-[#1d1d1f]">Weekly Check-ins</p>
               {intern.is_active && (
                 <button
                   onClick={() => setShowWeeklyForm(p => !p)}
@@ -600,18 +600,18 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               )}
             </div>
             {intern.weeks.length === 0 ? (
-              <p className="text-xs text-slate-500 italic">No check-ins yet.</p>
+              <p className="text-xs text-[#6e6e73] italic">No check-ins yet.</p>
             ) : (
               <div className="space-y-2">
                 {intern.weeks.map(w => (
-                  <div key={w.id} className="text-xs bg-surface-900/60 rounded-lg p-3 border border-white/[0.06]">
+                  <div key={w.id} className="text-xs bg-white/50 rounded-lg p-3 border border-black/[0.06]">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-semibold text-slate-300">Week {w.week_number}</span>
+                      <span className="font-semibold text-[#1d1d1f]">Week {w.week_number}</span>
                       {w.mood_score && <span>{MOOD_EMOJI[w.mood_score]}</span>}
                     </div>
-                    {w.highlight && <p className="text-slate-300"><span className="font-medium">✨</span> {w.highlight}</p>}
-                    {w.challenge && <p className="text-slate-500 mt-0.5"><span className="font-medium">⚡</span> {w.challenge}</p>}
-                    {w.learning && <p className="text-slate-500 mt-0.5"><span className="font-medium">📚</span> {w.learning}</p>}
+                    {w.highlight && <p className="text-[#1d1d1f]"><span className="font-medium">✨</span> {w.highlight}</p>}
+                    {w.challenge && <p className="text-[#6e6e73] mt-0.5"><span className="font-medium">⚡</span> {w.challenge}</p>}
+                    {w.learning && <p className="text-[#6e6e73] mt-0.5"><span className="font-medium">📚</span> {w.learning}</p>}
                   </div>
                 ))}
               </div>
@@ -629,7 +629,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           {(intern.phase === 'ownership' || intern.phase === 'completed') && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-slate-300">Final Review</p>
+                <p className="text-sm font-semibold text-[#1d1d1f]">Final Review</p>
                 {!showFinalForm && (
                   <button
                     onClick={() => setShowFinalForm(true)}
@@ -642,7 +642,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
               {intern.finalReview && !showFinalForm && (
                 <div className="text-xs bg-violet-500/10 rounded-lg p-3 border border-violet-500/20">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-slate-300">Rating: {intern.finalReview.overall_rating}/5</span>
+                    <span className="font-semibold text-[#1d1d1f]">Rating: {intern.finalReview.overall_rating}/5</span>
                     {intern.finalReview.recommend_for_hire && (
                       <span className="bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">
                         ✓ Hire Recommended
@@ -650,7 +650,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
                     )}
                   </div>
                   {intern.finalReview.key_contributions && (
-                    <p className="text-slate-400">{intern.finalReview.key_contributions}</p>
+                    <p className="text-[#515154]">{intern.finalReview.key_contributions}</p>
                   )}
                 </div>
               )}
@@ -665,13 +665,13 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
           )}
 
           {/* Intern Portal Link */}
-          <div className="pt-2 border-t border-white/[0.06]">
-            <p className="text-xs text-slate-500 mb-1">Intern Portal Link</p>
+          <div className="pt-2 border-t border-black/[0.06]">
+            <p className="text-xs text-[#6e6e73] mb-1">Intern Portal Link</p>
             <div className="flex items-center gap-2">
               <input
                 readOnly
                 value={internPortalUrl}
-                className="flex-1 text-xs bg-white/[0.04] border border-white/[0.10] rounded px-2 py-1.5 text-slate-400"
+                className="flex-1 text-xs bg-black/[0.03] border border-white/[0.10] rounded px-2 py-1.5 text-[#515154]"
               />
               <button
                 onClick={() => navigator.clipboard.writeText(internPortalUrl)}
@@ -684,7 +684,7 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
 
           {/* Deactivate */}
           {intern.is_active && (
-            <div className="pt-2 border-t border-white/[0.06]">
+            <div className="pt-2 border-t border-black/[0.06]">
               <button
                 onClick={async () => {
                   if (!window.confirm(`Deactivate ${intern.full_name}? This marks the intern as inactive but does not delete data.`)) return;
@@ -731,28 +731,28 @@ const MondayMeetingSetupModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-surface-800 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
-        <h3 className="text-lg font-black text-white">Monday Meeting #1</h3>
-        <p className="text-xs text-slate-400">
+      <div className="bg-white/80 border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <h3 className="text-lg font-black text-[#1d1d1f]">Monday Meeting #1</h3>
+        <p className="text-xs text-[#515154]">
           Welcome + Intros Kickoff. Agenda wird automatisch aus dem Template
           (docs/intern-academy/monday-meeting-template.md) befüllt — danach in der
           Academy-View editierbar.
         </p>
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Datum</label>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Datum</label>
           <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.06] border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-black/[0.04] border border-white/10 rounded-lg text-[#1d1d1f] text-sm"
           />
         </div>
         <div>
-          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Geleitet von</label>
+          <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Geleitet von</label>
           <select
             value={ledBy}
             onChange={(e) => setLedBy(e.target.value)}
-            className="w-full px-3 py-2 bg-white/[0.06] border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-black/[0.04] border border-white/10 rounded-lg text-[#1d1d1f] text-sm"
           >
             {interns.map(i => (
               <option key={i.id} value={i.id}>{i.full_name}</option>
@@ -763,13 +763,13 @@ const MondayMeetingSetupModal: React.FC<{
           <button
             onClick={handleCreate}
             disabled={submitting || !date || !ledBy}
-            className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white text-sm font-bold rounded-lg transition-colors"
+            className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-[#1d1d1f] text-sm font-bold rounded-lg transition-colors"
           >
             {submitting ? 'Erstelle…' : 'Meeting anlegen'}
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-white/[0.06] hover:bg-white/10 text-slate-300 text-sm font-bold rounded-lg transition-colors"
+            className="flex-1 py-2.5 bg-black/[0.04] hover:bg-white/10 text-[#1d1d1f] text-sm font-bold rounded-lg transition-colors"
           >
             Abbrechen
           </button>
@@ -935,12 +935,12 @@ const AcademyView: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Hartlimes Intern Academy</h2>
-          <p className="text-sm text-slate-500 mt-1">House of Sustainable Brands · 4-phase program</p>
+          <h2 className="text-xl font-bold text-[#1d1d1f]">Hartlimes Intern Academy</h2>
+          <p className="text-sm text-[#6e6e73] mt-1">House of Sustainable Brands · 4-phase program</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           ＋ Add Intern
         </button>
@@ -968,7 +968,7 @@ const AcademyView: React.FC = () => {
             <div className="flex gap-2">
               <button
                 onClick={copyAllPendingEmails}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+                className="bg-yellow-600 hover:bg-yellow-700 text-[#1d1d1f] text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
               >
                 Copy All Emails
               </button>
@@ -988,7 +988,7 @@ const AcademyView: React.FC = () => {
                   setSendingBatch(false);
                   alert(`${pendingInvites.length} Einladungen verschickt! 🚀`);
                 }}
-                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-[#1d1d1f] text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
               >
                 {sendingBatch ? 'Sende…' : inviteSendEnabled ? '🚀 Send all invites' : '🔒 Invites Coming Soon'}
               </button>
@@ -1030,7 +1030,7 @@ const AcademyView: React.FC = () => {
                     onChange={(e) => {
                       if (e.target.value) void assignBuddy(i.id, e.target.value);
                     }}
-                    className="text-xs bg-surface-900 border border-purple-500/30 text-purple-200 rounded px-2 py-1 max-w-[160px]"
+                    className="text-xs bg-white/60 border border-purple-500/30 text-purple-200 rounded px-2 py-1 max-w-[160px]"
                   >
                     <option value="" disabled>Buddy wählen…</option>
                     {candidates.map(c => (
@@ -1046,16 +1046,16 @@ const AcademyView: React.FC = () => {
 
       {/* Welle 1b Item 9 — Monday Meeting #1 setup banner (one-shot) */}
       {hasFirstMonday === false && interns.length > 0 && (
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between gap-4">
+        <div className="bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-xl p-4 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-bold text-amber-400">📅 Monday Meeting #1 ansetzen</p>
-            <p className="text-xs text-amber-500/80 mt-0.5">
+            <p className="text-sm font-bold text-[#E09B37]">📅 Monday Meeting #1 ansetzen</p>
+            <p className="text-xs text-[#E09B37]/80 mt-0.5">
               Erstes Welcome-Meeting für die {interns.length} Interns. Template mit Welcome + Intros + Programm-Übersicht ist vorgefertigt.
             </p>
           </div>
           <button
             onClick={() => setShowMondayModal(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+            className="bg-amber-600 hover:bg-amber-700 text-[#1d1d1f] text-xs font-semibold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
           >
             Schedule Meeting #1
           </button>
@@ -1102,8 +1102,8 @@ const AcademyView: React.FC = () => {
           onClick={() => setFilter('all')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
             filter === 'all'
-              ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-              : 'bg-white/[0.05] text-slate-500 hover:text-slate-300 border border-white/[0.06]'
+              ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+              : 'bg-black/[0.03] text-[#6e6e73] hover:text-[#1d1d1f] border border-black/[0.06]'
           }`}
         >
           All ({counts.all})
@@ -1114,8 +1114,8 @@ const AcademyView: React.FC = () => {
             onClick={() => setFilter(phase)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
               filter === phase
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                : 'bg-white/[0.05] text-slate-500 hover:text-slate-300 border border-white/[0.06]'
+                ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+                : 'bg-black/[0.03] text-[#6e6e73] hover:text-[#1d1d1f] border border-black/[0.06]'
             }`}
           >
             {PHASE_INFO[phase].label} ({counts[phase]})
@@ -1124,48 +1124,48 @@ const AcademyView: React.FC = () => {
       </div>
 
       {/* ─── Token-Verbrauch (AI Senior Accounts) ─── */}
-      <div className="border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 bg-surface-900/60 border-b border-white/[0.06]">
+      <div className="border border-black/[0.06] rounded-xl overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3 bg-white/50 border-b border-black/[0.06]">
           <div>
-            <h3 className="text-sm font-bold text-white">Token-Verbrauch · AI Senior</h3>
-            <p className="text-xs text-slate-500">Monat: {new Date().toISOString().slice(0, 7)}</p>
+            <h3 className="text-sm font-bold text-[#1d1d1f]">Token-Verbrauch · AI Senior</h3>
+            <p className="text-xs text-[#6e6e73]">Monat: {new Date().toISOString().slice(0, 7)}</p>
           </div>
         </div>
         {loading ? (
-          <div className="text-center py-8 text-slate-500 text-sm">Lade Accounts…</div>
+          <div className="text-center py-8 text-[#6e6e73] text-sm">Lade Accounts…</div>
         ) : interns.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
+          <div className="text-center py-8 text-[#6e6e73] text-sm">
             Noch keine Intern-Accounts vorhanden.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] bg-surface-900/60">
+                <tr className="border-b border-black/[0.06] bg-white/50">
                   {['Intern', 'Phase / Level', 'Department', 'Invite', 'Tokens', 'Kosten', 'Budget'].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    <th key={h} className="text-left px-4 py-2.5 text-xs font-semibold text-[#6e6e73] uppercase tracking-wider">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-black/[0.04]">
                 {interns.map(acc => {
                   const totalTokens = (acc.usage?.tokens_input ?? 0) + (acc.usage?.tokens_output ?? 0);
                   const budgetPct = Math.min(100, Math.round((totalTokens / acc.budget_tokens_monthly) * 100));
                   const phaseInfo = PHASE_INFO[acc.phase];
                   return (
-                    <tr key={acc.id} className="hover:bg-white/[0.03] transition-colors">
+                    <tr key={acc.id} className="hover:bg-black/[0.03] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-white">{acc.full_name}</p>
-                        <p className="text-xs text-slate-500">{acc.email}</p>
+                        <p className="font-medium text-[#1d1d1f]">{acc.full_name}</p>
+                        <p className="text-xs text-[#6e6e73]">{acc.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-1">
                           <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${phaseInfo.chip} w-fit`}>
                             {phaseInfo.label}
                           </span>
-                          <span className="text-[10px] text-slate-500">L{acc.level} {LEVEL_INFO[acc.level].name}</span>
+                          <span className="text-[10px] text-[#6e6e73]">L{acc.level} {LEVEL_INFO[acc.level].name}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3">
@@ -1182,7 +1182,7 @@ const AcademyView: React.FC = () => {
                           {acc.auth_user_id != null ? 'Active' : 'Pending'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-300">
+                      <td className="px-4 py-3 text-[#1d1d1f]">
                         {totalTokens.toLocaleString()}
                         <div className="w-24 h-1.5 bg-white/[0.10] rounded-full mt-1 overflow-hidden">
                           <div
@@ -1191,10 +1191,10 @@ const AcademyView: React.FC = () => {
                           />
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-300">
+                      <td className="px-4 py-3 text-[#1d1d1f]">
                         ${(acc.usage?.cost_usd ?? 0).toFixed(4)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-500">
+                      <td className="px-4 py-3 text-xs text-[#6e6e73]">
                         {acc.budget_tokens_monthly.toLocaleString()} · {budgetPct}%
                       </td>
                     </tr>
@@ -1208,9 +1208,9 @@ const AcademyView: React.FC = () => {
 
       {/* Intern lifecycle cards */}
       {loading ? (
-        <div className="text-center py-12 text-slate-500">Loading…</div>
+        <div className="text-center py-12 text-[#6e6e73]">Loading…</div>
       ) : displayed.length === 0 ? (
-        <div className="text-center py-12 text-slate-500">
+        <div className="text-center py-12 text-[#6e6e73]">
           <p className="text-4xl mb-3">🎓</p>
           <p className="font-medium">No interns in this phase.</p>
         </div>

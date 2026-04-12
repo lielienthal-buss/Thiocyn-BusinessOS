@@ -182,7 +182,7 @@ function LangToggle() {
   return (
     <button
       onClick={() => setLang(lang === 'de' ? 'en' : 'de')}
-      className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-400 bg-surface-700 border border-white/[0.08] rounded-lg hover:bg-surface-600 hover:text-slate-200 transition-colors"
+      className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-[#515154] bg-white/80 border border-black/[0.08] rounded-lg hover:bg-surface-600 hover:text-[#1d1d1f] transition-colors"
       title={lang === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
     >
       {lang === 'de' ? '🇬🇧 EN' : '🇩🇪 DE'}
@@ -491,22 +491,31 @@ const Dashboard: React.FC = () => {
 
   return (
     <LanguageProvider>
-    <div className="animate-[fadeIn_0.5s_ease-out] ambient-bg bg-surface-950 min-h-screen pb-20 md:pb-0">
-      {/* Dot grid texture */}
-      <div className="fixed inset-0 dot-grid pointer-events-none z-0 opacity-100" />
+    <div className="animate-[fadeIn_0.5s_ease-out] min-h-screen pb-20 md:pb-0" style={{
+      backgroundColor: '#f0f0f5',
+      backgroundImage: 'radial-gradient(ellipse at 20% 20%, rgba(224, 155, 55, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 10%, rgba(51, 79, 180, 0.06) 0%, transparent 40%), radial-gradient(ellipse at 60% 80%, rgba(224, 155, 55, 0.05) 0%, transparent 45%)',
+      backgroundAttachment: 'fixed',
+      color: '#1d1d1f',
+    }}>
       {/* Header */}
-      <header className="relative z-20 sticky top-0 bg-surface-900/80 backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between border-b border-white/[0.06] py-3 md:py-4 px-4 md:px-8 gap-2 md:gap-4">
+      <header className="relative z-20 sticky top-0 flex flex-col md:flex-row md:items-center justify-between py-3 md:py-4 px-4 md:px-8 gap-2 md:gap-4" style={{
+        background: 'rgba(255,255,255,0.72)',
+        backdropFilter: 'blur(20px) saturate(1.8)',
+        WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
+        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+      }}>
         <div>
-          <h1 className="text-lg md:text-2xl font-black text-white tracking-tighter">
-            {companyName} <span className="hidden md:inline text-slate-400 font-medium">— {t.dashboard.title}</span>
+          <h1 className="text-lg md:text-2xl font-black tracking-tighter" style={{ color: '#1d1d1f' }}>
+            {companyName} <span className="hidden md:inline font-medium" style={{ color: '#6e6e73' }}>— {t.dashboard.title}</span>
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-sm mt-1" style={{ color: '#6e6e73' }}>
             {isDemoMode ? (
-              <span className="inline-flex items-center px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-amber-500/20 animate-pulse">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse" style={{ background: 'rgba(224,155,55,0.12)', color: '#E09B37', border: '1px solid rgba(224,155,55,0.25)' }}>
                 {t.dashboard.demoMode}
               </span>
             ) : (
-              <>{t.dashboard.loggedInAs} <span className="text-amber-400 font-bold">{session?.user.email}</span></>
+              <>{t.dashboard.loggedInAs} <span className="font-bold" style={{ color: '#E09B37' }}>{session?.user.email}</span></>
             )}
           </p>
         </div>
@@ -515,16 +524,18 @@ const Dashboard: React.FC = () => {
           {section !== 'account' && section !== 'command' && <BrandSwitcher compact />}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
-          <div className="flex items-center gap-0.5 bg-surface-700 rounded-full p-0.5 border border-white/[0.06]">
+          <div className="flex items-center gap-0.5 rounded-full p-0.5" style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>
             <button
               onClick={() => setLang('de')}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${lang === 'de' ? 'bg-surface-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+              className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
+              style={{ background: lang === 'de' ? '#E09B37' : 'transparent', color: lang === 'de' ? '#fff' : '#6e6e73' }}
             >
               DE
             </button>
             <button
               onClick={() => setLang('en')}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${lang === 'en' ? 'bg-surface-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+              className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
+              style={{ background: lang === 'en' ? '#E09B37' : 'transparent', color: lang === 'en' ? '#fff' : '#6e6e73' }}
             >
               EN
             </button>
@@ -547,7 +558,7 @@ const Dashboard: React.FC = () => {
                     if (first) handleSectionChange(first.id);
                   }
                 }}
-                className="text-[10px] font-black uppercase tracking-wider bg-surface-700 border border-white/[0.08] rounded-lg px-3 py-2 text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                className="text-[10px] font-black uppercase tracking-wider bg-white/80 border border-black/[0.08] rounded-lg px-3 py-2 text-[#1d1d1f] cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
               >
                 <option value="__real__">View as: Owner</option>
                 <option value="admin">View as: Admin</option>
@@ -557,22 +568,22 @@ const Dashboard: React.FC = () => {
               </select>
             </div>
           )}
-          <button onClick={handleLogout} className="px-4 py-2 bg-surface-700 text-slate-400 hover:bg-red-500/15 hover:text-red-400 text-xs font-bold rounded-lg transition-colors border border-white/[0.06]">
+          <button onClick={handleLogout} className="px-4 py-2 bg-white/80 text-[#515154] hover:bg-red-500/15 hover:text-red-400 text-xs font-bold rounded-lg transition-colors border border-black/[0.06]">
             {t.dashboard.logout}
           </button>
         </div>
       </header>
 
       {/* Top Section Nav — desktop only */}
-      <nav className="relative z-10 hidden md:flex items-center gap-1 border-b border-white/[0.06] px-4 md:px-8 overflow-x-auto bg-surface-900/60">
+      <nav className="relative z-10 hidden md:flex items-center gap-1 border-b border-black/[0.06] px-4 md:px-8 overflow-x-auto" style={{ background: 'rgba(255,255,255,0.5)' }}>
         {visibleSections.map(s => (
           <button
             key={s.id}
             onClick={() => handleSectionChange(s.id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all rounded-lg mx-0.5 ${
               section === s.id
-                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm'
-                : 'text-slate-500 hover:text-slate-200 hover:bg-white/5'
+                ? 'bg-[#E09B37] text-white border border-[#b8801f] shadow-sm'
+                : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03]'
             } ${s.tabs.length === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
             disabled={s.tabs.length === 0}
             title={s.tabs.length === 0 ? t.dashboard.comingSoon : undefined}
@@ -584,13 +595,14 @@ const Dashboard: React.FC = () => {
       </nav>
 
       {/* Quick Actions Bar */}
-      <div className="relative z-10 flex items-center gap-2 py-2.5 px-4 md:px-8 overflow-x-auto border-b border-white/[0.04] bg-surface-950/40">
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-500/70 whitespace-nowrap">✦ Jarvis</span>
+      <div className="relative z-10 flex items-center gap-2 py-2.5 px-4 md:px-8 overflow-x-auto border-b border-black/[0.04]" style={{ background: 'rgba(255,255,255,0.4)' }}>
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap" style={{ color: '#E09B37' }}>✦ Jarvis</span>
         {(QUICK_ACTIONS[section] ?? DEFAULT_QUICK_ACTIONS).map(action => (
           <button
             key={action.label}
             onClick={() => { setChatInitialPrompt(action.prompt); setChatOpen(true); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.04] hover:bg-amber-500/10 hover:text-amber-300 text-slate-400 text-xs font-semibold rounded-full whitespace-nowrap transition-all border border-white/[0.06] hover:border-amber-500/25"
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-[#E09B37]/10 hover:text-[#E09B37] text-[#515154] text-xs font-semibold rounded-full whitespace-nowrap transition-all border border-black/[0.06] hover:border-[#E09B37]/25"
+            style={{ background: 'rgba(0,0,0,0.03)' }}
           >
             <span>{action.emoji}</span> {action.label}
           </button>
@@ -603,15 +615,15 @@ const Dashboard: React.FC = () => {
         {activeTabs.length > 0 && (
           <>
             {/* Mobile: horizontal scrollable pill row */}
-            <nav className="flex md:hidden flex-row overflow-x-auto gap-1 py-2 px-1 border-b border-white/[0.06]">
+            <nav className="flex md:hidden flex-row overflow-x-auto gap-1 py-2 px-1 border-b border-black/[0.06]">
               {activeTabs.map(tabItem => (
                 <button
                   key={tabItem.id}
                   onClick={() => { setTab(tabItem.id); setSelectedAppId(null); }}
                   className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 ${
                     tab === tabItem.id
-                      ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25'
-                      : 'text-slate-500 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                      ? 'bg-[#E09B37]/15 text-[#E09B37] border border-amber-500/25'
+                      : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03] border border-transparent'
                   }`}
                 >
                   {t.tabs[tabItem.id] ?? tabItem.label}
@@ -620,7 +632,7 @@ const Dashboard: React.FC = () => {
             </nav>
 
             {/* Desktop: left sidebar */}
-            <aside className="hidden md:block md:w-48 md:shrink-0 md:border-r md:border-white/[0.06] pt-6 pr-4">
+            <aside className="hidden md:block md:w-48 md:shrink-0 md:border-r md:border-black/[0.06] pt-6 pr-4">
               <nav className="flex flex-col gap-0.5">
                 {activeTabs.map(tabItem => (
                   <button
@@ -628,8 +640,8 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setTab(tabItem.id); setSelectedAppId(null); }}
                     className={`text-left px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
                       tab === tabItem.id
-                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                        : 'text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] border border-transparent'
+                        ? 'bg-[#E09B37] text-white border border-[#b8801f]'
+                        : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03] border border-transparent'
                     }`}
                   >
                     {t.tabs[tabItem.id] ?? tabItem.label}
@@ -645,12 +657,12 @@ const Dashboard: React.FC = () => {
           {activeTabs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <p className="text-4xl mb-4">{activeSection.emoji}</p>
-              <p className="text-slate-400 font-semibold">{t.sections[activeSection.id] ?? activeSection.label} — {t.dashboard.comingSoon}</p>
+              <p className="text-[#515154] font-semibold">{t.sections[activeSection.id] ?? activeSection.label} — {t.dashboard.comingSoon}</p>
               <p className="text-slate-600 text-sm mt-1">{t.dashboard.comingSoonDesc}</p>
             </div>
           ) : (
             <ErrorBoundary key={tab}>
-              <Suspense fallback={<div className="text-center py-12 text-slate-500 text-sm">Loading...</div>}>
+              <Suspense fallback={<div className="text-center py-12 text-[#515154] text-sm">Loading...</div>}>
                 <div className="animate-[fadeIn_0.2s_ease-out]">
                   {renderContent()}
                 </div>
@@ -660,7 +672,7 @@ const Dashboard: React.FC = () => {
         </main>
       </div>
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-surface-900/90 backdrop-blur-xl border-t border-white/[0.06] flex items-center justify-around px-2 py-2 safe-area-pb">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 backdrop-blur-xl border-t border-black/[0.06] flex items-center justify-around px-2 py-2 safe-area-pb" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px) saturate(1.8)', WebkitBackdropFilter: 'blur(20px) saturate(1.8)' }}>
         {[
           { id: 'command' as Section, emoji: '🎯', label: 'Home' },
           { id: 'creative' as Section, emoji: '🎨', label: 'Creative' },
@@ -673,8 +685,8 @@ const Dashboard: React.FC = () => {
             onClick={() => handleSectionChange(s.id)}
             className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] ${
               section === s.id
-                ? 'bg-amber-500/10 text-amber-400'
-                : 'text-slate-500 hover:text-slate-200'
+                ? 'bg-[#E09B37]/15 text-[#E09B37]'
+                : 'text-[#515154] hover:text-[#1d1d1f]'
             }`}
           >
             <span className="text-xl leading-none">{s.emoji}</span>
@@ -683,7 +695,7 @@ const Dashboard: React.FC = () => {
         ))}
         <button
           onClick={() => setChatOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] text-slate-500 hover:text-amber-400"
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] text-[#515154] hover:text-amber-400"
         >
           <span className="text-xl leading-none">✨</span>
           <span className="text-[10px] font-semibold">Jarvis</span>

@@ -27,7 +27,7 @@ const STAGE_COLORS: Record<string, string> = {
 };
 
 const SCORE_COLOR = (score: number | null | undefined) => {
-  if (score == null) return 'text-slate-500';
+  if (score == null) return 'text-[#6e6e73]';
   if (score >= 75) return 'text-emerald-400';
   if (score >= 50) return 'text-yellow-400';
   return 'text-red-400';
@@ -106,10 +106,10 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
 
   if (apps.length === 0) {
     return (
-      <div className="p-12 rounded-[2.5rem] bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm text-center">
+      <div className="p-12 rounded-[2.5rem] bg-white/70 border border-black/[0.06] backdrop-blur-sm text-center">
         <p className="text-5xl mb-4">🗂️</p>
-        <h3 className="text-xl font-bold text-white mb-2">No applications yet</h3>
-        <p className="text-slate-400 max-w-md mx-auto">
+        <h3 className="text-xl font-bold text-[#1d1d1f] mb-2">No applications yet</h3>
+        <p className="text-[#515154] max-w-md mx-auto">
           The Eval Dashboard collects every application in one scrollable wall once
           applicants come through the public form.
         </p>
@@ -120,13 +120,13 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
   return (
     <div className="space-y-4 animate-[fadeIn_0.5s_ease-out]">
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap gap-3 items-center p-4 rounded-2xl bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
+      <div className="flex flex-wrap gap-3 items-center p-4 rounded-2xl bg-white/70 border border-black/[0.06] backdrop-blur-sm">
         <div className="flex items-center gap-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Stage</label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Stage</label>
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value as ApplicationStage | 'all')}
-            className="px-3 py-1.5 bg-white/[0.06] border border-white/10 rounded-lg text-xs text-white"
+            className="px-3 py-1.5 bg-black/[0.04] border border-white/10 rounded-lg text-xs text-[#1d1d1f]"
           >
             <option value="all">All</option>
             <option value="applied">Applied</option>
@@ -138,18 +138,18 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
           </select>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Sort</label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Sort</label>
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="px-3 py-1.5 bg-white/[0.06] border border-white/10 rounded-lg text-xs text-white"
+            className="px-3 py-1.5 bg-black/[0.04] border border-white/10 rounded-lg text-xs text-[#1d1d1f]"
           >
             <option value="aiScore">AI Score (high → low)</option>
             <option value="created_at">Newest first</option>
             <option value="stage">Stage</option>
           </select>
         </div>
-        <span className="ml-auto text-xs text-slate-500">
+        <span className="ml-auto text-xs text-[#6e6e73]">
           {filteredSorted.length} of {apps.length}
         </span>
       </div>
@@ -160,15 +160,15 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
           <button
             key={app.id}
             onClick={() => onSelectApplicant(app.id)}
-            className="text-left p-5 rounded-2xl bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm hover:border-primary-500/40 hover:bg-surface-800/80 transition-all"
+            className="text-left p-5 rounded-2xl bg-white/70 border border-black/[0.06] backdrop-blur-sm hover:border-primary-500/40 hover:bg-white/80/80 transition-all"
           >
             {/* Header row */}
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="min-w-0 flex-1">
-                <h4 className="text-base font-black text-white truncate">{app.full_name}</h4>
-                <p className="text-xs text-slate-500 truncate">{app.email}</p>
+                <h4 className="text-base font-black text-[#1d1d1f] truncate">{app.full_name}</h4>
+                <p className="text-xs text-[#6e6e73] truncate">{app.email}</p>
               </div>
-              <span className={`px-2 py-0.5 text-[10px] font-black rounded-full uppercase tracking-wider ${STAGE_COLORS[app.stage ?? ''] ?? 'bg-slate-500/15 text-slate-400'}`}>
+              <span className={`px-2 py-0.5 text-[10px] font-black rounded-full uppercase tracking-wider ${STAGE_COLORS[app.stage ?? ''] ?? 'bg-slate-500/15 text-[#515154]'}`}>
                 {(app.stage ?? 'unknown').replace('_', ' ')}
               </span>
             </div>
@@ -176,36 +176,36 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
             {/* Score + verdict */}
             <div className="flex items-center gap-3 mb-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">AI Score</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">AI Score</p>
                 <p className={`text-2xl font-black tracking-tight ${SCORE_COLOR(app.aiScore)}`}>
                   {app.aiScore != null ? Math.round(app.aiScore) : '—'}
                 </p>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Verdict</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Verdict</p>
                 <p className={`text-sm font-bold ${SCORE_COLOR(app.aiScore)}`}>{SCORE_VERDICT(app.aiScore)}</p>
               </div>
               <div className="ml-auto text-right">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Notes</p>
-                <p className="text-sm font-bold text-slate-300">{app.notes_count ?? 0}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Notes</p>
+                <p className="text-sm font-bold text-[#1d1d1f]">{app.notes_count ?? 0}</p>
               </div>
             </div>
 
             {/* Work sample preview */}
             <div className="mb-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Work Sample</p>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Work Sample</p>
+              <p className="text-xs text-[#515154] leading-relaxed">
                 {truncate(app.work_sample_text, 180)}
               </p>
             </div>
 
             {/* Footer pills */}
-            <div className="flex flex-wrap gap-2 text-[10px] text-slate-500">
-              <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
+            <div className="flex flex-wrap gap-2 text-[10px] text-[#6e6e73]">
+              <span className="px-2 py-0.5 rounded bg-black/[0.03] border border-black/[0.06]">
                 Applied {new Date(app.created_at).toLocaleDateString()}
               </span>
               {app.task_sent_at && (
-                <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
+                <span className="px-2 py-0.5 rounded bg-black/[0.03] border border-black/[0.06]">
                   Task {new Date(app.task_sent_at).toLocaleDateString()}
                 </span>
               )}
@@ -215,7 +215,7 @@ const EvalDashboardView: React.FC<Props> = ({ onSelectApplicant }) => {
                 </span>
               )}
               {app.decided_at && (
-                <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
+                <span className="px-2 py-0.5 rounded bg-black/[0.03] border border-black/[0.06]">
                   Decided {new Date(app.decided_at).toLocaleDateString()}
                 </span>
               )}

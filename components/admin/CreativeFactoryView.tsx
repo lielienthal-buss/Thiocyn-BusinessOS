@@ -69,20 +69,20 @@ interface Insight {
 const CATEGORY_LABELS: Record<string, { label: string; emoji: string; color: string }> = {
   problem:      { label: 'Problem',      emoji: '🔴', color: 'bg-red-500/10 text-red-400 border-red-500/20' },
   mechanism:    { label: 'Mechanism',     emoji: '⚙️', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-  aspiration:   { label: 'Aspiration',    emoji: '✨', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  aspiration:   { label: 'Aspiration',    emoji: '✨', color: 'bg-[#E09B37]/12 text-[#E09B37] border-[#E09B37]/25' },
   social_proof: { label: 'Social Proof',  emoji: '👥', color: 'bg-green-500/10 text-green-400 border-green-500/20' },
   contrarian:   { label: 'Contrarian',    emoji: '⚡', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
   identity:     { label: 'Identity',      emoji: '🪞', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' },
-  trust:        { label: 'Trust',         emoji: '🤝', color: 'bg-slate-500/10 text-slate-400 border-slate-500/20' },
+  trust:        { label: 'Trust',         emoji: '🤝', color: 'bg-slate-500/10 text-[#515154] border-slate-500/20' },
 };
 
 const PERF_TAGS: Record<string, { label: string; color: string }> = {
-  untested:  { label: 'Untested',  color: 'bg-slate-700 text-slate-300' },
+  untested:  { label: 'Untested',  color: 'bg-slate-700 text-[#1d1d1f]' },
   testing:   { label: 'Testing',   color: 'bg-yellow-500/20 text-yellow-400' },
   winner:    { label: 'Winner',    color: 'bg-green-500/20 text-green-400' },
   performer: { label: 'Performer', color: 'bg-blue-500/20 text-blue-400' },
   loser:     { label: 'Loser',     color: 'bg-red-500/20 text-red-400' },
-  retired:   { label: 'Retired',   color: 'bg-slate-600 text-slate-400' },
+  retired:   { label: 'Retired',   color: 'bg-slate-600 text-[#515154]' },
 };
 
 const BRANDS = ['thiocyn', 'take-a-shot', 'paigh', 'dr-severin', 'wristr', 'timber-john'] as const;
@@ -162,8 +162,8 @@ const CreativeFactoryView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Creative Factory</h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <h2 className="text-xl font-semibold text-[#1d1d1f]">Creative Factory</h2>
+          <p className="text-sm text-[#515154] mt-1">
             Angle Libraries, Asset Tracking & Performance Feedback Loop
           </p>
         </div>
@@ -171,7 +171,7 @@ const CreativeFactoryView: React.FC = () => {
           <select
             value={selectedBrand}
             onChange={e => setSelectedBrand(e.target.value)}
-            className="bg-slate-800 text-sm text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5"
+            className="bg-slate-800 text-sm text-[#1d1d1f] border border-slate-700 rounded-lg px-3 py-1.5"
           >
             <option value="all">All Brands</option>
             {BRANDS.map(b => (
@@ -184,15 +184,15 @@ const CreativeFactoryView: React.FC = () => {
       {/* KPI Strip */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label: 'Total Angles', value: stats.total, color: 'text-white' },
-          { label: 'Untested', value: stats.untested, color: 'text-slate-400' },
+          { label: 'Total Angles', value: stats.total, color: 'text-[#1d1d1f]' },
+          { label: 'Untested', value: stats.untested, color: 'text-[#515154]' },
           { label: 'Winners', value: stats.winners, color: 'text-green-400' },
           { label: 'Losers', value: stats.losers, color: 'text-red-400' },
-          { label: 'Avg Win Rate', value: `${stats.avgWinRate}%`, color: 'text-amber-400' },
+          { label: 'Avg Win Rate', value: `${stats.avgWinRate}%`, color: 'text-[#E09B37]' },
         ].map(kpi => (
           <div key={kpi.label} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 text-center">
             <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
-            <div className="text-xs text-slate-500 mt-1">{kpi.label}</div>
+            <div className="text-xs text-[#6e6e73] mt-1">{kpi.label}</div>
           </div>
         ))}
       </div>
@@ -205,8 +205,8 @@ const CreativeFactoryView: React.FC = () => {
             onClick={() => setSubTab(tab)}
             className={`px-4 py-1.5 rounded-md text-sm transition-colors ${
               subTab === tab
-                ? 'bg-amber-500/20 text-amber-400'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-amber-500/20 text-[#E09B37]'
+                : 'text-[#515154] hover:text-[#1d1d1f]'
             }`}
           >
             {tab === 'health' ? 'Brand Health' : tab === 'scoreboard' ? 'Angle Scoreboard' : tab === 'assets' ? 'Assets' : 'Insights'}
@@ -220,10 +220,10 @@ const CreativeFactoryView: React.FC = () => {
           {health.map(h => (
             <div key={h.brand_slug} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white font-medium">{h.brand_name}</h3>
+                <h3 className="text-[#1d1d1f] font-medium">{h.brand_name}</h3>
                 <div className="flex gap-2 text-xs">
-                  <span className="text-slate-400">Coverage: <span className="text-amber-400">{h.test_coverage_pct ?? 0}%</span></span>
-                  <span className="text-slate-400">Win Rate: <span className="text-green-400">{h.overall_win_rate_pct ?? 0}%</span></span>
+                  <span className="text-[#515154]">Coverage: <span className="text-[#E09B37]">{h.test_coverage_pct ?? 0}%</span></span>
+                  <span className="text-[#515154]">Win Rate: <span className="text-green-400">{h.overall_win_rate_pct ?? 0}%</span></span>
                 </div>
               </div>
               {/* Progress bar */}
@@ -244,13 +244,13 @@ const CreativeFactoryView: React.FC = () => {
                   <div className="bg-slate-600" style={{ width: `${(h.untested / h.total_angles) * 100}%` }} title={`${h.untested} Untested`} />
                 )}
               </div>
-              <div className="flex gap-3 mt-2 text-xs text-slate-500">
+              <div className="flex gap-3 mt-2 text-xs text-[#6e6e73]">
                 <span>{h.total_angles} Angles</span>
                 <span className="text-green-400">{h.winners} W</span>
                 <span className="text-blue-400">{h.performers} P</span>
                 <span className="text-yellow-400">{h.testing} T</span>
                 <span className="text-red-400">{h.losers} L</span>
-                <span className="text-slate-400">{h.untested} U</span>
+                <span className="text-[#515154]">{h.untested} U</span>
                 {h.categories_missing > 0 && (
                   <span className="text-orange-400">{h.categories_missing} categories missing</span>
                 )}
@@ -268,7 +268,7 @@ const CreativeFactoryView: React.FC = () => {
             <button
               onClick={() => setSelectedCategory('all')}
               className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-                selectedCategory === 'all' ? 'bg-slate-600 text-white border-slate-500' : 'text-slate-400 border-slate-700 hover:border-slate-500'
+                selectedCategory === 'all' ? 'bg-slate-600 text-[#1d1d1f] border-slate-500' : 'text-[#515154] border-slate-700 hover:border-slate-500'
               }`}
             >
               All
@@ -278,7 +278,7 @@ const CreativeFactoryView: React.FC = () => {
                 key={key}
                 onClick={() => setSelectedCategory(key)}
                 className={`px-3 py-1 rounded-full text-xs border transition-colors ${
-                  selectedCategory === key ? color : 'text-slate-400 border-slate-700 hover:border-slate-500'
+                  selectedCategory === key ? color : 'text-[#515154] border-slate-700 hover:border-slate-500'
                 }`}
               >
                 {emoji} {label}
@@ -290,7 +290,7 @@ const CreativeFactoryView: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-slate-500 text-xs border-b border-slate-700">
+                <tr className="text-[#6e6e73] text-xs border-b border-slate-700">
                   <th className="text-left py-2 px-2">Brand</th>
                   <th className="text-left py-2 px-2">Code</th>
                   <th className="text-left py-2 px-2">Category</th>
@@ -308,14 +308,14 @@ const CreativeFactoryView: React.FC = () => {
                   const perf = PERF_TAGS[angle.performance_tag] ?? PERF_TAGS.untested;
                   return (
                     <tr key={angle.id} className="border-b border-slate-800 hover:bg-slate-800/30">
-                      <td className="py-2 px-2 text-slate-300">{angle.brand_slug}</td>
-                      <td className="py-2 px-2 font-mono text-amber-400 text-xs">{angle.code}</td>
+                      <td className="py-2 px-2 text-[#1d1d1f]">{angle.brand_slug}</td>
+                      <td className="py-2 px-2 font-mono text-[#E09B37] text-xs">{angle.code}</td>
                       <td className="py-2 px-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs border ${cat?.color ?? ''}`}>
                           {cat?.emoji} {cat?.label}
                         </span>
                       </td>
-                      <td className="py-2 px-2 text-slate-300 truncate max-w-[300px]" title={angle.hook_de ?? ''}>
+                      <td className="py-2 px-2 text-[#1d1d1f] truncate max-w-[300px]" title={angle.hook_de ?? ''}>
                         {angle.hook_de ?? angle.name}
                       </td>
                       <td className="py-2 px-2 text-center">
@@ -323,16 +323,16 @@ const CreativeFactoryView: React.FC = () => {
                           {perf.label}
                         </span>
                       </td>
-                      <td className="py-2 px-2 text-right text-slate-300">
+                      <td className="py-2 px-2 text-right text-[#1d1d1f]">
                         {angle.avg_ctr > 0 ? `${(angle.avg_ctr * 100).toFixed(2)}%` : '—'}
                       </td>
-                      <td className="py-2 px-2 text-right text-slate-300">
+                      <td className="py-2 px-2 text-right text-[#1d1d1f]">
                         {angle.avg_roas > 0 ? `${angle.avg_roas.toFixed(1)}x` : '—'}
                       </td>
-                      <td className="py-2 px-2 text-right text-slate-300">
+                      <td className="py-2 px-2 text-right text-[#1d1d1f]">
                         {angle.total_assets > 0 ? `${angle.win_rate}%` : '—'}
                       </td>
-                      <td className="py-2 px-2 text-right text-slate-400">{angle.total_assets}</td>
+                      <td className="py-2 px-2 text-right text-[#515154]">{angle.total_assets}</td>
                     </tr>
                   );
                 })}
@@ -347,7 +347,7 @@ const CreativeFactoryView: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-slate-500 text-xs border-b border-slate-700">
+              <tr className="text-[#6e6e73] text-xs border-b border-slate-700">
                 <th className="text-left py-2 px-2">Asset Name</th>
                 <th className="text-left py-2 px-2">Format</th>
                 <th className="text-left py-2 px-2">Platform</th>
@@ -359,28 +359,28 @@ const CreativeFactoryView: React.FC = () => {
             <tbody>
               {filteredAssets.map(asset => (
                 <tr key={asset.id} className="border-b border-slate-800 hover:bg-slate-800/30">
-                  <td className="py-2 px-2 font-mono text-xs text-amber-400">{asset.asset_name}</td>
-                  <td className="py-2 px-2 text-slate-300">{asset.format}</td>
-                  <td className="py-2 px-2 text-slate-300">{asset.platform}</td>
+                  <td className="py-2 px-2 font-mono text-xs text-[#E09B37]">{asset.asset_name}</td>
+                  <td className="py-2 px-2 text-[#1d1d1f]">{asset.format}</td>
+                  <td className="py-2 px-2 text-[#1d1d1f]">{asset.platform}</td>
                   <td className="py-2 px-2">
                     <span className={`px-2 py-0.5 rounded-full text-xs ${
                       asset.status === 'live' ? 'bg-green-500/20 text-green-400' :
                       asset.status === 'ready' ? 'bg-blue-500/20 text-blue-400' :
-                      asset.status === 'retired' ? 'bg-slate-600 text-slate-400' :
-                      'bg-slate-700 text-slate-300'
+                      asset.status === 'retired' ? 'bg-slate-600 text-[#515154]' :
+                      'bg-slate-700 text-[#1d1d1f]'
                     }`}>
                       {asset.status}
                     </span>
                   </td>
-                  <td className="py-2 px-2 text-slate-400 text-xs">{asset.produced_by ?? '—'}</td>
-                  <td className="py-2 px-2 text-slate-500 text-xs">
+                  <td className="py-2 px-2 text-[#515154] text-xs">{asset.produced_by ?? '—'}</td>
+                  <td className="py-2 px-2 text-[#6e6e73] text-xs">
                     {new Date(asset.created_at).toLocaleDateString('de-DE')}
                   </td>
                 </tr>
               ))}
               {filteredAssets.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500">
+                  <td colSpan={6} className="py-8 text-center text-[#6e6e73]">
                     No assets yet. Create your first creative asset to get started.
                   </td>
                 </tr>
@@ -394,7 +394,7 @@ const CreativeFactoryView: React.FC = () => {
       {subTab === 'insights' && (
         <div className="space-y-3">
           {insights.length === 0 && (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-[#6e6e73]">
               No insights yet. Run the Performance Feedback Loop to generate insights.
             </div>
           )}
@@ -412,7 +412,7 @@ const CreativeFactoryView: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`px-2 py-0.5 rounded-full text-xs ${
                       insight.insight_type === 'pattern' ? 'bg-purple-500/20 text-purple-400' :
-                      insight.insight_type === 'cross_brand' ? 'bg-amber-500/20 text-amber-400' :
+                      insight.insight_type === 'cross_brand' ? 'bg-amber-500/20 text-[#E09B37]' :
                       insight.insight_type === 'warning' ? 'bg-red-500/20 text-red-400' :
                       'bg-blue-500/20 text-blue-400'
                     }`}>
@@ -420,20 +420,20 @@ const CreativeFactoryView: React.FC = () => {
                     </span>
                     <span className={`px-2 py-0.5 rounded-full text-xs ${
                       insight.confidence === 'proven' ? 'bg-green-500/20 text-green-400' :
-                      insight.confidence === 'high' ? 'bg-amber-500/20 text-amber-400' :
-                      'bg-slate-700 text-slate-400'
+                      insight.confidence === 'high' ? 'bg-amber-500/20 text-[#E09B37]' :
+                      'bg-slate-700 text-[#515154]'
                     }`}>
                       {insight.confidence}
                     </span>
                     {insight.brand_slug && (
-                      <span className="text-xs text-slate-500">{insight.brand_slug}</span>
+                      <span className="text-xs text-[#6e6e73]">{insight.brand_slug}</span>
                     )}
                   </div>
-                  <h4 className="text-white font-medium">{insight.title}</h4>
-                  <p className="text-sm text-slate-400 mt-1">{insight.description}</p>
+                  <h4 className="text-[#1d1d1f] font-medium">{insight.title}</h4>
+                  <p className="text-sm text-[#515154] mt-1">{insight.description}</p>
                 </div>
                 {insight.actionable && !insight.action_taken && (
-                  <span className="px-2 py-1 bg-amber-500/10 text-amber-400 text-xs rounded-lg whitespace-nowrap ml-3">
+                  <span className="px-2 py-1 bg-[#E09B37]/12 text-[#E09B37] text-xs rounded-lg whitespace-nowrap ml-3">
                     Action needed
                   </span>
                 )}

@@ -39,7 +39,7 @@ const renderMarkdown = (text: string): React.ReactNode => {
           </thead>
           <tbody>
             {rows.map((row, ri) => (
-              <tr key={ri} className="border-b border-white/[0.04]">
+              <tr key={ri} className="border-b border-black/[0.04]">
                 {row.map((cell, ci) => (
                   <td key={ci} className="py-2 px-3 text-gray-300 text-sm"
                     dangerouslySetInnerHTML={{ __html: cell.trim().replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
@@ -69,31 +69,31 @@ const renderMarkdown = (text: string): React.ReactNode => {
     }
 
     if (line.startsWith('# ')) {
-      elements.push(<h1 key={key} className="text-2xl font-black text-white tracking-tight mt-2 mb-4">{line.slice(2)}</h1>);
+      elements.push(<h1 key={key} className="text-2xl font-black text-[#1d1d1f] tracking-tight mt-2 mb-4">{line.slice(2)}</h1>);
     } else if (line.startsWith('## ')) {
-      elements.push(<h2 key={key} className="text-base font-black text-white uppercase tracking-widest mt-6 mb-2">{line.slice(3)}</h2>);
+      elements.push(<h2 key={key} className="text-base font-black text-[#1d1d1f] uppercase tracking-widest mt-6 mb-2">{line.slice(3)}</h2>);
     } else if (line.startsWith('### ')) {
       elements.push(<h3 key={key} className="text-sm font-bold text-gray-300 mt-4 mb-1">{line.slice(4)}</h3>);
     } else if (line.startsWith('---')) {
-      elements.push(<hr key={key} className="border-white/[0.08] my-4" />);
+      elements.push(<hr key={key} className="border-black/[0.08] my-4" />);
     } else if (line.startsWith('- ') || line.startsWith('* ')) {
       elements.push(
         <li key={key} className="text-gray-300 text-sm ml-4 mb-1 list-disc"
-          dangerouslySetInnerHTML={{ __html: line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/⚠️/g, '<span class="text-yellow-400">⚠️</span>') }}
+          dangerouslySetInnerHTML={{ __html: line.slice(2).replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#1d1d1f]">$1</strong>').replace(/⚠️/g, '<span class="text-yellow-400">⚠️</span>') }}
         />
       );
     } else if (/^\d+\. /.test(line)) {
       elements.push(
         <li key={key} className="text-gray-300 text-sm ml-4 mb-1 list-decimal"
-          dangerouslySetInnerHTML={{ __html: line.replace(/^\d+\. /, '').replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>') }}
+          dangerouslySetInnerHTML={{ __html: line.replace(/^\d+\. /, '').replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#1d1d1f]">$1</strong>') }}
         />
       );
     } else if (line.startsWith('**') && line.endsWith('**') && line.length > 4) {
-      elements.push(<p key={key} className="text-white font-bold text-sm mb-1">{line.slice(2, -2)}</p>);
+      elements.push(<p key={key} className="text-[#1d1d1f] font-bold text-sm mb-1">{line.slice(2, -2)}</p>);
     } else if (line.trim() !== '') {
       elements.push(
         <p key={key} className="text-gray-300 text-sm mb-2 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/⚠️/g, '<span class="text-yellow-400">⚠️</span>') }}
+          dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#1d1d1f]">$1</strong>').replace(/⚠️/g, '<span class="text-yellow-400">⚠️</span>') }}
         />
       );
     } else {
@@ -168,12 +168,12 @@ const BriefingGeneratorView: React.FC = () => {
     <div className="space-y-6 max-w-3xl mx-auto">
       {/* Header */}
       <div>
-        <h2 className="text-white font-black text-2xl tracking-tight">Briefing Generator</h2>
+        <h2 className="text-[#1d1d1f] font-black text-2xl tracking-tight">Briefing Generator</h2>
         <p className="text-gray-500 text-sm mt-0.5">Roher Task rein → Intern-Briefing raus. Sofort umsetzbar.</p>
       </div>
 
       {/* Input Form */}
-      <div className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-6 space-y-5">
+      <div className="bg-black/[0.03] border border-white/[0.07] rounded-2xl p-6 space-y-5">
 
         {/* Brand + Task */}
         <div className="flex gap-3">
@@ -182,7 +182,7 @@ const BriefingGeneratorView: React.FC = () => {
             <select
               value={brand}
               onChange={e => setBrand(e.target.value as Brand)}
-              className="w-full bg-black/40 border border-white/10 text-white rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-violet-500"
+              className="w-full bg-black/40 border border-white/10 text-[#1d1d1f] rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-violet-500"
             >
               {BRANDS.map(b => <option key={b} value={b} className="bg-[#0d0d0d]">{b}</option>)}
             </select>
@@ -194,7 +194,7 @@ const BriefingGeneratorView: React.FC = () => {
               onChange={e => setTaskRaw(e.target.value)}
               rows={3}
               placeholder="Mach 3 UGC Creatives für Instagram — Sommer, Conversion"
-              className="w-full bg-black/40 border border-white/10 text-white placeholder-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 resize-none"
+              className="w-full bg-black/40 border border-white/10 text-[#1d1d1f] placeholder-gray-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 resize-none"
             />
           </div>
         </div>
@@ -207,7 +207,7 @@ const BriefingGeneratorView: React.FC = () => {
               <button
                 key={ex}
                 onClick={() => setTaskRaw(ex)}
-                className="text-xs text-gray-500 hover:text-gray-300 bg-white/[0.03] border border-white/[0.06] hover:border-white/10 rounded-lg px-2.5 py-1.5 transition-all text-left"
+                className="text-xs text-gray-500 hover:text-gray-300 bg-black/[0.03] border border-black/[0.06] hover:border-white/10 rounded-lg px-2.5 py-1.5 transition-all text-left"
               >
                 {ex}
               </button>
@@ -232,7 +232,7 @@ const BriefingGeneratorView: React.FC = () => {
                   value={assignee}
                   onChange={e => setAssignee(e.target.value)}
                   placeholder="z.B. Mainak"
-                  className="w-full bg-black/40 border border-white/10 text-white placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
+                  className="w-full bg-black/40 border border-white/10 text-[#1d1d1f] placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
                 />
               </div>
               <div>
@@ -242,7 +242,7 @@ const BriefingGeneratorView: React.FC = () => {
                   value={deadline}
                   onChange={e => setDeadline(e.target.value)}
                   placeholder="z.B. Freitag, 28.03."
-                  className="w-full bg-black/40 border border-white/10 text-white placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
+                  className="w-full bg-black/40 border border-white/10 text-[#1d1d1f] placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
                 />
               </div>
               <div className="col-span-2">
@@ -252,7 +252,7 @@ const BriefingGeneratorView: React.FC = () => {
                   value={context}
                   onChange={e => setContext(e.target.value)}
                   placeholder="z.B. Für laufende Sommerkampagne, Budget 300€, Cold Audience"
-                  className="w-full bg-black/40 border border-white/10 text-white placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
+                  className="w-full bg-black/40 border border-white/10 text-[#1d1d1f] placeholder-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-violet-500"
                 />
               </div>
             </div>
@@ -266,7 +266,7 @@ const BriefingGeneratorView: React.FC = () => {
         <button
           onClick={generate}
           disabled={loading || !taskRaw.trim()}
-          className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-black rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-3.5 bg-violet-600 hover:bg-violet-500 text-[#1d1d1f] font-black rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <><Spinner /><span>Generiere Briefing…</span></>
@@ -287,14 +287,14 @@ const BriefingGeneratorView: React.FC = () => {
                 className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all ${
                   copied
                     ? 'bg-green-500/20 border-green-500/40 text-green-400'
-                    : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                    : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20 hover:text-[#1d1d1f]'
                 }`}
               >
                 {copied ? '✓ Kopiert' : 'Kopieren'}
               </button>
               <button
                 onClick={reset}
-                className="text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-white transition-all"
+                className="text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 bg-white/5 text-gray-400 hover:border-white/20 hover:text-[#1d1d1f] transition-all"
               >
                 Neu
               </button>

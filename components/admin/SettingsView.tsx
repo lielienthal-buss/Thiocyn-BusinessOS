@@ -66,10 +66,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
 
   const field = (key: keyof typeof form, label: string, type = 'text') => (
     <div key={key}>
-      <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">{label}</label>
+      <label className="block text-xs font-semibold text-[#515154] mb-1 uppercase tracking-wider">{label}</label>
       <input type={type} value={(form as any)[key] || ''} disabled={isDemoMode}
         onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-        className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-sm disabled:opacity-40" />
+        className="w-full px-3 py-2 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] rounded-lg text-sm disabled:opacity-40" />
     </div>
   );
 
@@ -79,7 +79,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
   const SaveButton = () => (
     <div className="flex justify-end pt-2">
       <button onClick={handleSave} disabled={saving || isDemoMode}
-        className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-colors disabled:opacity-40">
+        className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-[#1d1d1f] text-sm font-semibold rounded-lg flex items-center gap-2 transition-colors disabled:opacity-40">
         {saving && <Spinner className="w-4 h-4" />} Speichern
       </button>
     </div>
@@ -94,20 +94,20 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
 
   return (
     <div className="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
-      <h2 className="text-3xl font-black text-white tracking-tighter mb-6">Einstellungen</h2>
+      <h2 className="text-3xl font-black text-[#1d1d1f] tracking-tighter mb-6">Einstellungen</h2>
 
-      <div className="flex gap-1 mb-6 bg-white/[0.03] p-1 rounded-xl w-fit flex-wrap">
+      <div className="flex gap-1 mb-6 bg-black/[0.03] p-1 rounded-xl w-fit flex-wrap">
         {TABS.map(t => (
           <button key={t.id} onClick={() => setActiveTab(t.id)}
             className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
-              activeTab === t.id ? 'bg-white/[0.10] text-white' : 'text-slate-500 hover:text-slate-300'
+              activeTab === t.id ? 'bg-white/[0.10] text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}>
             {t.label}
           </button>
         ))}
       </div>
 
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl p-6 space-y-6">
+      <div className="bg-white/70 border border-black/[0.06] rounded-xl p-6 space-y-6">
 
         {activeTab === 'general' && (
           <>
@@ -128,10 +128,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
           <>
             <div className="space-y-1">
               {Object.entries(FEATURE_LABELS).map(([key, label]) => (
-                <div key={key} className="flex items-center justify-between py-3 border-b border-white/[0.06] last:border-0">
+                <div key={key} className="flex items-center justify-between py-3 border-b border-black/[0.06] last:border-0">
                   <div>
-                    <p className="text-sm font-semibold text-white">{label}</p>
-                    <p className="text-xs text-slate-500 font-mono">feature_flags.{key}</p>
+                    <p className="text-sm font-semibold text-[#1d1d1f]">{label}</p>
+                    <p className="text-xs text-[#6e6e73] font-mono">feature_flags.{key}</p>
                   </div>
                   <button disabled={isDemoMode}
                     onClick={() => setForm(f => ({ ...f, feature_flags: { ...f.feature_flags, [key]: !f.feature_flags[key] } }))}
@@ -148,13 +148,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
         {activeTab === 'ai' && (
           <>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">KI Kontext für Bewerber-Analyse</label>
-              <p className="text-xs text-slate-500 mb-3">Beschreibt dem KI-Assistenten das Unternehmen, die Werte und wen ihr sucht.</p>
+              <label className="block text-xs font-semibold text-[#515154] mb-2 uppercase tracking-wider">KI Kontext für Bewerber-Analyse</label>
+              <p className="text-xs text-[#6e6e73] mb-3">Beschreibt dem KI-Assistenten das Unternehmen, die Werte und wen ihr sucht.</p>
               <textarea value={form.ai_instruction || ''} disabled={isDemoMode}
                 onChange={e => setForm(f => ({ ...f, ai_instruction: e.target.value }))}
                 rows={10}
                 placeholder="z.B.: Wir sind ein D2C E-Commerce Aggregator mit 6 nachhaltigen Brands. Wir suchen Interns die eigenverantwortlich arbeiten..."
-                className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-sm resize-y placeholder-slate-600 disabled:opacity-40" />
+                className="w-full px-3 py-2 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] rounded-lg text-sm resize-y placeholder-[#86868b] disabled:opacity-40" />
             </div>
             <SaveButton />
           </>
@@ -164,11 +164,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
           <>
             <div className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Modus</label>
+                <label className="block text-xs font-semibold text-[#515154] mb-2 uppercase tracking-wider">Modus</label>
                 <div className="flex gap-2">
                   {(['influencer', 'partner', 'both'] as const).map(m => (
                     <button key={m} type="button" onClick={() => setL('mode', m)}
-                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${landing.mode === m ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-white/[0.05] text-slate-500 border border-white/[0.06] hover:text-slate-300'}`}>
+                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${landing.mode === m ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-black/[0.03] text-[#6e6e73] border border-black/[0.06] hover:text-[#1d1d1f]'}`}>
                       {m === 'influencer' ? 'Influencer' : m === 'partner' ? 'Partner' : 'Beides'}
                     </button>
                   ))}
@@ -178,9 +178,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
               <div className="grid grid-cols-1 gap-4">
                 {[['hero_tagline', 'Hero Tagline'], ['hero_subtitle', 'Hero Subtitle']].map(([k, l]) => (
                   <div key={k}>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">{l}</label>
+                    <label className="block text-xs font-semibold text-[#515154] mb-1 uppercase tracking-wider">{l}</label>
                     <input type="text" value={(landing as any)[k] || ''} onChange={e => setL(k as any, e.target.value)}
-                      className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-sm" />
+                      className="w-full px-3 py-2 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] rounded-lg text-sm" />
                   </div>
                 ))}
               </div>
@@ -188,19 +188,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
               <div className="grid grid-cols-2 gap-4">
                 {[['cta_primary_text', 'CTA Primär Text'], ['cta_primary_url', 'CTA Primär URL'], ['cta_secondary_text', 'CTA Sekundär Text'], ['cta_secondary_url', 'CTA Sekundär URL']].map(([k, l]) => (
                   <div key={k}>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">{l}</label>
+                    <label className="block text-xs font-semibold text-[#515154] mb-1 uppercase tracking-wider">{l}</label>
                     <input type="text" value={(landing as any)[k] || ''} onChange={e => setL(k as any, e.target.value)}
-                      className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg text-sm" />
+                      className="w-full px-3 py-2 bg-black/[0.03] border border-white/[0.10] text-[#1d1d1f] rounded-lg text-sm" />
                   </div>
                 ))}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Sektionen</label>
+                <label className="block text-xs font-semibold text-[#515154] mb-2 uppercase tracking-wider">Sektionen</label>
                 <div className="grid grid-cols-2 gap-2">
                   {([['show_portfolio', 'Portfolio / Brands'], ['show_approach', 'Methodik'], ['show_jobs_link', 'Stellenausschreibungen'], ['show_faq', 'FAQ']] as [keyof LandingConfig, string][]).map(([k, l]) => (
                     <button key={k} type="button" onClick={() => setL(k, !landing[k] as any)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-all border ${landing[k] ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-white/[0.04] border-white/[0.06] text-slate-500'}`}>
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-all border ${landing[k] ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' : 'bg-black/[0.03] border-black/[0.06] text-[#6e6e73]'}`}>
                       <span className={`w-3 h-3 rounded-full flex-shrink-0 ${landing[k] ? 'bg-blue-500' : 'bg-white/10'}`} />
                       {l}
                     </button>

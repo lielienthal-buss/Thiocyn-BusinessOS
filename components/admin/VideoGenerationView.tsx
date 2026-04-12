@@ -98,8 +98,8 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-black text-lg tracking-tight">New Generation Job</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors text-xl leading-none">✕</button>
+          <h3 className="text-[#1d1d1f] font-black text-lg tracking-tight">New Generation Job</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-[#1d1d1f] transition-colors text-xl leading-none">✕</button>
         </div>
 
         {error && <p className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">{error}</p>}
@@ -114,7 +114,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
                 onClick={() => setJobType(t)}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-bold capitalize transition-all border ${
                   jobType === t
-                    ? 'bg-violet-600 border-violet-500 text-white'
+                    ? 'bg-violet-600 border-violet-500 text-[#1d1d1f]'
                     : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
                 }`}
               >
@@ -130,7 +130,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
           <select
             value={brand}
             onChange={e => setBrand(e.target.value as Brand)}
-            className="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500"
+            className="w-full bg-white/5 border border-white/10 text-[#1d1d1f] rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500"
           >
             {BRANDS.map(b => <option key={b} value={b} className="bg-[#111]">{b}</option>)}
           </select>
@@ -144,7 +144,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
             onChange={e => setPrompt(e.target.value)}
             rows={3}
             placeholder="Person applying serum to scalp. Bright bathroom. Cinematic close-up. Natural light. Soft focus background."
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600 rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500 resize-none"
+            className="w-full bg-white/5 border border-white/10 text-[#1d1d1f] placeholder-gray-600 rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500 resize-none"
           />
         </div>
 
@@ -159,7 +159,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
                   onClick={() => setStylePreset(s.id)}
                   className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
                     stylePreset === s.id
-                      ? 'bg-violet-600 border-violet-500 text-white'
+                      ? 'bg-violet-600 border-violet-500 text-[#1d1d1f]'
                       : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
                   }`}
                 >
@@ -181,7 +181,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
             value={charRefUrl}
             onChange={e => setCharRefUrl(e.target.value)}
             placeholder="https://..."
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600 rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500"
+            className="w-full bg-white/5 border border-white/10 text-[#1d1d1f] placeholder-gray-600 rounded-xl p-3 text-sm focus:outline-none focus:border-violet-500"
           />
         </div>
 
@@ -198,7 +198,7 @@ const NewJobModal: React.FC<NewJobModalProps> = ({ onClose, onCreated }) => {
           <button
             onClick={handleCreate}
             disabled={submitting || !prompt.trim()}
-            className="flex-1 py-3 bg-violet-600 text-white font-black rounded-xl hover:bg-violet-500 transition-all disabled:opacity-40"
+            className="flex-1 py-3 bg-violet-600 text-[#1d1d1f] font-black rounded-xl hover:bg-violet-500 transition-all disabled:opacity-40"
           >
             {submitting ? <Spinner /> : `Queue Job — ${estimatedCredits} cr`}
           </button>
@@ -224,7 +224,7 @@ const JobCard: React.FC<{ job: VideoJob; onRefresh: () => void }> = ({ job, onRe
   };
 
   return (
-    <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 space-y-3 hover:border-white/10 transition-all">
+    <div className="bg-black/[0.03] border border-black/[0.06] rounded-2xl p-4 space-y-3 hover:border-white/10 transition-all">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -234,7 +234,7 @@ const JobCard: React.FC<{ job: VideoJob; onRefresh: () => void }> = ({ job, onRe
             <span className="text-xs text-gray-600">·</span>
             <span className="text-xs text-gray-500">{job.style_preset}</span>
           </div>
-          <p className="text-white text-sm font-medium line-clamp-2">{job.prompt}</p>
+          <p className="text-[#1d1d1f] text-sm font-medium line-clamp-2">{job.prompt}</p>
         </div>
         <StatusBadge status={job.status} />
       </div>
@@ -253,7 +253,7 @@ const JobCard: React.FC<{ job: VideoJob; onRefresh: () => void }> = ({ job, onRe
         <p className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg p-2">{job.error_msg}</p>
       )}
 
-      <div className="flex items-center justify-between pt-1 border-t border-white/[0.04]">
+      <div className="flex items-center justify-between pt-1 border-t border-black/[0.04]">
         <span className="text-xs text-gray-600">
           {new Date(job.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
           {job.credits_used != null && ` · ${job.credits_used} cr used`}
@@ -354,12 +354,12 @@ const VideoGenerationView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-white font-black text-2xl tracking-tight">Video Generation</h2>
+          <h2 className="text-[#1d1d1f] font-black text-2xl tracking-tight">Video Generation</h2>
           <p className="text-gray-500 text-sm mt-0.5">Higgsfield AI — image & video jobs</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="px-5 py-2.5 bg-violet-600 text-white font-bold rounded-xl hover:bg-violet-500 transition-all text-sm"
+          className="px-5 py-2.5 bg-violet-600 text-[#1d1d1f] font-bold rounded-xl hover:bg-violet-500 transition-all text-sm"
         >
           + New Job
         </button>
@@ -371,8 +371,8 @@ const VideoGenerationView: React.FC = () => {
           <button
             key={s}
             onClick={() => setFilterStatus(filterStatus === s ? 'all' : s)}
-            className={`bg-white/[0.03] border rounded-xl p-3 text-center transition-all ${
-              filterStatus === s ? 'border-violet-500/50 bg-violet-500/10' : 'border-white/[0.06] hover:border-white/10'
+            className={`bg-black/[0.03] border rounded-xl p-3 text-center transition-all ${
+              filterStatus === s ? 'border-violet-500/50 bg-violet-500/10' : 'border-black/[0.06] hover:border-white/10'
             }`}
           >
             <div className={`text-2xl font-black ${STATUS_CONFIG[s].color}`}>{counts[s] || 0}</div>
@@ -394,14 +394,14 @@ const VideoGenerationView: React.FC = () => {
         {filterStatus !== 'all' && (
           <button
             onClick={() => setFilterStatus('all')}
-            className="text-xs text-gray-500 hover:text-white transition-colors border border-white/10 rounded-xl px-3 py-2"
+            className="text-xs text-gray-500 hover:text-[#1d1d1f] transition-colors border border-white/10 rounded-xl px-3 py-2"
           >
             Clear filter ✕
           </button>
         )}
         <button
           onClick={fetchJobs}
-          className="ml-auto text-xs text-gray-500 hover:text-white transition-colors"
+          className="ml-auto text-xs text-gray-500 hover:text-[#1d1d1f] transition-colors"
         >
           ↻ Refresh
         </button>

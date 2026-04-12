@@ -159,10 +159,10 @@ const InsightsView: React.FC = () => {
   // ─── Empty state ──────────────────────────────────────────────────────
   if (stats.total === 0) {
     return (
-      <div className="p-12 rounded-[2.5rem] bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm text-center animate-[fadeIn_0.5s_ease-out]">
+      <div className="p-12 rounded-[2.5rem] bg-white/70 border border-black/[0.06] backdrop-blur-sm text-center animate-[fadeIn_0.5s_ease-out]">
         <p className="text-5xl mb-4">📊</p>
-        <h3 className="text-xl font-bold text-white mb-2">No applications yet</h3>
-        <p className="text-slate-400 max-w-md mx-auto">
+        <h3 className="text-xl font-bold text-[#1d1d1f] mb-2">No applications yet</h3>
+        <p className="text-[#515154] max-w-md mx-auto">
           The Insights View shows funnel conversion, median time-to-hire, and personality averages
           once applicants come through the public form. Come back after your first few submissions.
         </p>
@@ -173,50 +173,50 @@ const InsightsView: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 animate-[fadeIn_0.5s_ease-out]">
       {/* ─── Headline metrics ─── */}
-      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">
+      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2">
           Total Applicants
         </p>
-        <h4 className="text-5xl font-black text-white tracking-tighter">{stats.total}</h4>
+        <h4 className="text-5xl font-black text-[#1d1d1f] tracking-tighter">{stats.total}</h4>
       </div>
 
-      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Hired</p>
+      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2">Hired</p>
         <h4 className="text-5xl font-black text-emerald-400 tracking-tighter">{stats.hiredCount}</h4>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-[#6e6e73] mt-1">
           {stats.total > 0 ? `${((stats.hiredCount / stats.total) * 100).toFixed(1)}% conversion` : '—'}
         </p>
       </div>
 
-      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">
+      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2">
           Median Time-to-Hire
         </p>
-        <h4 className="text-5xl font-black text-white tracking-tighter">
+        <h4 className="text-5xl font-black text-[#1d1d1f] tracking-tighter">
           {stats.timeToHireDays != null ? `${stats.timeToHireDays.toFixed(1)}d` : '—'}
         </h4>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-[#6e6e73] mt-1">
           {stats.hiredCount > 0 ? `n=${stats.hiredCount}` : 'no data yet'}
         </p>
       </div>
 
-      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">
+      <div className="md:col-span-3 p-8 rounded-[2.5rem] flex flex-col justify-center bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-2">
           Median Task Completion
         </p>
-        <h4 className="text-5xl font-black text-white tracking-tighter">
+        <h4 className="text-5xl font-black text-[#1d1d1f] tracking-tighter">
           {stats.taskCompletionDays != null ? `${stats.taskCompletionDays.toFixed(1)}d` : '—'}
         </h4>
-        <p className="text-xs text-slate-500 mt-1">task sent → submitted</p>
+        <p className="text-xs text-[#6e6e73] mt-1">task sent → submitted</p>
       </div>
 
       {/* ─── Full hiring funnel with conversion rates ─── */}
-      <div className="md:col-span-12 p-8 rounded-[2.5rem] bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
+      <div className="md:col-span-12 p-8 rounded-[2.5rem] bg-white/70 border border-black/[0.06] backdrop-blur-sm">
         <div className="flex items-baseline justify-between mb-6">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">
+          <h3 className="text-xs font-black uppercase tracking-widest text-[#6e6e73]">
             Hiring Funnel
           </h3>
-          <p className="text-[10px] text-slate-600 uppercase tracking-wider">
+          <p className="text-[10px] text-[#86868b] uppercase tracking-wider">
             % from previous step · % from top
           </p>
         </div>
@@ -224,18 +224,18 @@ const InsightsView: React.FC = () => {
           {stats.funnel.map((step, idx) => (
             <div key={step.key} className="space-y-1.5">
               <div className="flex justify-between items-baseline text-[11px]">
-                <span className="font-black uppercase tracking-widest text-slate-400">{step.label}</span>
+                <span className="font-black uppercase tracking-widest text-[#515154]">{step.label}</span>
                 <div className="flex gap-3 items-baseline">
                   {idx > 0 && (
-                    <span className="text-slate-500">{step.fromPrev.toFixed(1)}% ↓</span>
+                    <span className="text-[#6e6e73]">{step.fromPrev.toFixed(1)}% ↓</span>
                   )}
-                  <span className="text-slate-500">{step.fromTop.toFixed(1)}% top</span>
+                  <span className="text-[#6e6e73]">{step.fromTop.toFixed(1)}% top</span>
                   <span className="font-black text-primary-400 text-sm">{step.count}</span>
                 </div>
               </div>
-              <div className="w-full h-3 bg-white/[0.06] rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-black/[0.04] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary-600 transition-all duration-1000"
+                  className="h-full bg-[#E09B37] transition-all duration-1000"
                   style={{ width: stats.total > 0 ? `${step.fromTop}%` : '0%' }}
                 />
               </div>
@@ -246,16 +246,16 @@ const InsightsView: React.FC = () => {
 
       {/* ─── Big Five personality averages ─── */}
       {stats.bigFiveAverages.length > 0 && (
-        <div className="md:col-span-6 p-8 rounded-[2.5rem] bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-          <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-8">
+        <div className="md:col-span-6 p-8 rounded-[2.5rem] bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+          <h3 className="text-xs font-black uppercase tracking-widest text-[#6e6e73] mb-8">
             Avg. Personality Profile
           </h3>
           <div className="space-y-3">
             {stats.bigFiveAverages.map(({ trait, average }) => (
               <div key={trait}>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm font-medium text-slate-300 capitalize">{trait}</span>
-                  <span className="text-sm font-bold text-white">{average}%</span>
+                  <span className="text-sm font-medium text-[#1d1d1f] capitalize">{trait}</span>
+                  <span className="text-sm font-bold text-[#1d1d1f]">{average}%</span>
                 </div>
                 <div className="w-full bg-white/[0.08] rounded-full h-2.5">
                   <div
@@ -270,26 +270,26 @@ const InsightsView: React.FC = () => {
       )}
 
       {/* ─── Stage breakdown grid ─── */}
-      <div className="md:col-span-6 p-8 rounded-[2.5rem] bg-surface-800/60 border border-white/[0.06] backdrop-blur-sm">
-        <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-6">
+      <div className="md:col-span-6 p-8 rounded-[2.5rem] bg-white/70 border border-black/[0.06] backdrop-blur-sm">
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#6e6e73] mb-6">
           Stage Breakdown
         </h3>
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(stats.stageCounts).map(([stage, count]) => (
             <div
               key={stage}
-              className="p-4 rounded-2xl bg-surface-900/60 border border-white/[0.06]"
+              className="p-4 rounded-2xl bg-white/50 border border-black/[0.06]"
             >
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stage}</p>
-              <p className="text-2xl font-black text-white">{count}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">{stage}</p>
+              <p className="text-2xl font-black text-[#1d1d1f]">{count}</p>
             </div>
           ))}
           {stats.timeToTaskDays != null && (
-            <div className="p-4 rounded-2xl bg-surface-900/60 border border-white/[0.06] col-span-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <div className="p-4 rounded-2xl bg-white/50 border border-black/[0.06] col-span-2">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">
                 Median Time to Task Sent
               </p>
-              <p className="text-2xl font-black text-white">
+              <p className="text-2xl font-black text-[#1d1d1f]">
                 {stats.timeToTaskDays.toFixed(1)}d
               </p>
             </div>

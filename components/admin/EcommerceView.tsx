@@ -138,8 +138,8 @@ const OverviewTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-black text-white">Brand Revenue Overview</h3>
-        <p className="text-xs text-slate-500 mt-0.5">Live ecommerce metrics across all 6 brands</p>
+        <h3 className="text-base font-black text-[#1d1d1f]">Brand Revenue Overview</h3>
+        <p className="text-xs text-[#6e6e73] mt-0.5">Live ecommerce metrics across all 6 brands</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -153,15 +153,15 @@ const OverviewTab: React.FC = () => {
           return (
             <div
               key={brandId}
-              className="flex flex-col gap-3 p-5 bg-surface-800/60 border-2 border-white/[0.06] hover:border-primary-500/30 rounded-2xl transition-all duration-200 backdrop-blur-sm"
+              className="flex flex-col gap-3 p-5 bg-white/70 border-2 border-black/[0.06] hover:border-primary-500/30 rounded-2xl transition-all duration-200 backdrop-blur-sm"
             >
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-2xl">{emoji}</span>
                   <div>
-                    <p className="font-black text-white text-sm">{name}</p>
-                    <p className="text-[10px] text-slate-500">{brandId}</p>
+                    <p className="font-black text-[#1d1d1f] text-sm">{name}</p>
+                    <p className="text-[10px] text-[#6e6e73]">{brandId}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -179,7 +179,7 @@ const OverviewTab: React.FC = () => {
                       {INVENTORY_LABEL[m.inventory_status]}
                     </span>
                   ) : (
-                    <span className="text-[10px] text-slate-500 font-semibold">Inventory —</span>
+                    <span className="text-[10px] text-[#6e6e73] font-semibold">Inventory —</span>
                   )}
                 </div>
               </div>
@@ -187,8 +187,8 @@ const OverviewTab: React.FC = () => {
               {isEmpty ? (
                 /* Empty state */
                 <div className="flex-1 flex flex-col items-center justify-center py-4 gap-2">
-                  <span className="text-xs font-black text-slate-500">—</span>
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-white/[0.04] text-slate-500 rounded-full border border-white/[0.06]">
+                  <span className="text-xs font-black text-[#6e6e73]">—</span>
+                  <span className="text-[10px] font-bold px-2.5 py-1 bg-black/[0.03] text-[#6e6e73] rounded-full border border-black/[0.06]">
                     Waiting for data
                   </span>
                 </div>
@@ -197,16 +197,16 @@ const OverviewTab: React.FC = () => {
                   {/* Revenue MTD vs Target */}
                   <div className="space-y-1.5">
                     <div className="flex items-end justify-between text-xs">
-                      <span className="text-slate-400 font-semibold">Revenue MTD</span>
+                      <span className="text-[#515154] font-semibold">Revenue MTD</span>
                       <div className="text-right">
-                        <span className="font-black text-white">{fmt(m.revenue_mtd)}</span>
+                        <span className="font-black text-[#1d1d1f]">{fmt(m.revenue_mtd)}</span>
                         {m.revenue_target_mtd != null && (
-                          <span className="text-slate-500 ml-1">/ {fmt(m.revenue_target_mtd)}</span>
+                          <span className="text-[#6e6e73] ml-1">/ {fmt(m.revenue_target_mtd)}</span>
                         )}
                       </div>
                     </div>
                     {pct != null && (
-                      <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                      <div className="w-full h-2 bg-black/[0.04] rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
                             pct >= 80 ? 'bg-green-500' : pct >= 50 ? 'bg-amber-400' : 'bg-red-400'
@@ -216,43 +216,43 @@ const OverviewTab: React.FC = () => {
                       </div>
                     )}
                     {pct != null && (
-                      <p className="text-[10px] text-slate-500 text-right">{pct}% of target</p>
+                      <p className="text-[10px] text-[#6e6e73] text-right">{pct}% of target</p>
                     )}
                   </div>
 
                   {/* Metrics row */}
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-white/[0.04] rounded-xl p-2">
-                      <p className="text-[10px] text-slate-500 font-semibold">Orders Today</p>
-                      <p className="text-sm font-black text-white mt-0.5">
+                    <div className="bg-black/[0.03] rounded-xl p-2">
+                      <p className="text-[10px] text-[#6e6e73] font-semibold">Orders Today</p>
+                      <p className="text-sm font-black text-[#1d1d1f] mt-0.5">
                         {m.orders_today ?? '—'}
                       </p>
                     </div>
-                    <div className="bg-white/[0.04] rounded-xl p-2">
-                      <p className="text-[10px] text-slate-500 font-semibold">Orders MTD</p>
-                      <p className="text-sm font-black text-white mt-0.5">
+                    <div className="bg-black/[0.03] rounded-xl p-2">
+                      <p className="text-[10px] text-[#6e6e73] font-semibold">Orders MTD</p>
+                      <p className="text-sm font-black text-[#1d1d1f] mt-0.5">
                         {m.orders_mtd ?? '—'}
                       </p>
                     </div>
-                    <div className="bg-white/[0.04] rounded-xl p-2">
-                      <p className="text-[10px] text-slate-500 font-semibold">AOV</p>
-                      <p className="text-sm font-black text-white mt-0.5">
+                    <div className="bg-black/[0.03] rounded-xl p-2">
+                      <p className="text-[10px] text-[#6e6e73] font-semibold">AOV</p>
+                      <p className="text-sm font-black text-[#1d1d1f] mt-0.5">
                         {fmt(m.aov)}
                       </p>
                     </div>
                   </div>
 
                   {m.return_rate != null && (
-                    <p className="text-[11px] text-slate-500">
-                      Return rate: <span className="font-bold text-slate-400">{m.return_rate.toFixed(1)}%</span>
+                    <p className="text-[11px] text-[#6e6e73]">
+                      Return rate: <span className="font-bold text-[#515154]">{m.return_rate.toFixed(1)}%</span>
                     </p>
                   )}
                 </>
               )}
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] mt-auto">
-                <p className="text-[10px] text-slate-500">
+              <div className="flex items-center justify-between pt-2 border-t border-black/[0.06] mt-auto">
+                <p className="text-[10px] text-[#6e6e73]">
                   {m?.synced_at
                     ? <>Synced {fmtTs(m.synced_at)}</>
                     : m?.updated_at
@@ -359,8 +359,8 @@ const OrdersTab: React.FC = () => {
       {/* Header + controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-black text-white">Orders</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h3 className="text-base font-black text-[#1d1d1f]">Orders</h3>
+          <p className="text-xs text-[#6e6e73] mt-0.5">
             {filtered.length} order{filtered.length !== 1 ? 's' : ''} shown
           </p>
         </div>
@@ -369,7 +369,7 @@ const OrdersTab: React.FC = () => {
           <select
             value={filterBrand}
             onChange={e => setFilterBrand(e.target.value as BrandId | 'all')}
-            className="text-xs font-semibold border border-white/[0.10] rounded-lg px-2.5 py-1.5 bg-white/[0.04] text-slate-300 focus:outline-none focus:border-primary-400"
+            className="text-xs font-semibold border border-white/[0.10] rounded-lg px-2.5 py-1.5 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
           >
             <option value="all">All Brands</option>
             {BRAND_IDS.map(b => (
@@ -381,7 +381,7 @@ const OrdersTab: React.FC = () => {
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value as OrderStatus | 'all')}
-            className="text-xs font-semibold border border-white/[0.10] rounded-lg px-2.5 py-1.5 bg-white/[0.04] text-slate-300 focus:outline-none focus:border-primary-400"
+            className="text-xs font-semibold border border-white/[0.10] rounded-lg px-2.5 py-1.5 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
           >
             <option value="all">All Statuses</option>
             {ORDER_STATUSES.map(s => (
@@ -391,7 +391,7 @@ const OrdersTab: React.FC = () => {
 
           <button
             onClick={() => setShowAddForm(v => !v)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-[#c8832a] transition-colors"
           >
             + Add Manual Order
           </button>
@@ -402,56 +402,56 @@ const OrdersTab: React.FC = () => {
       {showAddForm && (
         <form
           onSubmit={handleAddOrder}
-          className="p-5 bg-surface-800/60 border-2 border-primary-500/30 rounded-2xl space-y-4 backdrop-blur-sm"
+          className="p-5 bg-white/70 border-2 border-primary-500/30 rounded-2xl space-y-4 backdrop-blur-sm"
         >
-          <p className="text-sm font-black text-white">Add Manual Order</p>
+          <p className="text-sm font-black text-[#1d1d1f]">Add Manual Order</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Brand</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Brand</label>
               <select
                 required
                 value={formData.brand_id}
                 onChange={e => setFormData(f => ({ ...f, brand_id: e.target.value as BrandId }))}
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               >
                 {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_LABELS[b].name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Order ID</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Order ID</label>
               <input
                 required
                 type="text"
                 value={formData.order_id}
                 onChange={e => setFormData(f => ({ ...f, order_id: e.target.value }))}
                 placeholder="#1234"
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Platform</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Platform</label>
               <select
                 required
                 value={formData.platform}
                 onChange={e => setFormData(f => ({ ...f, platform: e.target.value as Platform }))}
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               >
                 {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Customer Email</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Customer Email</label>
               <input
                 type="email"
                 value={formData.customer_email ?? ''}
                 onChange={e => setFormData(f => ({ ...f, customer_email: e.target.value }))}
                 placeholder="customer@example.com"
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Amount</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Amount</label>
               <input
                 required
                 type="number"
@@ -459,15 +459,15 @@ const OrdersTab: React.FC = () => {
                 step="0.01"
                 value={formData.amount}
                 onChange={e => setFormData(f => ({ ...f, amount: parseFloat(e.target.value) || 0 }))}
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Currency</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Currency</label>
               <select
                 value={formData.currency}
                 onChange={e => setFormData(f => ({ ...f, currency: e.target.value }))}
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               >
                 <option value="EUR">EUR</option>
                 <option value="USD">USD</option>
@@ -475,23 +475,23 @@ const OrdersTab: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Status</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Status</label>
               <select
                 value={formData.status}
                 onChange={e => setFormData(f => ({ ...f, status: e.target.value as OrderStatus }))}
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               >
                 {ORDER_STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
               </select>
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Notes</label>
+              <label className="block text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1">Notes</label>
               <input
                 type="text"
                 value={formData.notes ?? ''}
                 onChange={e => setFormData(f => ({ ...f, notes: e.target.value }))}
                 placeholder="Optional note..."
-                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-white/[0.04] text-slate-100 focus:outline-none focus:border-primary-400"
+                className="w-full text-xs border border-white/[0.10] rounded-lg px-2.5 py-2 bg-black/[0.03] text-[#1d1d1f] focus:outline-none focus:border-primary-400"
               />
             </div>
           </div>
@@ -504,14 +504,14 @@ const OrdersTab: React.FC = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-[#c8832a] transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving…' : 'Save Order'}
             </button>
             <button
               type="button"
               onClick={() => { setShowAddForm(false); setSaveError(null); }}
-              className="px-4 py-2 bg-white/[0.05] text-slate-400 text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
+              className="px-4 py-2 bg-black/[0.03] text-[#515154] text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
             >
               Cancel
             </button>
@@ -527,22 +527,22 @@ const OrdersTab: React.FC = () => {
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-3xl mb-3">📦</p>
-          <p className="text-sm font-semibold text-slate-400">No orders found</p>
-          <p className="text-xs text-slate-500 mt-1">Adjust your filters or add a manual order above.</p>
+          <p className="text-sm font-semibold text-[#515154]">No orders found</p>
+          <p className="text-xs text-[#6e6e73] mt-1">Adjust your filters or add a manual order above.</p>
         </div>
       ) : (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-x-auto backdrop-blur-sm">
+        <div className="bg-white/70 border border-black/[0.06] rounded-2xl overflow-x-auto backdrop-blur-sm">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-white/[0.06] bg-surface-900/60 text-left">
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Order</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Brand</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Platform</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Customer</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider text-right">Amount</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 font-black text-slate-500 uppercase tracking-wider">Notes</th>
+              <tr className="border-b border-black/[0.06] bg-white/50 text-left">
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Order</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Brand</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Platform</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Customer</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider text-right">Amount</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Date</th>
+                <th className="px-4 py-3 font-black text-[#6e6e73] uppercase tracking-wider">Notes</th>
                 <th className="w-8"></th>
               </tr>
             </thead>
@@ -552,22 +552,22 @@ const OrdersTab: React.FC = () => {
                 return (
                   <tr
                     key={order.id}
-                    className={`group border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors ${i % 2 === 1 ? 'bg-white/[0.02]' : ''}`}
+                    className={`group border-b border-black/[0.04] hover:bg-black/[0.03] transition-colors ${i % 2 === 1 ? 'bg-black/[0.02]' : ''}`}
                   >
-                    <td className="px-4 py-3 font-mono font-bold text-slate-300 whitespace-nowrap">
+                    <td className="px-4 py-3 font-mono font-bold text-[#1d1d1f] whitespace-nowrap">
                       {order.order_id}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className="flex items-center gap-1.5 font-semibold text-slate-200">
+                      <span className="flex items-center gap-1.5 font-semibold text-[#1d1d1f]">
                         <span>{brand.emoji}</span>
                         {brand.name}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-400 whitespace-nowrap">{order.platform}</td>
-                    <td className="px-4 py-3 text-slate-500 max-w-[160px] truncate">
+                    <td className="px-4 py-3 text-[#515154] whitespace-nowrap">{order.platform}</td>
+                    <td className="px-4 py-3 text-[#6e6e73] max-w-[160px] truncate">
                       {order.customer_email || '—'}
                     </td>
-                    <td className="px-4 py-3 font-black text-white text-right whitespace-nowrap">
+                    <td className="px-4 py-3 font-black text-[#1d1d1f] text-right whitespace-nowrap">
                       {fmt(order.amount, order.currency)}
                     </td>
                     <td className="px-4 py-3">
@@ -579,7 +579,7 @@ const OrdersTab: React.FC = () => {
                         {ORDER_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
-                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-[#6e6e73] whitespace-nowrap">
                       {fmtTs(order.created_at)}
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
@@ -589,13 +589,13 @@ const OrdersTab: React.FC = () => {
                         onChange={e => setOrders(prev => prev.map(o => o.id === order.id ? { ...o, notes: e.target.value } : o))}
                         onBlur={e => updateOrder(order.id, { notes: e.target.value || null })}
                         placeholder="Note..."
-                        className="w-full text-xs bg-transparent border-none outline-none text-slate-500 placeholder-slate-700 hover:text-slate-300 focus:text-slate-200 transition-colors"
+                        className="w-full text-xs bg-transparent border-none outline-none text-[#6e6e73] placeholder-[#86868b] hover:text-[#1d1d1f] focus:text-[#1d1d1f] transition-colors"
                       />
                     </td>
                     <td className="px-2 py-3">
                       <button
                         onClick={() => { if (confirm('Delete order?')) deleteOrder(order.id); }}
-                        className="text-slate-600 hover:text-red-400 transition-colors text-xs opacity-0 group-hover:opacity-100"
+                        className="text-[#86868b] hover:text-red-400 transition-colors text-xs opacity-0 group-hover:opacity-100"
                       >
                         🗑
                       </button>
@@ -629,12 +629,12 @@ const EcommerceView: React.FC = () => {
     <div className="animate-[fadeIn_0.3s_ease-out]">
       {/* Section header */}
       <div className="mb-6">
-        <h2 className="text-xl font-black text-white tracking-tight">E-Commerce</h2>
-        <p className="text-sm text-slate-500 mt-0.5">Revenue, orders and inventory across all brands</p>
+        <h2 className="text-xl font-black text-[#1d1d1f] tracking-tight">E-Commerce</h2>
+        <p className="text-sm text-[#6e6e73] mt-0.5">Revenue, orders and inventory across all brands</p>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-white/[0.06] mb-6">
+      <div className="flex gap-1 border-b border-black/[0.06] mb-6">
         {TABS.map(t => (
           <button
             key={t.id}
@@ -642,7 +642,7 @@ const EcommerceView: React.FC = () => {
             className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 -mb-px ${
               tab === t.id
                 ? 'border-primary-500 text-primary-400'
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                : 'border-transparent text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}
           >
             {t.label}
@@ -672,33 +672,33 @@ const ProductsTab: React.FC = () => {
     })();
   }, []);
 
-  if (loading) return <div className="flex justify-center py-20 text-slate-500 text-sm">Lade Produkte...</div>;
-  if (products.length === 0) return <div className="text-center py-20 text-slate-500">Noch keine Produktdaten. Starte einen Shopify Sync.</div>;
+  if (loading) return <div className="flex justify-center py-20 text-[#6e6e73] text-sm">Lade Produkte...</div>;
+  if (products.length === 0) return <div className="text-center py-20 text-[#6e6e73]">Noch keine Produktdaten. Starte einen Shopify Sync.</div>;
 
   return (
-    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] overflow-hidden">
+    <div className="bg-white/70 rounded-xl border border-black/[0.06] overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-surface-900/60 border-b border-white/[0.06]">
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Produkt</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Orders</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Revenue</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Units</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Creator Orders</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Creator Rev</th>
+          <tr className="bg-white/50 border-b border-black/[0.06]">
+            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Brand</th>
+            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Produkt</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Orders</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Revenue</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Units</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Creator Orders</th>
+            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Creator Rev</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.06]">
+        <tbody className="divide-y divide-black/[0.06]">
           {products.map((p, i) => (
-            <tr key={i} className="hover:bg-white/[0.03]">
-              <td className="px-4 py-3 text-slate-400 text-xs">{p.brand_slug}</td>
-              <td className="px-4 py-3 text-white font-medium">{p.product_title}</td>
-              <td className="px-4 py-3 text-right text-slate-300">{p.total_orders}</td>
-              <td className="px-4 py-3 text-right text-white font-bold">{fmt(p.total_revenue)}</td>
-              <td className="px-4 py-3 text-right text-slate-400">{p.total_units}</td>
-              <td className="px-4 py-3 text-right text-amber-400">{p.creator_attributed_orders}</td>
-              <td className="px-4 py-3 text-right text-amber-400">{fmt(p.creator_attributed_revenue)}</td>
+            <tr key={i} className="hover:bg-black/[0.03]">
+              <td className="px-4 py-3 text-[#515154] text-xs">{p.brand_slug}</td>
+              <td className="px-4 py-3 text-[#1d1d1f] font-medium">{p.product_title}</td>
+              <td className="px-4 py-3 text-right text-[#1d1d1f]">{p.total_orders}</td>
+              <td className="px-4 py-3 text-right text-[#1d1d1f] font-bold">{fmt(p.total_revenue)}</td>
+              <td className="px-4 py-3 text-right text-[#515154]">{p.total_units}</td>
+              <td className="px-4 py-3 text-right text-[#E09B37]">{p.creator_attributed_orders}</td>
+              <td className="px-4 py-3 text-right text-[#E09B37]">{fmt(p.creator_attributed_revenue)}</td>
             </tr>
           ))}
         </tbody>
@@ -741,20 +741,20 @@ const ShopifySyncTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Sync Controls */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl p-5">
-        <h3 className="text-white font-bold mb-4">Shopify Sync</h3>
+      <div className="bg-white/70 border border-black/[0.06] rounded-xl p-5">
+        <h3 className="text-[#1d1d1f] font-bold mb-4">Shopify Sync</h3>
         <div className="flex gap-3 items-end flex-wrap">
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Brand</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Brand</label>
             <select value={selectedBrand} onChange={e => setSelectedBrand(e.target.value as BrandId)}
-              className="px-3 py-2 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg text-sm">
+              className="px-3 py-2 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-lg text-sm">
               {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_LABELS[b].emoji} {BRAND_LABELS[b].name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Zeitraum</label>
+            <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Zeitraum</label>
             <select value={daysBack} onChange={e => setDaysBack(Number(e.target.value))}
-              className="px-3 py-2 border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg text-sm">
+              className="px-3 py-2 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-lg text-sm">
               <option value={1}>Gestern</option>
               <option value={7}>Letzte 7 Tage</option>
               <option value={14}>Letzte 14 Tage</option>
@@ -762,48 +762,48 @@ const ShopifySyncTab: React.FC = () => {
             </select>
           </div>
           <button onClick={handleSync} disabled={syncing}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50">
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-[#1d1d1f] rounded-lg text-sm font-bold transition-colors disabled:opacity-50">
             {syncing ? 'Syncing...' : 'Sync starten'}
           </button>
         </div>
-        <p className="text-xs text-slate-500 mt-3">
+        <p className="text-xs text-[#6e6e73] mt-3">
           Zieht Bestellungen aus Shopify, matched Affiliate-Codes auf Creator, aktualisiert Sales + Product Performance.
         </p>
       </div>
 
       {/* Result */}
       {result && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl p-4 text-xs font-mono text-slate-300 relative">
-          <button onClick={() => setResult(null)} className="absolute top-2 right-2 text-slate-500 hover:text-white">×</button>
+        <div className="bg-white/70 border border-black/[0.06] rounded-xl p-4 text-xs font-mono text-[#1d1d1f] relative">
+          <button onClick={() => setResult(null)} className="absolute top-2 right-2 text-[#6e6e73] hover:text-[#1d1d1f]">×</button>
           <pre className="whitespace-pre-wrap">{result}</pre>
         </div>
       )}
 
       {/* Sync Log */}
       {logs.length > 0 && (
-        <div className="bg-surface-800/60 border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/[0.06]">
-            <h3 className="text-sm font-bold text-white">Sync History</h3>
+        <div className="bg-white/70 border border-black/[0.06] rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-black/[0.06]">
+            <h3 className="text-sm font-bold text-[#1d1d1f]">Sync History</h3>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-surface-900/60 border-b border-white/[0.06]">
-                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Zeit</th>
-                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
-                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Orders</th>
-                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Matched</th>
-                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Revenue</th>
-                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
+              <tr className="bg-white/50 border-b border-black/[0.06]">
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Zeit</th>
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Brand</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Orders</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Matched</th>
+                <th className="px-4 py-2 text-right text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Revenue</th>
+                <th className="px-4 py-2 text-left text-[10px] font-black uppercase tracking-widest text-[#6e6e73]">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06]">
+            <tbody className="divide-y divide-black/[0.06]">
               {logs.map((l, i) => (
-                <tr key={i} className="hover:bg-white/[0.03]">
-                  <td className="px-4 py-2 text-slate-500 text-xs">{new Date(l.created_at).toLocaleString('de-DE')}</td>
-                  <td className="px-4 py-2 text-slate-300">{l.brand_slug}</td>
-                  <td className="px-4 py-2 text-right text-slate-300">{l.orders_fetched}</td>
-                  <td className="px-4 py-2 text-right text-amber-400">{l.orders_matched}</td>
-                  <td className="px-4 py-2 text-right text-white font-bold">{fmt(l.revenue_total)}</td>
+                <tr key={i} className="hover:bg-black/[0.03]">
+                  <td className="px-4 py-2 text-[#6e6e73] text-xs">{new Date(l.created_at).toLocaleString('de-DE')}</td>
+                  <td className="px-4 py-2 text-[#1d1d1f]">{l.brand_slug}</td>
+                  <td className="px-4 py-2 text-right text-[#1d1d1f]">{l.orders_fetched}</td>
+                  <td className="px-4 py-2 text-right text-[#E09B37]">{l.orders_matched}</td>
+                  <td className="px-4 py-2 text-right text-[#1d1d1f] font-bold">{fmt(l.revenue_total)}</td>
                   <td className="px-4 py-2">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${l.status === 'success' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                       {l.status}

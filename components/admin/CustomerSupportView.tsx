@@ -44,9 +44,9 @@ interface Props {
 const STATUSES: { id: TicketStatus; label: string; color: string }[] = [
   { id: 'open',        label: 'Open',        color: 'bg-red-500/15 text-red-400 border-red-500/20' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-blue-500/15 text-blue-400 border-blue-500/20' },
-  { id: 'waiting',     label: 'Waiting',     color: 'bg-amber-500/15 text-amber-400 border-amber-500/20' },
+  { id: 'waiting',     label: 'Waiting',     color: 'bg-[#E09B37]/15 text-[#E09B37] border-[#E09B37]/25' },
   { id: 'resolved',    label: 'Resolved',    color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' },
-  { id: 'closed',      label: 'Closed',      color: 'bg-slate-500/15 text-slate-500 border-slate-500/20' },
+  { id: 'closed',      label: 'Closed',      color: 'bg-slate-500/15 text-[#6e6e73] border-slate-500/20' },
 ];
 
 const CHANNELS: { id: TicketChannel; label: string; icon: string }[] = [
@@ -151,10 +151,10 @@ function InlineText({
     return (
       <span
         onClick={() => setEditing(true)}
-        className={`cursor-text hover:bg-white/[0.04] rounded px-1 -mx-1 transition-colors ${className}`}
+        className={`cursor-text hover:bg-black/[0.03] rounded px-1 -mx-1 transition-colors ${className}`}
         title="Click to edit"
       >
-        {value || <span className="text-slate-600 italic">{placeholder ?? 'Click to add'}</span>}
+        {value || <span className="text-[#86868b] italic">{placeholder ?? 'Click to add'}</span>}
       </span>
     );
   }
@@ -166,7 +166,7 @@ function InlineText({
       onChange={e => setDraft(e.target.value)}
       onBlur={commit}
       onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setDraft(value); setEditing(false); } }}
-      className={`bg-white/[0.06] border border-amber-500/30 rounded px-1.5 py-0.5 text-slate-200 outline-none -mx-1 ${className}`}
+      className={`bg-black/[0.04] border border-amber-500/30 rounded px-1.5 py-0.5 text-[#1d1d1f] outline-none -mx-1 ${className}`}
       placeholder={placeholder}
     />
   );
@@ -189,20 +189,20 @@ function InlineSelect<T extends string>({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="hover:bg-white/[0.04] rounded px-1 -mx-1 transition-colors cursor-pointer"
+        className="hover:bg-black/[0.03] rounded px-1 -mx-1 transition-colors cursor-pointer"
       >
         {renderValue ? renderValue(value) : value}
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute z-50 mt-1 left-0 bg-surface-800 border border-white/[0.1] rounded-lg shadow-xl py-1 min-w-[140px]">
+          <div className="absolute z-50 mt-1 left-0 bg-white/80 border border-white/[0.1] rounded-lg shadow-xl py-1 min-w-[140px]">
             {options.map(o => (
               <button
                 key={o.id}
                 onClick={() => { onSave(o.id); setOpen(false); }}
                 className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
-                  value === o.id ? 'bg-amber-500/10 text-amber-400 font-bold' : 'text-slate-300 hover:bg-white/[0.05]'
+                  value === o.id ? 'bg-[#E09B37]/12 text-[#E09B37] font-bold' : 'text-[#1d1d1f] hover:bg-black/[0.03]'
                 }`}
               >
                 {o.label}
@@ -246,20 +246,20 @@ function QuickAddRow({ onAdd }: { onAdd: (subject: string) => void }) {
   };
 
   return (
-    <div className="flex items-center gap-2 py-2 px-3 border-t border-white/[0.04] group">
-      <span className="text-slate-600 text-sm">+</span>
+    <div className="flex items-center gap-2 py-2 px-3 border-t border-black/[0.04] group">
+      <span className="text-[#86868b] text-sm">+</span>
       <input
         ref={inputRef}
         value={value}
         onChange={e => setValue(e.target.value)}
         onKeyDown={e => { if (e.key === 'Enter') submit(); }}
         placeholder="Add ticket..."
-        className="flex-1 bg-transparent text-sm text-slate-300 placeholder-slate-600 outline-none"
+        className="flex-1 bg-transparent text-sm text-[#1d1d1f] placeholder-[#86868b] outline-none"
       />
       {value.trim() && (
         <button
           onClick={submit}
-          className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 hover:bg-amber-500/20 transition-colors"
+          className="text-[10px] font-bold text-[#E09B37] bg-[#E09B37]/12 border border-[#E09B37]/25 rounded px-2 py-0.5 hover:bg-amber-500/20 transition-colors"
         >
           Add
         </button>
@@ -298,16 +298,16 @@ function DetailPanel({
       <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="fixed top-0 right-0 z-50 h-full w-full max-w-lg bg-surface-900 border-l border-white/[0.08] shadow-2xl flex flex-col animate-[slideInRight_0.2s_ease-out]">
+      <div className="fixed top-0 right-0 z-50 h-full w-full max-w-lg bg-white/60 border-l border-black/[0.08] shadow-2xl flex flex-col animate-[slideInRight_0.2s_ease-out]">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.06]">
           <div className="flex items-center gap-2">
             <span className="text-base">{CHANNEL_ICONS[ticket.channel] ?? '📌'}</span>
-            <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73]">
               {BRAND_LABELS[ticket.brand_id] ?? ticket.brand_id}
             </span>
           </div>
-          <button onClick={onClose} className="text-slate-500 hover:text-white text-lg transition-colors">✕</button>
+          <button onClick={onClose} className="text-[#6e6e73] hover:text-[#1d1d1f] text-lg transition-colors">✕</button>
         </div>
 
         {/* Body — scrollable */}
@@ -317,7 +317,7 @@ function DetailPanel({
             <InlineText
               value={ticket.subject}
               onSave={v => onUpdate(ticket.id, { subject: v })}
-              className="text-lg font-black text-white w-full block"
+              className="text-lg font-black text-[#1d1d1f] w-full block"
             />
           </div>
 
@@ -334,7 +334,7 @@ function DetailPanel({
                 renderValue={v => (
                   <span className="flex items-center gap-1.5">
                     <span className={`w-2 h-2 rounded-full ${PRIORITY_DOT[Number(v)]}`} />
-                    <span className="text-xs text-slate-300">{PRIORITY_LABEL[Number(v)]}</span>
+                    <span className="text-xs text-[#1d1d1f]">{PRIORITY_LABEL[Number(v)]}</span>
                   </span>
                 )}
               />
@@ -362,8 +362,8 @@ function DetailPanel({
                 ]}
                 onSave={v => onUpdate(ticket.id, { assigned_to: v === '__none__' ? null : v })}
                 renderValue={v => (
-                  <span className="text-xs text-slate-300">
-                    {v === '__none__' ? <span className="text-slate-600">Unassigned</span> : shortEmail(v)}
+                  <span className="text-xs text-[#1d1d1f]">
+                    {v === '__none__' ? <span className="text-[#86868b]">Unassigned</span> : shortEmail(v)}
                   </span>
                 )}
               />
@@ -373,7 +373,7 @@ function DetailPanel({
                 type="date"
                 value={ticket.due_date ?? ''}
                 onChange={e => onUpdate(ticket.id, { due_date: e.target.value || null })}
-                className="text-xs bg-transparent text-slate-300 border-none outline-none cursor-pointer hover:bg-white/[0.04] rounded px-1 -mx-1"
+                className="text-xs bg-transparent text-[#1d1d1f] border-none outline-none cursor-pointer hover:bg-black/[0.03] rounded px-1 -mx-1"
               />
             </FieldRow>
             <FieldRow label="Customer">
@@ -381,7 +381,7 @@ function DetailPanel({
                 value={ticket.customer_name ?? ''}
                 onSave={v => onUpdate(ticket.id, { customer_name: v || null })}
                 placeholder="Name"
-                className="text-xs text-slate-300"
+                className="text-xs text-[#1d1d1f]"
               />
             </FieldRow>
             <FieldRow label="Email">
@@ -389,21 +389,21 @@ function DetailPanel({
                 value={ticket.customer_email ?? ''}
                 onSave={v => onUpdate(ticket.id, { customer_email: v || null })}
                 placeholder="customer@..."
-                className="text-xs text-slate-300"
+                className="text-xs text-[#1d1d1f]"
               />
             </FieldRow>
           </div>
 
           {/* Tags */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">Tags</p>
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1.5">Tags</p>
             <div className="flex flex-wrap gap-1">
               {(ticket.tags ?? []).map((tag, i) => (
-                <span key={i} className="px-2 py-0.5 text-[10px] font-semibold bg-white/[0.06] text-slate-400 rounded-full border border-white/[0.06]">
+                <span key={i} className="px-2 py-0.5 text-[10px] font-semibold bg-black/[0.04] text-[#515154] rounded-full border border-black/[0.06]">
                   {tag}
                   <button
                     onClick={() => onUpdate(ticket.id, { tags: ticket.tags.filter((_, j) => j !== i) })}
-                    className="ml-1 text-slate-600 hover:text-red-400 transition-colors"
+                    className="ml-1 text-[#86868b] hover:text-red-400 transition-colors"
                   >
                     ×
                   </button>
@@ -415,19 +415,19 @@ function DetailPanel({
 
           {/* Notes */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1.5">Notes</p>
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-1.5">Notes</p>
             <textarea
               value={notes}
               onChange={e => setNotes(e.target.value)}
               onBlur={saveNotes}
               rows={5}
               placeholder="Add notes..."
-              className="w-full text-sm bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2 text-slate-300 placeholder-slate-600 resize-none outline-none focus:border-amber-500/30 transition-colors"
+              className="w-full text-sm bg-black/[0.03] border border-black/[0.06] rounded-lg px-3 py-2 text-[#1d1d1f] placeholder-[#86868b] resize-none outline-none focus:border-amber-500/30 transition-colors"
             />
           </div>
 
           {/* Meta */}
-          <div className="text-[10px] text-slate-600 space-y-0.5">
+          <div className="text-[10px] text-[#86868b] space-y-0.5">
             <p>Created {new Date(ticket.created_at).toLocaleString('de-DE')}</p>
             <p>Updated {relativeTime(ticket.updated_at)} ago</p>
             {ticket.resolved_at && <p>Resolved {new Date(ticket.resolved_at).toLocaleString('de-DE')}</p>}
@@ -435,11 +435,11 @@ function DetailPanel({
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-white/[0.06] flex justify-between">
+        <div className="px-5 py-3 border-t border-black/[0.06] flex justify-between">
           {!confirmDelete ? (
             <button
               onClick={() => setConfirmDelete(true)}
-              className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+              className="text-xs text-[#6e6e73] hover:text-red-400 transition-colors"
             >
               Delete ticket
             </button>
@@ -447,12 +447,12 @@ function DetailPanel({
             <div className="flex items-center gap-2">
               <span className="text-xs text-red-400">Delete?</span>
               <button onClick={() => { onDelete(ticket.id); onClose(); }} className="text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 rounded px-2 py-0.5 hover:bg-red-500/20">Yes</button>
-              <button onClick={() => setConfirmDelete(false)} className="text-xs text-slate-500 hover:text-slate-300">No</button>
+              <button onClick={() => setConfirmDelete(false)} className="text-xs text-[#6e6e73] hover:text-[#1d1d1f]">No</button>
             </div>
           )}
           <button
             onClick={onClose}
-            className="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+            className="text-xs font-semibold text-[#515154] hover:text-[#1d1d1f] transition-colors"
           >
             Close
           </button>
@@ -465,7 +465,7 @@ function DetailPanel({
 function FieldRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-0.5">{label}</p>
+      <p className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73] mb-0.5">{label}</p>
       {children}
     </div>
   );
@@ -487,7 +487,7 @@ function AddTagButton({ onAdd }: { onAdd: (tag: string) => void }) {
     return (
       <button
         onClick={() => setEditing(true)}
-        className="px-2 py-0.5 text-[10px] font-semibold text-slate-600 hover:text-slate-300 border border-dashed border-white/[0.08] rounded-full hover:border-white/[0.15] transition-colors"
+        className="px-2 py-0.5 text-[10px] font-semibold text-[#86868b] hover:text-[#1d1d1f] border border-dashed border-black/[0.08] rounded-full hover:border-white/[0.15] transition-colors"
       >
         + tag
       </button>
@@ -501,7 +501,7 @@ function AddTagButton({ onAdd }: { onAdd: (tag: string) => void }) {
       onChange={e => setValue(e.target.value)}
       onBlur={commit}
       onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') { setValue(''); setEditing(false); } }}
-      className="w-20 px-2 py-0.5 text-[10px] bg-white/[0.06] border border-amber-500/30 rounded-full text-slate-300 outline-none"
+      className="w-20 px-2 py-0.5 text-[10px] bg-black/[0.04] border border-amber-500/30 rounded-full text-[#1d1d1f] outline-none"
       placeholder="tag name"
     />
   );
@@ -650,8 +650,8 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-black text-white tracking-tight">Customer Support</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Ticket-Management, Team und Brand-Status</p>
+          <h2 className="text-xl font-black text-[#1d1d1f] tracking-tight">Customer Support</h2>
+          <p className="text-sm text-[#6e6e73] mt-0.5">Ticket-Management, Team und Brand-Status</p>
         </div>
         <div className="flex items-center gap-2">
           <RefreshButton onClick={() => fetchTickets(true)} refreshing={refreshing} />
@@ -663,14 +663,14 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
         {[
           { label: 'Open', value: stats.open, color: 'text-red-400 bg-red-500/10 border-red-500/20', filter: 'open' as const },
           { label: 'In Progress', value: stats.inProgress, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', filter: 'in_progress' as const },
-          { label: 'Waiting', value: stats.waiting, color: 'text-amber-400 bg-amber-500/10 border-amber-500/20', filter: 'waiting' as const },
+          { label: 'Waiting', value: stats.waiting, color: 'text-[#E09B37] bg-[#E09B37]/12 border-[#E09B37]/25', filter: 'waiting' as const },
           { label: 'Resolved', value: stats.resolved, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', filter: 'resolved' as const },
         ].map(s => (
           <button
             key={s.label}
             onClick={() => setFilterStatus(filterStatus === s.filter ? 'all' : s.filter)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
-              filterStatus === s.filter ? s.color + ' ring-1 ring-white/10' : 'text-slate-500 bg-surface-800 border-white/[0.06] hover:bg-white/[0.04]'
+              filterStatus === s.filter ? s.color + ' ring-1 ring-white/10' : 'text-[#6e6e73] bg-white/80 border-black/[0.06] hover:bg-black/[0.03]'
             }`}
           >
             <span className="font-black">{s.value}</span>
@@ -685,7 +685,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
       </div>
 
       {/* Tab Bar */}
-      <div className="flex gap-1 border-b border-white/[0.06]">
+      <div className="flex gap-1 border-b border-black/[0.06]">
         {[
           { id: 'tickets' as const, label: 'Tickets' },
           { id: 'overview' as const, label: 'Overview' },
@@ -694,7 +694,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 -mb-px ${
-              tab === t.id ? 'border-amber-500 text-amber-400' : 'border-transparent text-slate-500 hover:text-slate-300'
+              tab === t.id ? 'border-amber-500 text-[#E09B37]' : 'border-transparent text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}
           >
             {t.label}
@@ -710,12 +710,12 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search tickets..."
-              className="text-sm bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5 text-slate-300 placeholder-slate-600 outline-none focus:border-amber-500/30 w-48 transition-colors"
+              className="text-sm bg-black/[0.03] border border-black/[0.06] rounded-lg px-3 py-1.5 text-[#1d1d1f] placeholder-[#86868b] outline-none focus:border-amber-500/30 w-48 transition-colors"
             />
             <select
               value={filterBrand}
               onChange={e => setFilterBrand(e.target.value)}
-              className="text-xs bg-surface-800 border border-white/[0.06] rounded-lg px-2 py-1.5 text-slate-300 outline-none cursor-pointer"
+              className="text-xs bg-white/80 border border-black/[0.06] rounded-lg px-2 py-1.5 text-[#1d1d1f] outline-none cursor-pointer"
             >
               <option value="all">All Brands</option>
               {BRANDS.map(b => <option key={b.id} value={b.id}>{b.label}</option>)}
@@ -723,7 +723,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             <select
               value={filterAssigned}
               onChange={e => setFilterAssigned(e.target.value)}
-              className="text-xs bg-surface-800 border border-white/[0.06] rounded-lg px-2 py-1.5 text-slate-300 outline-none cursor-pointer"
+              className="text-xs bg-white/80 border border-black/[0.06] rounded-lg px-2 py-1.5 text-[#1d1d1f] outline-none cursor-pointer"
             >
               <option value="all">All Assignees</option>
               <option value="__none__">Unassigned</option>
@@ -733,7 +733,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             {/* Bulk actions */}
             {selected.size > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-[10px] font-bold text-amber-400">{selected.size} selected</span>
+                <span className="text-[10px] font-bold text-[#E09B37]">{selected.size} selected</span>
                 <select
                   defaultValue=""
                   onChange={e => {
@@ -741,13 +741,13 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                     else if (e.target.value) bulkUpdate({ status: e.target.value as TicketStatus });
                     e.target.value = '';
                   }}
-                  className="text-[10px] bg-surface-800 border border-white/[0.06] rounded px-2 py-1 text-slate-300 cursor-pointer"
+                  className="text-[10px] bg-white/80 border border-black/[0.06] rounded px-2 py-1 text-[#1d1d1f] cursor-pointer"
                 >
                   <option value="" disabled>Bulk action...</option>
                   {STATUSES.map(s => <option key={s.id} value={s.id}>Set {s.label}</option>)}
                   <option value="__delete__">Delete selected</option>
                 </select>
-                <button onClick={() => setSelected(new Set())} className="text-[10px] text-slate-500 hover:text-slate-300 ml-1">Clear</button>
+                <button onClick={() => setSelected(new Set())} className="text-[10px] text-[#6e6e73] hover:text-[#1d1d1f] ml-1">Clear</button>
               </div>
             )}
           </div>
@@ -758,9 +758,9 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
           ) : error ? (
             <ErrorState message={error} onRetry={() => fetchTickets()} />
           ) : (
-            <div className="rounded-xl border border-white/[0.06] bg-surface-800/60 overflow-hidden">
+            <div className="rounded-xl border border-black/[0.06] bg-white/70 overflow-hidden">
               {/* Table Header */}
-              <div className="grid grid-cols-[32px_1fr_100px_80px_90px_90px_80px_60px] gap-0 px-3 py-2 border-b border-white/[0.06] bg-surface-900/40">
+              <div className="grid grid-cols-[32px_1fr_100px_80px_90px_90px_80px_60px] gap-0 px-3 py-2 border-b border-black/[0.06] bg-white/60/40">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -783,10 +783,10 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                   <button
                     key={col.key}
                     onClick={() => toggleSort(col.key)}
-                    className="text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-slate-300 text-left transition-colors flex items-center gap-1"
+                    className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73] hover:text-[#1d1d1f] text-left transition-colors flex items-center gap-1"
                   >
                     {col.label}
-                    {sortKey === col.key && <span className="text-amber-500">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                    {sortKey === col.key && <span className="text-[#E09B37]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                   </button>
                 ))}
                 <div />
@@ -803,7 +803,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                 sorted.map(ticket => (
                   <div
                     key={ticket.id}
-                    className={`grid grid-cols-[32px_1fr_100px_80px_90px_90px_80px_60px] gap-0 px-3 py-2 border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors items-center group ${
+                    className={`grid grid-cols-[32px_1fr_100px_80px_90px_90px_80px_60px] gap-0 px-3 py-2 border-b border-black/[0.04] hover:bg-black/[0.02] transition-colors items-center group ${
                       selected.has(ticket.id) ? 'bg-amber-500/[0.04]' : ''
                     }`}
                   >
@@ -830,11 +830,11 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         <InlineText
                           value={ticket.subject}
                           onSave={v => updateTicket(ticket.id, { subject: v })}
-                          className="text-sm font-semibold text-slate-200 truncate"
+                          className="text-sm font-semibold text-[#1d1d1f] truncate"
                         />
                       </div>
                       {ticket.customer_name && (
-                        <p className="text-[10px] text-slate-500 truncate ml-5">{ticket.customer_name}</p>
+                        <p className="text-[10px] text-[#6e6e73] truncate ml-5">{ticket.customer_name}</p>
                       )}
                     </div>
 
@@ -845,7 +845,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         options={BRANDS}
                         onSave={v => updateTicket(ticket.id, { brand_id: v })}
                         renderValue={v => (
-                          <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-1.5 py-0.5 uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#E09B37] bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-full px-1.5 py-0.5 uppercase tracking-wide">
                             {BRAND_LABELS[v] ?? v}
                           </span>
                         )}
@@ -866,7 +866,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         renderValue={v => (
                           <span className="flex items-center gap-1">
                             <span className={`w-2 h-2 rounded-full ${PRIORITY_DOT[Number(v)]}`} />
-                            <span className="text-xs text-slate-400">{PRIORITY_LABEL[Number(v)]}</span>
+                            <span className="text-xs text-[#515154]">{PRIORITY_LABEL[Number(v)]}</span>
                           </span>
                         )}
                       />
@@ -882,7 +882,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         ]}
                         onSave={v => updateTicket(ticket.id, { assigned_to: v === '__none__' ? null : v })}
                         renderValue={v => (
-                          <span className={`text-xs ${v === '__none__' ? 'text-slate-600' : 'text-slate-300'}`}>
+                          <span className={`text-xs ${v === '__none__' ? 'text-[#86868b]' : 'text-[#1d1d1f]'}`}>
                             {v === '__none__' ? '—' : shortEmail(v)}
                           </span>
                         )}
@@ -898,7 +898,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         className={`text-[10px] bg-transparent border-none outline-none cursor-pointer w-full ${
                           isOverdue(ticket.due_date) && ticket.status !== 'resolved' && ticket.status !== 'closed'
                             ? 'text-red-400 font-bold'
-                            : 'text-slate-500'
+                            : 'text-[#6e6e73]'
                         }`}
                       />
                     </div>
@@ -907,7 +907,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                     <div className="flex justify-end">
                       <button
                         onClick={() => setSelectedId(ticket.id)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-amber-400 text-xs transition-all"
+                        className="opacity-0 group-hover:opacity-100 text-[#6e6e73] hover:text-[#E09B37] text-xs transition-all"
                         title="Open details"
                       >
                         →
@@ -934,22 +934,22 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
               { label: 'Returns — Viking', url: 'https://docs.google.com/spreadsheets/d/1bopEmzQ-Wga5kYckw187F7Cm1IuNq5KgR7gZCFMSbyw/edit' },
             ].map(link => (
               <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-surface-900/60 border border-white/[0.06] hover:bg-white/[0.03] transition-colors text-xs font-semibold text-slate-300">
-                <span className="text-slate-500">↗</span> {link.label}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/50 border border-black/[0.06] hover:bg-black/[0.03] transition-colors text-xs font-semibold text-[#1d1d1f]">
+                <span className="text-[#6e6e73]">↗</span> {link.label}
               </a>
             ))}
           </div>
 
           {/* Brand CS Status */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">Brand Status</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6e6e73] mb-3">Brand Status</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {BRAND_CS.map(brand => (
-                <div key={brand.name} className="rounded-xl border border-white/[0.06] bg-surface-800/60 p-4 backdrop-blur-sm">
+                <div key={brand.name} className="rounded-xl border border-black/[0.06] bg-white/70 p-4 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ background: brand.accent }} />
-                      <span className="font-black text-sm text-white">{brand.name}</span>
+                      <span className="font-black text-sm text-[#1d1d1f]">{brand.name}</span>
                     </div>
                     <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${CS_STATUS_STYLES[brand.status]}`}>
                       {brand.statusLabel}
@@ -963,16 +963,16 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
           {/* CS Team */}
           {team.length > 0 && (
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">CS Team ({team.length} aktiv)</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6e6e73] mb-3">CS Team ({team.length} aktiv)</p>
               <div className="flex flex-wrap gap-2">
                 {team.map(intern => (
-                  <div key={intern.email} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-900/60 border border-white/[0.06]">
-                    <div className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-[10px] font-black text-slate-300">
+                  <div key={intern.email} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/50 border border-black/[0.06]">
+                    <div className="w-6 h-6 rounded-full bg-white/[0.08] flex items-center justify-center text-[10px] font-black text-[#1d1d1f]">
                       {intern.full_name.charAt(0)}
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-white">{intern.full_name}</div>
-                      <div className="text-[10px] text-slate-500">{intern.email}</div>
+                      <div className="text-xs font-bold text-[#1d1d1f]">{intern.full_name}</div>
+                      <div className="text-[10px] text-[#6e6e73]">{intern.email}</div>
                     </div>
                   </div>
                 ))}
@@ -982,7 +982,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
 
           {/* KPI Targets */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">KPI Targets</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6e6e73] mb-3">KPI Targets</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {[
                 { label: 'First Response', target: '≤ 24h' },
@@ -990,9 +990,9 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                 { label: 'Standup', target: 'Mo bis 10:00' },
                 { label: 'Escalation Rate', target: '≤ 10%' },
               ].map(kpi => (
-                <div key={kpi.label} className="px-3 py-2.5 rounded-lg bg-surface-900/60 border border-white/[0.06]">
-                  <div className="text-[9px] font-black uppercase tracking-wider text-slate-500">{kpi.label}</div>
-                  <div className="text-sm font-black text-white mt-0.5">{kpi.target}</div>
+                <div key={kpi.label} className="px-3 py-2.5 rounded-lg bg-white/50 border border-black/[0.06]">
+                  <div className="text-[9px] font-black uppercase tracking-wider text-[#6e6e73]">{kpi.label}</div>
+                  <div className="text-sm font-black text-[#1d1d1f] mt-0.5">{kpi.target}</div>
                 </div>
               ))}
             </div>
@@ -1000,7 +1000,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
 
           {/* Resources */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mb-3">Ressourcen</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6e6e73] mb-3">Ressourcen</p>
             <ResourceCardList section="support" isAdmin={isAdmin} />
           </div>
         </div>

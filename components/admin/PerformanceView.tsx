@@ -70,7 +70,7 @@ const INTERN_ROSTER: { email: string; name: string; role: string }[] = [
 
 function scoreColor(s: number) {
   if (s >= 80) return 'text-emerald-400';
-  if (s >= 60) return 'text-amber-400';
+  if (s >= 60) return 'text-[#E09B37]';
   return 'text-red-400';
 }
 function scoreBg(s: number) {
@@ -135,16 +135,16 @@ function periodStart(period: Period): Date {
 const ScoreBar: React.FC<{ label: string; value: number; weight: string }> = ({ label, value, weight }) => (
   <div>
     <div className="flex items-center justify-between mb-1">
-      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">{label}</span>
-      <span className="text-xs font-black text-slate-300">{value}%</span>
+      <span className="text-[10px] font-bold text-[#6e6e73] uppercase tracking-wide">{label}</span>
+      <span className="text-xs font-black text-[#1d1d1f]">{value}%</span>
     </div>
-    <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+    <div className="h-1.5 bg-black/[0.04] rounded-full overflow-hidden">
       <div
         className={`h-full rounded-full transition-all ${scoreBg(value)}`}
         style={{ width: `${value}%` }}
       />
     </div>
-    <p className="text-[9px] text-slate-500 mt-0.5 text-right">weight {weight}</p>
+    <p className="text-[9px] text-[#6e6e73] mt-0.5 text-right">weight {weight}</p>
   </div>
 );
 
@@ -158,32 +158,32 @@ const InternCard: React.FC<{
   const done = intern.tasks.filter(t => t.status === 'done');
 
   return (
-    <div className={`bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden transition-all backdrop-blur-sm ${scoreRing(score.overall)} ring-2`}>
+    <div className={`bg-white/70 border border-black/[0.06] rounded-2xl overflow-hidden transition-all backdrop-blur-sm ${scoreRing(score.overall)} ring-2`}>
       {/* Header */}
       <div
-        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-white/[0.03] transition-colors"
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-black/[0.03] transition-colors"
         onClick={() => setExpanded(e => !e)}
       >
         {/* Score circle */}
         <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 ${
-          score.overall >= 80 ? 'bg-emerald-500/15' : score.overall >= 60 ? 'bg-amber-500/15' : 'bg-red-500/15'
+          score.overall >= 80 ? 'bg-emerald-500/15' : score.overall >= 60 ? 'bg-[#E09B37]/15' : 'bg-red-500/15'
         }`}>
           <span className={`text-xl font-black leading-none ${scoreColor(score.overall)}`}>
             {score.raw.total === 0 ? '—' : score.overall}
           </span>
           {score.raw.total > 0 && (
-            <span className="text-[9px] text-slate-500 font-semibold">/ 100</span>
+            <span className="text-[9px] text-[#6e6e73] font-semibold">/ 100</span>
           )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="font-black text-white text-sm">{intern.name}</p>
-          <p className="text-xs text-slate-500 font-medium">{intern.role}</p>
+          <p className="font-black text-[#1d1d1f] text-sm">{intern.name}</p>
+          <p className="text-xs text-[#6e6e73] font-medium">{intern.role}</p>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-            <span className="text-[10px] text-slate-500">
-              <span className="font-bold text-slate-300">{score.raw.done}</span>/{score.raw.total} tasks
+            <span className="text-[10px] text-[#6e6e73]">
+              <span className="font-bold text-[#1d1d1f]">{score.raw.done}</span>/{score.raw.total} tasks
             </span>
-            <span className="text-[10px] text-slate-500">
+            <span className="text-[10px] text-[#6e6e73]">
               <span className="font-bold text-emerald-400">{score.raw.onTime}</span> on-time
             </span>
             {open.length > 0 && (
@@ -202,8 +202,8 @@ const InternCard: React.FC<{
             { label: 'Volume', val: score.volume },
           ].map(d => (
             <div key={d.label} className="flex items-center gap-1.5">
-              <span className="text-[9px] text-slate-500 w-14 text-right">{d.label}</span>
-              <div className="flex-1 h-1 bg-white/[0.06] rounded-full overflow-hidden">
+              <span className="text-[9px] text-[#6e6e73] w-14 text-right">{d.label}</span>
+              <div className="flex-1 h-1 bg-black/[0.04] rounded-full overflow-hidden">
                 <div className={`h-full rounded-full ${scoreBg(d.val)}`} style={{ width: `${d.val}%` }} />
               </div>
             </div>
@@ -211,7 +211,7 @@ const InternCard: React.FC<{
         </div>
 
         <svg
-          className={`w-4 h-4 text-slate-500 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-[#6e6e73] shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}
           fill="none" stroke="currentColor" viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
@@ -220,7 +220,7 @@ const InternCard: React.FC<{
 
       {/* Expanded Detail */}
       {expanded && (
-        <div className="border-t border-white/[0.06] px-5 py-4 space-y-4">
+        <div className="border-t border-black/[0.06] px-5 py-4 space-y-4">
           {/* Score breakdown */}
           <div className="grid grid-cols-2 gap-3">
             <ScoreBar label="Efficiency (on-time)" value={score.efficiency} weight="40%" />
@@ -232,19 +232,19 @@ const InternCard: React.FC<{
           {/* Unrated tasks (need quality/impact score) */}
           {done.filter(t => t.quality_score == null).length > 0 && (
             <div>
-              <p className="text-xs font-bold text-amber-400 mb-2 flex items-center gap-1">
+              <p className="text-xs font-bold text-[#E09B37] mb-2 flex items-center gap-1">
                 <span>⚠</span> {done.filter(t => t.quality_score == null).length} tasks need rating
               </p>
               <div className="space-y-1.5">
                 {done.filter(t => t.quality_score == null).map(task => (
-                  <div key={task.id} className="flex items-center gap-2 text-xs bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
-                    <span className="flex-1 text-slate-300 font-medium truncate">{task.title}</span>
+                  <div key={task.id} className="flex items-center gap-2 text-xs bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-lg px-3 py-2">
+                    <span className="flex-1 text-[#1d1d1f] font-medium truncate">{task.title}</span>
                     {task.brand && (
                       <span className="text-[10px] text-primary-600 font-bold uppercase">{task.brand}</span>
                     )}
                     <button
                       onClick={() => onRate(task)}
-                      className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded-md transition-colors shrink-0"
+                      className="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-[#1d1d1f] text-[10px] font-bold rounded-md transition-colors shrink-0"
                     >
                       Rate
                     </button>
@@ -257,16 +257,16 @@ const InternCard: React.FC<{
           {/* Open tasks */}
           {open.length > 0 && (
             <div>
-              <p className="text-xs font-bold text-slate-500 mb-2">Open tasks</p>
+              <p className="text-xs font-bold text-[#6e6e73] mb-2">Open tasks</p>
               <div className="space-y-1">
                 {open.map(task => (
-                  <div key={task.id} className="flex items-center gap-2 text-xs bg-white/[0.03] rounded-lg px-3 py-1.5">
+                  <div key={task.id} className="flex items-center gap-2 text-xs bg-black/[0.03] rounded-lg px-3 py-1.5">
                     <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                       task.status === 'blocked' ? 'bg-red-500' :
                       task.status === 'in_progress' ? 'bg-blue-500' : 'bg-slate-500'
                     }`} />
-                    <span className="flex-1 text-slate-300 truncate">{task.title}</span>
-                    <span className="text-[10px] text-slate-500 shrink-0">
+                    <span className="flex-1 text-[#1d1d1f] truncate">{task.title}</span>
+                    <span className="text-[10px] text-[#6e6e73] shrink-0">
                       {task.due_date ? new Date(task.due_date).toLocaleDateString('de-DE', { day:'2-digit', month:'short' }) : '—'}
                     </span>
                   </div>
@@ -313,16 +313,16 @@ const RateTaskModal: React.FC<{
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-surface-800 border border-white/[0.08] rounded-2xl p-6 w-full max-w-sm shadow-2xl m-4"
+        className="bg-white/80 border border-black/[0.08] rounded-2xl p-6 w-full max-w-sm shadow-2xl m-4"
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="font-black text-white mb-1">Rate Task</h3>
-        <p className="text-xs text-slate-500 mb-5 truncate">{task.title}</p>
+        <h3 className="font-black text-[#1d1d1f] mb-1">Rate Task</h3>
+        <p className="text-xs text-[#6e6e73] mb-5 truncate">{task.title}</p>
 
         {/* Quality */}
         <div className="mb-5">
-          <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">
-            Quality Score <span className="text-amber-500">★</span>
+          <label className="block text-xs font-bold text-[#515154] mb-2 uppercase tracking-wide">
+            Quality Score <span className="text-[#E09B37]">★</span>
           </label>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(v => (
@@ -330,19 +330,19 @@ const RateTaskModal: React.FC<{
                 key={v}
                 onClick={() => setQuality(v)}
                 className={`flex-1 py-2 rounded-xl text-sm font-black border-2 transition-all ${
-                  quality === v ? 'border-primary-500 bg-primary-500/10 text-primary-400' : 'border-white/[0.10] text-slate-500 hover:border-white/20'
+                  quality === v ? 'border-primary-500 bg-primary-500/10 text-primary-400' : 'border-white/[0.10] text-[#6e6e73] hover:border-white/20'
                 }`}
               >
                 {v}
               </button>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-1.5 text-center">{QUALITY_LABELS[quality]}</p>
+          <p className="text-xs text-[#6e6e73] mt-1.5 text-center">{QUALITY_LABELS[quality]}</p>
         </div>
 
         {/* Impact */}
         <div className="mb-6">
-          <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">
+          <label className="block text-xs font-bold text-[#515154] mb-2 uppercase tracking-wide">
             Impact Score ⚡
           </label>
           <div className="flex gap-2">
@@ -351,27 +351,27 @@ const RateTaskModal: React.FC<{
                 key={v}
                 onClick={() => setImpact(v)}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-black border-2 transition-all ${
-                  impact === v ? 'border-blue-500 bg-blue-500/15 text-blue-400' : 'border-white/[0.10] text-slate-500 hover:border-white/20'
+                  impact === v ? 'border-blue-500 bg-blue-500/15 text-blue-400' : 'border-white/[0.10] text-[#6e6e73] hover:border-white/20'
                 }`}
               >
                 {v}
               </button>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-1.5 text-center">{IMPACT_LABELS[impact]}</p>
+          <p className="text-xs text-[#6e6e73] mt-1.5 text-center">{IMPACT_LABELS[impact]}</p>
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 bg-white/[0.05] text-slate-400 text-sm font-bold rounded-xl hover:bg-white/[0.08] transition-all"
+            className="flex-1 py-2.5 bg-black/[0.03] text-[#515154] text-sm font-bold rounded-xl hover:bg-white/[0.08] transition-all"
           >
             Cancel
           </button>
           <button
             onClick={save}
             disabled={saving}
-            className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-60"
+            className="flex-1 py-2.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-bold rounded-xl transition-all disabled:opacity-60"
           >
             {saving ? 'Saving…' : 'Save Rating'}
           </button>
@@ -449,25 +449,25 @@ const PerformanceView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
         <div>
-          <h2 className="text-lg font-black text-white">Team Performance</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="text-lg font-black text-[#1d1d1f]">Team Performance</h2>
+          <p className="text-xs text-[#6e6e73] mt-0.5">
             Scoring: Efficiency 40% · Quality 30% · Volume 20% · Impact 10%
           </p>
         </div>
 
         <div className="ml-auto flex items-center gap-2">
           {totalUnrated > 0 && (
-            <span className="px-3 py-1.5 bg-amber-500/15 border border-amber-500/20 text-amber-400 text-xs font-bold rounded-full">
+            <span className="px-3 py-1.5 bg-[#E09B37]/15 border border-[#E09B37]/25 text-[#E09B37] text-xs font-bold rounded-full">
               ⚠ {totalUnrated} tasks need rating
             </span>
           )}
-          <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.06] rounded-full p-0.5">
+          <div className="flex items-center gap-1 bg-black/[0.03] border border-black/[0.06] rounded-full p-0.5">
             {PERIODS.map(p => (
               <button
                 key={p.id}
                 onClick={() => setPeriod(p.id)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  period === p.id ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
+                  period === p.id ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
                 {p.label}
@@ -481,7 +481,7 @@ const PerformanceView: React.FC = () => {
       <div className="grid grid-cols-3 gap-3 text-center">
         {[
           { label: 'High Performer', range: '80–100', color: 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400' },
-          { label: 'On Track', range: '60–79', color: 'bg-amber-500/15 border-amber-500/20 text-amber-400' },
+          { label: 'On Track', range: '60–79', color: 'bg-[#E09B37]/15 border-[#E09B37]/25 text-[#E09B37]' },
           { label: 'Needs Attention', range: '0–59', color: 'bg-red-500/15 border-red-500/20 text-red-400' },
         ].map(l => (
           <div key={l.label} className={`rounded-xl border px-3 py-2.5 ${l.color}`}>
@@ -499,8 +499,8 @@ const PerformanceView: React.FC = () => {
       ) : scored.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">📊</p>
-          <p className="text-slate-400 font-semibold">No team tasks assigned yet.</p>
-          <p className="text-slate-500 text-sm mt-1">Assign tasks via 👥 Team Board to start tracking performance.</p>
+          <p className="text-[#515154] font-semibold">No team tasks assigned yet.</p>
+          <p className="text-[#6e6e73] text-sm mt-1">Assign tasks via 👥 Team Board to start tracking performance.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -508,7 +508,7 @@ const PerformanceView: React.FC = () => {
             <div key={intern.email} className="relative">
               {idx === 0 && score.raw.total > 0 && (
                 <div className="absolute -top-1.5 -left-1 z-10">
-                  <span className="text-xs bg-amber-400 text-white font-black px-2 py-0.5 rounded-full shadow-sm">
+                  <span className="text-xs bg-amber-400 text-[#1d1d1f] font-black px-2 py-0.5 rounded-full shadow-sm">
                     #1 🏆
                   </span>
                 </div>
@@ -524,7 +524,7 @@ const PerformanceView: React.FC = () => {
       )}
 
       {/* Note */}
-      <p className="text-[10px] text-slate-500 text-center pb-2">
+      <p className="text-[10px] text-[#6e6e73] text-center pb-2">
         Only team-scoped tasks are tracked. Private tasks (🔒 My Desk) are excluded from team scoring.
         Quality + Impact scores are set manually by Luis after task completion.
       </p>

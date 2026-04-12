@@ -42,12 +42,12 @@ const NotesSection: React.FC<{
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             placeholder="Add a new note..."
-            className="w-full p-2 text-sm bg-white/[0.04] rounded-md border border-white/[0.10] text-slate-100"
+            className="w-full p-2 text-sm bg-black/[0.03] rounded-md border border-white/[0.10] text-[#1d1d1f]"
           />
           <button
             onClick={handleAddNote}
             disabled={isSaving}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg flex items-center"
+            className="px-4 py-2 bg-blue-600 text-[#1d1d1f] text-sm font-bold rounded-lg flex items-center"
           >
             {isSaving && <Spinner className="w-4 h-4 mr-2" />}
             Add Note
@@ -65,19 +65,19 @@ const NotesSection: React.FC<{
               .map((note) => (
                 <div
                   key={note.id}
-                  className="bg-surface-900/60 p-3 rounded-lg"
+                  className="bg-white/50 p-3 rounded-lg"
                 >
-                  <p className="text-sm text-slate-100">
+                  <p className="text-sm text-[#1d1d1f]">
                     {note.note_text}
                   </p>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-[#6e6e73] mt-2">
                     <span className="font-bold">{note.author_email}</span> &middot;{' '}
                     {new Date(note.created_at).toLocaleString()}
                   </p>
                 </div>
               ))
           ) : (
-            <p className="text-sm text-slate-500">No notes yet.</p>
+            <p className="text-sm text-[#6e6e73]">No notes yet.</p>
           )}
         </div>
       </div>
@@ -120,7 +120,7 @@ const CvDownload: React.FC<{ path: string; filename?: string | null }> = ({ path
       target="_blank"
       rel="noopener noreferrer"
       download={filename ?? undefined}
-      className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors"
+      className="inline-flex items-center gap-2 px-4 py-2 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-[#c8832a] transition-colors"
     >
       📄 {filename ?? 'Download CV'}
     </a>
@@ -138,7 +138,7 @@ const StatusBadge: React.FC<{ stage: string | null }> = ({ stage }) => {
     onboarding: 'bg-teal-500/15 text-teal-400',
   };
 
-  const style = stage ? stageStyles[stage] || 'bg-slate-500/15 text-slate-400' : 'bg-slate-500/15 text-slate-400';
+  const style = stage ? stageStyles[stage] || 'bg-slate-500/15 text-[#515154]' : 'bg-slate-500/15 text-[#515154]';
   const text = stage ? stage.replace('_', ' ').toUpperCase() : 'UNKNOWN';
 
   return (
@@ -305,7 +305,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
   if (!application) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-500">
+      <div className="flex items-center justify-center h-full text-[#6e6e73]">
         Select an applicant to see details
       </div>
     );
@@ -324,15 +324,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
     )}
     {hireModal && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="bg-surface-800 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
-          <h3 className="text-lg font-black text-white">Hire {application?.full_name}?</h3>
-          <p className="text-sm text-slate-400">Wähle das Department. Der Kandidat erhält eine E-Mail mit Magic Link.</p>
+        <div className="bg-white/80 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4">
+          <h3 className="text-lg font-black text-[#1d1d1f]">Hire {application?.full_name}?</h3>
+          <p className="text-sm text-[#515154]">Wähle das Department. Der Kandidat erhält eine E-Mail mit Magic Link.</p>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Department</label>
+            <label className="block text-xs font-bold uppercase tracking-widest text-[#6e6e73] mb-2">Department</label>
             <select
               value={hireDepartment}
               onChange={(e) => setHireDepartment(e.target.value)}
-              className="w-full px-3 py-2.5 bg-white/[0.06] border border-white/10 rounded-lg text-white text-sm"
+              className="w-full px-3 py-2.5 bg-black/[0.04] border border-white/10 rounded-lg text-[#1d1d1f] text-sm"
             >
               <option value="marketing">Marketing</option>
               <option value="support">Customer Support</option>
@@ -344,13 +344,13 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           <div className="flex gap-3 pt-1">
             <button
               onClick={handleHire}
-              className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-lg transition-colors"
+              className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-[#1d1d1f] text-sm font-bold rounded-lg transition-colors"
             >
               Hire & Send Email
             </button>
             <button
               onClick={() => setHireModal(false)}
-              className="flex-1 py-2.5 bg-white/[0.06] text-slate-300 text-sm font-bold rounded-lg hover:bg-white/10 transition-colors"
+              className="flex-1 py-2.5 bg-black/[0.04] text-[#1d1d1f] text-sm font-bold rounded-lg hover:bg-white/10 transition-colors"
             >
               Abbrechen
             </button>
@@ -362,7 +362,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
       {/* --- Header --- */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-[#1d1d1f]">
             {application.full_name}
           </h2>
         </div>
@@ -370,29 +370,29 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           {/* Welle 1b Item 5 — Coming-Soon pill while Resend Domain is unverified */}
           {!emailSendEnabled && (
             <span
-              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30"
+              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-[#E09B37]/15 text-[#E09B37] border border-amber-500/30"
               title="Resend Domain verification pending — emails are queued but not sent"
             >
               🔒 Email Coming Soon
             </span>
           )}
           {/* Language toggle for outgoing emails */}
-          <div className="flex items-center gap-0.5 bg-surface-800 border border-white/[0.08] rounded-lg p-0.5">
-            <button onClick={() => setEmailLang('de')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'de' ? 'bg-amber-500 text-black' : 'text-slate-500 hover:text-slate-300'}`}>DE</button>
-            <button onClick={() => setEmailLang('en')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'en' ? 'bg-amber-500 text-black' : 'text-slate-500 hover:text-slate-300'}`}>EN</button>
+          <div className="flex items-center gap-0.5 bg-white/80 border border-black/[0.08] rounded-lg p-0.5">
+            <button onClick={() => setEmailLang('de')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'de' ? 'bg-amber-500 text-black' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>DE</button>
+            <button onClick={() => setEmailLang('en')} className={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition-all ${emailLang === 'en' ? 'bg-amber-500 text-black' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>EN</button>
           </div>
           {(application.stage === 'applied' || application.stage === 'task_requested') && (
             <>
               <button
                 onClick={handleCopyTaskLink}
-                className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors"
               >
                 📋 Copy Task Link
               </button>
               <button
                 onClick={() => handleSendEmail('task_invite')}
                 disabled={isSendingEmail}
-                className="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-4 py-2 bg-green-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-1"
               >
                 {isSendingEmail && <Spinner className="w-3 h-3" />}
                 {application.stage === 'task_requested' ? '🔄 Resend Task Email' : '✉️ Send Task Email'}
@@ -404,7 +404,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               <button
                 onClick={() => handleSendEmail('interview_invite')}
                 disabled={isSendingEmail}
-                className="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-4 py-2 bg-green-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center gap-1"
               >
                 {isSendingEmail && <Spinner className="w-3 h-3" />}
                 📅 Send Interview Invite
@@ -412,7 +412,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               <button
                 onClick={() => handleSendEmail('rejection')}
                 disabled={isSendingEmail}
-                className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-4 py-2 bg-red-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
               >
                 {isSendingEmail && <Spinner className="w-3 h-3" />}
                 ❌ Reject
@@ -424,7 +424,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               <button
                 onClick={() => setHireModal(true)}
                 disabled={isHiring}
-                className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-4 py-2 bg-emerald-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-emerald-500 transition-colors disabled:opacity-50 flex items-center gap-1"
               >
                 {isHiring && <Spinner className="w-3 h-3" />}
                 ✅ Hire
@@ -432,7 +432,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
               <button
                 onClick={() => handleSendEmail('rejection')}
                 disabled={isSendingEmail}
-                className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-4 py-2 bg-red-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
               >
                 {isSendingEmail && <Spinner className="w-3 h-3" />}
                 ❌ Reject
@@ -462,14 +462,14 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
                   }
                 },
               })}
-              className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
+              className="px-4 py-2 bg-blue-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
             >
               🔗 Magic Link senden
             </button>
           )}
           <button
             onClick={onReturn}
-            className="px-4 py-2 bg-white/[0.08] text-slate-100 text-xs font-bold rounded-lg hover:bg-white/[0.12] transition-colors"
+            className="px-4 py-2 bg-white/[0.08] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-white/[0.12] transition-colors"
           >
             &larr; Back to Applications
           </button>
@@ -480,26 +480,26 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
       <Card>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
-            <p className="text-slate-500 font-bold">Status</p>
+            <p className="text-[#6e6e73] font-bold">Status</p>
             <StatusBadge stage={application.stage} />
           </div>
           <div>
-            <p className="text-slate-500 font-bold">Applied On</p>
-            <p className="text-white font-semibold">
+            <p className="text-[#6e6e73] font-bold">Applied On</p>
+            <p className="text-[#1d1d1f] font-semibold">
               {new Date(application.created_at).toLocaleDateString()}
             </p>
           </div>
           <div>
-            <p className="text-slate-500 font-bold">Email</p>
+            <p className="text-[#6e6e73] font-bold">Email</p>
             <a href={`mailto:${application.email}`} className="text-primary-600 dark:text-primary-400 font-semibold hover:underline">
               {application.email}
             </a>
           </div>
           <div>
-            <p className="text-slate-500 font-bold">Profile</p>
+            <p className="text-[#6e6e73] font-bold">Profile</p>
             {(() => {
               const raw = application.linkedin_url?.trim();
-              if (!raw) return <p className="text-slate-500">Not provided</p>;
+              if (!raw) return <p className="text-[#6e6e73]">Not provided</p>;
               // Normalize: auto-prefix https:// if missing (fixes Welle 1 Item 3 — many applicants
               // submit `www.linkedin.com/...` or `linkedin.com/...` which become 404 as relative links)
               const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
@@ -519,7 +519,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           </div>
           {application.preferred_project_areas && application.preferred_project_areas.length > 0 && (
             <div className="col-span-full mt-4">
-              <p className="text-slate-500 font-bold mb-2">Preferred Project Areas</p>
+              <p className="text-[#6e6e73] font-bold mb-2">Preferred Project Areas</p>
               <div className="flex flex-wrap gap-2">
                 {application.preferred_project_areas.map((area, index) => (
                   <span
@@ -534,8 +534,8 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           )}
           {(!application.preferred_project_areas || application.preferred_project_areas.length === 0) && (
             <div className="col-span-full mt-4">
-              <p className="text-slate-500 font-bold mb-2">Preferred Project Areas</p>
-              <p className="text-slate-500">Not filled out</p>
+              <p className="text-[#6e6e73] font-bold mb-2">Preferred Project Areas</p>
+              <p className="text-[#6e6e73]">Not filled out</p>
             </div>
           )}
         </div>
@@ -545,7 +545,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
         {/* --- Left Column --- */}
         <div className="lg:col-span-2 space-y-6">
           <Card title="Project Highlight">
-            <p className="text-sm text-slate-300 whitespace-pre-wrap">
+            <p className="text-sm text-[#1d1d1f] whitespace-pre-wrap">
               {application.project_highlight}
             </p>
           </Card>
@@ -558,7 +558,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
 
           {application.work_sample_text && (
               <Card title="Work Sample Submission">
-                <p className="text-sm text-slate-300 whitespace-pre-wrap">
+                <p className="text-sm text-[#1d1d1f] whitespace-pre-wrap">
                   {application.work_sample_text}
                 </p>
               </Card>
@@ -581,7 +581,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
             <div className="space-y-3">
               {application.aiScore !== undefined && application.aiScore !== null && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-500">Score:</span>
+                  <span className="text-sm font-bold text-[#6e6e73]">Score:</span>
                   <span className={`px-3 py-1 text-xs font-black rounded-full ${
                     application.aiScore >= 75 ? 'bg-emerald-500/15 text-emerald-400' :
                     application.aiScore >= 50 ? 'bg-yellow-500/15 text-yellow-400' :
@@ -595,16 +595,16 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
                 </div>
               )}
               {aiAnalysis ? (
-                <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+                <p className="text-xs text-[#1d1d1f] whitespace-pre-wrap leading-relaxed">
                   {aiAnalysis}
                 </p>
               ) : (
-                <p className="text-sm text-slate-500">Not yet analyzed.</p>
+                <p className="text-sm text-[#6e6e73]">Not yet analyzed.</p>
               )}
               <button
                 onClick={handleAnalyzeWithAI}
                 disabled={isAnalyzing}
-                className="w-full px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full px-4 py-2 bg-purple-600 text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isAnalyzing && <Spinner className="w-3 h-3" />}
                 {isAnalyzing ? 'Analyzing...' : aiAnalysis ? '🔄 Re-analyze' : '✨ Analyze with AI'}
