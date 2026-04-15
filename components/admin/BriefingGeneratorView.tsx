@@ -1,3 +1,5 @@
+// @deprecated 2026-04-15 — consolidated into ContentCalendarView / BriefsHubView (Phase 3)
+// Will be removed 2 weeks after user verifies the new consolidated views.
 import React, { useState, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';

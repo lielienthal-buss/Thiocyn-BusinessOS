@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { LoadingState } from '@/components/ui/DataStates';
+import ExecutiveSummary, { type ExecRole } from './home/ExecutiveSummary';
+
+interface HomeViewProps {
+  userRole?: ExecRole;
+}
 import {
   Section,
   Card,
@@ -66,7 +71,7 @@ const daysUntil = (d: string) => Math.round((new Date(d).getTime() - Date.now())
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-export default function HomeView() {
+export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
   const [metrics, setMetrics] = useState<BrandMetric[]>([]);
   const [disputes, setDisputes] = useState<Dispute[]>([]);
   const [tasks, setTasks] = useState<TeamTask[]>([]);
@@ -162,6 +167,9 @@ export default function HomeView() {
 
   return (
     <Section className="space-y-6">
+      {/* ── Executive Summary ── */}
+      <ExecutiveSummary role={userRole} />
+
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>

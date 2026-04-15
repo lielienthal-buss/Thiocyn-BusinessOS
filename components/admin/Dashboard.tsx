@@ -59,9 +59,23 @@ const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
 const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
 const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
 const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
+const MarketingCockpit = lazyLoad(() => import('./marketing/MarketingCockpit'));
+const CampaignKanban = lazyLoad(() => import('./marketing/CampaignKanban'));
+const CampaignDrawer = lazyLoad(() => import('./marketing/CampaignDrawer'));
+const ContentCalendarView = lazyLoad(() => import('./marketing/ContentCalendarView'));
+const BriefsHubView = lazyLoad(() => import('./marketing/BriefsHubView'));
 
-type Tab = 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner' | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator' | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds' | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard' | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails' | 'customerSupportOverview' | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings' | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
-type Section = 'command' | 'creative' | 'revenue' | 'hiring' | 'finance' | 'support' | 'admin' | 'account' | 'workspace';
+type Tab =
+  | 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner'
+  | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator'
+  | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
+  | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
+  | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
+  | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails'
+  | 'customerSupportOverview'
+  | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
+  | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
+type Section = 'home' | 'marketing' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -73,44 +87,37 @@ const hasRole = (userRole: string, minRole: UserRole) =>
 
 const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole; tabs: { id: Tab; label: string }[] }[] = [
   {
-    id: 'command',
-    label: 'Command Center',
-    emoji: '🎯',
+    id: 'home',
+    label: 'Home',
+    emoji: '🏠',
     tabs: [
       { id: 'briefing', label: 'Daily Briefing' },
       { id: 'home', label: 'Overview' },
       { id: 'teamTasks', label: 'Tasks' },
       { id: 'emmaPlanner', label: 'Planner' },
+      { id: 'workspace', label: 'My Workspace' },
+      { id: 'notificationFeed', label: 'Notifications' },
     ],
   },
   {
-    id: 'creative',
-    label: 'Creative Studio',
-    emoji: '🎨',
+    id: 'marketing',
+    label: 'Marketing',
+    emoji: '📣',
     tabs: [
-      { id: 'creatorPipeline', label: 'Creators' },
-      { id: 'creativeFactory', label: 'Creative Factory' },
-      { id: 'contentMachine', label: 'Content Machine' },
-      { id: 'videoGeneration', label: 'Video Gen' },
-      { id: 'postsTracker', label: 'Posts' },
-      { id: 'briefingGenerator', label: 'Briefings' },
-    ],
-  },
-  {
-    id: 'revenue',
-    label: 'Revenue & Analytics',
-    emoji: '📊',
-    minRole: 'staff',
-    tabs: [
-      { id: 'ecomOverview', label: 'Overview' },
-      { id: 'ecomOrders', label: 'Orders' },
-      { id: 'analyticsKpis', label: 'Brand KPIs' },
+      { id: 'marketingCockpit', label: 'Cockpit' },
+      { id: 'marketingCampaigns', label: 'Campaigns' },
       { id: 'analyticsAds', label: 'Ad Performance' },
+      { id: 'ecomOverview', label: 'E-Com Overview' },
+      { id: 'ecomOrders', label: 'E-Com Orders' },
+      { id: 'analyticsKpis', label: 'Brand KPIs' },
+      { id: 'marketingContentCalendar', label: 'Content Calendar' },
+      { id: 'creatorPipeline', label: 'Creators' },
+      { id: 'marketingBriefs', label: 'Briefs' },
     ],
   },
   {
-    id: 'hiring',
-    label: 'Hiring & Academy',
+    id: 'teamAcademy',
+    label: 'Team & Academy',
     emoji: '🎓',
     tabs: [
       { id: 'applications', label: 'Applications' },
@@ -136,11 +143,19 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     ],
   },
   {
-    id: 'support',
-    label: 'Support',
+    id: 'customerSupport',
+    label: 'Customer Support',
     emoji: '💬',
     tabs: [
       { id: 'customerSupportOverview', label: 'Overview' },
+    ],
+  },
+  {
+    id: 'account',
+    label: 'Account',
+    emoji: '👤',
+    tabs: [
+      { id: 'accountProfile', label: 'My Profile' },
     ],
   },
   {
@@ -157,22 +172,6 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'processExecution', label: 'SOPs' },
       { id: 'isoCompliance', label: 'Risk & ISO' },
       { id: 'settings', label: 'Settings' },
-    ],
-  },
-  {
-    id: 'workspace' as Section,
-    label: 'Workspace',
-    emoji: '🗂️',
-    tabs: [
-      { id: 'workspace', label: 'My Workspace' },
-    ],
-  },
-  {
-    id: 'account' as Section,
-    label: 'Account',
-    emoji: '👤',
-    tabs: [
-      { id: 'accountProfile', label: 'My Profile' },
     ],
   },
 ];
@@ -209,7 +208,7 @@ const Dashboard: React.FC = () => {
   const { lang, setLang } = useLang();
   const t = translations[lang];
 
-  const [section, setSection] = useState<Section>('command');
+  const [section, setSection] = useState<Section>('home');
   const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [tab, setTab] = useState<Tab>('home');
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
@@ -218,6 +217,8 @@ const Dashboard: React.FC = () => {
   const [loadingApplicant, setLoadingApplicant] = useState(false); // New state for loading applicant details
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInitialPrompt, setChatInitialPrompt] = useState<string | undefined>();
+  const [campaignDrawerId, setCampaignDrawerId] = useState<string | null>(null);
+  const [previewRole, setPreviewRole] = useState<UserRole | null>(null);
   const [companyName, setCompanyName] = useState<string>('Business OS');
 
   useEffect(() => {
@@ -313,7 +314,40 @@ const Dashboard: React.FC = () => {
     }
 
     if (tab === 'home') {
-      return <HomeView />;
+      return <HomeView userRole={effectiveRole} />;
+    }
+
+    if (tab === 'marketingCockpit') {
+      return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <MarketingCockpit role={effectiveRole} />
+        </React.Suspense>
+      );
+    }
+
+    if (tab === 'marketingCampaigns') {
+      return (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-base font-black text-[#1d1d1f]">Campaigns</h3>
+              <p className="text-xs text-[#6e6e73] mt-0.5">
+                Plan, brief and approve campaigns across brands + agencies. Drag to change status.
+              </p>
+            </div>
+            <CampaignKanban onCardClick={setCampaignDrawerId} />
+            <CampaignDrawer campaignId={campaignDrawerId} onClose={() => setCampaignDrawerId(null)} />
+          </div>
+        </React.Suspense>
+      );
+    }
+
+    if (tab === 'marketingContentCalendar') {
+      return <React.Suspense fallback={<div>Loading...</div>}><ContentCalendarView /></React.Suspense>;
+    }
+
+    if (tab === 'marketingBriefs') {
+      return <React.Suspense fallback={<div>Loading...</div>}><BriefsHubView /></React.Suspense>;
     }
 
     if (tab === 'teamTasks') {
@@ -477,7 +511,6 @@ const Dashboard: React.FC = () => {
     return null;
   };
 
-  const [previewRole, setPreviewRole] = useState<UserRole | null>(null);
   const effectiveRole: UserRole = previewRole ?? (isDemoMode ? 'owner' : userRole);
   const visibleSections = SECTIONS.filter(s => !s.minRole || hasRole(effectiveRole, s.minRole));
   const activeSection = SECTIONS.find(s => s.id === section) ?? SECTIONS[0];
@@ -675,10 +708,10 @@ const Dashboard: React.FC = () => {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 backdrop-blur-xl border-t border-black/[0.06] flex items-center justify-around px-2 py-2 safe-area-pb" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px) saturate(1.8)', WebkitBackdropFilter: 'blur(20px) saturate(1.8)' }}>
         {[
-          { id: 'command' as Section, emoji: '🎯', label: 'Home' },
-          { id: 'creative' as Section, emoji: '🎨', label: 'Creative' },
-          { id: 'revenue' as Section, emoji: '📊', label: 'Revenue' },
-          { id: 'hiring' as Section, emoji: '🎓', label: 'Hiring' },
+          { id: 'home' as Section, emoji: '🏠', label: 'Home' },
+          { id: 'marketing' as Section, emoji: '📣', label: 'Marketing' },
+          { id: 'teamAcademy' as Section, emoji: '🎓', label: 'Team' },
+          { id: 'finance' as Section, emoji: '💰', label: 'Finance' },
           { id: 'admin' as Section, emoji: '⚙️', label: 'Admin' },
         ].filter(s => visibleSections.find(vs => vs.id === s.id)).map(s => (
           <button

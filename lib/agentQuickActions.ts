@@ -5,7 +5,7 @@ export interface QuickAction {
 }
 
 export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
-  command: [
+  home: [
     {
       emoji: '☀️',
       label: 'Daily brief',
@@ -17,7 +17,37 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       prompt: 'Summarize the current status across all areas: open tasks, pending items, and what needs my attention.',
     },
   ],
-  hiring: [
+  marketing: [
+    {
+      emoji: '🪝',
+      label: 'Generate hook',
+      prompt:
+        'Generate 3 strong video hooks for Thiocyn targeting German-speaking audiences aged 25-45 concerned about hair loss.',
+    },
+    {
+      emoji: '📅',
+      label: 'Plan content week',
+      prompt:
+        'Help me plan a content week for our top 2 active brands: Thiocyn and Take A Shot. Focus on Instagram Reels.',
+    },
+    {
+      emoji: '📊',
+      label: 'Review SOP status',
+      prompt:
+        'Based on our Meta Ads SOP phases, what should be the next priority action for Thiocyn (currently in phase 3: script production)?',
+    },
+    {
+      emoji: '📈',
+      label: 'Revenue overview',
+      prompt: 'Give me a revenue overview across all brands: MTD revenue, top performing products, and trends.',
+    },
+    {
+      emoji: '🛒',
+      label: 'Order analysis',
+      prompt: 'Analyze recent order patterns: AOV trends, return rates, and any anomalies across brands.',
+    },
+  ],
+  teamAcademy: [
     {
       emoji: '📋',
       label: 'Review pipeline',
@@ -37,38 +67,6 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
         'Suggest 5 strong interview questions for a marketing intern position at Hart Limes GmbH.',
     },
   ],
-  creative: [
-    {
-      emoji: '🪝',
-      label: 'Generate hook',
-      prompt:
-        'Generate 3 strong video hooks for Thiocyn targeting German-speaking audiences aged 25-45 concerned about hair loss.',
-    },
-    {
-      emoji: '📅',
-      label: 'Plan content week',
-      prompt:
-        'Help me plan a content week for our top 2 active brands: Thiocyn and Take A Shot. Focus on Instagram Reels.',
-    },
-    {
-      emoji: '📊',
-      label: 'Review SOP status',
-      prompt:
-        'Based on our Meta Ads SOP phases, what should be the next priority action for Thiocyn (currently in phase 3: script production)?',
-    },
-  ],
-  revenue: [
-    {
-      emoji: '📊',
-      label: 'Revenue overview',
-      prompt: 'Give me a revenue overview across all brands: MTD revenue, top performing products, and trends.',
-    },
-    {
-      emoji: '🛒',
-      label: 'Order analysis',
-      prompt: 'Analyze recent order patterns: AOV trends, return rates, and any anomalies across brands.',
-    },
-  ],
   finance: [
     {
       emoji: '💰',
@@ -81,7 +79,7 @@ export const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       prompt: 'Summarize all active payment disputes: platform, amount, deadline, and recommended action.',
     },
   ],
-  support: [
+  customerSupport: [
     {
       emoji: '💬',
       label: 'Draft response',
