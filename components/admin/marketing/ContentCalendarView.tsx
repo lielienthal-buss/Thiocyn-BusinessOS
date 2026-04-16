@@ -252,7 +252,7 @@ const ContentCalendarView: React.FC = () => {
           <select
             value={brandFilter}
             onChange={e => setBrandFilter(e.target.value)}
-            className="bg-white border border-slate-200 text-sm text-slate-700 rounded-lg px-3 py-1.5"
+            className="bg-white ring-1 ring-slate-200 text-sm text-slate-700 rounded-lg px-3 py-1.5"
           >
             <option value="all">Alle Brands</option>
             {Object.entries(BRAND_LABELS).map(([k, v]) => (
@@ -263,7 +263,7 @@ const ContentCalendarView: React.FC = () => {
           </select>
           <button
             onClick={() => setShowAddForm(v => !v)}
-            className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#E09B37] hover:bg-[#c8832a] text-white text-sm font-bold rounded-lg transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
           >
             + Post
           </button>
@@ -279,12 +279,12 @@ const ContentCalendarView: React.FC = () => {
               value={newPost.title}
               onChange={e => setNewPost({ ...newPost, title: e.target.value })}
               placeholder="Titel"
-              className="md:col-span-2 border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="md:col-span-2 ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
             />
             <select
               value={newPost.brand_id}
               onChange={e => setNewPost({ ...newPost, brand_id: e.target.value })}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
             >
               {Object.entries(BRAND_LABELS).map(([k, v]) => (
                 <option key={k} value={k}>
@@ -295,7 +295,7 @@ const ContentCalendarView: React.FC = () => {
             <select
               value={newPost.platform}
               onChange={e => setNewPost({ ...newPost, platform: e.target.value })}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
             >
               <option value="instagram">Instagram</option>
               <option value="tiktok">TikTok</option>
@@ -306,11 +306,11 @@ const ContentCalendarView: React.FC = () => {
               type="date"
               value={newPost.due_date}
               onChange={e => setNewPost({ ...newPost, due_date: e.target.value })}
-              className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
             />
             <button
               onClick={submitNewPost}
-              className="bg-slate-900 hover:bg-slate-700 text-white text-sm font-bold rounded-lg px-3 py-2"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg px-3 py-2 transition-colors"
             >
               Save
             </button>
@@ -374,12 +374,12 @@ const ContentCalendarView: React.FC = () => {
                 <div
                   key={i}
                   className={`min-h-[80px] rounded-lg p-1.5 ring-1 ${
-                    inMonth ? 'bg-slate-50 ring-slate-100' : 'bg-slate-50/50 ring-slate-100/50'
-                  } ${isToday ? 'ring-2 ring-amber-400' : ''}`}
+                    inMonth ? 'bg-slate-50 ring-slate-200' : 'bg-slate-50/50 ring-slate-200/50'
+                  } ${isToday ? 'ring-2 ring-indigo-500' : ''}`}
                 >
                   <div
                     className={`text-[11px] font-bold mb-1 ${
-                      inMonth ? 'text-slate-700' : 'text-slate-300'
+                      inMonth ? 'text-slate-700' : 'text-slate-500'
                     }`}
                   >
                     {day.getDate()}
@@ -428,7 +428,7 @@ const ContentCalendarView: React.FC = () => {
                 ? hashtags
                 : hashtags.filter(h => h.brand_slug === brandFilter)
               ).map(h => (
-                <div key={h.brand_slug} className="border border-slate-200 rounded-xl p-3">
+                <div key={h.brand_slug} className="ring-1 ring-slate-200 rounded-xl p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-900">{BRAND_LABELS[h.brand_slug] ?? h.brand_slug}</span>
                     <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">
@@ -485,8 +485,8 @@ const ContentCalendarView: React.FC = () => {
                 return (
                   <div
                     key={`${d.brand_slug}-${d.week_in_cycle}`}
-                    className={`border rounded-xl p-3 ${
-                      isThisWeek ? 'border-amber-300 bg-amber-50' : 'border-slate-200'
+                    className={`ring-1 rounded-xl p-3 ${
+                      isThisWeek ? 'ring-amber-300 bg-amber-50' : 'ring-slate-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -631,7 +631,7 @@ function HashtagInput({ onAdd }: { onAdd: (tag: string) => void }) {
           setEditing(false);
         }
       }}
-      className="w-20 px-1.5 py-0.5 text-[10px] bg-white border border-amber-400 rounded text-slate-900 outline-none"
+      className="w-20 px-1.5 py-0.5 text-[10px] bg-white ring-1 ring-indigo-500 rounded text-slate-900 outline-none"
       placeholder="#tag"
     />
   );

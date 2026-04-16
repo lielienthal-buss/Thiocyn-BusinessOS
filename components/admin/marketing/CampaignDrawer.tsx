@@ -108,7 +108,7 @@ const BriefTab: React.FC<{ campaignId: string; onCampaignChanged: () => void }> 
   return (
     <div className="space-y-4">
       {approved && (
-        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-600 font-semibold">
+        <div className="p-3 bg-blue-50 ring-1 ring-blue-200 rounded-xl text-xs text-blue-700 font-semibold">
           ✅ Approved{existing?.approved_at ? ` on ${new Date(existing.approved_at).toLocaleDateString()}` : ''}
         </div>
       )}
@@ -218,7 +218,7 @@ const BriefTab: React.FC<{ campaignId: string; onCampaignChanged: () => void }> 
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-4 py-2 text-sm font-bold text-white bg-[#1d1d1f] rounded-lg hover:bg-black disabled:opacity-50"
+          className="px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 transition-colors"
         >
           {saving ? 'Saving...' : existing ? 'Update Brief' : 'Save Brief'}
         </button>
@@ -285,8 +285,8 @@ const CommentsTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
       <div key={c.id} style={{ marginLeft: depth * 16 }} className="mb-3">
         <div className="bg-white rounded-xl ring-1 ring-slate-200 p-3">
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold text-[#1d1d1f]">{c.author_name ?? 'Anon'}</span>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-xs font-bold text-slate-900">{c.author_name ?? 'Anon'}</span>
+            <span className="text-[10px] text-slate-500">
               {new Date(c.created_at).toLocaleString()}
             </span>
           </div>
@@ -323,7 +323,7 @@ const CommentsTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
           <button
             onClick={() => submit(null)}
             disabled={saving || !body.trim()}
-            className="px-4 py-2 text-xs font-bold text-white bg-[#1d1d1f] rounded-lg hover:bg-black disabled:opacity-50"
+            className="px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 transition-colors"
           >
             {saving ? 'Posting...' : 'Post'}
           </button>
@@ -371,10 +371,10 @@ const AssetsTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-black text-[#1d1d1f]">Creative Sets</h4>
+        <h4 className="text-sm font-black text-slate-900">Creative Sets</h4>
         <button
           onClick={() => setShowNewSet(true)}
-          className="px-3 py-1.5 text-xs font-bold text-white bg-[#1d1d1f] hover:bg-black rounded-lg"
+          className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
         >
           + Set
         </button>
@@ -452,14 +452,14 @@ const CreativeSetRow: React.FC<{
     <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-sm text-[#1d1d1f]">{set.name}</span>
+          <span className="font-bold text-sm text-slate-900">{set.name}</span>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">
             {set.status}
           </span>
         </div>
         <button
           onClick={() => setShowAdd((s) => !s)}
-          className="text-xs font-bold text-amber-600 hover:text-amber-700"
+          className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
         >
           + Asset
         </button>
@@ -496,7 +496,7 @@ const CreativeSetRow: React.FC<{
       )}
 
       {assets.length === 0 ? (
-        <p className="text-[11px] text-slate-400 italic">no assets</p>
+        <p className="text-[11px] text-slate-500 italic">no assets</p>
       ) : (
         <ul className="space-y-1">
           {assets.map((a) => (
@@ -508,13 +508,13 @@ const CreativeSetRow: React.FC<{
                 <span className="text-[10px] font-bold uppercase bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">
                   {a.type ?? '—'}
                 </span>
-                <span className="font-semibold text-[#1d1d1f] truncate">{a.label ?? '(no label)'}</span>
+                <span className="font-semibold text-slate-900 truncate">{a.label ?? '(no label)'}</span>
               </div>
               <a
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-amber-600 hover:text-amber-700 font-bold shrink-0"
+                className="text-indigo-600 hover:text-indigo-700 font-bold shrink-0"
               >
                 open ↗
               </a>
@@ -622,7 +622,7 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
                 <XAxis dataKey="snapshot_date" tick={{ fontSize: 10, fill: '#64748b' }} />
                 <YAxis tick={{ fontSize: 10, fill: '#64748b' }} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} />
-                <ReferenceLine y={2} stroke="#94a3b8" strokeDasharray="4 4" />
+                <ReferenceLine y={2} stroke="#cbd5e1" strokeDasharray="3 3" />
                 <Line
                   type="monotone"
                   dataKey="roas"
@@ -643,14 +643,14 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
                 <XAxis dataKey="snapshot_date" tick={{ fontSize: 10, fill: '#64748b' }} />
                 <YAxis tick={{ fontSize: 10, fill: '#64748b' }} />
                 <Tooltip contentStyle={TOOLTIP_STYLE} />
-                <Bar dataKey="spend" fill="#64748b" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="spend" fill="#475569" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>
       ) : (
         <div className="bg-white rounded-xl ring-1 ring-slate-200 p-6 text-center">
-          <p className="text-xs text-slate-400 italic">
+          <p className="text-xs text-slate-500 italic">
             No performance data yet — add the first snapshot below.
           </p>
         </div>
@@ -658,7 +658,7 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
 
       {/* Manual entry */}
       <div className="bg-slate-50 rounded-xl p-3 ring-1 ring-slate-200">
-        <p className="text-xs font-black uppercase tracking-wider text-[#6e6e73] mb-2">
+        <p className="text-xs font-black uppercase tracking-wider text-slate-600 mb-2">
           Manual Entry
         </p>
         <div className="grid grid-cols-7 gap-2 items-end">
@@ -688,7 +688,7 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
           <button
             onClick={submit}
             disabled={saving}
-            className="px-3 py-2 text-xs font-bold text-white bg-[#1d1d1f] hover:bg-black rounded-lg disabled:opacity-50"
+            className="px-3 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 transition-colors"
           >
             {saving ? '...' : 'Save'}
           </button>
@@ -699,7 +699,7 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
       <div className="overflow-x-auto bg-white rounded-xl ring-1 ring-slate-200">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-[#6e6e73]">
+            <tr className="border-b border-slate-200 bg-slate-50 text-slate-600">
               <Th>Date</Th>
               <Th>Spend</Th>
               <Th>Impr.</Th>
@@ -715,7 +715,7 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
           <tbody>
             {kpis.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-6 text-center text-slate-400 italic">
+                <td colSpan={10} className="px-4 py-6 text-center text-slate-500 italic">
                   No snapshots yet
                 </td>
               </tr>
@@ -728,12 +728,12 @@ const PerformanceTab: React.FC<{ campaignId: string }> = ({ campaignId }) => {
                   <Td>{fmtInt(k.clicks)}</Td>
                   <Td>{fmtInt(k.conversions)}</Td>
                   <Td>{fmt(k.revenue)}</Td>
-                  <Td className={k.roas && k.roas >= 2 ? 'text-emerald-600 font-bold' : 'text-rose-500'}>
+                  <Td className={k.roas && k.roas >= 2 ? 'text-emerald-700 font-bold' : 'text-rose-700'}>
                     {fmt(k.roas)}
                   </Td>
                   <Td>{fmt(k.cpa)}</Td>
                   <Td>{fmt(k.ctr)}</Td>
-                  <Td className="text-slate-400">{k.source}</Td>
+                  <Td className="text-slate-500">{k.source}</Td>
                 </tr>
               ))
             )}
@@ -752,6 +752,7 @@ const TOOLTIP_STYLE = {
   borderRadius: 8,
   fontSize: 11,
   padding: '6px 8px',
+  color: '#0f172a',
 } as const;
 
 const StatCard: React.FC<{
@@ -760,13 +761,13 @@ const StatCard: React.FC<{
   tone?: 'slate' | 'emerald' | 'rose';
 }> = ({ label, value, tone = 'slate' }) => {
   const tones: Record<string, string> = {
-    slate: 'text-[#1d1d1f]',
-    emerald: 'text-emerald-600',
-    rose: 'text-rose-600',
+    slate: 'text-slate-900',
+    emerald: 'text-emerald-700',
+    rose: 'text-rose-700',
   };
   return (
     <div className="bg-white rounded-xl ring-1 ring-slate-200 px-3 py-2">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-[#6e6e73]">{label}</p>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{label}</p>
       <p className={`text-lg font-black ${tones[tone]}`}>{value}</p>
     </div>
   );
@@ -779,8 +780,8 @@ const ChartCard: React.FC<{
 }> = ({ title, subtitle, children }) => (
   <div className="bg-white rounded-xl ring-1 ring-slate-200 p-3">
     <div className="flex items-baseline justify-between mb-1">
-      <h5 className="text-[11px] font-black uppercase tracking-wider text-[#6e6e73]">{title}</h5>
-      {subtitle && <span className="text-[10px] text-slate-400">{subtitle}</span>}
+      <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-600">{title}</h5>
+      {subtitle && <span className="text-[10px] text-slate-500">{subtitle}</span>}
     </div>
     {children}
   </div>
@@ -790,14 +791,14 @@ const ChartCard: React.FC<{
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="space-y-2">
-    <h5 className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73]">{title}</h5>
+    <h5 className="text-[10px] font-black uppercase tracking-wider text-slate-600">{title}</h5>
     <div className="space-y-2">{children}</div>
   </div>
 );
 
 const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
-    <label className="text-[11px] font-semibold text-[#6e6e73] block mb-1">{label}</label>
+    <label className="text-[11px] font-semibold text-slate-600 block mb-1">{label}</label>
     {children}
   </div>
 );
@@ -812,7 +813,7 @@ const TextArea: React.FC<{
     value={value}
     onChange={(e) => onChange(e.target.value)}
     rows={rows}
-    className={`w-full px-3 py-2 text-sm rounded-lg ring-1 ring-slate-200 bg-white focus:ring-amber-400 focus:outline-none resize-y ${
+    className={`w-full px-3 py-2 text-sm rounded-lg ring-1 ring-slate-200 bg-white focus:ring-indigo-500 focus:outline-none resize-y ${
       mono ? 'font-mono text-xs' : ''
     }`}
   />
@@ -820,7 +821,7 @@ const TextArea: React.FC<{
 
 const Col: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
-    <label className="text-[10px] font-semibold text-[#6e6e73] block mb-0.5">{label}</label>
+    <label className="text-[10px] font-semibold text-slate-600 block mb-0.5">{label}</label>
     {children}
   </div>
 );
@@ -839,7 +840,7 @@ const Th: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const Td: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-  <td className={`px-3 py-2 text-[#1d1d1f] ${className ?? ''}`}>{children}</td>
+  <td className={`px-3 py-2 text-slate-900 ${className ?? ''}`}>{children}</td>
 );
 
 // ─── Main Drawer ────────────────────────────────────────────────────────────
@@ -866,33 +867,33 @@ const CampaignDrawer: React.FC<CampaignDrawerProps> = ({ campaignId, onClose, on
       <div className="flex-1 bg-black/30" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="w-full max-w-3xl bg-[#fafafa] h-full overflow-hidden flex flex-col shadow-2xl ring-1 ring-slate-200">
+      <div className="w-full max-w-3xl bg-slate-50 h-full overflow-hidden flex flex-col shadow-2xl ring-1 ring-slate-200">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-start justify-between gap-4">
           {loading ? (
-            <p className="text-sm text-slate-400">Loading...</p>
+            <p className="text-sm text-slate-500">Loading...</p>
           ) : error ? (
             <p className="text-sm text-red-500">{error}</p>
           ) : campaign ? (
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className="text-lg font-black text-[#1d1d1f]">{campaign.name}</h2>
+                <h2 className="text-lg font-black text-slate-900">{campaign.name}</h2>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${statusBadge}`}>
                   {STATUS_LABELS[campaign.status as CampaignStatus] ?? campaign.status}
                 </span>
               </div>
-              <p className="text-xs text-[#6e6e73]">
+              <p className="text-xs text-slate-600">
                 {campaign.brand_id} · {campaign.platform}
                 {campaign.budget_planned ? ` · €${Number(campaign.budget_planned).toLocaleString()}` : ''}
               </p>
             </div>
           ) : (
-            <p className="text-sm text-slate-400">Not found</p>
+            <p className="text-sm text-slate-500">Not found</p>
           )}
 
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-xl font-bold px-2"
+            className="text-slate-500 hover:text-slate-700 text-xl font-bold px-2"
             aria-label="Close"
           >
             ×
@@ -907,8 +908,8 @@ const CampaignDrawer: React.FC<CampaignDrawerProps> = ({ campaignId, onClose, on
               onClick={() => setTab(t)}
               className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 -mb-px transition-colors ${
                 tab === t
-                  ? 'border-amber-500 text-[#1d1d1f]'
-                  : 'border-transparent text-[#6e6e73] hover:text-[#1d1d1f]'
+                  ? 'border-indigo-600 text-slate-900'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
               {t}

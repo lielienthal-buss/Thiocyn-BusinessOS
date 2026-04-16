@@ -23,9 +23,10 @@ interface MarketingCockpitProps {
 
 // Monochromatic-per-chart palette — slate-neutral + one accent per metric
 const PLATFORM_COLORS: Record<string, string> = {
-  meta: '#6366f1', // indigo
-  google: '#0ea5e9', // sky
-  tiktok: '#64748b', // slate
+  meta: '#4f46e5', // indigo-600
+  google: '#0284c7', // sky-600
+  tiktok: '#475569', // slate-600
+  amazon: '#ea580c', // orange-600
   cross: '#94a3b8',
 };
 
@@ -35,6 +36,7 @@ const TOOLTIP_STYLE = {
   borderRadius: 8,
   fontSize: 11,
   padding: '6px 8px',
+  color: '#0f172a',
 } as const;
 
 interface CampaignRow {
@@ -142,7 +144,7 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
     <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
       <div>
         <h2 className="text-xl font-black tracking-tight text-slate-900">Marketing Cockpit</h2>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-600 mt-1">
           Role-adaptive summary of campaigns, spend and creative throughput.
         </p>
       </div>
@@ -152,9 +154,9 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
       {/* Overview strip */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Platform Split */}
-        <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+        <div className="bg-white rounded-2xl ring-1 ring-slate-200 hover:ring-slate-300 p-4 transition-all">
           <div className="flex items-baseline justify-between mb-2">
-            <h5 className="text-[11px] font-black uppercase tracking-wider text-[#6e6e73]">
+            <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-600">
               Platform Split · MTD Spend
             </h5>
           </div>
@@ -195,9 +197,9 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
         </div>
 
         {/* Spend by Brand */}
-        <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+        <div className="bg-white rounded-2xl ring-1 ring-slate-200 hover:ring-slate-300 p-4 transition-all">
           <div className="flex items-baseline justify-between mb-2">
-            <h5 className="text-[11px] font-black uppercase tracking-wider text-[#6e6e73]">
+            <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-600">
               Spend by Brand · MTD
             </h5>
           </div>
@@ -213,7 +215,7 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
                   contentStyle={TOOLTIP_STYLE}
                   formatter={(v: number) => `€${v.toLocaleString()}`}
                 />
-                <Bar dataKey="value" fill="#6366f1" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="value" fill="#4f46e5" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -222,9 +224,9 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
         </div>
 
         {/* Campaign Status */}
-        <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-4">
+        <div className="bg-white rounded-2xl ring-1 ring-slate-200 hover:ring-slate-300 p-4 transition-all">
           <div className="flex items-baseline justify-between mb-2">
-            <h5 className="text-[11px] font-black uppercase tracking-wider text-[#6e6e73]">
+            <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-600">
               Campaign Status
             </h5>
           </div>
@@ -264,7 +266,7 @@ const ChartSkeleton: React.FC = () => (
 
 const EmptyChart: React.FC<{ hint: string }> = ({ hint }) => (
   <div className="h-[180px] flex items-center justify-center">
-    <p className="text-xs text-slate-400 italic">{hint}</p>
+    <p className="text-xs text-slate-500 italic">{hint}</p>
   </div>
 );
 

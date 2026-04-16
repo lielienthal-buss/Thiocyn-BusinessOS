@@ -95,11 +95,11 @@ interface AgencyBriefRow {
 }
 
 const STATUS_COLORS: Record<AgencyBriefStatus, string> = {
-  draft: 'bg-slate-100 text-slate-600',
-  sent: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-yellow-100 text-yellow-700',
-  completed: 'bg-green-100 text-green-700',
-  archived: 'bg-slate-200 text-slate-500',
+  draft: 'bg-slate-50 text-slate-700',
+  sent: 'bg-blue-50 text-blue-700',
+  in_progress: 'bg-yellow-50 text-yellow-700',
+  completed: 'bg-green-50 text-green-700',
+  archived: 'bg-slate-100 text-slate-700',
 };
 
 const STATUS_LIST: AgencyBriefStatus[] = ['draft', 'sent', 'in_progress', 'completed', 'archived'];
@@ -129,12 +129,12 @@ const CATEGORY_LABELS: Record<string, { label: string; emoji: string }> = {
 };
 
 const PERF_COLORS: Record<string, string> = {
-  winner: 'bg-green-100 text-green-700',
-  performer: 'bg-blue-100 text-blue-700',
-  testing: 'bg-yellow-100 text-yellow-700',
-  loser: 'bg-red-100 text-red-700',
-  untested: 'bg-slate-100 text-slate-600',
-  retired: 'bg-slate-200 text-slate-500',
+  winner: 'bg-green-50 text-green-700',
+  performer: 'bg-blue-50 text-blue-700',
+  testing: 'bg-yellow-50 text-yellow-700',
+  loser: 'bg-red-50 text-red-700',
+  untested: 'bg-slate-50 text-slate-700',
+  retired: 'bg-slate-100 text-slate-700',
 };
 
 // ─── Markdown Renderer (reused from BriefingGeneratorView, light-theme) ─────
@@ -345,7 +345,7 @@ const BriefsHubView: React.FC = () => {
         </div>
         <button
           onClick={() => setShowCreateModal('agency')}
-          className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#E09B37] hover:bg-[#c8832a] text-white text-sm font-bold rounded-lg transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
         >
           + Neues Brief generieren
         </button>
@@ -426,9 +426,9 @@ const BriefsHubView: React.FC = () => {
                         </td>
                         <td className="py-2 px-3">
                           {b.approved_at ? (
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">approved</span>
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-green-50 text-green-700">approved</span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600">draft</span>
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-slate-50 text-slate-700">draft</span>
                           )}
                         </td>
                         <td className="py-2 px-3 text-slate-500 text-xs">
@@ -458,7 +458,7 @@ const BriefsHubView: React.FC = () => {
                 <button
                   key={d.id}
                   onClick={() => setDrawerContent({ kind: 'daily', briefing: d })}
-                  className="text-left border border-slate-200 rounded-xl p-3 hover:bg-slate-50 transition-colors"
+                  className="text-left ring-1 ring-slate-200 hover:ring-slate-300 rounded-xl p-3 hover:bg-slate-50 transition-all"
                 >
                   <div className="text-xs font-bold text-slate-500">
                     {new Date(d.date).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'short' })}
@@ -484,7 +484,7 @@ const BriefsHubView: React.FC = () => {
               </span>
               <button
                 onClick={() => setShowCreateModal('agency')}
-                className="text-xs font-bold text-[#E09B37] hover:text-[#c8832a]"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
               >
                 + Neu
               </button>
@@ -503,13 +503,13 @@ const BriefsHubView: React.FC = () => {
                 <button
                   key={b.id}
                   onClick={() => setDrawerContent({ kind: 'agency', brief: b })}
-                  className="text-left border border-slate-200 rounded-xl p-3 hover:bg-slate-50 transition-colors"
+                  className="text-left ring-1 ring-slate-200 hover:ring-slate-300 rounded-xl p-3 hover:bg-slate-50 transition-all"
                 >
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-bold">
+                    <span className="px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full text-[10px] font-bold">
                       {b.brand_id ?? '—'}
                     </span>
-                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-[10px] font-bold uppercase">
+                    <span className="px-2 py-0.5 bg-slate-50 text-slate-700 rounded-full text-[10px] font-bold uppercase">
                       {b.type}
                     </span>
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_COLORS[b.status]}`}>
@@ -534,13 +534,13 @@ const BriefsHubView: React.FC = () => {
                 <button
                   key={g.id}
                   onClick={() => setDrawerContent({ kind: 'generated', brief: g })}
-                  className="text-left border border-amber-200 bg-amber-50/40 rounded-xl p-3 hover:bg-amber-50 transition-colors"
+                  className="text-left ring-1 ring-amber-200 bg-amber-50 rounded-xl p-3 hover:ring-amber-300 transition-all"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-[10px] font-bold">
+                    <span className="px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full text-[10px] font-bold">
                       {g.brand}
                     </span>
-                    <span className="px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-[10px] font-bold">
+                    <span className="px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold">
                       🟡 Not saved
                     </span>
                     <span className="text-[10px] text-slate-500">
@@ -596,7 +596,7 @@ const BriefsHubView: React.FC = () => {
                           {a.hook_de ?? a.name}
                         </td>
                         <td className="py-2 px-3 text-center">
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${PERF_COLORS[a.performance_tag] ?? 'bg-slate-100 text-slate-600'}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-xs ${PERF_COLORS[a.performance_tag] ?? 'bg-slate-50 text-slate-700'}`}>
                             {a.performance_tag}
                           </span>
                         </td>
@@ -780,7 +780,7 @@ const GeneratedBriefDetail: React.FC<{ brief: GeneratedBrief }> = ({ brief }) =>
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-xs font-bold">{brief.brand}</span>
+        <span className="px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full text-xs font-bold">{brief.brand}</span>
         <span className="text-xs text-slate-500">{new Date(brief.created_at).toLocaleString('de-DE')}</span>
         <button
           onClick={copy}
@@ -816,10 +816,10 @@ const AgencyBriefDetail: React.FC<{
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="px-2 py-0.5 bg-violet-100 text-violet-700 rounded-full text-xs font-bold">
+        <span className="px-2 py-0.5 bg-violet-50 text-violet-700 rounded-full text-xs font-bold">
           {brief.brand_id ?? '—'}
         </span>
-        <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full text-xs font-bold uppercase">
+        <span className="px-2 py-0.5 bg-slate-50 text-slate-700 rounded-full text-xs font-bold uppercase">
           {brief.type}
         </span>
         <span className="text-xs text-slate-500">
@@ -843,7 +843,7 @@ const AgencyBriefDetail: React.FC<{
           <select
             value={brief.status}
             onChange={e => onStatusChange(e.target.value as AgencyBriefStatus)}
-            className="border border-slate-200 rounded-lg px-2 py-1 text-sm"
+            className="ring-1 ring-slate-200 rounded-lg px-2 py-1 text-sm bg-white"
           >
             {STATUS_LIST.map(s => (
               <option key={s} value={s}>
@@ -1027,7 +1027,7 @@ const GeneratorModal: React.FC<{
               <select
                 value={brand}
                 onChange={e => setBrand(e.target.value as Brand)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                className="w-full ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
               >
                 {BRANDS.map(b => (
                   <option key={b} value={b}>
@@ -1041,7 +1041,7 @@ const GeneratorModal: React.FC<{
               <select
                 value={briefType}
                 onChange={e => setBriefType(e.target.value as AgencyBriefType)}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm capitalize"
+                className="w-full ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white capitalize"
               >
                 {TYPE_LIST.map(t => (
                   <option key={t} value={t}>
@@ -1057,7 +1057,7 @@ const GeneratorModal: React.FC<{
                 onChange={e => setTaskRaw(e.target.value)}
                 rows={3}
                 placeholder="Mach 3 UGC Creatives für Instagram — Sommer, Conversion"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none"
+                className="w-full ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white resize-none focus:ring-indigo-500 focus:outline-none"
               />
             </div>
           </div>
@@ -1090,21 +1090,21 @@ const GeneratorModal: React.FC<{
                 value={assignee}
                 onChange={e => setAssignee(e.target.value)}
                 placeholder="Assignee (z.B. Mainak)"
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                className="ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
               />
               <input
                 type="date"
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
                 placeholder="Deadline"
-                className="border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                className="ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
               />
               <input
                 type="text"
                 value={context}
                 onChange={e => setContext(e.target.value)}
                 placeholder="Kontext (Budget, Audience, Kampagne…)"
-                className="col-span-2 border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                className="col-span-2 ring-1 ring-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
               />
             </div>
           )}
@@ -1116,7 +1116,7 @@ const GeneratorModal: React.FC<{
           <button
             onClick={generate}
             disabled={loading || !taskRaw.trim()}
-            className="w-full py-3 bg-violet-600 hover:bg-violet-500 text-white font-black rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

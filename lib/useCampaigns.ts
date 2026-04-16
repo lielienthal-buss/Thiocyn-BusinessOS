@@ -348,14 +348,13 @@ export const STATUS_LABELS: Record<CampaignStatus, string> = {
   killed: 'Killed',
 };
 
-// Harmonized analogous palette — cool (draft/review/approved) → active green →
-// warm (paused) → conclusion (sky/rose). Consistent `bg-{c}-500/15 text-{c}-600 border-{c}-500/20`.
+// Design-token aligned: bg-{c}-50 + text-{c}-700 + border-{c}-200. WCAG AA on white.
 export const STATUS_BADGE: Record<CampaignStatus, string> = {
-  draft: 'bg-slate-400/15 text-slate-500 border-slate-400/20',
-  brief_review: 'bg-violet-500/15 text-violet-600 border-violet-500/20',
-  approved: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/20',
-  live: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/20',
-  paused: 'bg-amber-500/15 text-amber-600 border-amber-500/20',
-  completed: 'bg-sky-500/15 text-sky-600 border-sky-500/20',
-  killed: 'bg-rose-500/15 text-rose-600 border-rose-500/20',
+  draft: 'bg-slate-100 text-slate-700 border border-slate-200',
+  brief_review: 'bg-violet-50 text-violet-700 border border-violet-200',
+  approved: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+  live: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  paused: 'bg-amber-50 text-amber-700 border border-amber-200',
+  completed: 'bg-sky-50 text-sky-700 border border-sky-200',
+  killed: 'bg-rose-50 text-rose-700 border border-rose-200',
 };
