@@ -535,7 +535,7 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Brand Switcher — visible when in a brand-aware section */}
-          {section !== 'account' && section !== 'command' && <BrandSwitcher compact />}
+          {section !== 'account' && <BrandSwitcher compact />}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
           <div className="flex items-center gap-0.5 rounded-full p-0.5" style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>

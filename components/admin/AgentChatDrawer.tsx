@@ -2,15 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 type Section =
-  | 'command'
-  | 'creative'
-  | 'revenue'
-  | 'hiring'
+  | 'home'
+  | 'marketing'
+  | 'teamAcademy'
   | 'finance'
-  | 'support'
-  | 'admin'
+  | 'customerSupport'
   | 'account'
-  | 'workspace';
+  | 'admin';
 
 interface Message {
   id: string;
@@ -27,28 +25,24 @@ interface Props {
   initialPrompt?: string;
 }
 
-const SECTION_LABELS: Record<string, string> = {
-  command: 'Command Center',
-  creative: 'Creative Studio',
-  revenue: 'Revenue & Analytics',
-  hiring: 'Hiring & Academy',
+const SECTION_LABELS: Record<Section, string> = {
+  home: 'Home',
+  marketing: 'Marketing',
+  teamAcademy: 'Team & Academy',
   finance: 'Finance',
-  support: 'Support',
+  customerSupport: 'Customer Support',
   admin: 'Admin',
   account: 'Account',
-  workspace: 'Workspace',
 };
 
-const SECTION_EMOJIS: Record<string, string> = {
-  command: '🎯',
-  creative: '🎨',
-  revenue: '📊',
-  hiring: '🎓',
+const SECTION_EMOJIS: Record<Section, string> = {
+  home: '🏠',
+  marketing: '📣',
+  teamAcademy: '🎓',
   finance: '💰',
-  support: '💬',
+  customerSupport: '💬',
   admin: '⚙️',
   account: '👤',
-  workspace: '🗂️',
 };
 
 function generateId(): string {
