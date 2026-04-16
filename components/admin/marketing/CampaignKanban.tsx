@@ -230,14 +230,13 @@ const NewCampaignModal: React.FC<{
 // ─── Kanban ─────────────────────────────────────────────────────────────────
 
 const CampaignKanban: React.FC<CampaignKanbanProps> = ({ onCardClick }) => {
-  const { brands } = useBrand();
+  const { brands, activeBrand } = useBrand();
   const { data: agencies } = useAgencies();
-  const [brandFilter, setBrandFilter] = useState<string>('');
   const [agencyFilter, setAgencyFilter] = useState<string>('');
   const [showNew, setShowNew] = useState(false);
 
   const { data: serverCampaigns, loading, error, refetch } = useCampaigns({
-    brand_id: brandFilter || null,
+    brand_id: activeBrand?.id ?? null,
     agency_id: agencyFilter || null,
   });
 
@@ -364,18 +363,16 @@ const CampaignKanban: React.FC<CampaignKanbanProps> = ({ onCardClick }) => {
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <select
-          value={brandFilter}
-          onChange={(e) => setBrandFilter(e.target.value)}
-          className="px-3 py-2 text-xs font-semibold rounded-lg ring-1 ring-slate-200 bg-white"
-        >
-          <option value="">All Brands</option>
-          {brands.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.emoji} {b.name}
-            </option>
-          ))}
-        </select>
+        {activeBrand ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200">
+            {activeBrand.emoji} {activeBrand.name}
+            <span className="text-[10px] text-indigo-500 font-normal">(via brand switcher)</span>
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-3 py-2 text-xs font-semibold rounded-lg bg-slate-50 text-slate-600 ring-1 ring-slate-200">
+            All Brands
+          </span>
+        )}
         <select
           value={agencyFilter}
           onChange={(e) => setAgencyFilter(e.target.value)}

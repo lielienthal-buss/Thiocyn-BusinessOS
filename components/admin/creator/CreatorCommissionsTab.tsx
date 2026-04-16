@@ -15,7 +15,7 @@ const pct = (n: number | null | undefined) => (n != null ? n.toFixed(1) + '%' : 
 
 const cacBadge = (v: number | null) => {
   if (v == null) return <span className="text-xs text-slate-500">—</span>;
-  const cls = v <= 20 ? 'bg-green-500/15 text-green-400' : v <= 25 ? 'bg-yellow-500/15 text-yellow-400' : 'bg-red-500/15 text-red-400';
+  const cls = v <= 20 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : v <= 25 ? 'bg-yellow-50 text-yellow-700 border border-yellow-200' : 'bg-rose-50 text-rose-700 border border-rose-200';
   return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cls}`}>{v.toFixed(1)}%</span>;
 };
 
@@ -83,16 +83,16 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-indigo-600" />
       </div>
     );
   }
 
   const kpis = [
-    { label: 'Total Cost', value: fmt(totalCost), color: 'text-slate-100' },
-    { label: 'Avg CAC%', value: pct(avgCac || null), color: avgCac <= 20 ? 'text-green-400' : avgCac <= 25 ? 'text-yellow-400' : 'text-red-400' },
-    { label: 'Pending Approval', value: String(pendingCount), color: pendingCount > 0 ? 'text-amber-400' : 'text-emerald-400' },
-    { label: 'Paid Out', value: String(paidCount), color: 'text-emerald-400' },
+    { label: 'Total Cost', value: fmt(totalCost), color: 'text-slate-900' },
+    { label: 'Avg CAC%', value: pct(avgCac || null), color: avgCac <= 20 ? 'text-emerald-700' : avgCac <= 25 ? 'text-amber-700' : 'text-rose-700' },
+    { label: 'Pending Approval', value: String(pendingCount), color: pendingCount > 0 ? 'text-amber-700' : 'text-emerald-700' },
+    { label: 'Paid Out', value: String(paidCount), color: 'text-emerald-700' },
   ];
 
   return (
@@ -102,7 +102,7 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="text-sm rounded-lg bg-surface-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 focus:ring-primary-500/30 focus:border-primary-500"
+          className="text-sm rounded-lg bg-white ring-1 ring-slate-200 text-slate-900 px-3 py-1.5 focus:ring-2 focus:ring-indigo-500"
         >
           <option value="all">All periods</option>
           {monthOptions.map((m) => (
@@ -114,22 +114,22 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
       {/* KPI cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {kpis.map((k) => (
-          <div key={k.label} className="p-4 rounded-2xl bg-surface-800/60 border border-white/[0.06]">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{k.label}</p>
-            <p className={`text-lg font-black mt-1 ${k.color}`}>{k.value}</p>
+          <div key={k.label} className="p-4 rounded-2xl bg-white ring-1 ring-slate-200">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{k.label}</p>
+            <p className={`text-lg font-semibold mt-1 ${k.color}`}>{k.value}</p>
           </div>
         ))}
       </div>
 
       {/* Flash */}
       {actionMsg && (
-        <div className={`text-xs font-medium px-4 py-2 rounded-lg ${actionMsg.type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+        <div className={`text-xs font-medium px-4 py-2 rounded-lg ${actionMsg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
           {actionMsg.text}
         </div>
       )}
 
       {/* Table */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {displayed.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-slate-500">
             <p className="text-sm">No commission records found.</p>
@@ -138,34 +138,34 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] text-left">
+                <tr className="border-b border-slate-200 text-left bg-slate-50">
                   {['Creator', 'Brand', 'Tier', 'Model', 'Revenue', 'Commission', 'Flat Fee', 'Retainer', 'Bonus', 'Total Cost', 'CAC%', 'Status', 'Actions'].map((h) => (
-                    <th key={h} className="px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-3 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-slate-100">
                 {displayed.map((r, i) => (
-                  <tr key={`${r.creator_id}-${r.period_start}-${i}`} className="hover:bg-white/[0.03] transition-colors">
-                    <td className="px-3 py-3 font-medium text-slate-200 whitespace-nowrap">{r.creator_name}</td>
-                    <td className="px-3 py-3 text-slate-400">{r.brand_name}</td>
+                  <tr key={`${r.creator_id}-${r.period_start}-${i}`} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-3 py-3 font-semibold text-slate-900 whitespace-nowrap">{r.creator_name}</td>
+                    <td className="px-3 py-3 text-slate-600">{r.brand_name}</td>
                     <td className="px-3 py-3">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${TIER_COLORS[r.tier] ?? 'bg-slate-500/15 text-slate-400'}`}>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${TIER_COLORS[r.tier] ?? 'bg-slate-50 text-slate-700 border border-slate-200'}`}>
                         {r.tier}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-slate-400 capitalize">{r.compensation_model}</td>
-                    <td className="px-3 py-3 text-slate-300 tabular-nums">{fmt(r.gross_revenue)}</td>
-                    <td className="px-3 py-3 text-slate-300 tabular-nums">{fmt(r.commission_amount)}</td>
-                    <td className="px-3 py-3 text-slate-400 tabular-nums">{fmt(r.flat_fee_total)}</td>
-                    <td className="px-3 py-3 text-slate-400 tabular-nums">{fmt(r.retainer_amount)}</td>
-                    <td className="px-3 py-3 text-slate-400 tabular-nums">{fmt(r.performance_bonus)}</td>
-                    <td className="px-3 py-3 font-semibold text-slate-200 tabular-nums">{fmt(r.total_cost)}</td>
+                    <td className="px-3 py-3 text-slate-600 capitalize">{r.compensation_model}</td>
+                    <td className="px-3 py-3 text-slate-700 tabular-nums">{fmt(r.gross_revenue)}</td>
+                    <td className="px-3 py-3 text-slate-700 tabular-nums">{fmt(r.commission_amount)}</td>
+                    <td className="px-3 py-3 text-slate-600 tabular-nums">{fmt(r.flat_fee_total)}</td>
+                    <td className="px-3 py-3 text-slate-600 tabular-nums">{fmt(r.retainer_amount)}</td>
+                    <td className="px-3 py-3 text-slate-600 tabular-nums">{fmt(r.performance_bonus)}</td>
+                    <td className="px-3 py-3 font-semibold text-slate-900 tabular-nums">{fmt(r.total_cost)}</td>
                     <td className="px-3 py-3">{cacBadge(r.total_cac_pct)}</td>
                     <td className="px-3 py-3">
-                      <span className="text-xs font-semibold capitalize px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
+                      <span className="text-xs font-semibold capitalize px-2 py-0.5 rounded-full bg-slate-50 text-slate-700 border border-slate-200">
                         {r.status}
                       </span>
                     </td>
@@ -173,7 +173,7 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
                       {r.status === 'calculated' && (
                         <button
                           onClick={() => updateStatus(r, 'approved', { approved_by: 'admin', approved_at: new Date().toISOString() })}
-                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/25 transition-colors"
+                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
                         >
                           Approve
                         </button>
@@ -181,7 +181,7 @@ const CreatorCommissionsTab: React.FC<Props> = ({ brandFilter }) => {
                       {r.status === 'approved' && (
                         <button
                           onClick={() => updateStatus(r, 'paid')}
-                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-violet-500/15 text-violet-400 hover:bg-violet-500/25 transition-colors"
+                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-100 transition-colors"
                         >
                           Mark Paid
                         </button>

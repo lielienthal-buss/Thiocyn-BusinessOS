@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { LoadingState, EmptyState } from '@/components/ui/DataStates';
+import { useBrand } from '@/lib/BrandContext';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -108,12 +109,17 @@ function sameDay(a: Date, b: string | null) {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const ContentCalendarView: React.FC = () => {
+  const { activeBrand } = useBrand();
+  // Legacy-shape brandFilter: 'all' when no active brand, otherwise activeBrand.slug.
+  // Note: for content_posts.brand_id the DB value is the slug (see BRAND_LABELS map),
+  // so activeBrand.slug is the right key for post.brand_id.
+  const brandFilter = activeBrand ? activeBrand.slug : 'all';
+
   const [posts, setPosts] = useState<ContentPost[]>([]);
   const [hashtags, setHashtags] = useState<HashtagStrategy[]>([]);
   const [directions, setDirections] = useState<ContentDirection[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
-  const [brandFilter, setBrandFilter] = useState<string>('all');
   const [bottomTab, setBottomTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [sidebarTab, setSidebarTab] = useState<'hashtags' | 'directions'>('hashtags');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -215,13 +221,20 @@ const ContentCalendarView: React.FC = () => {
 
   // ─── Add Post (inline) ────────────────────────────────────────────────
   const [newPost, setNewPost] = useState({
-    brand_id: 'thiocyn',
+    brand_id: activeBrand?.slug ?? 'thiocyn',
     platform: 'instagram',
     format: 'reel',
     title: '',
     due_date: '',
     status: 'planning',
   });
+
+  // Keep newPost.brand_id synced with active brand when user switches
+  useEffect(() => {
+    if (activeBrand) {
+      setNewPost(np => ({ ...np, brand_id: activeBrand.slug }));
+    }
+  }, [activeBrand]);
 
   const submitNewPost = async () => {
     if (!newPost.title.trim() || !newPost.due_date) return;
@@ -249,21 +262,18 @@ const ContentCalendarView: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <select
-            value={brandFilter}
-            onChange={e => setBrandFilter(e.target.value)}
-            className="bg-white ring-1 ring-slate-200 text-sm text-slate-700 rounded-lg px-3 py-1.5"
-          >
-            <option value="all">Alle Brands</option>
-            {Object.entries(BRAND_LABELS).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+          {activeBrand ? (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200">
+              {activeBrand.emoji} {activeBrand.name}
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 text-slate-600 ring-1 ring-slate-200">
+              Alle Brands
+            </span>
+          )}
           <button
             onClick={() => setShowAddForm(v => !v)}
-            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
           >
             + Post
           </button>

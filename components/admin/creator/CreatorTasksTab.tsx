@@ -100,35 +100,35 @@ const CreatorTasksTab: React.FC<Props> = ({
   }
 
   return (
-    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] overflow-hidden backdrop-blur-sm">
+    <div className="bg-white rounded-xl ring-1 ring-slate-200 overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-surface-900/60 border-b border-white/[0.06]">
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Creator</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">KW</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Direction</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Angle</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Status</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Rating</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Repost</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Ads</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</th>
+          <tr className="bg-slate-50 border-b border-slate-200">
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Creator</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">KW</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Direction</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Angle</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Status</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Rating</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Repost</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Ads</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.06]">
+        <tbody className="divide-y divide-slate-100">
           {filteredTasks.map(t => (
             <React.Fragment key={t.id}>
-              <tr className="hover:bg-white/[0.03] transition-colors">
-                <td className="px-4 py-3 font-semibold text-white">{t.creator_name ?? '—'}</td>
-                <td className="px-4 py-3 text-slate-400 text-xs">KW{t.week_number}/{t.year}</td>
-                <td className="px-4 py-3 text-slate-300 text-xs">{DIRECTION_LABELS[t.content_direction] ?? t.content_direction}</td>
-                <td className="px-4 py-3 font-mono text-amber-400 text-xs">{t.angle_code ?? '—'}</td>
+              <tr className="hover:bg-slate-50 transition-colors">
+                <td className="px-4 py-3 font-semibold text-slate-900">{t.creator_name ?? '—'}</td>
+                <td className="px-4 py-3 text-slate-600 text-xs">KW{t.week_number}/{t.year}</td>
+                <td className="px-4 py-3 text-slate-700 text-xs">{DIRECTION_LABELS[t.content_direction] ?? t.content_direction}</td>
+                <td className="px-4 py-3 font-mono text-amber-700 text-xs">{t.angle_code ?? '—'}</td>
                 <td className="px-4 py-3">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${TASK_STATUS_COLORS[t.status] ?? ''}`}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${TASK_STATUS_COLORS[t.status] ?? ''}`}>
                     {t.status}
                   </span>
                   {t.status === 'rejected' && t.rejection_reason && (
-                    <div className="text-[10px] text-red-400/80 mt-0.5 max-w-[160px] truncate" title={t.rejection_reason}>
+                    <div className="text-[10px] text-rose-700 mt-0.5 max-w-[160px] truncate" title={t.rejection_reason}>
                       {t.rejection_reason}
                     </div>
                   )}
@@ -146,8 +146,8 @@ const CreatorTasksTab: React.FC<Props> = ({
                         onClick={() => handleRating(t, n)}
                         className={`text-base transition-colors ${
                           n <= (t.quality_rating ?? 0)
-                            ? 'text-amber-400 hover:text-amber-300'
-                            : 'text-slate-600 hover:text-slate-400'
+                            ? 'text-amber-500 hover:text-amber-600'
+                            : 'text-slate-300 hover:text-slate-500'
                         }`}
                         title={`Rate ${n}/5`}
                       >
@@ -157,7 +157,7 @@ const CreatorTasksTab: React.FC<Props> = ({
                   </div>
                 </td>
                 <td className="px-4 py-3 text-xs">
-                  {t.repost_worthy ? <span className="text-green-400 font-bold">&#10003;</span> : '—'}
+                  {t.repost_worthy ? <span className="text-emerald-700 font-semibold">&#10003;</span> : '—'}
                 </td>
                 <td className="px-4 py-3 text-xs">
                   {t.repost_worthy && t.submission_url && (
@@ -171,11 +171,10 @@ const CreatorTasksTab: React.FC<Props> = ({
                           else setActionResult(`Asset created: ${data}`);
                         }}
                         disabled={actionLoading === 'push-ads-' + t.id}
-                        className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] font-bold transition-colors disabled:opacity-50"
+                        className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded text-[10px] font-semibold transition-colors disabled:opacity-50"
                       >
                         {actionLoading === 'push-ads-' + t.id ? '...' : 'Push to Ads'}
                       </button>
-                      {/* Tooltip for non-paid tiers — we check creator tier indirectly via task context */}
                     </div>
                   )}
                 </td>
@@ -183,7 +182,7 @@ const CreatorTasksTab: React.FC<Props> = ({
                   {(t.status === 'submitted' || t.status === 'feedback_given') && rejectingId !== t.id && (
                     <button
                       onClick={() => { setRejectingId(t.id); setRejectionReason(''); }}
-                      className="px-2 py-1 bg-red-600/80 hover:bg-red-700 text-white rounded text-[10px] font-bold transition-colors"
+                      className="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-semibold transition-colors"
                     >
                       Reject
                     </button>
@@ -192,26 +191,26 @@ const CreatorTasksTab: React.FC<Props> = ({
               </tr>
               {/* Inline rejection form */}
               {rejectingId === t.id && (
-                <tr className="bg-red-500/5">
+                <tr className="bg-rose-50">
                   <td colSpan={9} className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <textarea
                         value={rejectionReason}
                         onChange={e => setRejectionReason(e.target.value)}
                         placeholder="Rejection reason (required)..."
-                        className="flex-1 px-3 py-2 border border-red-500/20 bg-surface-900/60 text-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-red-500/30 focus:border-red-400 outline-none resize-none"
+                        className="flex-1 px-3 py-2 ring-1 ring-rose-200 bg-white text-slate-900 rounded-lg text-xs focus:ring-2 focus:ring-rose-500 outline-none resize-none"
                         rows={2}
                       />
                       <button
                         onClick={() => handleReject(t)}
                         disabled={!rejectionReason.trim() || rejectSaving}
-                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                        className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
                       >
                         {rejectSaving ? '...' : 'Confirm Reject'}
                       </button>
                       <button
                         onClick={() => { setRejectingId(null); setRejectionReason(''); }}
-                        className="text-xs text-slate-500 hover:text-slate-300"
+                        className="text-xs text-slate-500 hover:text-slate-900"
                       >
                         Cancel
                       </button>

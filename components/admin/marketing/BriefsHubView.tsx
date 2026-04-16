@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';
 import { LoadingState, EmptyState } from '@/components/ui/DataStates';
+import { useBrand } from '@/lib/BrandContext';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -109,6 +110,20 @@ const TYPE_LIST: AgencyBriefType[] = ['agency', 'task', 'creative', 'other'];
 
 const BRANDS = ['Thiocyn', 'Take A Shot', 'Dr. Severin', 'Paigh', 'Wristr', 'Timber & John'] as const;
 type Brand = typeof BRANDS[number];
+
+// Display name → DB brand slug. brand_id in agency_briefs must be slug, not display name.
+const BRAND_NAME_TO_SLUG: Record<Brand, string> = {
+  'Thiocyn': 'thiocyn',
+  'Take A Shot': 'take-a-shot',
+  'Dr. Severin': 'dr-severin',
+  'Paigh': 'paigh',
+  'Wristr': 'wristr',
+  'Timber & John': 'timber-john',
+};
+
+const BRAND_SLUG_TO_NAME: Record<string, Brand> = Object.fromEntries(
+  (Object.entries(BRAND_NAME_TO_SLUG) as [Brand, string][]).map(([n, s]) => [s, n])
+) as Record<string, Brand>;
 
 const TASK_EXAMPLES = [
   'Mach 3 UGC Creatives für Instagram — Sommer-Feeling, Conversion',
@@ -248,6 +263,7 @@ function renderMarkdown(text: string): React.ReactNode {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const BriefsHubView: React.FC = () => {
+  const { activeBrand } = useBrand();
   const [typeFilter, setTypeFilter] = useState<BriefType>('all');
   const [loading, setLoading] = useState(true);
   const [campaignBriefs, setCampaignBriefs] = useState<CampaignBriefRow[]>([]);
@@ -320,15 +336,42 @@ const BriefsHubView: React.FC = () => {
     return m;
   }, [campaigns]);
 
-  // ─── Counts ────────────────────────────────────────────────────────────
-  const agencyCount = agencyBriefs.length + generatedBriefs.length;
+  // ─── Brand-scoped derived lists ───────────────────────────────────────
+  const activeSlug = activeBrand?.slug ?? null;
+
+  const fCampaignBriefs = useMemo(() => {
+    if (!activeSlug) return campaignBriefs;
+    return campaignBriefs.filter(b => {
+      const c = campaignById.get(b.campaign_id);
+      return c?.brand_slug === activeSlug;
+    });
+  }, [campaignBriefs, campaignById, activeSlug]);
+
+  const fCreativeAngles = useMemo(() => {
+    if (!activeSlug) return creativeAngles;
+    return creativeAngles.filter(a => a.brand_slug === activeSlug);
+  }, [creativeAngles, activeSlug]);
+
+  const fAgencyBriefs = useMemo(() => {
+    if (!activeSlug) return agencyBriefs;
+    return agencyBriefs.filter(b => b.brand_id === activeSlug);
+  }, [agencyBriefs, activeSlug]);
+
+  const fGeneratedBriefs = useMemo(() => {
+    if (!activeSlug) return generatedBriefs;
+    const expectedName = BRAND_SLUG_TO_NAME[activeSlug];
+    return generatedBriefs.filter(g => g.brand === expectedName || g.brand === activeSlug);
+  }, [generatedBriefs, activeSlug]);
+
+  // ─── Counts (brand-scoped) ────────────────────────────────────────────
+  const agencyCount = fAgencyBriefs.length + fGeneratedBriefs.length;
   const counts = {
     all:
-      campaignBriefs.length + dailyBriefings.length + creativeAngles.length + agencyCount,
-    campaign: campaignBriefs.length,
+      fCampaignBriefs.length + dailyBriefings.length + fCreativeAngles.length + agencyCount,
+    campaign: fCampaignBriefs.length,
     daily: dailyBriefings.length,
     agency: agencyCount,
-    creative: creativeAngles.length,
+    creative: fCreativeAngles.length,
   };
 
   if (loading) return <LoadingState label="Briefs laden…" />;
@@ -338,14 +381,17 @@ const BriefsHubView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">Briefs Hub</h2>
+          <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Briefs Hub</h2>
           <p className="text-sm text-slate-500 mt-0.5">
             Alle Briefs an einem Ort: Campaign Briefs, Daily Briefings, Agency-/Task-Briefs, Creative Angles.
+            {activeBrand && (
+              <span className="ml-2 text-indigo-700 font-semibold">· {activeBrand.name}</span>
+            )}
           </p>
         </div>
         <button
           onClick={() => setShowCreateModal('agency')}
-          className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
         >
           + Neues Brief generieren
         </button>
@@ -380,10 +426,10 @@ const BriefsHubView: React.FC = () => {
       {(typeFilter === 'all' || typeFilter === 'campaign') && (
         <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Campaign Briefs</h3>
-            <span className="text-xs text-slate-500">{campaignBriefs.length}</span>
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Campaign Briefs</h3>
+            <span className="text-xs text-slate-500">{fCampaignBriefs.length}</span>
           </div>
-          {campaignBriefs.length === 0 ? (
+          {fCampaignBriefs.length === 0 ? (
             <EmptyState
               icon="📋"
               title="Keine Campaign Briefs"
@@ -404,7 +450,7 @@ const BriefsHubView: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {campaignBriefs.map(b => {
+                  {fCampaignBriefs.map(b => {
                     const c = campaignById.get(b.campaign_id) ?? null;
                     return (
                       <tr
@@ -476,21 +522,21 @@ const BriefsHubView: React.FC = () => {
       {(typeFilter === 'all' || typeFilter === 'agency') && (
         <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Agency / Task Briefs</h3>
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Agency / Task Briefs</h3>
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-500">
-                {agencyBriefs.length} gespeichert
-                {generatedBriefs.length > 0 ? ` · ${generatedBriefs.length} unsaved` : ''}
+                {fAgencyBriefs.length} gespeichert
+                {fGeneratedBriefs.length > 0 ? ` · ${fGeneratedBriefs.length} unsaved` : ''}
               </span>
               <button
                 onClick={() => setShowCreateModal('agency')}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
               >
                 + Neu
               </button>
             </div>
           </div>
-          {agencyBriefs.length === 0 && generatedBriefs.length === 0 ? (
+          {fAgencyBriefs.length === 0 && fGeneratedBriefs.length === 0 ? (
             <EmptyState
               icon="⚡"
               title="Noch keine Briefs generiert"
@@ -499,7 +545,7 @@ const BriefsHubView: React.FC = () => {
             />
           ) : (
             <div className="grid gap-2">
-              {agencyBriefs.map(b => (
+              {fAgencyBriefs.map(b => (
                 <button
                   key={b.id}
                   onClick={() => setDrawerContent({ kind: 'agency', brief: b })}
@@ -530,7 +576,7 @@ const BriefsHubView: React.FC = () => {
                   )}
                 </button>
               ))}
-              {generatedBriefs.map(g => (
+              {fGeneratedBriefs.map(g => (
                 <button
                   key={g.id}
                   onClick={() => setDrawerContent({ kind: 'generated', brief: g })}
@@ -558,10 +604,10 @@ const BriefsHubView: React.FC = () => {
       {(typeFilter === 'all' || typeFilter === 'creative') && (
         <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Creative Angles</h3>
-            <span className="text-xs text-slate-500">{creativeAngles.length}</span>
+            <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">Creative Angles</h3>
+            <span className="text-xs text-slate-500">{fCreativeAngles.length}</span>
           </div>
-          {creativeAngles.length === 0 ? (
+          {fCreativeAngles.length === 0 ? (
             <EmptyState icon="🎯" title="Keine Creative Angles" />
           ) : (
             <div className="overflow-x-auto">
@@ -579,7 +625,7 @@ const BriefsHubView: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {creativeAngles.slice(0, 50).map(a => {
+                  {fCreativeAngles.slice(0, 50).map(a => {
                     const cat = CATEGORY_LABELS[a.category];
                     return (
                       <tr
@@ -612,9 +658,9 @@ const BriefsHubView: React.FC = () => {
                   })}
                 </tbody>
               </table>
-              {creativeAngles.length > 50 && (
+              {fCreativeAngles.length > 50 && (
                 <p className="text-xs text-slate-500 text-center mt-2">
-                  {creativeAngles.length - 50} weitere Angles — siehe Creative Factory für Vollansicht.
+                  {fCreativeAngles.length - 50} weitere Angles — siehe Creative Factory für Vollansicht.
                 </p>
               )}
             </div>
@@ -625,6 +671,7 @@ const BriefsHubView: React.FC = () => {
       {/* ─── Create Modal (AI Generator) ────────────────────────────────── */}
       {showCreateModal === 'agency' && (
         <GeneratorModal
+          initialBrand={activeBrand ? BRAND_SLUG_TO_NAME[activeBrand.slug] ?? 'Take A Shot' : 'Take A Shot'}
           onClose={() => setShowCreateModal(null)}
           onPersisted={row => {
             setAgencyBriefs(prev => [row, ...prev]);
@@ -919,11 +966,12 @@ const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
 // ─── Generator Modal ────────────────────────────────────────────────────────
 
 const GeneratorModal: React.FC<{
+  initialBrand?: Brand;
   onClose: () => void;
   onPersisted: (row: AgencyBriefRow) => void;
   onPersistFailed: (g: GeneratedBrief) => void;
-}> = ({ onClose, onPersisted, onPersistFailed }) => {
-  const [brand, setBrand] = useState<Brand>('Take A Shot');
+}> = ({ initialBrand = 'Take A Shot', onClose, onPersisted, onPersistFailed }) => {
+  const [brand, setBrand] = useState<Brand>(initialBrand);
   const [briefType, setBriefType] = useState<AgencyBriefType>('agency');
   const [taskRaw, setTaskRaw] = useState('');
   const [assignee, setAssignee] = useState('');
@@ -971,12 +1019,15 @@ const GeneratorModal: React.FC<{
         type: briefType,
       };
 
+      // CRITICAL: brand_id must be the brand slug (DB convention), not the display name.
+      const brandSlug = BRAND_NAME_TO_SLUG[brand];
+
       const { data: inserted, error: insertError } = await supabase
         .from('agency_briefs')
         .insert({
           type: briefType,
           title,
-          brand_id: brand,
+          brand_id: brandSlug,
           body,
           prompt_input: promptInput,
           assignee: trimmedAssignee ?? null,

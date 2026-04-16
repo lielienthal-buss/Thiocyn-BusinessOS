@@ -9,10 +9,10 @@ interface Props {
 }
 
 const STATUS_BADGE: Record<string, string> = {
-  not_shipped: 'bg-slate-500/15 text-slate-400',
-  awaiting_content: 'bg-amber-500/15 text-amber-400',
-  content_received: 'bg-green-500/15 text-green-400',
-  overdue: 'bg-red-500/15 text-red-400',
+  not_shipped: 'bg-slate-50 text-slate-700 border border-slate-200',
+  awaiting_content: 'bg-amber-50 text-amber-700 border border-amber-200',
+  content_received: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  overdue: 'bg-rose-50 text-rose-700 border border-rose-200',
 };
 
 const fmt = (n: number | null | undefined) =>
@@ -91,7 +91,7 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-indigo-600" />
       </div>
     );
   }
@@ -103,7 +103,7 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="text-sm rounded-lg bg-surface-700 border border-white/[0.06] text-slate-300 px-3 py-1.5 focus:ring-primary-500/30 focus:border-primary-500"
+          className="text-sm rounded-lg bg-white ring-1 ring-slate-200 text-slate-900 px-3 py-1.5 focus:ring-2 focus:ring-indigo-500"
         >
           <option value="all">All statuses</option>
           <option value="not_shipped">Not Shipped</option>
@@ -115,13 +115,13 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
 
       {/* Flash */}
       {actionMsg && (
-        <div className={`text-xs font-medium px-4 py-2 rounded-lg ${actionMsg.type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+        <div className={`text-xs font-medium px-4 py-2 rounded-lg ${actionMsg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'}`}>
           {actionMsg.text}
         </div>
       )}
 
       {/* Table */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {displayed.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-slate-500">
             <p className="text-sm">No gifting records found.</p>
@@ -130,38 +130,38 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] text-left">
+                <tr className="border-b border-slate-200 text-left bg-slate-50">
                   {['Creator', 'Tier', 'Brand', 'Gift Type', 'Description', 'Season', 'Shipped', 'Content Received', 'Cost', 'Status', 'Actions'].map((h) => (
-                    <th key={h} className="px-3 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-3 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-slate-100">
                 {displayed.map((r) => (
-                  <tr key={r.id} className="hover:bg-white/[0.03] transition-colors">
-                    <td className="px-3 py-3 font-medium text-slate-200 whitespace-nowrap">{r.name}</td>
+                  <tr key={r.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-3 py-3 font-semibold text-slate-900 whitespace-nowrap">{r.name}</td>
                     <td className="px-3 py-3">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${TIER_COLORS[r.tier] ?? 'bg-slate-500/15 text-slate-400'}`}>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full capitalize ${TIER_COLORS[r.tier] ?? 'bg-slate-50 text-slate-700 border border-slate-200'}`}>
                         {r.tier}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-slate-400">{r.brand_slug}</td>
-                    <td className="px-3 py-3 text-slate-300 capitalize">{r.gift_type}</td>
-                    <td className="px-3 py-3 text-slate-400 max-w-[200px] truncate">{r.gift_description ?? '—'}</td>
-                    <td className="px-3 py-3 text-slate-400">{r.season ?? '—'}</td>
-                    <td className="px-3 py-3 text-slate-400">{r.shipped_date ?? '—'}</td>
+                    <td className="px-3 py-3 text-slate-600">{r.brand_slug}</td>
+                    <td className="px-3 py-3 text-slate-700 capitalize">{r.gift_type}</td>
+                    <td className="px-3 py-3 text-slate-600 max-w-[200px] truncate">{r.gift_description ?? '—'}</td>
+                    <td className="px-3 py-3 text-slate-600">{r.season ?? '—'}</td>
+                    <td className="px-3 py-3 text-slate-600">{r.shipped_date ?? '—'}</td>
                     <td className="px-3 py-3">
                       {r.content_received ? (
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-500/15 text-green-400">Yes</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Yes</span>
                       ) : (
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">No</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-50 text-slate-700 border border-slate-200">No</span>
                       )}
                     </td>
-                    <td className="px-3 py-3 text-slate-300 tabular-nums">{fmt(r.cost_eur)}</td>
+                    <td className="px-3 py-3 text-slate-700 tabular-nums">{fmt(r.cost_eur)}</td>
                     <td className="px-3 py-3">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[r.gift_status] ?? 'bg-slate-500/15 text-slate-400'}`}>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_BADGE[r.gift_status] ?? 'bg-slate-50 text-slate-700 border border-slate-200'}`}>
                         {r.gift_status.replace(/_/g, ' ')}
                       </span>
                     </td>
@@ -173,17 +173,17 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
                               type="date"
                               value={shippingDate}
                               onChange={(e) => setShippingDate(e.target.value)}
-                              className="text-xs rounded bg-surface-700 border border-white/[0.06] text-slate-300 px-2 py-1"
+                              className="text-xs rounded bg-white ring-1 ring-slate-200 text-slate-900 px-2 py-1"
                             />
                             <button
                               onClick={() => markShipped(r.id)}
-                              className="text-xs font-semibold px-2 py-1 rounded-lg bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-colors"
+                              className="text-xs font-semibold px-2 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
                             >
                               Save
                             </button>
                             <button
                               onClick={() => setShippingDateFor(null)}
-                              className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                              className="text-xs text-slate-500 hover:text-slate-900 transition-colors"
                             >
                               Cancel
                             </button>
@@ -191,7 +191,7 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
                         ) : (
                           <button
                             onClick={() => { setShippingDateFor(r.id); setShippingDate(new Date().toISOString().slice(0, 10)); }}
-                            className="text-xs font-semibold px-3 py-1 rounded-lg bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 transition-colors"
+                            className="text-xs font-semibold px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors"
                           >
                             Mark Shipped
                           </button>
@@ -200,7 +200,7 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
                       {r.gift_status === 'awaiting_content' && (
                         <button
                           onClick={() => markContentReceived(r.id)}
-                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/25 transition-colors"
+                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
                         >
                           Content Received
                         </button>
@@ -215,10 +215,10 @@ const CreatorGiftingTab: React.FC<Props> = ({ brandFilter }) => {
 
         {/* Summary row */}
         {displayed.length > 0 && (
-          <div className="px-5 py-3 border-t border-white/[0.06] flex items-center gap-6 text-xs text-slate-500">
-            <span>Total gifts: <span className="font-semibold text-slate-300">{summary.total}</span></span>
-            <span>Total cost: <span className="font-semibold text-slate-300">{fmt(summary.totalCost)}</span></span>
-            <span>Content received: <span className="font-semibold text-slate-300">{summary.receivedPct}%</span></span>
+          <div className="px-5 py-3 border-t border-slate-200 flex items-center gap-6 text-xs text-slate-500 bg-slate-50">
+            <span>Total gifts: <span className="font-semibold text-slate-900">{summary.total}</span></span>
+            <span>Total cost: <span className="font-semibold text-slate-900">{fmt(summary.totalCost)}</span></span>
+            <span>Content received: <span className="font-semibold text-slate-900">{summary.receivedPct}%</span></span>
           </div>
         )}
       </div>

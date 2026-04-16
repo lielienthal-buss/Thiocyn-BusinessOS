@@ -17,11 +17,11 @@ type KnowledgeEntry = {
 };
 
 const catColors = [
-  'bg-violet-500/15 text-violet-400',
-  'bg-blue-500/15 text-blue-400',
-  'bg-emerald-500/15 text-emerald-400',
-  'bg-orange-500/15 text-orange-400',
-  'bg-pink-500/15 text-pink-400',
+  'bg-violet-50 text-violet-700 border border-violet-200',
+  'bg-sky-50 text-sky-700 border border-sky-200',
+  'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  'bg-amber-50 text-amber-700 border border-amber-200',
+  'bg-pink-50 text-pink-700 border border-pink-200',
 ];
 
 function getCatColor(categories: string[], category: string): string {
@@ -138,15 +138,15 @@ export default function KnowledgeBaseView() {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <h2 className="text-lg font-semibold text-[#1d1d1f] shrink-0">Knowledge Base</h2>
+        <h2 className="text-lg font-semibold text-slate-900 shrink-0">Knowledge Base</h2>
         <input
-          className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40 placeholder-[#86868b]"
+          className="w-full ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500"
           placeholder="Suchen nach Titel, Inhalt oder Tags…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 shrink-0"
+          className="ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shrink-0"
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
         >
@@ -160,18 +160,18 @@ export default function KnowledgeBaseView() {
       </div>
 
       {/* Stats bar */}
-      <div className="flex items-center gap-4 text-sm text-[#6e6e73]">
+      <div className="flex items-center gap-4 text-sm text-slate-600">
         <span>
-          <span className="font-medium text-[#1d1d1f]">{filtered.length}</span> Einträge
+          <span className="font-semibold text-slate-900">{filtered.length}</span> Einträge
         </span>
-        <span className="text-[#1d1d1f]/[0.10]">|</span>
+        <span className="text-slate-300">|</span>
         <span>
-          <span className="font-medium text-[#1d1d1f]">{uniqueCategories.length}</span> Kategorien
+          <span className="font-semibold text-slate-900">{uniqueCategories.length}</span> Kategorien
         </span>
         {activeBrand?.slug && (
           <>
-            <span className="text-[#1d1d1f]/[0.10]">|</span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-400">
+            <span className="text-slate-300">|</span>
+            <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200">
               {activeBrand.slug}
             </span>
           </>
@@ -180,9 +180,9 @@ export default function KnowledgeBaseView() {
 
       {/* Entry list */}
       {loading ? (
-        <div className="text-sm text-[#6e6e73] py-8 text-center">Laden…</div>
+        <div className="text-sm text-slate-600 py-8 text-center">Laden…</div>
       ) : filtered.length === 0 ? (
-        <div className="text-sm text-[#6e6e73] py-8 text-center">Keine Einträge gefunden.</div>
+        <div className="text-sm text-slate-600 py-8 text-center">Keine Einträge gefunden.</div>
       ) : (
         <div className="space-y-3">
           {filtered.map((entry) => {
@@ -196,7 +196,7 @@ export default function KnowledgeBaseView() {
             return (
               <div
                 key={entry.id}
-                className="bg-white/70 rounded-2xl border border-black/[0.06] backdrop-blur-sm p-4 relative group"
+                className="bg-white rounded-2xl ring-1 ring-slate-200 p-4 relative group"
                 onMouseEnter={() => setHoveredId(entry.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
@@ -211,16 +211,16 @@ export default function KnowledgeBaseView() {
                     </span>
                   )}
                   {entry.brand_slug && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-[#515154]">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
                       {entry.brand_slug}
                     </span>
                   )}
-                  <span className="font-medium text-[#1d1d1f] text-sm">{entry.title}</span>
-                  <span className="text-xs text-[#6e6e73]">v{entry.version}</span>
+                  <span className="font-medium text-slate-900 text-sm">{entry.title}</span>
+                  <span className="text-xs text-slate-500">v{entry.version}</span>
                   {entry.source && (
-                    <span className="text-xs text-[#6e6e73]">· {entry.source}</span>
+                    <span className="text-xs text-slate-500">· {entry.source}</span>
                   )}
-                  <span className="text-xs text-[#6e6e73] ml-auto">
+                  <span className="text-xs text-slate-500 ml-auto">
                     {new Date(entry.updated_at).toLocaleDateString('de-DE')}
                   </span>
                 </div>
@@ -231,7 +231,7 @@ export default function KnowledgeBaseView() {
                     {(entry.tags ?? []).map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-500/15 text-[#6e6e73]"
+                        className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200"
                       >
                         {tag}
                       </span>
@@ -241,7 +241,7 @@ export default function KnowledgeBaseView() {
 
                 {/* Content */}
                 <div
-                  className="mt-2 text-sm text-[#515154] cursor-pointer"
+                  className="mt-2 text-sm text-slate-600 cursor-pointer"
                   onClick={() => setExpanded(isExpanded ? null : entry.id)}
                 >
                   {isExpanded ? (
@@ -254,7 +254,7 @@ export default function KnowledgeBaseView() {
                 {/* Edit button (shown on hover) */}
                 {hoveredId === entry.id && (
                   <button
-                    className="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-sm font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04]"
+                    className="absolute top-3 right-3 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEdit(entry);
@@ -272,7 +272,7 @@ export default function KnowledgeBaseView() {
       {/* Edit Modal */}
       {editState && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm"
           onClick={(e) => {
             if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
               setEditState(null);
@@ -281,33 +281,33 @@ export default function KnowledgeBaseView() {
         >
           <div
             ref={modalRef}
-            className="bg-white/80 border border-black/[0.08] rounded-2xl shadow-xl p-6 w-full max-w-lg space-y-4"
+            className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-xl p-6 w-full max-w-lg space-y-4"
           >
-            <h3 className="text-base font-semibold text-[#1d1d1f]">Eintrag bearbeiten</h3>
+            <h3 className="text-base font-semibold text-slate-900">Eintrag bearbeiten</h3>
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-[#6e6e73] mb-1">Titel</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Titel</label>
                 <input
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40"
+                  className="w-full ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   value={editState.title}
                   onChange={(e) => setEditState({ ...editState, title: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#6e6e73] mb-1">Kategorie</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Kategorie</label>
                 <input
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40"
+                  className="w-full ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   value={editState.category}
                   onChange={(e) => setEditState({ ...editState, category: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#6e6e73] mb-1">Inhalt</label>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Inhalt</label>
                 <textarea
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40 resize-y"
+                  className="w-full ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
                   rows={8}
                   value={editState.content}
                   onChange={(e) => setEditState({ ...editState, content: e.target.value })}
@@ -315,11 +315,11 @@ export default function KnowledgeBaseView() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[#6e6e73] mb-1">
-                  Tags <span className="font-normal text-[#6e6e73]">(kommagetrennt)</span>
+                <label className="block text-xs font-medium text-slate-600 mb-1">
+                  Tags <span className="font-normal text-slate-500">(kommagetrennt)</span>
                 </label>
                 <input
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40 placeholder-[#86868b]"
+                  className="w-full ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500"
                   value={editState.tags}
                   onChange={(e) => setEditState({ ...editState, tags: e.target.value })}
                   placeholder="tag1, tag2, tag3"
@@ -329,14 +329,14 @@ export default function KnowledgeBaseView() {
 
             <div className="flex justify-end gap-2 pt-2">
               <button
-                className="px-3 py-1.5 rounded-lg text-sm font-medium text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-black/[0.04]"
+                className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 onClick={() => setEditState(null)}
                 disabled={saving}
               >
                 Abbrechen
               </button>
               <button
-                className="px-4 py-2 bg-amber-500 text-[#1d1d1f] rounded-xl text-sm font-medium hover:bg-amber-600 disabled:opacity-50"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
                 onClick={handleSave}
                 disabled={saving}
               >

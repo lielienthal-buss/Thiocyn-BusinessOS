@@ -86,10 +86,10 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
   const scoreBadge = (score: number) => {
     const cls =
       score >= 15
-        ? 'bg-green-500/15 text-green-400'
+        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
         : score >= 12
-          ? 'bg-yellow-500/15 text-yellow-400'
-          : 'bg-red-500/15 text-red-400';
+          ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+          : 'bg-rose-50 text-rose-700 border border-rose-200';
     return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cls}`}>{score}</span>;
   };
 
@@ -98,7 +98,7 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
   if (loading) {
     return (
       <div className="flex justify-center py-16">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-slate-200 border-t-indigo-600" />
       </div>
     );
   }
@@ -107,12 +107,12 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
     <div className="space-y-4">
       {/* Action bar */}
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-sm text-slate-400 select-none cursor-pointer">
+        <label className="flex items-center gap-2 text-sm text-slate-700 select-none cursor-pointer">
           <input
             type="checkbox"
             checked={qualifiedOnly}
             onChange={() => setQualifiedOnly((v) => !v)}
-            className="rounded border-white/20 bg-surface-700 text-primary-500 focus:ring-primary-500/30"
+            className="rounded border-slate-300 bg-white text-indigo-600 focus:ring-indigo-500"
           />
           Qualified only
         </label>
@@ -122,13 +122,13 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
             <span className="text-xs text-slate-500">{selected.size} selected</span>
             <button
               onClick={() => bulkUpdate('qualified', { qualified_at: new Date().toISOString() })}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/25 transition-colors"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
             >
               Qualify
             </button>
             <button
               onClick={() => bulkUpdate('rejected')}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors"
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors"
             >
               Reject
             </button>
@@ -140,7 +140,7 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
       {actionMsg && (
         <div
           className={`text-xs font-medium px-4 py-2 rounded-lg ${
-            actionMsg.type === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+            actionMsg.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
           }`}
         >
           {actionMsg.text}
@@ -148,7 +148,7 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
       )}
 
       {/* Table */}
-      <div className="bg-surface-800/60 border border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {displayed.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-slate-500">
             <p className="text-sm">No prospects found.</p>
@@ -157,43 +157,43 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06] text-left">
+                <tr className="border-b border-slate-200 text-left bg-slate-50">
                   <th className="px-4 py-3">
                     <input
                       type="checkbox"
                       checked={selected.size === displayed.length && displayed.length > 0}
                       onChange={toggleAll}
-                      className="rounded border-white/20 bg-surface-700 text-primary-500 focus:ring-primary-500/30"
+                      className="rounded border-slate-300 bg-white text-indigo-600 focus:ring-indigo-500"
                     />
                   </th>
                   {['Handle', 'Name', 'Followers', 'Source', 'Brand', 'Score', 'Status', 'Actions'].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wide">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-slate-100">
                 {displayed.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/[0.03] transition-colors">
+                  <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
                         checked={selected.has(p.id)}
                         onChange={() => toggleSelect(p.id)}
-                        className="rounded border-white/20 bg-surface-700 text-primary-500 focus:ring-primary-500/30"
+                        className="rounded border-slate-300 bg-white text-indigo-600 focus:ring-indigo-500"
                       />
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-200">@{p.instagram_handle}</td>
-                    <td className="px-4 py-3 text-slate-300">{p.display_name ?? '—'}</td>
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 font-semibold text-slate-900">@{p.instagram_handle}</td>
+                    <td className="px-4 py-3 text-slate-700">{p.display_name ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-600">
                       {p.follower_count != null ? p.follower_count.toLocaleString() : '—'}
                     </td>
-                    <td className="px-4 py-3 text-slate-400 capitalize">{p.source}</td>
-                    <td className="px-4 py-3 text-slate-400">{p.suggested_brand ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-600 capitalize">{p.source}</td>
+                    <td className="px-4 py-3 text-slate-600">{p.suggested_brand ?? '—'}</td>
                     <td className="px-4 py-3">{scoreBadge(p.qualification_score)}</td>
                     <td className="px-4 py-3">
-                      <span className="text-xs font-semibold capitalize px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400">
+                      <span className="text-xs font-semibold capitalize px-2 py-0.5 rounded-full bg-slate-50 text-slate-700 border border-slate-200">
                         {p.status}
                       </span>
                     </td>
@@ -201,7 +201,7 @@ const CreatorProspectsTab: React.FC<Props> = ({ brandFilter }) => {
                       {p.status === 'qualified' && (
                         <button
                           onClick={() => convertProspect(p.id)}
-                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-violet-500/15 text-violet-400 hover:bg-violet-500/25 transition-colors"
+                          className="text-xs font-semibold px-3 py-1 rounded-lg bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-100 transition-colors"
                         >
                           Convert
                         </button>

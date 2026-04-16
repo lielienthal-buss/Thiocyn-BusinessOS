@@ -27,41 +27,41 @@ const CreatorPerformanceTab: React.FC<Props> = ({ scoreboard, brandFilter }) => 
   }
 
   return (
-    <div className="bg-surface-800/60 rounded-xl border border-white/[0.06] overflow-hidden backdrop-blur-sm">
+    <div className="bg-white rounded-xl ring-1 ring-slate-200 overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-surface-900/60 border-b border-white/[0.06]">
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">#</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Creator</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Brand</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Grade</th>
-            <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-500">Tier</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Delivery %</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Top Videos</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Sales (4w)</th>
-            <th className="px-4 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Total Sales</th>
+          <tr className="bg-slate-50 border-b border-slate-200">
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">#</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Creator</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Brand</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Grade</th>
+            <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-600">Tier</th>
+            <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-600">Delivery %</th>
+            <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-600">Top Videos</th>
+            <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-600">Sales (4w)</th>
+            <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-600">Total Sales</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.06]">
+        <tbody className="divide-y divide-slate-100">
           {filteredScoreboard.map(s => (
-            <tr key={s.id} className="hover:bg-white/[0.03] transition-colors">
+            <tr key={s.id} className="hover:bg-slate-50 transition-colors">
               <td className="px-4 py-3 text-slate-500 text-xs">#{s.rank}</td>
-              <td className="px-4 py-3 font-semibold text-white">{s.name}</td>
-              <td className="px-4 py-3 text-slate-400 text-xs">{s.brand_slug}</td>
+              <td className="px-4 py-3 font-semibold text-slate-900">{s.name}</td>
+              <td className="px-4 py-3 text-slate-600 text-xs">{s.brand_slug}</td>
               <td className="px-4 py-3">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-black ${GRADE_COLORS[s.creator_grade] ?? ''}`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${GRADE_COLORS[s.creator_grade] ?? ''}`}>
                   {s.creator_grade}
                 </span>
               </td>
               <td className="px-4 py-3">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${TIER_COLORS[s.tier] ?? ''}`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${TIER_COLORS[s.tier] ?? ''}`}>
                   {s.tier}
                 </span>
               </td>
-              <td className="px-4 py-3 text-right text-slate-300">{s.avg_delivery_rate_4w}%</td>
-              <td className="px-4 py-3 text-right text-slate-300">{s.top_videos_4w}</td>
-              <td className="px-4 py-3 text-right text-amber-400">{s.sales_4w}</td>
-              <td className="px-4 py-3 text-right text-slate-400">{s.total_sales}</td>
+              <td className="px-4 py-3 text-right text-slate-700">{s.avg_delivery_rate_4w}%</td>
+              <td className="px-4 py-3 text-right text-slate-700">{s.top_videos_4w}</td>
+              <td className="px-4 py-3 text-right text-amber-700">{s.sales_4w}</td>
+              <td className="px-4 py-3 text-right text-slate-600">{s.total_sales}</td>
             </tr>
           ))}
         </tbody>

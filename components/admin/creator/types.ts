@@ -174,12 +174,12 @@ export const BRAND_SLUGS: Record<string, string> = {
 export const STATUSES = ['Prospect', 'Contacted', 'Interested', 'Product sent', 'Content posted', 'Active'];
 
 export const STATUS_COLORS: Record<string, string> = {
-  Prospect: 'bg-slate-500/15 text-slate-400',
-  Contacted: 'bg-blue-500/15 text-blue-400',
-  Interested: 'bg-yellow-500/15 text-yellow-400',
-  'Product sent': 'bg-orange-500/15 text-orange-400',
-  'Content posted': 'bg-emerald-500/15 text-emerald-400',
-  Active: 'bg-violet-500/15 text-violet-400',
+  Prospect: 'bg-slate-50 text-slate-700 border border-slate-200',
+  Contacted: 'bg-blue-50 text-blue-700 border border-blue-200',
+  Interested: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+  'Product sent': 'bg-orange-50 text-orange-700 border border-orange-200',
+  'Content posted': 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  Active: 'bg-violet-50 text-violet-700 border border-violet-200',
 };
 
 export const NEXT_STATUS: Record<string, string> = {
@@ -188,28 +188,28 @@ export const NEXT_STATUS: Record<string, string> = {
 };
 
 export const TIER_COLORS: Record<string, string> = {
-  gifting: 'bg-slate-500/15 text-slate-400',
-  affiliate: 'bg-blue-500/15 text-blue-400',
-  influencer: 'bg-amber-500/15 text-amber-400',
-  ambassador: 'bg-violet-500/15 text-violet-400',
+  gifting: 'bg-slate-50 text-slate-700 border border-slate-200',
+  affiliate: 'bg-blue-50 text-blue-700 border border-blue-200',
+  influencer: 'bg-amber-50 text-amber-700 border border-amber-200',
+  ambassador: 'bg-violet-50 text-violet-700 border border-violet-200',
 };
 
 export const GRADE_COLORS: Record<string, string> = {
-  A: 'bg-green-500/20 text-green-400',
-  B: 'bg-yellow-500/20 text-yellow-400',
-  C: 'bg-red-500/20 text-red-400',
+  A: 'bg-green-50 text-green-700 border border-green-200',
+  B: 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+  C: 'bg-red-50 text-red-700 border border-red-200',
 };
 
 export const TASK_STATUS_COLORS: Record<string, string> = {
-  sent: 'bg-blue-500/15 text-blue-400',
-  acknowledged: 'bg-cyan-500/15 text-cyan-400',
-  submitted: 'bg-amber-500/15 text-amber-400',
-  feedback_given: 'bg-emerald-500/15 text-emerald-400',
-  approved: 'bg-green-500/15 text-green-400',
-  overdue: 'bg-red-500/15 text-red-400',
-  skipped: 'bg-slate-500/15 text-slate-400',
-  rejected: 'bg-red-500/20 text-red-300',
-  resubmitted: 'bg-purple-500/15 text-purple-400',
+  sent: 'bg-blue-50 text-blue-700 border border-blue-200',
+  acknowledged: 'bg-cyan-50 text-cyan-700 border border-cyan-200',
+  submitted: 'bg-amber-50 text-amber-700 border border-amber-200',
+  feedback_given: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  approved: 'bg-green-50 text-green-700 border border-green-200',
+  overdue: 'bg-red-50 text-red-700 border border-red-200',
+  skipped: 'bg-slate-50 text-slate-700 border border-slate-200',
+  rejected: 'bg-red-50 text-red-700 border border-red-200',
+  resubmitted: 'bg-purple-50 text-purple-700 border border-purple-200',
 };
 
 export const DIRECTION_LABELS: Record<string, string> = {

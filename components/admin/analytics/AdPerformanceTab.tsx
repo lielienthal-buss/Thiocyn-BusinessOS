@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { BRAND_IDS, BRAND_META, type BrandId } from './BrandKPIsTab';
+import { useBrand } from '@/lib/BrandContext';
+
+// Type guard: slug string → BrandId (narrowing to union of known ids)
+function isBrandId(s: string): s is BrandId {
+  return (BRAND_IDS as readonly string[]).includes(s);
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -87,10 +93,14 @@ const EMPTY_CAMPAIGN: Omit<AdCampaign, 'id'> = {
 // ─── Ad Performance Tab ───────────────────────────────────────────────────────
 
 const AdPerformanceTab: React.FC = () => {
+  const { activeBrand } = useBrand();
+  // Map activeBrand.slug → BrandId if it matches known set, else 'all'
+  const filterBrand: BrandId | 'all' =
+    activeBrand && isBrandId(activeBrand.slug) ? activeBrand.slug : 'all';
+
   const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterPlatform, setFilterPlatform] = useState<AdPlatform | 'all'>('all');
-  const [filterBrand, setFilterBrand] = useState<BrandId | 'all'>('all');
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState(EMPTY_CAMPAIGN);
   const [saving, setSaving] = useState(false);
@@ -177,15 +187,7 @@ const AdPerformanceTab: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {/* Brand filter */}
-          <select
-            value={filterBrand}
-            onChange={e => setFilterBrand(e.target.value as BrandId | 'all')}
-            className="text-[11px] font-semibold ring-1 ring-slate-200 bg-white text-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            <option value="all">All Brands</option>
-            {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_META[b].name}</option>)}
-          </select>
+          {/* Brand filter is driven by global BrandSwitcher in Dashboard header */}
 
           {/* Platform filter */}
           <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5">

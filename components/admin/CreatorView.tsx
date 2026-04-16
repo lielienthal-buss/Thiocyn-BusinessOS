@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useBrand } from '@/lib/BrandContext';
 
 // Types & constants from shared module
 import {
@@ -40,14 +41,24 @@ const SUB_TABS: { key: SubTab; label: string }[] = [
   { key: 'gifting', label: 'Gifting' },
 ];
 
+// Map slug → display name used by BRANDS list (for legacy `creators.brand` column lookups)
+const SLUG_TO_BRAND_NAME: Record<string, string> = Object.fromEntries(
+  Object.entries(BRAND_SLUGS).map(([name, slug]) => [slug, name])
+);
+
 const emptyForm = { name: '', instagram_url: '', email: '', brand: BRANDS[1] ?? '', status: 'Prospect', follower_range: '', notes: '' };
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const CreatorView: React.FC = () => {
+  // ── Global brand context ─────────────────────────────────────────────────
+  const { activeBrand } = useBrand();
+  // Compute legacy-shape brandFilter string ('All' | BRAND display name) from activeBrand.
+  // Sub-tabs still accept `brandFilter: string` — preserved for minimal surface change.
+  const brandFilter = activeBrand ? (SLUG_TO_BRAND_NAME[activeBrand.slug] ?? activeBrand.name) : 'All';
+
   // ── Shared state ────────────────────────────────────────────────────────
   const [subTab, setSubTab] = useState<SubTab>('pipeline');
-  const [brandFilter, setBrandFilter] = useState('All');
 
   // ── Pipeline state ──────────────────────────────────────────────────────
   const [creators, setCreators] = useState<Creator[]>([]);
@@ -253,38 +264,36 @@ const CreatorView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-[#1d1d1f] tracking-tight">Creator Engine</h1>
-          <p className="text-sm text-[#515154] mt-1">Pipeline, Tasks, Performance & Operator Management</p>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Creator Engine</h1>
+          <p className="text-sm text-slate-600 mt-1">
+            Pipeline, Tasks, Performance & Operator Management
+            {activeBrand && (
+              <span className="ml-2 text-indigo-700 font-semibold">· {activeBrand.name}</span>
+            )}
+          </p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <select
-            value={brandFilter}
-            onChange={e => setBrandFilter(e.target.value)}
-            className="text-sm border border-black/[0.06] bg-white/70 text-[#1d1d1f] rounded-lg px-3 py-1.5"
-          >
-            {BRANDS.map(b => <option key={b}>{b}</option>)}
-          </select>
           <button
             onClick={() => callEdgeFunction('distribute-creator-tasks', brandFilter !== 'All' ? { brand_slug: getBrandSlug(brandFilter) } : {})}
             disabled={actionLoading === 'distribute-creator-tasks'}
-            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-[#1d1d1f] rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
           >
             {actionLoading === 'distribute-creator-tasks' ? '...' : 'Distribute Tasks'}
           </button>
           <button
             onClick={() => callEdgeFunction('snapshot-creator-performance')}
             disabled={actionLoading === 'snapshot-creator-performance'}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-[#1d1d1f] rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
           >
             {actionLoading === 'snapshot-creator-performance' ? '...' : 'Snapshot'}
           </button>
-          <label className="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-[#1d1d1f] rounded-lg text-xs font-bold transition-colors cursor-pointer">
+          <label className="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer">
             {actionLoading === 'csv-import' ? 'Importing...' : 'CSV Import'}
             <input type="file" accept=".csv" onChange={handleCsvImport} className="hidden" />
           </label>
           <button
             onClick={() => { setShowModal(true); setFormError(null); setForm(emptyForm); }}
-            className="px-4 py-2 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-xl font-bold text-sm transition-colors shadow-sm"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold text-sm transition-colors shadow-sm"
           >
             + Creator
           </button>
@@ -294,36 +303,36 @@ const CreatorView: React.FC = () => {
       {/* KPI Strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Total Creators', value: stats.total, color: 'text-[#1d1d1f]' },
-          { label: 'Active', value: stats.active, color: 'text-green-400' },
-          { label: 'Ambassadors', value: stats.ambassadors, color: 'text-violet-400' },
-          { label: 'Total Sales', value: stats.totalSales, color: 'text-[#E09B37]' },
+          { label: 'Total Creators', value: stats.total, color: 'text-slate-900' },
+          { label: 'Active', value: stats.active, color: 'text-emerald-700' },
+          { label: 'Ambassadors', value: stats.ambassadors, color: 'text-violet-700' },
+          { label: 'Total Sales', value: stats.totalSales, color: 'text-indigo-700' },
         ].map(kpi => (
-          <div key={kpi.label} className="bg-white/70 border border-black/[0.06] rounded-xl p-3 text-center">
-            <div className={`text-2xl font-bold ${kpi.color}`}>{kpi.value}</div>
-            <div className="text-xs text-[#6e6e73] mt-1">{kpi.label}</div>
+          <div key={kpi.label} className="bg-white ring-1 ring-slate-200 rounded-xl p-3 text-center">
+            <div className={`text-2xl font-semibold ${kpi.color}`}>{kpi.value}</div>
+            <div className="text-xs text-slate-600 mt-1">{kpi.label}</div>
           </div>
         ))}
       </div>
 
       {/* Action Result */}
       {actionResult && (
-        <div className="bg-white/70 border border-black/[0.06] rounded-xl p-3 text-xs font-mono text-[#1d1d1f] relative">
-          <button onClick={() => setActionResult(null)} className="absolute top-2 right-2 text-[#6e6e73] hover:text-[#1d1d1f]">×</button>
+        <div className="bg-white ring-1 ring-slate-200 rounded-xl p-3 text-xs font-mono text-slate-900 relative">
+          <button onClick={() => setActionResult(null)} className="absolute top-2 right-2 text-slate-500 hover:text-slate-900">×</button>
           <pre className="whitespace-pre-wrap">{actionResult}</pre>
         </div>
       )}
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 bg-white/70 p-1 rounded-lg w-fit border border-black/[0.06]">
+      <div className="flex gap-1 bg-slate-50 p-1 rounded-lg w-fit ring-1 ring-slate-200">
         {SUB_TABS.map(tab => (
           <button
             key={tab.key}
             onClick={() => setSubTab(tab.key)}
-            className={`px-4 py-1.5 rounded-md text-sm font-bold transition-colors ${
+            className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${
               subTab === tab.key
-                ? 'bg-primary-500/20 text-primary-400'
-                : 'text-[#515154] hover:text-[#1d1d1f]'
+                ? 'bg-indigo-50 text-indigo-700'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             {tab.label}
@@ -352,13 +361,13 @@ const CreatorView: React.FC = () => {
           showUntaggedOnly={showUntaggedOnly}
           setShowUntaggedOnly={setShowUntaggedOnly}
           handleAdvanceStatus={handleAdvanceStatus}
-          fetchCreators={fetchCreators}
+          setSelectedIds={setSelectedIds}
         />
       )}
       {subTab === 'tasks' && (
         <CreatorTasksTab
           tasks={filteredTasks}
-          tabLoading={tabLoading}
+          brandFilter={brandFilter}
           actionLoading={actionLoading}
           setActionLoading={setActionLoading}
           actionResult={actionResult}
@@ -366,13 +375,13 @@ const CreatorView: React.FC = () => {
         />
       )}
       {subTab === 'performance' && (
-        <CreatorPerformanceTab scoreboard={filteredScoreboard} tabLoading={tabLoading} />
+        <CreatorPerformanceTab scoreboard={filteredScoreboard} brandFilter={brandFilter} />
       )}
       {subTab === 'operators' && (
-        <CreatorOperatorsTab operators={operators} tabLoading={tabLoading} />
+        <CreatorOperatorsTab operators={operators} loading={tabLoading} />
       )}
       {subTab === 'pulse' && (
-        <CreatorPulseTab pulse={pulse} tabLoading={tabLoading} brandFilter={brandFilter} />
+        <CreatorPulseTab pulse={pulse} loading={tabLoading} brandFilter={brandFilter} />
       )}
       {subTab === 'prospects' && (
         <CreatorProspectsTab brandFilter={brandFilter} />
@@ -386,59 +395,59 @@ const CreatorView: React.FC = () => {
 
       {/* ── Add Creator Modal ──────────────────────────────────────────── */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white/70 border border-black/[0.06] rounded-2xl shadow-2xl w-full max-w-md p-8 relative backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+          <div className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
             <button onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-[#6e6e73] hover:text-[#1d1d1f] text-xl font-black">×</button>
-            <h2 className="text-xl font-black text-[#1d1d1f] mb-6">Add Creator</h2>
+              className="absolute top-4 right-4 text-slate-500 hover:text-slate-900 text-xl font-semibold">×</button>
+            <h2 className="text-xl font-semibold text-slate-900 mb-6">Add Creator</h2>
             <form onSubmit={handleAddCreator} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Name *</label>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Name *</label>
                 <input type="text" required value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                   placeholder="Creator name" />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Instagram URL</label>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Instagram URL</label>
                 <input type="url" value={form.instagram_url}
                   onChange={e => setForm(f => ({ ...f, instagram_url: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                   placeholder="https://www.instagram.com/handle/" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Brand</label>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Brand</label>
                   <select value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none">
+                    className="w-full px-3 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     {BRANDS.filter(b => b !== 'All').map(b => <option key={b}>{b}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Status</label>
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Status</label>
                   <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none">
+                    className="w-full px-3 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     {STATUSES.map(s => <option key={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Email (optional)</label>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Email (optional)</label>
                 <input type="email" value={form.email}
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                  className="w-full px-4 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none"
+                  className="w-full px-4 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                   placeholder="email@example.com" />
               </div>
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-[#6e6e73] mb-1">Notes (optional)</label>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-1">Notes (optional)</label>
                 <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-black/[0.06] bg-white/50 text-[#1d1d1f] rounded-xl text-sm focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 outline-none resize-none"
+                  className="w-full px-4 py-2.5 ring-1 ring-slate-200 bg-white text-slate-900 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
                   placeholder="Additional notes..." />
               </div>
-              {formError && <p className="text-xs text-red-500 font-bold">{formError}</p>}
+              {formError && <p className="text-xs text-rose-700 font-semibold">{formError}</p>}
               <button type="submit" disabled={saving}
-                className="w-full py-3 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-xl font-black text-sm uppercase tracking-widest transition-colors disabled:opacity-50">
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold text-sm uppercase tracking-widest transition-colors disabled:opacity-50">
                 {saving ? 'Saving...' : 'Add Creator'}
               </button>
             </form>

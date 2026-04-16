@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useBrand } from '@/lib/BrandContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -63,7 +64,7 @@ const weekBounds = () => {
 
 // ─── Data loader ─────────────────────────────────────────────────────────────
 
-async function loadMetrics(): Promise<Metrics> {
+async function loadMetrics(activeBrandId: string | null): Promise<Metrics> {
   const { start: mStart, end: mEnd } = monthBounds();
   const { start: wStart } = weekBounds();
 
@@ -85,12 +86,31 @@ async function loadMetrics(): Promise<Metrics> {
     monthlyPnlStatus: '—',
   };
 
-  // campaign_kpis MTD aggregate
-  const { data: kpis } = await supabase
+  // When scoped to a brand, pre-fetch its campaign IDs so downstream queries can filter.
+  let brandCampaignIds: string[] | null = null;
+  if (activeBrandId) {
+    const { data: bcRes } = await supabase
+      .from('campaigns')
+      .select('id')
+      .eq('brand_id', activeBrandId);
+    brandCampaignIds = (bcRes ?? []).map((r: { id: string }) => r.id);
+    // If brand has zero campaigns, skip KPI aggregation entirely
+    if (brandCampaignIds.length === 0) {
+      return {
+        ...m,
+        monthlyPnlStatus: '—',
+      };
+    }
+  }
+
+  // campaign_kpis MTD aggregate — scoped by brand if applicable
+  let kpisQuery = supabase
     .from('campaign_kpis')
     .select('campaign_id, spend, revenue, roas, snapshot_date')
     .gte('snapshot_date', mStart)
     .lte('snapshot_date', mEnd);
+  if (brandCampaignIds) kpisQuery = kpisQuery.in('campaign_id', brandCampaignIds);
+  const { data: kpis } = await kpisQuery;
 
   if (kpis && kpis.length > 0) {
     let totalSpend = 0;
@@ -116,18 +136,22 @@ async function loadMetrics(): Promise<Metrics> {
     ).length;
   }
 
-  // active campaigns
-  const { count: liveCount } = await supabase
+  // active campaigns (optionally brand-scoped)
+  let liveQuery = supabase
     .from('campaigns')
     .select('id', { count: 'exact', head: true })
     .eq('status', 'live');
+  if (activeBrandId) liveQuery = liveQuery.eq('brand_id', activeBrandId);
+  const { count: liveCount } = await liveQuery;
   m.activeCampaigns = liveCount ?? 0;
 
-  // Pending brief approvals
-  const { count: briefCount } = await supabase
+  // Pending brief approvals (optionally brand-scoped)
+  let briefQuery = supabase
     .from('campaigns')
     .select('id', { count: 'exact', head: true })
     .eq('status', 'brief_review');
+  if (activeBrandId) briefQuery = briefQuery.eq('brand_id', activeBrandId);
+  const { count: briefCount } = await briefQuery;
   m.pendingBriefApprovals = briefCount ?? 0;
 
   // Urgent/open tasks — team_tasks has numeric priority; treat priority>=4 OR status='open' as "urgent"
@@ -142,12 +166,27 @@ async function loadMetrics(): Promise<Metrics> {
     m.pendingInternTasks = urgentTasks.length;
   }
 
-  // Disputes
-  const { count: dispCount } = await supabase
-    .from('disputes')
-    .select('id', { count: 'exact', head: true })
-    .in('status', ['open', 'pending']);
-  m.openDisputes = dispCount ?? 0;
+  // Disputes (optionally brand-scoped — column may not exist)
+  try {
+    let dispQuery = supabase
+      .from('disputes')
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['open', 'pending']);
+    if (activeBrandId) dispQuery = dispQuery.eq('brand_id', activeBrandId);
+    const { count: dispCount, error: dispErr } = await dispQuery;
+    if (dispErr && activeBrandId) {
+      // Fallback: column doesn't exist, fetch unfiltered total
+      const { count: allCount } = await supabase
+        .from('disputes')
+        .select('id', { count: 'exact', head: true })
+        .in('status', ['open', 'pending']);
+      m.openDisputes = allCount ?? 0;
+    } else {
+      m.openDisputes = dispCount ?? 0;
+    }
+  } catch {
+    m.openDisputes = 0;
+  }
 
   // ISO incidents (non-resolved)
   const { data: incidents } = await supabase
@@ -201,10 +240,12 @@ async function loadMetrics(): Promise<Metrics> {
 
   // Ad Spend Pace — (actual MTD / expected by today) × 100
   try {
-    const { data: liveCampaigns } = await supabase
+    let liveCampQuery = supabase
       .from('campaigns')
       .select('budget_planned')
       .eq('status', 'live');
+    if (activeBrandId) liveCampQuery = liveCampQuery.eq('brand_id', activeBrandId);
+    const { data: liveCampaigns } = await liveCampQuery;
     const dailyBudgetSum = (liveCampaigns ?? []).reduce(
       (s: number, c: any) => s + Number(c.budget_planned ?? 0),
       0,
@@ -313,11 +354,13 @@ function cardsForRole(role: ExecRole, m: Metrics): SummaryCard[] {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ role }) => {
+  const { activeBrand } = useBrand();
   const [metrics, setMetrics] = useState<Metrics | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    loadMetrics()
+    setMetrics(null);
+    loadMetrics(activeBrand?.id ?? null)
       .then((m) => {
         if (!cancelled) setMetrics(m);
       })
@@ -327,7 +370,7 @@ const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ role }) => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [activeBrand]);
 
   if (!metrics) {
     return (

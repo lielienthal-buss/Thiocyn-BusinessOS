@@ -53,7 +53,7 @@ interface KpiRow {
 }
 
 const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) => {
-  const { brands } = useBrand();
+  const { brands, activeBrand } = useBrand();
   const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
   const [kpis, setKpis] = useState<KpiRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,22 +64,39 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
       setLoading(true);
       const now = new Date();
       const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-      const [cRes, kRes] = await Promise.all([
-        supabase.from('campaigns').select('id, brand_id, platform, status'),
-        supabase
-          .from('campaign_kpis')
-          .select('campaign_id, spend, snapshot_date')
-          .gte('snapshot_date', monthStart),
-      ]);
+
+      let campaignsQuery = supabase.from('campaigns').select('id, brand_id, platform, status');
+      if (activeBrand) campaignsQuery = campaignsQuery.eq('brand_id', activeBrand.id);
+
+      const cRes = await campaignsQuery;
+      const cList = (cRes.data as CampaignRow[]) ?? [];
+
+      // KPI query — when activeBrand set, restrict to campaigns for that brand
+      let kpisQuery = supabase
+        .from('campaign_kpis')
+        .select('campaign_id, spend, snapshot_date')
+        .gte('snapshot_date', monthStart);
+      if (activeBrand) {
+        const ids = cList.map((c) => c.id);
+        if (ids.length === 0) {
+          if (cancelled) return;
+          setCampaigns(cList);
+          setKpis([]);
+          setLoading(false);
+          return;
+        }
+        kpisQuery = kpisQuery.in('campaign_id', ids);
+      }
+      const kRes = await kpisQuery;
       if (cancelled) return;
-      setCampaigns((cRes.data as CampaignRow[]) ?? []);
+      setCampaigns(cList);
       setKpis((kRes.data as KpiRow[]) ?? []);
       setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [activeBrand]);
 
   const campaignPlatform = useMemo(() => {
     const m = new Map<string, string>();
@@ -143,9 +160,14 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
   return (
     <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
       <div>
-        <h2 className="text-xl font-black tracking-tight text-slate-900">Marketing Cockpit</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-slate-900">Marketing Cockpit</h2>
         <p className="text-sm text-slate-600 mt-1">
           Role-adaptive summary of campaigns, spend and creative throughput.
+          {activeBrand && (
+            <span className="ml-2 inline-flex items-center gap-1 text-indigo-700 font-semibold">
+              · {activeBrand.emoji} {activeBrand.name}
+            </span>
+          )}
         </p>
       </div>
 
@@ -196,15 +218,23 @@ const MarketingCockpit: React.FC<MarketingCockpitProps> = ({ role = 'staff' }) =
           )}
         </div>
 
-        {/* Spend by Brand */}
+        {/* Spend by Brand (or single-brand total when filtered) */}
         <div className="bg-white rounded-2xl ring-1 ring-slate-200 hover:ring-slate-300 p-4 transition-all">
           <div className="flex items-baseline justify-between mb-2">
             <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-600">
-              Spend by Brand · MTD
+              {activeBrand ? `Spend · ${activeBrand.name} · MTD` : 'Spend by Brand · MTD'}
             </h5>
           </div>
           {loading ? (
             <ChartSkeleton />
+          ) : activeBrand ? (
+            <div className="h-[180px] flex flex-col items-center justify-center">
+              <span className="text-3xl">{activeBrand.emoji}</span>
+              <span className="text-3xl font-semibold text-slate-900 mt-2 tabular-nums">
+                €{(brandData[0]?.value ?? 0).toLocaleString()}
+              </span>
+              <span className="text-xs text-slate-500 mt-1">{activeBrand.name} spend MTD</span>
+            </div>
           ) : hasBrand ? (
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={brandData} margin={{ top: 4, right: 8, left: -10, bottom: 0 }}>
