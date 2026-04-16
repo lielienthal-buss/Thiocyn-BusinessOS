@@ -13,8 +13,6 @@ interface MailAnalysis {
   currency: string | null;
   due_date: string | null;
   service_description: string | null;
-  recommended_action: string;
-  action_reason: string;
   summary: string;
 }
 
@@ -52,7 +50,7 @@ serve(async (req) => {
     const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY')!;
 
     const systemPrompt = `You are a finance assistant analyzing business emails.
-Extract structured invoice/finance data and recommend an action.
+Extract structured invoice/finance data.
 
 Return ONLY valid JSON matching this exact structure:
 {
@@ -62,8 +60,6 @@ Return ONLY valid JSON matching this exact structure:
   "currency": "EUR/USD/GBP or null",
   "due_date": "YYYY-MM-DD or null",
   "service_description": "brief description of service/product or null",
-  "recommended_action": "forward_accounting|urgent_owner|schedule_payment|no_action",
-  "action_reason": "one sentence explaining why",
   "summary": "one sentence summarizing this mail"
 }`;
 
@@ -84,7 +80,7 @@ ${mail.preview ? `\nContent preview:\n${mail.preview}` : ''}`;
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 400,
+        max_tokens: 250,
         system: systemPrompt,
         messages: [{ role: 'user', content: userContent }],
       }),
@@ -105,8 +101,6 @@ ${mail.preview ? `\nContent preview:\n${mail.preview}` : ''}`;
         currency: null,
         due_date: null,
         service_description: null,
-        recommended_action: 'no_action',
-        action_reason: 'Could not parse mail content',
         summary: mail.subject,
       };
     }

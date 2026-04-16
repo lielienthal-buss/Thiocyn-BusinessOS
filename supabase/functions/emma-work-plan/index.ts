@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { classifyMail } from '../_shared/mail-classifier.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -61,11 +62,9 @@ serve(async (req) => {
       `- [${m.id}] From: ${m.sender} | Subject: ${m.subject}`
     ).join('\n') || 'None';
 
-    // Two parallel Claude calls — one for blocks, one for mail classification
-    const [blocksRaw, mailsRaw] = await Promise.all([
-      callClaude(
-        apiKey,
-        `You are Emma, a work time management assistant. Today is ${today}.
+    const blocksRaw = await callClaude(
+      apiKey,
+      `You are Emma, a work time management assistant. Today is ${today}.
 Rules:
 - Work hours: 09:00–18:00
 - 09:00–12:00 = deep work / booking window — NEVER schedule admin there
@@ -75,30 +74,23 @@ Rules:
 
 Return ONLY valid JSON:
 {"blocks":[{"start":"13:00","end":"14:00","title":"Block title","type":"admin|deep-work|call|review","tasks":["task description"]}],"summary":"one sentence briefing"}`,
-        `Today is ${today}.\n\nOpen tasks (${tasks?.length ?? 0}):\n${taskList}\n\nGenerate today's time blocks.`,
-        600
-      ),
-      callClaude(
-        apiKey,
-        `Classify finance emails and recommend actions.
-Rules:
-- invoice → forward_accounting
-- reminder → urgent_owner
-- dispute → urgent_owner
-- info → no_action
+      `Today is ${today}.\n\nOpen tasks (${tasks?.length ?? 0}):\n${taskList}\n\nGenerate today's time blocks.`,
+      600,
+    );
 
-Return ONLY valid JSON:
-{"mailActions":[{"mailId":"id","subject":"subject","action":"forward_accounting|urgent_owner|no_action","category":"invoice|reminder|dispute|info|other","priority":"high|normal|low"}]}`,
-        `Classify these finance mails (${mails?.length ?? 0}):\n${mailList}`,
-        600
-      ),
-    ]);
+    const mailActions = (mails ?? []).map((m) => {
+      const c = classifyMail(m.sender, m.subject, m.preview);
+      return {
+        mailId: m.id,
+        subject: m.subject,
+        action: c.action,
+        category: c.category,
+        priority: c.priority,
+      };
+    });
 
     const { blocks = [], summary = '' } = parseJson<{ blocks: unknown[]; summary: string }>(
       blocksRaw, { blocks: [], summary: '' }
-    );
-    const { mailActions = [] } = parseJson<{ mailActions: unknown[] }>(
-      mailsRaw, { mailActions: [] }
     );
 
     return new Response(

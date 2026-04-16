@@ -1,44 +1,12 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { ImapFlow } from 'npm:imapflow';
+import { classifyMail } from '../_shared/mail-classifier.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-async function classifyMail(
-  apiKey: string,
-  sender: string,
-  subject: string,
-  preview: string | null
-): Promise<{ category: string; priority: string }> {
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 100,
-        system: `Classify this email. Return ONLY valid JSON: {"category":"invoice|reminder|dispute|info|other|task|question","priority":"high|normal|low"}`,
-        messages: [{
-          role: 'user',
-          content: `From: ${sender}\nSubject: ${subject}${preview ? `\nPreview: ${preview.substring(0, 200)}` : ''}`,
-        }],
-      }),
-    });
-    const data = await res.json();
-    const text = data.content?.[0]?.text ?? '{}';
-    const match = text.match(/\{[\s\S]*\}/);
-    return JSON.parse(match?.[0] ?? '{}');
-  } catch {
-    return { category: 'other', priority: 'normal' };
-  }
-}
 
 async function fetchWithTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
@@ -69,8 +37,6 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
-    const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY')!;
-
     const client = new ImapFlow({
       host: imap_host,
       port: imap_port ?? 993,
@@ -155,15 +121,9 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existing) {
-        let category = 'other';
-        let ai_priority = 'normal';
-        if (anthropicKey) {
-          try {
-            const c = await classifyMail(anthropicKey, mail.sender, mail.subject, mail.preview);
-            if (c.category) category = c.category;
-            if (c.priority) ai_priority = c.priority;
-          } catch { /* skip classification, insert anyway */ }
-        }
+        const c = classifyMail(mail.sender, mail.subject, mail.preview);
+        const category = c.category;
+        const ai_priority = c.priority;
         await supabase.from('user_mails').insert({
           id: mail.id,
           user_id,
