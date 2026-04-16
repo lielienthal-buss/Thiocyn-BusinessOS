@@ -10,7 +10,6 @@ import ProjectAreaManager from './ProjectAreaManager';
 import TaskManager from './TaskManager';
 import AcademyView from './AcademyView';
 import CustomerSupportView from './CustomerSupportView';
-import PostsTrackerView from './PostsTrackerView';
 import AgentChatDrawer from './AgentChatDrawer';
 import NotificationBell from './NotificationBell';
 import AccountView from './AccountView';
@@ -56,9 +55,6 @@ const BrandConfigView = lazyLoad(() => import('./BrandConfigView'));
 const ProcessExecutionView = lazyLoad(() => import('./ProcessExecutionView'));
 const NotificationFeedView = lazyLoad(() => import('./NotificationFeedView'));
 const VideoGenerationView = lazyLoad(() => import('./VideoGenerationView'));
-const BriefingGeneratorView = lazyLoad(() => import('./BriefingGeneratorView'));
-const CreativeFactoryView = lazyLoad(() => import('./CreativeFactoryView'));
-const ContentMachineView = lazyLoad(() => import('./ContentMachineView'));
 const MarketingCockpit = lazyLoad(() => import('./marketing/MarketingCockpit'));
 const CampaignKanban = lazyLoad(() => import('./marketing/CampaignKanban'));
 const CampaignDrawer = lazyLoad(() => import('./marketing/CampaignDrawer'));
@@ -67,7 +63,7 @@ const BriefsHubView = lazyLoad(() => import('./marketing/BriefsHubView'));
 
 type Tab =
   | 'briefing' | 'home' | 'teamTasks' | 'emmaPlanner'
-  | 'creatorPipeline' | 'creativeFactory' | 'contentMachine' | 'videoGeneration' | 'postsTracker' | 'briefingGenerator'
+  | 'creatorPipeline' | 'videoGeneration'
   | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
   | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
   | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
@@ -452,28 +448,12 @@ const Dashboard: React.FC = () => {
     }
 
 
-    if (tab === 'postsTracker') {
-      return <PostsTrackerView />;
-    }
-
     if (tab === 'creatorPipeline') {
       return <React.Suspense fallback={<div>Loading...</div>}><CreatorView /></React.Suspense>;
     }
 
     if (tab === 'videoGeneration') {
       return <React.Suspense fallback={<div>Loading...</div>}><VideoGenerationView /></React.Suspense>;
-    }
-
-    if (tab === 'briefingGenerator') {
-      return <React.Suspense fallback={<div>Loading...</div>}><BriefingGeneratorView /></React.Suspense>;
-    }
-
-    if (tab === 'creativeFactory') {
-      return <React.Suspense fallback={<div>Loading...</div>}><CreativeFactoryView /></React.Suspense>;
-    }
-
-    if (tab === 'contentMachine') {
-      return <React.Suspense fallback={<div>Loading...</div>}><ContentMachineView /></React.Suspense>;
     }
 
     if (tab === 'teamManagement') {
