@@ -180,6 +180,10 @@ body {
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
+/* ─── Safe-area utilities (iOS notch/home indicator) ────────────────────────── */
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0.5rem); }
+.pt-safe { padding-top: max(env(safe-area-inset-top), 0.5rem); }
+
 /* ════════════════════════════════════════════════════════════════════════════
    LIGHT THEME — Welle 3 Foundation Hardening Pilot (2026-04-11)
    ──────────────────────────────────────────────────────────────────────────

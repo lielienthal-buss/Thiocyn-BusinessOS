@@ -677,6 +677,7 @@ const ProductsTab: React.FC = () => {
 
   return (
     <div className="bg-white/70 rounded-xl border border-black/[0.06] overflow-hidden">
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-white/50 border-b border-black/[0.06]">
@@ -703,6 +704,7 @@ const ProductsTab: React.FC = () => {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 };
@@ -785,6 +787,7 @@ const ShopifySyncTab: React.FC = () => {
           <div className="px-4 py-3 border-b border-black/[0.06]">
             <h3 className="text-sm font-bold text-[#1d1d1f]">Sync History</h3>
           </div>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-white/50 border-b border-black/[0.06]">
@@ -813,6 +816,7 @@ const ShopifySyncTab: React.FC = () => {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

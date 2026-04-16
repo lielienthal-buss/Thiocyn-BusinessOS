@@ -258,6 +258,7 @@ const TeamManagementView: React.FC = () => {
           <div className="text-center py-12 text-[#6e6e73] text-sm">No team members yet.</div>
         ) : (
           <div className="border border-black/[0.06] rounded-2xl overflow-hidden bg-white/70 backdrop-blur-sm">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-black/[0.06] bg-white/50">
@@ -385,6 +386,7 @@ const TeamManagementView: React.FC = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

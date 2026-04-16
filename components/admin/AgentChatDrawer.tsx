@@ -190,7 +190,7 @@ const AgentChatDrawer: React.FC<Props> = ({
       {/* Floating Action Button */}
       <button
         onClick={onOpen}
-        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
+        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
         title={`Open Jarvis — ${sectionLabel}`}
         aria-label="Open Jarvis AI assistant"
       >
@@ -219,14 +219,14 @@ const AgentChatDrawer: React.FC<Props> = ({
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-50 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
 
           {/* Drawer panel */}
           <div
-            className="fixed right-0 top-0 h-full w-full md:max-w-md bg-white/80 border-l border-black/[0.08] shadow-2xl flex flex-col z-50 transition-transform duration-300 translate-x-0"
+            className="fixed right-0 top-0 h-full w-full md:max-w-md bg-white/80 border-l border-black/[0.08] shadow-2xl flex flex-col z-[60] transition-transform duration-300 translate-x-0"
             role="dialog"
             aria-modal="true"
             aria-label="Jarvis AI assistant"

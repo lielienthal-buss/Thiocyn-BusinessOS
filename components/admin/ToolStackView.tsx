@@ -149,6 +149,7 @@ const ToolStackView: React.FC<Props> = ({ isAdmin }) => {
 
       {/* Tool Table */}
       <div className="rounded-xl border border-black/[0.06] overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-white/50 border-b border-black/[0.06]">
@@ -198,6 +199,7 @@ const ToolStackView: React.FC<Props> = ({ isAdmin }) => {
             ))}
           </tbody>
         </table>
+        </div>
         {filtered.length === 0 && (
           <div className="text-center py-8 text-sm text-[#6e6e73]">Keine Tools in dieser Kategorie.</div>
         )}

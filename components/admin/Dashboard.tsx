@@ -525,7 +525,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <LanguageProvider>
-    <div className="animate-[fadeIn_0.5s_ease-out] min-h-screen pb-20 md:pb-0" style={{
+    <div className="animate-[fadeIn_0.5s_ease-out] min-h-screen pb-28 md:pb-24" style={{
       backgroundColor: '#f0f0f5',
       backgroundImage: 'radial-gradient(ellipse at 20% 20%, rgba(224, 155, 55, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 10%, rgba(51, 79, 180, 0.06) 0%, transparent 40%), radial-gradient(ellipse at 60% 80%, rgba(224, 155, 55, 0.05) 0%, transparent 45%)',
       backgroundAttachment: 'fixed',
@@ -687,7 +687,7 @@ const Dashboard: React.FC = () => {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 pt-6 md:pl-6 min-w-0">
+        <main className="flex-1 pt-6 md:pl-6 min-w-0 pb-24 md:pb-16">
           {activeTabs.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <p className="text-4xl mb-4">{activeSection.emoji}</p>
@@ -706,7 +706,7 @@ const Dashboard: React.FC = () => {
         </main>
       </div>
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 backdrop-blur-xl border-t border-black/[0.06] flex items-center justify-around px-2 py-2 safe-area-pb" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px) saturate(1.8)', WebkitBackdropFilter: 'blur(20px) saturate(1.8)' }}>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 backdrop-blur-xl border-t border-black/[0.06] flex items-center justify-around px-2 py-2" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(20px) saturate(1.8)', WebkitBackdropFilter: 'blur(20px) saturate(1.8)', paddingBottom: 'max(env(safe-area-inset-bottom), 0.5rem)' }}>
         {[
           { id: 'home' as Section, emoji: '🏠', label: 'Home' },
           { id: 'marketing' as Section, emoji: '📣', label: 'Marketing' },
@@ -727,13 +727,6 @@ const Dashboard: React.FC = () => {
             <span className="text-[10px] font-semibold">{s.label}</span>
           </button>
         ))}
-        <button
-          onClick={() => setChatOpen(true)}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] text-[#515154] hover:text-amber-400"
-        >
-          <span className="text-xl leading-none">✨</span>
-          <span className="text-[10px] font-semibold">Jarvis</span>
-        </button>
       </nav>
 
       <AgentChatDrawer
