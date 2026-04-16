@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ const fmtTs = (ts: string | null | undefined) => {
 };
 
 const roasBadge = (roas: number | null) => {
-  if (roas == null) return <span className="text-xs text-slate-500 font-semibold">—</span>;
+  if (roas == null) return <span className="text-xs text-slate-600 font-semibold">—</span>;
   const cls =
     roas >= 3 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
     roas >= 2 ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -66,7 +67,32 @@ const SOP_PHASE_COLORS = (phase: number) => {
   return 'bg-slate-200';
 };
 
-// ─── Brand KPIs Tab ───────────────────────────────────────────────────────────
+// ─── Ad Analytics Tab ────────────────────────────────────────────────────────
+
+const TOOLTIP_STYLE = {
+  background: 'white',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
+  color: '#0f172a',
+  fontSize: '11px',
+  padding: '6px 8px',
+};
+
+function MiniBarChart({ data, dataKey, color, format }: { data: any[]; dataKey: string; color: string; format?: (n: any) => string }) {
+  if (data.length === 0) return <div className="h-32 flex items-center justify-center text-xs text-slate-500">No data</div>;
+  return (
+    <ResponsiveContainer width="100%" height={140}>
+      <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
+        <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} tickFormatter={format} />
+        <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: any) => format ? format(v) : v} cursor={{ fill: '#f1f5f9' }} />
+        <Bar dataKey={dataKey} fill={color} radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+
 
 const BrandKPIsTab: React.FC = () => {
   const [metrics, setMetrics] = useState<BrandMetric[]>([]);
@@ -152,25 +178,56 @@ const BrandKPIsTab: React.FC = () => {
     );
   }
 
+  // Chart data — sort each by value desc for visual ranking
+  const chartData = BRAND_IDS.map(brandId => {
+    const m = metrics.find(x => x.brand_id === brandId);
+    return {
+      name: BRAND_META[brandId].name,
+      followers: m?.followers ?? 0,
+      engagement: m?.engagement_rate ?? 0,
+      roas: m?.roas ?? 0,
+      adSpend: m?.ad_spend ?? 0,
+    };
+  });
+  const roasData = [...chartData].sort((a, b) => b.roas - a.roas);
+  const followersData = [...chartData].sort((a, b) => b.followers - a.followers);
+  const engagementData = [...chartData].sort((a, b) => b.engagement - a.engagement);
+
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-semibold text-slate-900">Brand KPIs</h3>
-        <p className="text-xs text-slate-500 mt-0.5">Live performance metrics per brand from Supabase</p>
+        <h3 className="text-base font-semibold text-slate-900">Ad Analytics</h3>
+        <p className="text-xs text-slate-600 mt-0.5">Live performance metrics per brand from Supabase</p>
+      </div>
+
+      {/* Charts strip */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-2">ROAS by Brand</p>
+          <MiniBarChart data={roasData} dataKey="roas" color="#6366f1" format={(v) => `${Number(v).toFixed(2)}x`} />
+        </div>
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-2">Followers by Brand</p>
+          <MiniBarChart data={followersData} dataKey="followers" color="#10b981" format={(v) => fmtNum(v)} />
+        </div>
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-2">Engagement % by Brand</p>
+          <MiniBarChart data={engagementData} dataKey="engagement" color="#475569" format={(v) => `${Number(v).toFixed(2)}%`} />
+        </div>
       </div>
 
       {/* Summary row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Avg ROAS (all brands)</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-1">Avg ROAS (all brands)</p>
           <p className="text-2xl font-semibold text-slate-900">{avgRoas != null ? `${avgRoas.toFixed(2)}x` : '—'}</p>
         </div>
         <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Ad Spend MTD</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-1">Total Ad Spend MTD</p>
           <p className="text-2xl font-semibold text-slate-900">{totalSpend > 0 ? fmtCurrency(totalSpend) : '—'}</p>
         </div>
         <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Best Performing Brand</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-1">Best Performing Brand</p>
           <p className="text-2xl font-semibold text-slate-900">
             {bestBrand
               ? `${BRAND_META[bestBrand.brand_id]?.emoji} ${BRAND_META[bestBrand.brand_id]?.name}`
@@ -230,7 +287,7 @@ const BrandKPIsTab: React.FC = () => {
                       ] as const
                     ).map(field => (
                       <div key={field.key}>
-                        <label className="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-0.5">
+                        <label className="block text-[9px] font-black uppercase tracking-wider text-slate-600 mb-0.5">
                           {field.label}
                         </label>
                         <input
@@ -250,7 +307,7 @@ const BrandKPIsTab: React.FC = () => {
                       </div>
                     ))}
                     <div className="col-span-2">
-                      <label className="block text-[9px] font-black uppercase tracking-wider text-slate-500 mb-0.5">Notes</label>
+                      <label className="block text-[9px] font-black uppercase tracking-wider text-slate-600 mb-0.5">Notes</label>
                       <input
                         type="text"
                         value={editForm.notes ?? ''}
@@ -289,14 +346,14 @@ const BrandKPIsTab: React.FC = () => {
                   {/* Followers + Engagement */}
                   <div className="flex items-center justify-between text-xs">
                     <div>
-                      <p className="text-[10px] text-slate-500 font-semibold">Followers</p>
+                      <p className="text-[10px] text-slate-600 font-semibold">Followers</p>
                       <p className="font-semibold text-slate-900 text-base mt-0.5">
                         {m.followers != null ? fmtNum(m.followers) : '—'}
                         <span className="text-slate-400 text-xs ml-1" title="Trend data not yet available">↔</span>
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-semibold">Engagement</p>
+                      <p className="text-[10px] text-slate-600 font-semibold">Engagement</p>
                       <p className="font-semibold text-slate-900 text-base mt-0.5">
                         {m.engagement_rate != null ? `${m.engagement_rate.toFixed(2)}%` : '—'}
                       </p>
@@ -306,11 +363,11 @@ const BrandKPIsTab: React.FC = () => {
                   {/* ROAS + Ad Spend */}
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] text-slate-500 font-semibold mb-1">ROAS</p>
+                      <p className="text-[10px] text-slate-600 font-semibold mb-1">ROAS</p>
                       {roasBadge(m.roas)}
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] text-slate-500 font-semibold">Ad Spend MTD</p>
+                      <p className="text-[10px] text-slate-600 font-semibold">Ad Spend MTD</p>
                       <p className="font-semibold text-slate-700 text-xs mt-0.5">{fmtCurrency(m.ad_spend)}</p>
                     </div>
                   </div>
@@ -318,7 +375,7 @@ const BrandKPIsTab: React.FC = () => {
                   {/* SOP Phase dots */}
                   {m.sop_phase != null && (
                     <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-slate-500 mr-1">SOP</span>
+                      <span className="text-[10px] text-slate-600 mr-1">SOP</span>
                       {[1, 2, 3, 4, 5, 6, 7].map(p => (
                         <div
                           key={p}
@@ -326,7 +383,7 @@ const BrandKPIsTab: React.FC = () => {
                           title={`Phase ${p}`}
                         />
                       ))}
-                      <span className="text-[10px] text-slate-500 ml-1">{m.sop_phase}/7</span>
+                      <span className="text-[10px] text-slate-600 ml-1">{m.sop_phase}/7</span>
                     </div>
                   )}
 

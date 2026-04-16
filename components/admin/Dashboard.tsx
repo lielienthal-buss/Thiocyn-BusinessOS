@@ -109,7 +109,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'analyticsAds', label: 'Ad Performance' },
       { id: 'ecomOverview', label: 'E-Com Overview' },
       { id: 'ecomOrders', label: 'E-Com Orders' },
-      { id: 'analyticsKpis', label: 'Brand KPIs' },
+      { id: 'analyticsKpis', label: 'Ad Analytics' },
       { id: 'marketingContentCalendar', label: 'Content Calendar' },
       { id: 'creatorPipeline', label: 'Creators' },
       { id: 'marketingBriefs', label: 'Briefs' },
