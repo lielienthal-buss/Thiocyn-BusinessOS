@@ -24,12 +24,12 @@ interface Props {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const BADGE_COLORS: Record<string, string> = {
-  'AI Tool':    'bg-violet-500/15 text-violet-400 border-violet-500/20',
-  'Drive':      'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  'Google Doc': 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-  'Google Sheet': 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-  'Notion':     'bg-slate-500/15 text-slate-400 border-slate-500/20',
-  'Viking Sheet': 'bg-orange-500/15 text-orange-400 border-orange-500/20',
+  'AI Tool':      'bg-violet-50 text-violet-700 border-violet-200',
+  'Drive':        'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Google Doc':   'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Google Sheet': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  'Notion':       'bg-slate-100 text-slate-600 border-slate-200',
+  'Viking Sheet': 'bg-amber-50 text-amber-700 border-amber-200',
 };
 
 // ─── Edit Modal ───────────────────────────────────────────────────────────────
@@ -82,53 +82,54 @@ const EditModal: React.FC<EditModalProps> = ({ resource, section, onClose, onSav
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="bg-surface-800 border border-white/[0.08] rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 space-y-4">
+    /* Modal backdrop — semi-transparent scrim is intentional for focus management */
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+      <div className="bg-white ring-1 ring-slate-200 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-black text-white">{isNew ? 'Ressource hinzufügen' : 'Ressource bearbeiten'}</h3>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-100 text-xl font-bold">×</button>
+          <h3 className="font-black text-slate-900">{isNew ? 'Ressource hinzufügen' : 'Ressource bearbeiten'}</h3>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-900 text-xl font-bold transition-colors">×</button>
         </div>
 
         {/* Icon + Label row */}
         <div className="flex gap-3">
           <div className="w-16">
-            <label className="text-xs font-bold text-slate-500 block mb-1">Icon</label>
+            <label className="text-xs font-bold text-slate-600 block mb-1">Icon</label>
             <input value={form.icon} onChange={e => set('icon', e.target.value)}
-              className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-2 py-2 text-center text-lg focus:outline-none focus:border-primary-400" />
+              className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-2 py-2 text-center text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400" />
           </div>
           <div className="flex-1">
-            <label className="text-xs font-bold text-slate-500 block mb-1">Label *</label>
+            <label className="text-xs font-bold text-slate-600 block mb-1">Label *</label>
             <input value={form.label} onChange={e => set('label', e.target.value)} placeholder="z.B. Support SOP"
-              className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 placeholder-slate-600" />
+              className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400" />
           </div>
         </div>
 
         <div>
-          <label className="text-xs font-bold text-slate-500 block mb-1">Beschreibung</label>
+          <label className="text-xs font-bold text-slate-600 block mb-1">Beschreibung</label>
           <input value={form.description} onChange={e => set('description', e.target.value)} placeholder="Kurze Beschreibung..."
-            className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 placeholder-slate-600" />
+            className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400" />
         </div>
 
         <div>
-          <label className="text-xs font-bold text-slate-500 block mb-1">URL (Drive, Sheet, etc.)</label>
+          <label className="text-xs font-bold text-slate-600 block mb-1">URL (Drive, Sheet, etc.)</label>
           <input value={form.url} onChange={e => set('url', e.target.value)} placeholder="https://drive.google.com/..."
-            className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 placeholder-slate-600 font-mono" />
+            className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400 font-mono" />
         </div>
 
         <div>
-          <label className="text-xs font-bold text-slate-500 block mb-1">Badge (optional)</label>
+          <label className="text-xs font-bold text-slate-600 block mb-1">Badge (optional)</label>
           <input value={form.badge} onChange={e => set('badge', e.target.value)} placeholder="z.B. Drive · Google Sheet · AI Tool"
-            className="w-full bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-400 placeholder-slate-600" />
+            className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400" />
         </div>
 
-        {error && <p className="text-red-600 text-xs font-semibold">{error}</p>}
+        {error && <p className="text-rose-600 text-xs font-semibold">{error}</p>}
 
         <div className="flex gap-3 pt-2">
-          <button onClick={onClose} className="flex-1 px-4 py-2 border border-white/[0.10] rounded-lg text-sm font-semibold text-slate-400 hover:bg-white/[0.06]">
+          <button onClick={onClose} className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
             Abbrechen
           </button>
           <button onClick={handleSave} disabled={saving}
-            className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-bold hover:bg-primary-700 disabled:opacity-50">
+            className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 disabled:opacity-50 transition-colors">
             {saving ? 'Speichern...' : 'Speichern'}
           </button>
         </div>
@@ -173,7 +174,7 @@ const ResourceCardList: React.FC<Props> = ({ section, isAdmin, emptyMessage }) =
         <div className="flex justify-end">
           <button
             onClick={() => setEditTarget('new')}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-primary-400 bg-primary-500/10 border border-primary-500/20 rounded-lg hover:bg-primary-500/15 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
           >
             + Ressource hinzufügen
           </button>
@@ -182,24 +183,24 @@ const ResourceCardList: React.FC<Props> = ({ section, isAdmin, emptyMessage }) =
 
       {/* Cards */}
       {resources.length === 0 ? (
-        <div className="text-sm text-slate-500 py-12 text-center border border-dashed border-white/[0.08] rounded-2xl">
+        <div className="text-sm text-slate-500 py-12 text-center border border-dashed border-slate-200 rounded-2xl">
           {emptyMessage ?? 'Noch keine Ressourcen. Als Admin hinzufügen.'}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {resources.map(r => (
-            <div key={r.id} className="group relative flex flex-col gap-3 p-5 bg-surface-800/60 border border-white/[0.06] rounded-2xl hover:border-primary-500/30 hover:shadow-md hover:shadow-primary-500/10 transition-all duration-200 backdrop-blur-sm">
+            <div key={r.id} className="group relative flex flex-col gap-3 p-5 bg-white ring-1 ring-slate-200 rounded-2xl hover:ring-indigo-300 hover:shadow-md transition-all duration-200">
               {/* Admin controls */}
               {isAdmin && (
                 <div className="absolute top-3 right-3 hidden group-hover:flex items-center gap-1">
                   <button
                     onClick={() => setEditTarget(r)}
-                    className="p-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.10] text-slate-400 text-xs transition-colors"
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs transition-colors"
                     title="Bearbeiten"
                   >✏️</button>
                   <button
                     onClick={() => handleDelete(r.id)}
-                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs transition-colors"
+                    className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs transition-colors"
                     title="Löschen"
                   >🗑️</button>
                 </div>
@@ -207,11 +208,11 @@ const ResourceCardList: React.FC<Props> = ({ section, isAdmin, emptyMessage }) =
 
               {/* Icon + badge */}
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.06] flex items-center justify-center text-xl">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-xl">
                   {r.icon}
                 </div>
                 {r.badge && (
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${BADGE_COLORS[r.badge] ?? 'bg-slate-500/15 text-slate-400 border-slate-500/20'}`}>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${BADGE_COLORS[r.badge] ?? 'bg-slate-100 text-slate-600 border-slate-200'}`}>
                     {r.badge}
                   </span>
                 )}
@@ -219,7 +220,7 @@ const ResourceCardList: React.FC<Props> = ({ section, isAdmin, emptyMessage }) =
 
               {/* Label + description */}
               <div>
-                <p className="text-sm font-bold text-white">{r.label}</p>
+                <p className="text-sm font-bold text-slate-900">{r.label}</p>
                 {r.description && (
                   <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{r.description}</p>
                 )}
@@ -231,12 +232,12 @@ const ResourceCardList: React.FC<Props> = ({ section, isAdmin, emptyMessage }) =
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[11px] font-semibold text-primary-600 hover:text-primary-800 transition-colors mt-auto"
+                  className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 transition-colors mt-auto"
                 >
                   Öffnen →
                 </a>
               ) : (
-                <span className="text-[11px] font-semibold text-slate-600 mt-auto">
+                <span className="text-[11px] font-semibold text-slate-500 mt-auto">
                   {isAdmin ? 'Noch kein Link — bearbeiten' : 'Link wird hinzugefügt'}
                 </span>
               )}

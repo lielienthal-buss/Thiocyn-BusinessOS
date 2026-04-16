@@ -89,7 +89,7 @@ const ToolStackView: React.FC<Props> = ({ isAdmin }) => {
           <p className="text-sm text-[#6e6e73] mt-0.5">Alle Tools, Kosten & Einsparpotenziale</p>
         </div>
         {isAdmin && (
-          <button onClick={openAdd} className="px-4 py-2 bg-gray-900 text-[#1d1d1f] text-xs font-black rounded-lg hover:bg-gray-700 transition-colors">
+          <button onClick={openAdd} className="px-4 py-2 bg-indigo-600 text-white text-xs font-black rounded-lg hover:bg-indigo-700 transition-colors">
             + Tool hinzufügen
           </button>
         )}
@@ -249,7 +249,7 @@ const ToolStackView: React.FC<Props> = ({ isAdmin }) => {
               </select>
             </div>
             <div className="flex gap-2 pt-2">
-              <button onClick={handleSave} className="flex-1 py-2.5 bg-gray-900 text-[#1d1d1f] text-sm font-black rounded-lg hover:bg-gray-700 transition-colors">Speichern</button>
+              <button onClick={handleSave} className="flex-1 py-2.5 bg-indigo-600 text-white text-sm font-black rounded-lg hover:bg-indigo-700 transition-colors">Speichern</button>
               <button onClick={() => { setShowAdd(false); setEditing(null); setForm({}); }} className="px-4 py-2.5 border border-black/[0.06] text-sm text-[#515154] rounded-lg hover:bg-black/[0.03] transition-colors">Abbrechen</button>
             </div>
           </div>

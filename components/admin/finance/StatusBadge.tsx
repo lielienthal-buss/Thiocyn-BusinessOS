@@ -50,10 +50,10 @@ export function SummaryBar({ items }: { items: { label: string; value: string; c
       {items.map((item) => (
         <div
           key={item.label}
-          className="flex items-center gap-2 bg-surface-800/60 border border-white/[0.06] rounded-xl px-4 py-2.5 shadow-sm"
+          className="flex items-center gap-2 bg-white ring-1 ring-slate-200 rounded-xl px-4 py-2.5 shadow-sm"
         >
           <span className="text-xs text-slate-500 font-medium">{item.label}</span>
-          <span className={`text-sm font-bold ${item.color ?? 'text-white'}`}>{item.value}</span>
+          <span className={`text-sm font-bold ${item.color ?? 'text-slate-900'}`}>{item.value}</span>
         </div>
       ))}
     </div>

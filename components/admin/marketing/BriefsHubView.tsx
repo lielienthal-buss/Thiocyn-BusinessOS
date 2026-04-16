@@ -413,7 +413,7 @@ const BriefsHubView: React.FC = () => {
             onClick={() => setTypeFilter(t.k)}
             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ring-1 ${
               typeFilter === t.k
-                ? 'bg-slate-900 text-white ring-slate-900'
+                ? 'bg-indigo-600 text-white ring-indigo-600'
                 : 'bg-white text-slate-600 ring-slate-200 hover:ring-slate-300'
             }`}
           >

@@ -287,7 +287,7 @@ const CreatorView: React.FC = () => {
           >
             {actionLoading === 'snapshot-creator-performance' ? '...' : 'Snapshot'}
           </button>
-          <label className="px-3 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer">
+          <label className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors cursor-pointer border border-slate-200">
             {actionLoading === 'csv-import' ? 'Importing...' : 'CSV Import'}
             <input type="file" accept=".csv" onChange={handleCsvImport} className="hidden" />
           </label>

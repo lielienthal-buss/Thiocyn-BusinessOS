@@ -312,7 +312,7 @@ const BrandKPIsTab: React.FC = () => {
                         type="text"
                         value={editForm.notes ?? ''}
                         onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))}
-                        className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
+                        className="w-full text-xs border border-slate-200 bg-white text-slate-900 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400"
                         placeholder="Optional note..."
                       />
                     </div>

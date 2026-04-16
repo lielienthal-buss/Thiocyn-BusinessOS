@@ -33,9 +33,9 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 rounded-2xl shadow-xl bg-gray-900/30 backdrop-blur-2xl border border-white/20">
+    <div className="max-w-md mx-auto mt-20 p-8 rounded-2xl shadow-xl bg-white ring-1 ring-slate-200">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-slate-900">
           Forgot Password?
         </h2>
         <p className="text-gray-500 text-sm mt-2">
@@ -51,7 +51,7 @@ const ForgotPassword: React.FC = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-slate-700 dark:border-slate-600 outline-none"
+            className="w-full px-4 py-2 border border-slate-200 bg-white text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400"
             placeholder="name@company.com"
           />
         </div>

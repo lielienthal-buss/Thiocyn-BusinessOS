@@ -109,7 +109,7 @@ const ProjectAreaManager: React.FC = () => {
       />
     )}
     <div className="max-w-4xl mx-auto animate-[fadeIn_0.5s_ease-out]">
-      <h2 className="text-3xl font-black text-white tracking-tighter mb-6">
+      <h2 className="text-3xl font-black text-slate-900 tracking-tighter mb-6">
         Manage Project Areas
       </h2>
 
@@ -117,38 +117,38 @@ const ProjectAreaManager: React.FC = () => {
       <Card title={editingArea ? 'Edit Project Area' : 'Add New Project Area'}>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
               Name
             </label>
             <input
               type="text"
               value={newAreaName}
               onChange={(e) => setNewAreaName(e.target.value)}
-              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md placeholder-slate-600"
+              className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 rounded-md placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               placeholder="e.g., Frontend Development"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
               Description (for applicants)
             </label>
             <textarea
               rows={3}
               value={newAreaDescription}
               onChange={(e) => setNewAreaDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md placeholder-slate-600"
+              className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 rounded-md placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               placeholder="A short description of what this role entails..."
             />
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-slate-700 mb-1">
                 Position Type
               </label>
               <select
                 value={newAreaPositionType}
                 onChange={(e) => setNewAreaPositionType(e.target.value)}
-                className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.10] text-slate-100 rounded-md"
+                className="w-full px-3 py-2 bg-white border border-slate-200 text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               >
                 <option value="internship">Praktikum</option>
                 <option value="working_student">Werkstudent</option>
@@ -162,9 +162,9 @@ const ProjectAreaManager: React.FC = () => {
                 id="is_active"
                 checked={newAreaIsActive}
                 onChange={(e) => setNewAreaIsActive(e.target.checked)}
-                className="w-4 h-4 accent-blue-500"
+                className="w-4 h-4 accent-indigo-600"
               />
-              <label htmlFor="is_active" className="text-sm font-medium text-slate-300">
+              <label htmlFor="is_active" className="text-sm font-medium text-slate-700">
                 Öffentlich sichtbar
               </label>
             </div>
@@ -177,7 +177,7 @@ const ProjectAreaManager: React.FC = () => {
                   setNewAreaName('');
                   setNewAreaDescription('');
                 }}
-                className="px-4 py-2 bg-white/[0.08] text-slate-100 rounded-md"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-md hover:bg-slate-200 transition-colors"
               >
                 Cancel Edit
               </button>
@@ -185,7 +185,7 @@ const ProjectAreaManager: React.FC = () => {
             <button
               onClick={handleAddOrUpdateArea}
               disabled={isSaving}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md flex items-center transition-colors disabled:opacity-50"
             >
               {isSaving && <Spinner className="w-4 h-4 mr-2" />}
               {editingArea ? 'Update Area' : 'Add Area'}
@@ -195,7 +195,7 @@ const ProjectAreaManager: React.FC = () => {
       </Card>
 
       {/* Project Areas List */}
-      <h3 className="text-xl font-bold text-white mt-8 mb-4">
+      <h3 className="text-xl font-bold text-slate-900 mt-8 mb-4">
         Existing Project Areas
       </h3>
       <div className="space-y-4">
@@ -207,17 +207,17 @@ const ProjectAreaManager: React.FC = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-bold text-lg text-white">{area.name}</h4>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">
+                    <h4 className="font-bold text-lg text-slate-900">{area.name}</h4>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">
                       {{ internship: 'Praktikum', working_student: 'Werkstudent', freelance: 'Freelance', fulltime: 'Vollzeit' }[(area as any).position_type] || 'Praktikum'}
                     </span>
                     {(area as any).is_active ? (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 font-medium">● Live</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">● Live</span>
                     ) : (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-500 font-medium">Versteckt</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 font-medium">Versteckt</span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-300">
+                  <p className="text-sm text-slate-600">
                     {area.description || 'No description provided.'}
                   </p>
                 </div>
@@ -230,13 +230,13 @@ const ProjectAreaManager: React.FC = () => {
                       setNewAreaPositionType((area as any).position_type || 'internship');
                       setNewAreaIsActive((area as any).is_active ?? true);
                     }}
-                    className="px-3 py-1 bg-yellow-500/20 text-yellow-600 text-xs rounded-md hover:bg-yellow-500/30"
+                    className="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs rounded-md hover:bg-amber-100 transition-colors"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeleteArea(area.id)}
-                    className="px-3 py-1 bg-red-500/20 text-red-600 text-xs rounded-md hover:bg-red-500/30"
+                    className="px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 text-xs rounded-md hover:bg-rose-100 transition-colors"
                   >
                     Delete
                   </button>

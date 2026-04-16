@@ -207,7 +207,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
           </thead>
           <tbody className="divide-y divide-black/[0.06] relative">
             {loading && (
-              <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center">
                 <Spinner className="w-8 h-8 text-primary-500" />
               </div>
             )}
