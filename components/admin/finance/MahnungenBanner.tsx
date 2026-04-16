@@ -64,10 +64,10 @@ function MahnungenBanner({ onChange }: Props) {
   const sumByCurrency = mahnungen.reduce((groups: Record<string, number>, m) => {
     groups[m.currency] = (groups[m.currency] ?? 0) + m.amount;
     return groups;
-  }, {});
+  }, {} as Record<string, number>);
 
   const totalLabel = Object.entries(sumByCurrency)
-    .map(([cur, val]) => formatAmount(val, cur as Currency))
+    .map(([cur, val]: [string, number]) => formatAmount(val, cur as Currency))
     .join(' + ');
 
   const hasInkasso = mahnungen.some((m) => m.stufe === 4);

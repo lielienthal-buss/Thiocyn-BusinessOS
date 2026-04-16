@@ -10,7 +10,7 @@ interface UseSupabaseQueryOptions<T> {
   /** Columns to select (default: '*') */
   select?: string;
   /** Apply filters to the query builder */
-  filter?: (query: PostgrestFilterBuilder<any, any, any>) => PostgrestFilterBuilder<any, any, any>;
+  filter?: (query: PostgrestFilterBuilder<any, any, any, any>) => PostgrestFilterBuilder<any, any, any, any>;
   /** Order by column */
   orderBy?: { column: string; ascending?: boolean };
   /** Pagination: page size (0 = no pagination) */

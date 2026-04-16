@@ -97,11 +97,11 @@ function CashTab() {
 
   // Total per currency (latest only)
   const totalByCurrency = Object.values(latestByAccount).reduce(
-    (acc: Record<string, number>, s) => {
+    (acc: Record<string, number>, s: CashSnapshot) => {
       acc[s.currency] = (acc[s.currency] ?? 0) + s.balance;
       return acc;
     },
-    {}
+    {} as Record<string, number>
   );
 
   const handleAdd = async () => {

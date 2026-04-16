@@ -12,6 +12,7 @@ interface Props {
   padding?: 'none' | 'sm' | 'md' | 'lg';
   className?: string;
   onClick?: () => void;
+  key?: React.Key | null;
 }
 
 const PADDING: Record<NonNullable<Props['padding']>, string> = {
