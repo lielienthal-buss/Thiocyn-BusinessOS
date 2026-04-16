@@ -49,21 +49,21 @@ const fmtTs = (ts: string | null | undefined) => {
 const roasBadge = (roas: number | null) => {
   if (roas == null) return <span className="text-xs text-slate-500 font-semibold">—</span>;
   const cls =
-    roas >= 3 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' :
-    roas >= 2 ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20' :
-                'bg-red-500/15 text-red-400 border-red-500/20';
+    roas >= 3 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+    roas >= 2 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                'bg-rose-50 text-rose-700 border-rose-200';
   return (
-    <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full border ${cls}`}>
+    <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${cls}`}>
       {roas.toFixed(2)}x
     </span>
   );
 };
 
 const SOP_PHASE_COLORS = (phase: number) => {
-  if (phase >= 5) return 'bg-green-500';
-  if (phase >= 3) return 'bg-amber-400';
-  if (phase >= 1) return 'bg-orange-400';
-  return 'bg-white/[0.08]';
+  if (phase >= 5) return 'bg-emerald-500';
+  if (phase >= 3) return 'bg-amber-500';
+  if (phase >= 1) return 'bg-orange-500';
+  return 'bg-slate-200';
 };
 
 // ─── Brand KPIs Tab ───────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ const BrandKPIsTab: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
-        <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -155,23 +155,23 @@ const BrandKPIsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-base font-black text-white">Brand KPIs</h3>
+        <h3 className="text-base font-semibold text-slate-900">Brand KPIs</h3>
         <p className="text-xs text-slate-500 mt-0.5">Live performance metrics per brand from Supabase</p>
       </div>
 
       {/* Summary row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
-          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Avg ROAS (all brands)</p>
-          <p className="text-2xl font-black text-white">{avgRoas != null ? `${avgRoas.toFixed(2)}x` : '—'}</p>
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Avg ROAS (all brands)</p>
+          <p className="text-2xl font-semibold text-slate-900">{avgRoas != null ? `${avgRoas.toFixed(2)}x` : '—'}</p>
         </div>
-        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
-          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Total Ad Spend MTD</p>
-          <p className="text-2xl font-black text-white">{totalSpend > 0 ? fmtCurrency(totalSpend) : '—'}</p>
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Total Ad Spend MTD</p>
+          <p className="text-2xl font-semibold text-slate-900">{totalSpend > 0 ? fmtCurrency(totalSpend) : '—'}</p>
         </div>
-        <div className="p-4 bg-surface-800/60 border border-white/[0.06] rounded-2xl backdrop-blur-sm">
-          <p className="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Best Performing Brand</p>
-          <p className="text-2xl font-black text-white">
+        <div className="p-4 bg-white ring-1 ring-slate-200 rounded-2xl">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">Best Performing Brand</p>
+          <p className="text-2xl font-semibold text-slate-900">
             {bestBrand
               ? `${BRAND_META[bestBrand.brand_id]?.emoji} ${BRAND_META[bestBrand.brand_id]?.name}`
               : '—'}
@@ -191,16 +191,16 @@ const BrandKPIsTab: React.FC = () => {
           return (
             <div
               key={brandId}
-              className="flex flex-col gap-3 p-5 bg-surface-800/60 border-2 border-white/[0.06] hover:border-primary-500/30 rounded-2xl backdrop-blur-sm transition-all duration-200"
+              className="flex flex-col gap-3 p-5 bg-white ring-1 ring-slate-200 hover:ring-slate-300 rounded-2xl transition-all duration-200"
             >
               {/* Card header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2.5">
                   <span className="text-2xl">{emoji}</span>
                   <div>
-                    <p className="font-black text-white text-sm">{name}</p>
+                    <p className="font-semibold text-slate-900 text-sm">{name}</p>
                     {m?.sop_phase != null && (
-                      <span className="inline-block text-[9px] font-black uppercase tracking-wider bg-primary-500/15 text-primary-400 border border-primary-500/20 px-1.5 py-0.5 rounded-full mt-0.5">
+                      <span className="inline-block text-[9px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-full mt-0.5">
                         Phase {m.sop_phase}
                       </span>
                     )}
@@ -209,7 +209,7 @@ const BrandKPIsTab: React.FC = () => {
                 {m && !isEditing && (
                   <button
                     onClick={() => startEdit(m)}
-                    className="text-[10px] font-bold text-slate-500 hover:text-primary-400 transition-colors px-2 py-1 rounded-lg hover:bg-primary-500/10"
+                    className="text-[10px] font-semibold text-slate-500 hover:text-indigo-700 transition-colors px-2 py-1 rounded-lg hover:bg-indigo-50"
                   >
                     Edit KPIs
                   </button>
@@ -245,7 +245,7 @@ const BrandKPIsTab: React.FC = () => {
                               [field.key]: e.target.value === '' ? null : parseFloat(e.target.value),
                             }))
                           }
-                          className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2 py-1.5 focus:outline-none focus:border-primary-400"
+                          className="w-full text-xs ring-1 ring-slate-200 bg-white text-slate-900 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                       </div>
                     ))}
@@ -265,13 +265,13 @@ const BrandKPIsTab: React.FC = () => {
                     <button
                       onClick={() => handleSaveEdit(m!.id)}
                       disabled={saving}
-                      className="px-3 py-1.5 bg-primary-600 text-white text-[10px] font-bold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+                      className="px-3 py-1.5 bg-indigo-600 text-white text-[10px] font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
                     >
                       {saving ? 'Saving…' : 'Save'}
                     </button>
                     <button
                       onClick={() => { setEditingId(null); setSaveError(null); }}
-                      className="px-3 py-1.5 bg-white/[0.05] text-slate-300 text-[10px] font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
+                      className="px-3 py-1.5 bg-slate-100 text-slate-700 text-[10px] font-semibold rounded-lg hover:bg-slate-200 transition-colors"
                     >
                       Cancel
                     </button>
@@ -279,8 +279,8 @@ const BrandKPIsTab: React.FC = () => {
                 </div>
               ) : m == null ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-4 gap-2">
-                  <span className="text-xs font-black text-slate-600">—</span>
-                  <span className="text-[10px] font-bold px-2.5 py-1 bg-white/[0.05] text-slate-500 rounded-full border border-white/[0.06]">
+                  <span className="text-xs font-semibold text-slate-500">—</span>
+                  <span className="text-[10px] font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full border border-slate-200">
                     No data yet
                   </span>
                 </div>
@@ -290,15 +290,14 @@ const BrandKPIsTab: React.FC = () => {
                   <div className="flex items-center justify-between text-xs">
                     <div>
                       <p className="text-[10px] text-slate-500 font-semibold">Followers</p>
-                      <p className="font-black text-white text-base mt-0.5">
+                      <p className="font-semibold text-slate-900 text-base mt-0.5">
                         {m.followers != null ? fmtNum(m.followers) : '—'}
-                        {/* Trend arrow placeholder */}
-                        <span className="text-slate-600 text-xs ml-1" title="Trend data not yet available">↔</span>
+                        <span className="text-slate-400 text-xs ml-1" title="Trend data not yet available">↔</span>
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] text-slate-500 font-semibold">Engagement</p>
-                      <p className="font-black text-white text-base mt-0.5">
+                      <p className="font-semibold text-slate-900 text-base mt-0.5">
                         {m.engagement_rate != null ? `${m.engagement_rate.toFixed(2)}%` : '—'}
                       </p>
                     </div>
@@ -312,7 +311,7 @@ const BrandKPIsTab: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] text-slate-500 font-semibold">Ad Spend MTD</p>
-                      <p className="font-bold text-slate-300 text-xs mt-0.5">{fmtCurrency(m.ad_spend)}</p>
+                      <p className="font-semibold text-slate-700 text-xs mt-0.5">{fmtCurrency(m.ad_spend)}</p>
                     </div>
                   </div>
 
@@ -323,7 +322,7 @@ const BrandKPIsTab: React.FC = () => {
                       {[1, 2, 3, 4, 5, 6, 7].map(p => (
                         <div
                           key={p}
-                          className={`w-2 h-2 rounded-full ${p <= m.sop_phase! ? SOP_PHASE_COLORS(m.sop_phase!) : 'bg-white/[0.08]'}`}
+                          className={`w-2 h-2 rounded-full ${p <= m.sop_phase! ? SOP_PHASE_COLORS(m.sop_phase!) : 'bg-slate-200'}`}
                           title={`Phase ${p}`}
                         />
                       ))}
@@ -337,7 +336,7 @@ const BrandKPIsTab: React.FC = () => {
                   )}
 
                   {/* Footer */}
-                  <p className="text-[10px] text-slate-600 mt-auto pt-2 border-t border-white/[0.06]">
+                  <p className="text-[10px] text-slate-500 mt-auto pt-2 border-t border-slate-200">
                     Updated {fmtTs(m.updated_at)}
                   </p>
                 </>

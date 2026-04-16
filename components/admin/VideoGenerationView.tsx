@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';
+import { ComingSoonBanner } from '@/components/ui/ComingSoon';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -351,11 +352,15 @@ const VideoGenerationView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <ComingSoonBanner
+        title="Video Generation"
+        description="Higgsfield-AI-Integration ist vorbereitet, aber noch nicht funktional. Existing jobs shown for reference only."
+      />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-[#1d1d1f] font-black text-2xl tracking-tight">Video Generation</h2>
-          <p className="text-gray-500 text-sm mt-0.5">Higgsfield AI — image & video jobs</p>
+          <h2 className="text-slate-900 font-semibold text-2xl tracking-tight">Video Generation</h2>
+          <p className="text-slate-500 text-sm mt-0.5">Higgsfield AI — image & video jobs</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
