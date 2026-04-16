@@ -43,11 +43,11 @@ const fmtNum = (n: number | null | undefined, decimals = 0) => {
 const roasBadge = (roas: number | null) => {
   if (roas == null) return <span className="text-xs text-slate-500 font-semibold">—</span>;
   const cls =
-    roas >= 3 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' :
-    roas >= 2 ? 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20' :
-                'bg-red-500/15 text-red-400 border-red-500/20';
+    roas >= 3 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+    roas >= 2 ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                'bg-rose-50 text-rose-700 border-rose-200';
   return (
-    <span className={`inline-block text-[10px] font-black px-2 py-0.5 rounded-full border ${cls}`}>
+    <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${cls}`}>
       {roas.toFixed(2)}x
     </span>
   );
@@ -56,16 +56,16 @@ const roasBadge = (roas: number | null) => {
 const ctrBadge = (ctr: number | null) => {
   if (ctr == null) return <span className="text-xs text-slate-500">—</span>;
   const cls =
-    ctr >= 1.5 ? 'text-emerald-400' :
-    ctr >= 1.0 ? 'text-yellow-400' :
-                 'text-red-400';
-  return <span className={`font-bold text-xs ${cls}`}>{ctr.toFixed(2)}%</span>;
+    ctr >= 1.5 ? 'text-emerald-700' :
+    ctr >= 1.0 ? 'text-amber-700' :
+                 'text-rose-700';
+  return <span className={`font-semibold text-xs ${cls}`}>{ctr.toFixed(2)}%</span>;
 };
 
 const CAMPAIGN_STATUS_STYLES: Record<CampaignStatus, string> = {
-  active: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-  paused: 'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
-  ended:  'bg-slate-500/15 text-slate-400 border-slate-500/20',
+  active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  paused: 'bg-amber-50 text-amber-700 border-amber-200',
+  ended:  'bg-slate-100 text-slate-600 border-slate-200',
 };
 
 const EMPTY_CAMPAIGN: Omit<AdCampaign, 'id'> = {
@@ -90,6 +90,7 @@ const AdPerformanceTab: React.FC = () => {
   const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterPlatform, setFilterPlatform] = useState<AdPlatform | 'all'>('all');
+  const [filterBrand, setFilterBrand] = useState<BrandId | 'all'>('all');
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState(EMPTY_CAMPAIGN);
   const [saving, setSaving] = useState(false);
@@ -109,8 +110,6 @@ const AdPerformanceTab: React.FC = () => {
   }, []);
 
   useEffect(() => { fetchCampaigns(); }, [fetchCampaigns]);
-
-  // ─── Edit & Delete ───────────────────────────────────────────────────
 
   const startEdit = (c: AdCampaign) => {
     setEditingId(c.id);
@@ -133,37 +132,27 @@ const AdPerformanceTab: React.FC = () => {
   const handleDelete = async (id: string) => {
     setCampaigns(prev => prev.filter(c => c.id !== id));
     const { error } = await supabase.from('ad_campaigns').delete().eq('id', id);
-    if (error) fetchCampaigns(); // rollback
+    if (error) fetchCampaigns();
   };
 
   const handleStatusToggle = async (c: AdCampaign) => {
     const next: CampaignStatus = c.status === 'active' ? 'paused' : c.status === 'paused' ? 'active' : c.status;
     setCampaigns(prev => prev.map(x => x.id === c.id ? { ...x, status: next } : x));
     const { error } = await supabase.from('ad_campaigns').update({ status: next }).eq('id', c.id);
-    if (error) fetchCampaigns(); // rollback
+    if (error) fetchCampaigns();
   };
 
   const filtered = campaigns.filter(c =>
-    filterPlatform === 'all' || c.platform === filterPlatform
+    (filterPlatform === 'all' || c.platform === filterPlatform) &&
+    (filterBrand === 'all' || c.brand_id === filterBrand)
   );
-
-  // Group by brand_id
-  const grouped: Record<string, AdCampaign[]> = {};
-  for (const c of filtered) {
-    if (!grouped[c.brand_id]) grouped[c.brand_id] = [];
-    grouped[c.brand_id].push(c);
-  }
 
   const handleAddCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setSaveError(null);
     const { error } = await supabase.from('ad_campaigns').insert(formData);
-    if (error) {
-      setSaveError(error.message);
-      setSaving(false);
-      return;
-    }
+    if (error) { setSaveError(error.message); setSaving(false); return; }
     setFormData(EMPTY_CAMPAIGN);
     setShowAddForm(false);
     setSaving(false);
@@ -172,24 +161,38 @@ const AdPerformanceTab: React.FC = () => {
 
   const CAMPAIGN_STATUSES: CampaignStatus[] = ['active', 'paused', 'ended'];
 
+  const inputCls = "w-full text-xs ring-1 ring-slate-200 bg-white text-slate-900 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500";
+  const labelCls = "block text-[10px] font-semibold uppercase tracking-wider text-slate-600 mb-1";
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-base font-black text-white">Ad Performance</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h3 className="text-base font-semibold text-slate-900">Ad Performance</h3>
+          <p className="text-xs text-slate-600 mt-0.5">
             {filtered.length} campaign{filtered.length !== 1 ? 's' : ''}
             {filterPlatform !== 'all' ? ` on ${filterPlatform}` : ' across all platforms'}
+            {filterBrand !== 'all' ? ` • ${BRAND_META[filterBrand].name}` : ''}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {/* Brand filter */}
+          <select
+            value={filterBrand}
+            onChange={e => setFilterBrand(e.target.value as BrandId | 'all')}
+            className="text-[11px] font-semibold ring-1 ring-slate-200 bg-white text-slate-700 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="all">All Brands</option>
+            {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_META[b].name}</option>)}
+          </select>
+
           {/* Platform filter */}
-          <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.06] rounded-full p-0.5">
+          <div className="flex items-center gap-1 bg-slate-100 rounded-full p-0.5">
             <button
               onClick={() => setFilterPlatform('all')}
-              className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${
-                filterPlatform === 'all' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
+              className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                filterPlatform === 'all' ? 'bg-white text-indigo-700 ring-1 ring-slate-200' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               All
@@ -198,8 +201,8 @@ const AdPerformanceTab: React.FC = () => {
               <button
                 key={p}
                 onClick={() => setFilterPlatform(p)}
-                className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all ${
-                  filterPlatform === p ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'text-slate-500 hover:text-slate-300'
+                className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-all ${
+                  filterPlatform === p ? 'bg-white text-indigo-700 ring-1 ring-slate-200' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {p}
@@ -209,7 +212,7 @@ const AdPerformanceTab: React.FC = () => {
 
           <button
             onClick={() => setShowAddForm(v => !v)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
           >
             + Add Campaign
           </button>
@@ -220,276 +223,224 @@ const AdPerformanceTab: React.FC = () => {
       {showAddForm && (
         <form
           onSubmit={handleAddCampaign}
-          className="p-5 bg-surface-800/60 border-2 border-primary-500/30 rounded-2xl space-y-4 backdrop-blur-sm"
+          className="p-5 bg-white ring-1 ring-slate-200 rounded-2xl space-y-4"
         >
-          <p className="text-sm font-black text-white">Add Campaign</p>
+          <p className="text-sm font-semibold text-slate-900">Add Campaign</p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Brand</label>
-              <select
-                required
-                value={formData.brand_id}
+              <label className={labelCls}>Brand</label>
+              <select required value={formData.brand_id}
                 onChange={e => setFormData(f => ({ ...f, brand_id: e.target.value as BrandId }))}
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              >
+                className={inputCls}>
                 {BRAND_IDS.map(b => <option key={b} value={b}>{BRAND_META[b].name}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Platform</label>
-              <select
-                required
-                value={formData.platform}
+              <label className={labelCls}>Platform</label>
+              <select required value={formData.platform}
                 onChange={e => setFormData(f => ({ ...f, platform: e.target.value as AdPlatform }))}
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              >
+                className={inputCls}>
                 {AD_PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
-            <div className="sm:col-span-1">
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Campaign Name</label>
-              <input
-                required
-                type="text"
-                value={formData.campaign_name}
+            <div>
+              <label className={labelCls}>Campaign Name</label>
+              <input required type="text" value={formData.campaign_name}
                 onChange={e => setFormData(f => ({ ...f, campaign_name: e.target.value }))}
                 placeholder="e.g. Thiocyn – MOFU Retargeting"
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              />
+                className={inputCls} />
             </div>
 
-            {(
-              [
-                { key: 'budget_daily',  label: 'Daily Budget (€)',  type: 'number', step: '1' },
-                { key: 'spend_mtd',     label: 'Spend MTD (€)',     type: 'number', step: '1' },
-                { key: 'impressions',   label: 'Impressions',       type: 'number', step: '1' },
-                { key: 'clicks',        label: 'Clicks',            type: 'number', step: '1' },
-                { key: 'ctr',           label: 'CTR (%)',           type: 'number', step: '0.01' },
-                { key: 'purchases',     label: 'Purchases',         type: 'number', step: '1' },
-                { key: 'roas',          label: 'ROAS',              type: 'number', step: '0.01' },
-              ] as const
-            ).map(field => (
+            {([
+              { key: 'budget_daily',  label: 'Daily Budget (€)',  step: '1' },
+              { key: 'spend_mtd',     label: 'Spend MTD (€)',     step: '1' },
+              { key: 'impressions',   label: 'Impressions',       step: '1' },
+              { key: 'clicks',        label: 'Clicks',            step: '1' },
+              { key: 'ctr',           label: 'CTR (%)',           step: '0.01' },
+              { key: 'purchases',     label: 'Purchases',         step: '1' },
+              { key: 'roas',          label: 'ROAS',              step: '0.01' },
+            ] as const).map(field => (
               <div key={field.key}>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">
-                  {field.label}
-                </label>
-                <input
-                  type={field.type}
-                  step={field.step}
-                  min="0"
+                <label className={labelCls}>{field.label}</label>
+                <input type="number" step={field.step} min="0"
                   value={(formData as any)[field.key] ?? ''}
-                  onChange={e =>
-                    setFormData(f => ({
-                      ...f,
-                      [field.key]: e.target.value === '' ? null : parseFloat(e.target.value),
-                    }))
-                  }
-                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-                />
+                  onChange={e => setFormData(f => ({
+                    ...f,
+                    [field.key]: e.target.value === '' ? null : parseFloat(e.target.value),
+                  }))}
+                  className={inputCls} />
               </div>
             ))}
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Status</label>
-              <select
-                value={formData.status}
+              <label className={labelCls}>Status</label>
+              <select value={formData.status}
                 onChange={e => setFormData(f => ({ ...f, status: e.target.value as CampaignStatus }))}
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              >
+                className={inputCls}>
                 {CAMPAIGN_STATUSES.map(s => (
                   <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Period Start</label>
-              <input
-                type="date"
-                value={formData.period_start ?? ''}
+              <label className={labelCls}>Period Start</label>
+              <input type="date" value={formData.period_start ?? ''}
                 onChange={e => setFormData(f => ({ ...f, period_start: e.target.value || null }))}
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              />
+                className={inputCls} />
             </div>
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Period End</label>
-              <input
-                type="date"
-                value={formData.period_end ?? ''}
+              <label className={labelCls}>Period End</label>
+              <input type="date" value={formData.period_end ?? ''}
                 onChange={e => setFormData(f => ({ ...f, period_end: e.target.value || null }))}
-                className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-              />
+                className={inputCls} />
             </div>
           </div>
 
-          {saveError && <p className="text-xs text-red-600 font-semibold">{saveError}</p>}
+          {saveError && <p className="text-xs text-rose-700 font-semibold">{saveError}</p>}
 
           <div className="flex gap-2 pt-1">
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
-            >
+            <button type="submit" disabled={saving}
+              className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
               {saving ? 'Saving…' : 'Save Campaign'}
             </button>
-            <button
-              type="button"
-              onClick={() => { setShowAddForm(false); setSaveError(null); }}
-              className="px-4 py-2 bg-white/[0.05] text-slate-300 text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors"
-            >
+            <button type="button" onClick={() => { setShowAddForm(false); setSaveError(null); }}
+              className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition-colors">
               Cancel
             </button>
           </div>
         </form>
       )}
 
-      {/* Campaigns table — grouped by brand */}
+      {/* Flat campaigns table — brand as column instead of grouping */}
       {loading ? (
         <div className="flex justify-center py-16">
-          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-3xl mb-3">📊</p>
-          <p className="text-sm font-semibold text-slate-500">No campaigns found</p>
-          <p className="text-xs text-slate-600 mt-1">
-            {filterPlatform !== 'all'
-              ? `No ${filterPlatform} campaigns yet.`
+          <p className="text-sm font-semibold text-slate-700">No campaigns found</p>
+          <p className="text-xs text-slate-500 mt-1">
+            {filterPlatform !== 'all' || filterBrand !== 'all'
+              ? 'Try adjusting filters above.'
               : 'Add a campaign above to get started.'}
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
-          {BRAND_IDS.filter(b => grouped[b]?.length).map(brandId => {
-            const { name, emoji } = BRAND_META[brandId];
-            const rows = grouped[brandId];
-            return (
-              <div key={brandId} className="bg-surface-800/60 border border-white/[0.06] rounded-2xl overflow-hidden backdrop-blur-sm">
-                {/* Brand group header */}
-                <div className="flex items-center gap-2 px-4 py-3 bg-surface-900/60 border-b border-white/[0.06]">
-                  <span className="text-base">{emoji}</span>
-                  <span className="text-sm font-black text-white">{name}</span>
-                  <span className="ml-auto text-[10px] text-slate-500 font-semibold">
-                    {rows.length} campaign{rows.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="border-b border-white/[0.06] text-left">
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Campaign</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Platform</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Daily Budget</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Spend MTD</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Impressions</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">CTR</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">Purchases</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider text-right">ROAS</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider">Period</th>
-                        <th className="px-4 py-2.5 font-black text-slate-500 uppercase tracking-wider w-20">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((c, i) => (
-                        <tr
-                          key={c.id}
-                          className={`border-b border-white/[0.06] hover:bg-white/[0.03] transition-colors ${i % 2 === 1 ? 'bg-white/[0.02]' : ''}`}
+        <div className="bg-white ring-1 ring-slate-200 rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50">
+                <tr className="border-b border-slate-200 text-left">
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px]">Brand</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px]">Campaign</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px]">Platform</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">Daily Budget</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">Spend MTD</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">Impressions</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">CTR</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">Purchases</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] text-right">ROAS</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px]">Status</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px]">Period</th>
+                  <th className="px-4 py-3 font-semibold text-slate-700 uppercase tracking-wider text-[10px] w-20">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((c, i) => (
+                  <tr key={c.id}
+                    className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${i % 2 === 1 ? 'bg-slate-50/40' : ''}`}>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 text-slate-700 font-semibold">
+                        <span>{BRAND_META[c.brand_id]?.emoji}</span>
+                        <span>{BRAND_META[c.brand_id]?.name}</span>
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-slate-900 max-w-[200px] truncate">
+                      {c.campaign_name}
+                    </td>
+                    <td className="px-4 py-3 text-slate-700 whitespace-nowrap">{c.platform}</td>
+                    <td className="px-4 py-3 text-slate-700 text-right whitespace-nowrap">
+                      {fmtCurrency(c.budget_daily)}
+                    </td>
+                    <td className="px-4 py-3 font-semibold text-slate-900 text-right whitespace-nowrap">
+                      {fmtCurrency(c.spend_mtd)}
+                    </td>
+                    <td className="px-4 py-3 text-slate-700 text-right whitespace-nowrap">
+                      {c.impressions != null ? fmtNum(c.impressions) : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      {ctrBadge(c.ctr)}
+                    </td>
+                    <td className="px-4 py-3 text-slate-700 text-right whitespace-nowrap font-semibold">
+                      {c.purchases ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      {roasBadge(c.roas)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border capitalize ${CAMPAIGN_STATUS_STYLES[c.status]}`}>
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-slate-600 whitespace-nowrap text-[10px]">
+                      {c.period_start
+                        ? `${new Date(c.period_start).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}${c.period_end ? ` – ${new Date(c.period_end).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}` : ''}`
+                        : '—'}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleStatusToggle(c)}
+                          className={`text-xs font-semibold px-1.5 py-0.5 rounded transition-colors ${
+                            c.status === 'active'
+                              ? 'text-amber-700 hover:bg-amber-50'
+                              : c.status === 'paused'
+                              ? 'text-emerald-700 hover:bg-emerald-50'
+                              : 'text-slate-400 cursor-not-allowed'
+                          }`}
+                          disabled={c.status === 'ended'}
+                          title={c.status === 'active' ? 'Pause' : c.status === 'paused' ? 'Activate' : ''}
                         >
-                          <td className="px-4 py-3 font-semibold text-slate-100 max-w-[200px] truncate">
-                            {c.campaign_name}
-                          </td>
-                          <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{c.platform}</td>
-                          <td className="px-4 py-3 text-slate-300 text-right whitespace-nowrap">
-                            {fmtCurrency(c.budget_daily)}
-                          </td>
-                          <td className="px-4 py-3 font-bold text-white text-right whitespace-nowrap">
-                            {fmtCurrency(c.spend_mtd)}
-                          </td>
-                          <td className="px-4 py-3 text-slate-400 text-right whitespace-nowrap">
-                            {c.impressions != null ? fmtNum(c.impressions) : '—'}
-                          </td>
-                          <td className="px-4 py-3 text-right whitespace-nowrap">
-                            {ctrBadge(c.ctr)}
-                          </td>
-                          <td className="px-4 py-3 text-slate-300 text-right whitespace-nowrap font-semibold">
-                            {c.purchases ?? '—'}
-                          </td>
-                          <td className="px-4 py-3 text-right whitespace-nowrap">
-                            {roasBadge(c.roas)}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${CAMPAIGN_STATUS_STYLES[c.status]}`}>
-                              {c.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-slate-500 whitespace-nowrap text-[10px]">
-                            {c.period_start
-                              ? `${new Date(c.period_start).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}${c.period_end ? ` – ${new Date(c.period_end).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}` : ''}`
-                              : '—'}
-                          </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => handleStatusToggle(c)}
-                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded transition-colors ${
-                                  c.status === 'active'
-                                    ? 'text-yellow-400 hover:bg-yellow-500/10'
-                                    : c.status === 'paused'
-                                    ? 'text-emerald-400 hover:bg-emerald-500/10'
-                                    : 'text-slate-600 cursor-not-allowed'
-                                }`}
-                                disabled={c.status === 'ended'}
-                                title={c.status === 'active' ? 'Pause' : c.status === 'paused' ? 'Activate' : ''}
-                              >
-                                {c.status === 'active' ? '⏸' : c.status === 'paused' ? '▶' : '—'}
-                              </button>
-                              <button
-                                onClick={() => startEdit(c)}
-                                className="text-[10px] text-slate-500 hover:text-amber-400 transition-colors px-1"
-                                title="Edit"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                onClick={() => { if (confirm('Delete this campaign?')) handleDelete(c.id); }}
-                                className="text-[10px] text-slate-500 hover:text-red-400 transition-colors px-1"
-                                title="Delete"
-                              >
-                                🗑
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          })}
+                          {c.status === 'active' ? '⏸' : c.status === 'paused' ? '▶' : '—'}
+                        </button>
+                        <button onClick={() => startEdit(c)}
+                          className="text-xs text-slate-500 hover:text-indigo-700 transition-colors px-1"
+                          title="Edit">
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => { if (confirm('Delete this campaign?')) handleDelete(c.id); }}
+                          className="text-xs text-slate-500 hover:text-rose-700 transition-colors px-1"
+                          title="Delete">
+                          🗑
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Edit Campaign Modal */}
       {editingId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md px-4">
-          <div className="bg-surface-800 rounded-2xl shadow-2xl border border-white/[0.08] w-full max-w-lg p-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl ring-1 ring-slate-200 w-full max-w-lg p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-100">Edit Campaign</h3>
-              <button onClick={() => { setEditingId(null); setSaveError(null); }} className="text-slate-500 hover:text-slate-200 text-lg leading-none transition-colors">✕</button>
+              <h3 className="text-sm font-semibold text-slate-900">Edit Campaign</h3>
+              <button onClick={() => { setEditingId(null); setSaveError(null); }}
+                className="text-slate-500 hover:text-slate-900 text-lg leading-none transition-colors">✕</button>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Campaign Name</label>
-                <input
-                  type="text"
-                  value={(editForm as any).campaign_name ?? ''}
+                <label className={labelCls}>Campaign Name</label>
+                <input type="text" value={(editForm as any).campaign_name ?? ''}
                   onChange={e => setEditForm(f => ({ ...f, campaign_name: e.target.value }))}
-                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-                />
+                  className={inputCls} />
               </div>
               {([
                 { key: 'budget_daily', label: 'Daily Budget (€)' },
@@ -501,35 +452,30 @@ const AdPerformanceTab: React.FC = () => {
                 { key: 'roas',         label: 'ROAS' },
               ] as const).map(field => (
                 <div key={field.key}>
-                  <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">{field.label}</label>
-                  <input
-                    type="number"
-                    step="0.01"
+                  <label className={labelCls}>{field.label}</label>
+                  <input type="number" step="0.01"
                     value={(editForm as any)[field.key] ?? ''}
                     onChange={e => setEditForm(f => ({ ...f, [field.key]: e.target.value === '' ? null : parseFloat(e.target.value) }))}
-                    className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-                  />
+                    className={inputCls} />
                 </div>
               ))}
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Status</label>
-                <select
-                  value={(editForm as any).status ?? 'active'}
+                <label className={labelCls}>Status</label>
+                <select value={(editForm as any).status ?? 'active'}
                   onChange={e => setEditForm(f => ({ ...f, status: e.target.value as CampaignStatus }))}
-                  className="w-full text-xs border border-white/[0.06] bg-surface-900/60 text-slate-100 rounded-lg px-2.5 py-2 focus:outline-none focus:border-primary-400"
-                >
+                  className={inputCls}>
                   {CAMPAIGN_STATUSES.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                 </select>
               </div>
             </div>
-            {saveError && <p className="text-xs text-red-600 font-semibold mt-2">{saveError}</p>}
+            {saveError && <p className="text-xs text-rose-700 font-semibold mt-2">{saveError}</p>}
             <div className="flex gap-2 pt-4">
               <button onClick={handleSaveEdit} disabled={saving}
-                className="px-4 py-2 bg-primary-600 text-white text-xs font-bold rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50">
+                className="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
                 {saving ? 'Saving...' : 'Save Changes'}
               </button>
               <button onClick={() => { setEditingId(null); setSaveError(null); }}
-                className="px-4 py-2 bg-white/[0.05] text-slate-300 text-xs font-bold rounded-lg hover:bg-white/[0.08] transition-colors">
+                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-200 transition-colors">
                 Cancel
               </button>
             </div>
