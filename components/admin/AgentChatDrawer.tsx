@@ -183,6 +183,7 @@ const AgentChatDrawer: React.FC<Props> = ({
     <>
       {/* Floating Action Button */}
       <button
+        data-tour="jarvis-fab"
         onClick={onOpen}
         className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
         title={`Open Jarvis — ${sectionLabel}`}

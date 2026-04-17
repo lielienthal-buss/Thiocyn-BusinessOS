@@ -247,6 +247,22 @@ const AccountView: React.FC<Props> = ({ session }) => {
         </div>
       </div>
 
+      {/* Product Tour */}
+      <div className="bg-white ring-1 ring-slate-200 rounded-2xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Product Tour</h2>
+            <p className="text-xs text-slate-500 mt-1">Walk through the 8 main features again — useful when new sections ship.</p>
+          </div>
+          <button
+            onClick={() => window.dispatchEvent(new Event('restart-onboarding'))}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-wider rounded-lg transition-colors whitespace-nowrap"
+          >
+            Restart Tour
+          </button>
+        </div>
+      </div>
+
       {/* Notification Preferences */}
       <div className="bg-white ring-1 ring-slate-200 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">

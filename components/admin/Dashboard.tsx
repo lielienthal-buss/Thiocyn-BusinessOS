@@ -34,6 +34,7 @@ import { translations } from '@/lib/translations';
 import { LanguageProvider, useLang as useWorkspaceLang } from '@/lib/language';
 import BrandSwitcher from '@/components/ui/BrandSwitcher';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import OnboardingTour from './OnboardingTour';
 // Lazy import with auto-reload on chunk load failure (stale deploy)
 function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
   return lazy(() =>
@@ -216,6 +217,25 @@ const Dashboard: React.FC = () => {
   const [campaignDrawerId, setCampaignDrawerId] = useState<string | null>(null);
   const [previewRole, setPreviewRole] = useState<UserRole | null>(null);
   const [companyName, setCompanyName] = useState<string>('Business OS');
+  const [forceTour, setForceTour] = useState(false);
+
+  useEffect(() => {
+    const restart = () => setForceTour(true);
+    window.addEventListener('restart-onboarding', restart);
+    return () => window.removeEventListener('restart-onboarding', restart);
+  }, []);
+
+  const handleLangChange = (newLang: 'de' | 'en') => {
+    setLang(newLang);
+    localStorage.setItem('app_lang', newLang);
+    if (session?.user?.email) {
+      supabase
+        .from('team_members')
+        .update({ preferred_language: newLang })
+        .eq('email', session.user.email)
+        .then(() => {});
+    }
+  };
 
   useEffect(() => {
     supabase
@@ -232,11 +252,15 @@ const Dashboard: React.FC = () => {
     // Check team_members first (staff/admin)
     supabase
       .from('team_members')
-      .select('role, status')
+      .select('role, status, preferred_language')
       .eq('email', session.user.email)
       .eq('status', 'active')
       .maybeSingle()
       .then(({ data }) => {
+        if (data?.preferred_language && data.preferred_language !== lang) {
+          setLang(data.preferred_language as 'de' | 'en');
+          localStorage.setItem('app_lang', data.preferred_language);
+        }
         if (data?.role) { setUserRole(data.role as UserRole); return; }
         // Fallback: check intern_accounts for intern_lead
         supabase
@@ -535,19 +559,23 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Brand Switcher — visible when in a brand-aware section */}
-          {section !== 'account' && <BrandSwitcher compact />}
+          {section !== 'account' && (
+            <div data-tour="brand-switcher">
+              <BrandSwitcher compact />
+            </div>
+          )}
           {/* Notification Bell — visible to all logged-in users */}
           {(session || isDemoMode) && <NotificationBell userId={session?.user?.id} />}
           <div className="flex items-center gap-0.5 rounded-full p-0.5" style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>
             <button
-              onClick={() => setLang('de')}
+              onClick={() => handleLangChange('de')}
               className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
               style={{ background: lang === 'de' ? '#E09B37' : 'transparent', color: lang === 'de' ? '#fff' : '#6e6e73' }}
             >
               DE
             </button>
             <button
-              onClick={() => setLang('en')}
+              onClick={() => handleLangChange('en')}
               className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
               style={{ background: lang === 'en' ? '#E09B37' : 'transparent', color: lang === 'en' ? '#fff' : '#6e6e73' }}
             >
@@ -593,6 +621,7 @@ const Dashboard: React.FC = () => {
         {visibleSections.map(s => (
           <button
             key={s.id}
+            data-tour={`section-${s.id}`}
             onClick={() => handleSectionChange(s.id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all rounded-lg mx-0.5 ${
               section === s.id
@@ -715,6 +744,13 @@ const Dashboard: React.FC = () => {
         onOpen={() => setChatOpen(true)}
         onClose={() => { setChatOpen(false); setChatInitialPrompt(undefined); }}
         initialPrompt={chatInitialPrompt}
+      />
+
+      <OnboardingTour
+        userEmail={session?.user?.email}
+        onSectionChange={(s) => handleSectionChange(s as Section)}
+        forceRun={forceTour}
+        onFinish={() => setForceTour(false)}
       />
     </div>
     </LanguageProvider>
