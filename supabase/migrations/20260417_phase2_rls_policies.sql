@@ -96,9 +96,9 @@ CREATE POLICY "campaign_briefs_agency_update" ON public.campaign_briefs
       AND c.agency_id IN (SELECT public.current_user_agencies())
   ));
 
--- ─── agency_briefs (direct agency link via campaign scope) ─────────────────
--- NOTE: agency_briefs schema unknown at migration time; assumes campaign_id FK.
--- If agency_briefs has its own agency_id column, adjust scope accordingly.
+-- ─── agency_briefs (direct agency_id column, no campaign link) ─────────────
+-- Schema: id, type, title, brand_id, agency_id, body, prompt_input, assignee,
+-- deadline, status, created_by, created_at, updated_at
 
 CREATE POLICY "agency_briefs_internal_full" ON public.agency_briefs
   FOR ALL TO authenticated
@@ -107,16 +107,8 @@ CREATE POLICY "agency_briefs_internal_full" ON public.agency_briefs
 
 CREATE POLICY "agency_briefs_agency_rw" ON public.agency_briefs
   FOR ALL TO authenticated
-  USING (EXISTS (
-    SELECT 1 FROM public.campaigns c
-    WHERE c.id = agency_briefs.campaign_id
-      AND c.agency_id IN (SELECT public.current_user_agencies())
-  ))
-  WITH CHECK (EXISTS (
-    SELECT 1 FROM public.campaigns c
-    WHERE c.id = agency_briefs.campaign_id
-      AND c.agency_id IN (SELECT public.current_user_agencies())
-  ));
+  USING (agency_id IN (SELECT public.current_user_agencies()))
+  WITH CHECK (agency_id IN (SELECT public.current_user_agencies()));
 
 -- ─── campaign_creative_sets (via parent campaign) ─────────────────────────
 
@@ -206,23 +198,12 @@ CREATE POLICY "kpis_agency_read" ON public.campaign_kpis
       AND c.agency_id IN (SELECT public.current_user_agencies())
   ));
 
--- ─── audit_log (internal full; agencies see scope-relevant rows only) ──────
+-- ─── audit_log (internal only for v1) ──────────────────────────────────────
+-- Agencies don't need audit visibility in v1; defer scoped read to v2 if needed.
 
 CREATE POLICY "audit_log_internal_full" ON public.audit_log
   FOR SELECT TO authenticated
   USING (public.is_team_member());
-
--- Agency members: can see audit rows tied to campaigns in their scope
-CREATE POLICY "audit_log_agency_scoped_read" ON public.audit_log
-  FOR SELECT TO authenticated
-  USING (
-    table_name IN ('campaigns','campaign_briefs','agency_briefs','campaign_creative_sets','campaign_assets','campaign_comments','campaign_kpis')
-    AND EXISTS (
-      SELECT 1 FROM public.campaigns c
-      WHERE c.id = audit_log.row_id::uuid
-        AND c.agency_id IN (SELECT public.current_user_agencies())
-    )
-  );
 
 COMMIT;
 
