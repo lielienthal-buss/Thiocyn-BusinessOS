@@ -22,10 +22,24 @@
   --text-secondary:  #94a3b8;
   --text-muted:      #475569;
 
-  --amber:    #f59e0b;
-  --amber-dim: rgba(245, 158, 11, 0.12);
-  --indigo:   #6366f1;
-  --indigo-dim: rgba(99, 102, 241, 0.12);
+  /* ─── HoSB Brand Tokens — House of Sustainable Brands ─────────────────────
+     Canonical design tokens. All accents route through these.
+     Growth Teal  = primary (nachhaltig / CTAs / active states)
+     Pythia Coral = secondary (AI-Highlight / sparing use)
+     Light/Dark variants match HSB-Web. */
+  --brand-primary:        oklch(0.55 0.15 180);       /* Growth Teal — light mode */
+  --brand-primary-dark:   oklch(0.72 0.14 180);       /* Growth Teal — dark mode (brighter) */
+  --brand-primary-dim:    oklch(0.55 0.15 180 / 0.12);
+  --brand-primary-glow:   oklch(0.55 0.15 180 / 0.25);
+  --brand-secondary:      oklch(0.58 0.18 25);        /* Pythia Coral — light mode */
+  --brand-secondary-dark: oklch(0.68 0.18 25);        /* Pythia Coral — dark mode (brighter) */
+  --brand-secondary-dim:  oklch(0.58 0.18 25 / 0.10);
+
+  /* ─── Legacy aliases — existing components keep working, now render HoSB ─── */
+  --amber:      var(--brand-primary-dark);
+  --amber-dim:  var(--brand-primary-dim);
+  --indigo:     var(--brand-secondary-dark);
+  --indigo-dim: var(--brand-secondary-dim);
 }
 
 /* ─── Base ──────────────────────────────────────────────────────────────────── */
@@ -231,8 +245,8 @@ body {
 }
 
 .glass-card-interactive:hover {
-  border-color: rgba(245, 158, 11, 0.2);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: oklch(0.72 0.14 180 / 0.2);
+  box-shadow: 0 0 0 1px oklch(0.72 0.14 180 / 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
   transform: translateY(-2px);
 }
 
@@ -253,12 +267,12 @@ body {
    ════════════════════════════════════════════════════════════════════════════ */
 
 .light-section {
-  /* Thiocyn Brand */
-  --tc-gold:        #E09B37;
-  --tc-gold-soft:   rgba(224, 155, 55, 0.12);
-  --tc-gold-glow:   rgba(224, 155, 55, 0.25);
-  --tc-blue:        #334FB4;
-  --tc-blue-soft:   rgba(51, 79, 180, 0.10);
+  /* Legacy brand aliases — retained for backward-compat, point to HoSB tokens */
+  --tc-gold:        var(--brand-primary);
+  --tc-gold-soft:   var(--brand-primary-dim);
+  --tc-gold-glow:   var(--brand-primary-glow);
+  --tc-blue:        var(--brand-secondary);
+  --tc-blue-soft:   var(--brand-secondary-dim);
 
   /* Light Surface */
   --light-bg:       #f0f0f5;
@@ -281,12 +295,12 @@ body {
   --light-warning:  #ff9500;
   --light-warning-soft: rgba(255, 149, 0, 0.12);
 
-  /* Section background — light with subtle Gold/Blue mesh */
+  /* Section background — light with subtle Teal/Coral mesh (HoSB) */
   background-color: var(--light-bg);
   background-image:
-    radial-gradient(ellipse at 20% 20%, rgba(224, 155, 55, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 10%, rgba(51, 79, 180, 0.08) 0%, transparent 40%),
-    radial-gradient(ellipse at 60% 80%, rgba(224, 155, 55, 0.06) 0%, transparent 45%);
+    radial-gradient(ellipse at 20% 20%, oklch(0.55 0.15 180 / 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 10%, oklch(0.58 0.18 25 / 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 60% 80%, oklch(0.55 0.15 180 / 0.06) 0%, transparent 45%);
   color: var(--light-text);
   border-radius: 1.25rem;
   padding: 1.5rem;

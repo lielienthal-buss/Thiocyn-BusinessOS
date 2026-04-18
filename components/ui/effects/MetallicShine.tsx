@@ -13,14 +13,16 @@ interface Props {
   children: React.ReactNode;
   className?: string;
   intensity?: number; // 0-1, default 0.15
-  color?: 'amber' | 'white' | 'indigo';
+  color?: 'teal' | 'coral' | 'amber' | 'white' | 'indigo';
   borderRadius?: string;
 }
 
 const SHINE_COLOR: Record<NonNullable<Props['color']>, string> = {
-  amber: '245, 158, 11',
+  teal: '103, 191, 192',    // HoSB Growth Teal (dark-mode variant)
+  coral: '232, 123, 104',   // HoSB Pythia Coral (dark-mode variant)
+  amber: '245, 158, 11',    // legacy
   white: '255, 255, 255',
-  indigo: '99, 102, 241',
+  indigo: '99, 102, 241',   // legacy
 };
 
 export function MetallicShine({

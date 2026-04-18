@@ -10,13 +10,19 @@ import React from 'react';
 
 interface Props {
   children: React.ReactNode;
-  color?: 'amber' | 'indigo' | 'white' | 'success';
+  color?: 'teal' | 'coral' | 'amber' | 'indigo' | 'white' | 'success';
   speed?: 'slow' | 'normal' | 'fast';
   className?: string;
   as?: React.ElementType;
 }
 
 const COLOR_GRADIENT: Record<NonNullable<Props['color']>, string> = {
+  // HoSB — primary brand accents
+  teal:
+    'linear-gradient(120deg, oklch(0.45 0.12 180) 0%, oklch(0.72 0.14 180) 25%, oklch(0.92 0.06 180) 50%, oklch(0.72 0.14 180) 75%, oklch(0.45 0.12 180) 100%)',
+  coral:
+    'linear-gradient(120deg, oklch(0.48 0.15 25) 0%, oklch(0.68 0.18 25) 25%, oklch(0.92 0.06 25) 50%, oklch(0.68 0.18 25) 75%, oklch(0.48 0.15 25) 100%)',
+  // Legacy — kept for backward compatibility
   amber:
     'linear-gradient(120deg, #d97706 0%, #fbbf24 25%, #fef3c7 50%, #fbbf24 75%, #d97706 100%)',
   indigo:
