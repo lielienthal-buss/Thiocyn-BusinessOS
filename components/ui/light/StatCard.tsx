@@ -7,7 +7,7 @@ type Variant = 'default' | 'success' | 'warning' | 'danger';
 
 interface Props {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   sub?: string;
   variant?: Variant;
   icon?: React.ReactNode;

@@ -19,6 +19,7 @@ import {
   IconCash,
   IconDocument,
 } from '@/components/ui/light';
+import { ShinyText, MetallicShine, AnimatedCounter, GradientOrbs } from '@/components/ui/effects';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -167,13 +168,17 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
 
   return (
     <Section className="space-y-6">
+      <GradientOrbs intensity="subtle" />
+
       {/* ── Executive Summary ── */}
       <ExecutiveSummary role={userRole} />
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="lt-text-h1" style={{ fontSize: '1.5rem' }}>Command Center</h1>
+          <h1 className="lt-text-h1" style={{ fontSize: '1.5rem' }}>
+            <ShinyText color="amber" speed="slow">Command Center</ShinyText>
+          </h1>
           <p className="lt-text-meta mt-1">
             {new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
             <span style={{ margin: '0 0.5rem', color: 'var(--light-text-muted)' }}>·</span>
@@ -209,15 +214,16 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
 
       {/* ── Top-Level KPIs ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <StatCard label="Ad Spend MTD" value={fmtCurrency(totalAdSpend)} sub={`${campaigns.length} active`} size="md" />
-        <StatCard label="Avg ROAS" value={avgRoas != null ? `${avgRoas.toFixed(1)}x` : '—'} sub={avgRoas != null && avgRoas < 2 ? 'Below target' : undefined} variant={avgRoas != null && avgRoas < 2 ? 'danger' : 'default'} size="md" />
-        <StatCard label="Disputes" value={String(openDisputes)} sub={openDisputes > 0 ? `${fmtCurrency(disputes.reduce((s, d) => s + d.amount, 0))} at risk` : 'All clear'} variant={openDisputes > 3 ? 'danger' : 'default'} size="md" />
-        <StatCard label="Support" value={String(openTickets.length)} sub={criticalTickets.length > 0 ? `${criticalTickets.length} critical` : undefined} variant={criticalTickets.length > 0 ? 'danger' : 'default'} size="md" />
-        <StatCard label="Overdue Tasks" value={String(overdueTasks.length)} variant={overdueTasks.length > 0 ? 'warning' : 'success'} size="md" />
-        <StatCard label="Open Invoices" value={fmtCurrency(openInvoiceSum)} sub={`${pipeline.length} items · ${overdueInvoices.length} overdue`} variant={overdueInvoices.length > 0 ? 'danger' : 'default'} size="md" />
+        <StatCard label="Ad Spend MTD" value={<AnimatedCounter value={totalAdSpend} format="currency" />} sub={`${campaigns.length} active`} size="md" />
+        <StatCard label="Avg ROAS" value={avgRoas != null ? <AnimatedCounter value={avgRoas} decimals={1} suffix="x" /> : '—'} sub={avgRoas != null && avgRoas < 2 ? 'Below target' : undefined} variant={avgRoas != null && avgRoas < 2 ? 'danger' : 'default'} size="md" />
+        <StatCard label="Disputes" value={<AnimatedCounter value={openDisputes} />} sub={openDisputes > 0 ? `${fmtCurrency(disputes.reduce((s, d) => s + d.amount, 0))} at risk` : 'All clear'} variant={openDisputes > 3 ? 'danger' : 'default'} size="md" />
+        <StatCard label="Support" value={<AnimatedCounter value={openTickets.length} />} sub={criticalTickets.length > 0 ? `${criticalTickets.length} critical` : undefined} variant={criticalTickets.length > 0 ? 'danger' : 'default'} size="md" />
+        <StatCard label="Overdue Tasks" value={<AnimatedCounter value={overdueTasks.length} />} variant={overdueTasks.length > 0 ? 'warning' : 'success'} size="md" />
+        <StatCard label="Open Invoices" value={<AnimatedCounter value={openInvoiceSum} format="currency" />} sub={`${pipeline.length} items · ${overdueInvoices.length} overdue`} variant={overdueInvoices.length > 0 ? 'danger' : 'default'} size="md" />
       </div>
 
       {/* ── Brand Performance Grid ── */}
+      <MetallicShine color="amber" intensity={0.1}>
       <Card padding="none">
         <div className="px-5 py-3.5 lt-header-divider">
           <span className="lt-text-label">Brand Performance</span>
@@ -263,6 +269,7 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
           })}
         </div>
       </Card>
+      </MetallicShine>
 
       {/* ── 3-Column Detail Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
