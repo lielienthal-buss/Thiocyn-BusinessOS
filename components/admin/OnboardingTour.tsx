@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Joyride, EVENTS, STATUS, type EventData, type Step } from 'react-joyride';
 import { supabase } from '@/lib/supabaseClient';
+import { useLang } from '@/lib/i18n';
 
 type Lang = 'de' | 'en';
 type Section = 'home' | 'marketing' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
@@ -19,10 +20,7 @@ const STEPS: TourStep[] = [
     id: 'welcome',
     target: 'body',
     placement: 'center',
-    title: {
-      de: 'Willkommen im Business OS',
-      en: 'Welcome to Business OS',
-    },
+    title: { de: 'Willkommen im Business OS', en: 'Welcome to Business OS' },
     body: {
       de: 'Das interne Betriebssystem für unsere 6 Brands. In 8 kurzen Schritten zeigen wir dir alles Wichtige — du kannst die Tour jederzeit im Account-View neu starten.',
       en: 'The internal OS for our 6 brands. In 8 short steps we\'ll show you everything — you can restart the tour any time from the Account view.',
@@ -112,10 +110,15 @@ interface Props {
   onFinish?: () => void;
 }
 
+function detectBrowserLang(): Lang {
+  const nav = typeof navigator !== 'undefined' ? (navigator.language ?? '').toLowerCase() : '';
+  return nav.startsWith('de') ? 'de' : 'en';
+}
+
 export const OnboardingTour: React.FC<Props> = ({ userEmail, onSectionChange, forceRun, onFinish }) => {
+  const { lang, setLang } = useLang();
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
-  const [lang, setLangLocal] = useState<Lang>(() => (localStorage.getItem('app_lang') as Lang) ?? 'de');
 
   useEffect(() => {
     if (forceRun) {
@@ -131,52 +134,127 @@ export const OnboardingTour: React.FC<Props> = ({ userEmail, onSectionChange, fo
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
-        if (data.preferred_language) {
-          setLangLocal(data.preferred_language as Lang);
-          localStorage.setItem('app_lang', data.preferred_language);
-        }
         const state = data.onboarding_state as
           | { completed?: boolean; last_step?: number }
           | null;
+
+        // First-run language default: if user hasn't completed tour yet AND DB has
+        // default 'de' (likely not actively chosen), prefer browser language.
+        // After completion, always honor DB preference.
+        if (state?.completed && data.preferred_language) {
+          setLang(data.preferred_language as Lang);
+          localStorage.setItem('app_lang', data.preferred_language);
+        } else if (!state?.completed) {
+          const browserLang = detectBrowserLang();
+          const stored = localStorage.getItem('app_lang') as Lang | null;
+          const initial = stored ?? browserLang;
+          setLang(initial);
+          localStorage.setItem('app_lang', initial);
+        }
+
         if (!state?.completed) {
           setStepIndex(state?.last_step ?? 0);
           setRun(true);
         }
       });
-  }, [userEmail, forceRun]);
+  }, [userEmail, forceRun, setLang]);
+
+  const persistLang = useCallback(
+    (newLang: Lang) => {
+      setLang(newLang);
+      localStorage.setItem('app_lang', newLang);
+      if (userEmail) {
+        supabase
+          .from('team_members')
+          .update({ preferred_language: newLang })
+          .eq('email', userEmail)
+          .then(() => {});
+      }
+    },
+    [userEmail, setLang],
+  );
+
+  const handleLangPick = useCallback(
+    (newLang: Lang) => {
+      persistLang(newLang);
+      setStepIndex(1);
+    },
+    [persistLang],
+  );
+
+  const persistState = useCallback(
+    (completed: boolean, lastStep: number) => {
+      if (!userEmail) return;
+      supabase
+        .from('team_members')
+        .update({
+          onboarding_state: {
+            completed,
+            last_step: lastStep,
+            completed_sections: STEPS.slice(0, lastStep)
+              .map((s) => s.section)
+              .filter(Boolean),
+            completed_at: completed ? new Date().toISOString() : null,
+          },
+        })
+        .eq('email', userEmail)
+        .then(() => {});
+    },
+    [userEmail],
+  );
 
   const steps: Step[] = useMemo(
     () =>
-      STEPS.map((s) => ({
-        target: s.target,
-        content: (
-          <div>
-            <h3 className="text-base font-semibold text-slate-900 mb-1.5">{s.title[lang]}</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">{s.body[lang]}</p>
-          </div>
-        ),
-        placement: s.placement ?? 'auto',
-      })),
-    [lang],
+      STEPS.map((s, i) => {
+        // Step 0 is the bilingual welcome + language picker
+        if (i === 0) {
+          return {
+            target: s.target,
+            placement: s.placement ?? 'auto',
+            buttons: ['skip'],
+            content: (
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">🇩🇪 Deutsch</div>
+                  <h3 className="text-base font-semibold text-slate-900 mb-1">{s.title.de}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{s.body.de}</p>
+                </div>
+                <div className="border-t border-slate-200 pt-3">
+                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">🇬🇧 English</div>
+                  <h3 className="text-base font-semibold text-slate-900 mb-1">{s.title.en}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{s.body.en}</p>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button
+                    onClick={() => handleLangPick('de')}
+                    className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                  >
+                    🇩🇪 Auf Deutsch fortfahren
+                  </button>
+                  <button
+                    onClick={() => handleLangPick('en')}
+                    className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+                  >
+                    🇬🇧 Continue in English
+                  </button>
+                </div>
+              </div>
+            ),
+          } satisfies Step;
+        }
+        return {
+          target: s.target,
+          placement: s.placement ?? 'auto',
+          content: (
+            <div>
+              <h3 className="text-base font-semibold text-slate-900 mb-1.5">{s.title[lang]}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{s.body[lang]}</p>
+            </div>
+          ),
+        } satisfies Step;
+      }),
+    [lang, handleLangPick],
   );
-
-  const persistState = (completed: boolean, lastStep: number) => {
-    if (!userEmail) return;
-    supabase
-      .from('team_members')
-      .update({
-        onboarding_state: {
-          completed,
-          last_step: lastStep,
-          completed_sections: STEPS.slice(0, lastStep)
-            .map((s) => s.section)
-            .filter(Boolean),
-          completed_at: completed ? new Date().toISOString() : null,
-        },
-      })
-      .eq('email', userEmail)
-      .then(() => {});
-  };
 
   const handleEvent = (data: EventData) => {
     const { type, status, action, index } = data;
@@ -230,7 +308,7 @@ export const OnboardingTour: React.FC<Props> = ({ userEmail, onSectionChange, fo
         open: lang === 'de' ? 'Öffnen' : 'Open',
       }}
       styles={{
-        tooltip: { borderRadius: 12, padding: 16, fontFamily: 'inherit' },
+        tooltip: { borderRadius: 12, padding: 16, fontFamily: 'inherit', maxWidth: 420 },
         tooltipTitle: { fontSize: 15 },
         tooltipContent: { padding: 0 },
         buttonPrimary: { borderRadius: 8, fontSize: 13, padding: '8px 14px', fontWeight: 600 },
