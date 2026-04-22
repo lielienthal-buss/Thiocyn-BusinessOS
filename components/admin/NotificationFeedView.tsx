@@ -112,7 +112,7 @@ export default function NotificationFeedView() {
                 onClick={() => setTypeFilter(type)}
                 className={`px-3 py-1.5 text-sm rounded-lg font-medium transition-all ${
                   typeFilter === type
-                    ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+                    ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25'
                     : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >

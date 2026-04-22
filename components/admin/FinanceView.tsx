@@ -49,7 +49,7 @@ const FinanceView: React.FC<Props> = ({ activeTab: initialTab }) => {
             onClick={() => setActiveTab(tab.id)}
             className="px-5 py-2 text-sm font-semibold rounded-xl transition-all"
             style={{
-              background: activeTab === tab.id ? '#E09B37' : 'transparent',
+              background: activeTab === tab.id ? '#0F766E' : 'transparent',
               color: activeTab === tab.id ? '#ffffff' : '#515154',
               border: activeTab === tab.id ? '1px solid #b8801f' : '1px solid transparent',
             }}

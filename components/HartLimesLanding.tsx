@@ -772,7 +772,7 @@ export default function HartLimesLanding({
                 Neben dem Creator-Programm gibt es bei Hart Limes offene Stellen als Praktikant:in, Werkstudent:in oder in Festanstellung. Bewirb dich direkt über unser Portal.
               </p>
               <a
-                href="/"
+                href="/hiring"
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/5 border border-white/10 text-gray-300 text-sm font-bold rounded-full hover:bg-white/10 hover:border-white/20 transition-all"
               >
                 Offene Stellen ansehen
@@ -882,7 +882,9 @@ export default function HartLimesLanding({
           <span className="ml-3">House of Sustainable Brands</span>
         </div>
         <div className="flex gap-5">
-          <a href="/" className="hover:text-gray-300 transition-colors">Portal</a>
+          <a href="/admin" className="hover:text-gray-300 transition-colors">Portal</a>
+          <a href="/hiring" className="hover:text-gray-300 transition-colors">Karriere</a>
+          <a href="/brand-ambassador" className="hover:text-gray-300 transition-colors">Ambassador</a>
           <a href="/imprint" className="hover:text-gray-300 transition-colors">Impressum</a>
           <a href="/privacy" className="hover:text-gray-300 transition-colors">Datenschutz</a>
         </div>

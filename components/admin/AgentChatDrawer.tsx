@@ -185,7 +185,7 @@ const AgentChatDrawer: React.FC<Props> = ({
       <button
         data-tour="jarvis-fab"
         onClick={onOpen}
-        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
+        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 w-14 h-14 bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
         title={`Open Jarvis — ${sectionLabel}`}
         aria-label="Open Jarvis AI assistant"
       >
@@ -229,7 +229,7 @@ const AgentChatDrawer: React.FC<Props> = ({
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-black/[0.06] shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#E09B37] flex items-center justify-center text-[#1d1d1f] shadow">
+                <div className="w-9 h-9 rounded-xl bg-[#0F766E] flex items-center justify-center text-[#1d1d1f] shadow">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -286,7 +286,7 @@ const AgentChatDrawer: React.FC<Props> = ({
                   <div
                     className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
                       msg.role === 'user'
-                        ? 'bg-[#E09B37] text-[#1d1d1f] rounded-tr-none'
+                        ? 'bg-[#0F766E] text-[#1d1d1f] rounded-tr-none'
                         : 'bg-white/70 text-[#1d1d1f] border border-black/[0.06] rounded-tl-none backdrop-blur-sm'
                     }`}
                   >
@@ -344,7 +344,7 @@ const AgentChatDrawer: React.FC<Props> = ({
                 <button
                   type="submit"
                   disabled={!input.trim() || isLoading}
-                  className="w-10 h-10 shrink-0 bg-[#E09B37] hover:bg-[#c8832a] disabled:opacity-40 disabled:cursor-not-allowed text-[#1d1d1f] rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow"
+                  className="w-10 h-10 shrink-0 bg-[#0F766E] hover:bg-[#c8832a] disabled:opacity-40 disabled:cursor-not-allowed text-[#1d1d1f] rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow"
                   aria-label="Send message"
                 >
                   <svg

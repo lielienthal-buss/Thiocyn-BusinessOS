@@ -104,9 +104,18 @@ function CursorGlow() {
 const App: React.FC = () => {
   const [applyPanelOpen, setApplyPanelOpen] = React.useState(false);
   const router = createBrowserRouter([
-    // --- Standalone full-bleed pages (no AppLayout wrapper) ---
+    // --- HSB Public Root — replaces former Take A Shot landing ---
     {
       path: '/',
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <HartLimesLanding />
+        </React.Suspense>
+      ),
+    },
+    // --- Hiring Funnel — former root, now scoped to /hiring ---
+    {
+      path: '/hiring',
       element: (
         <React.Suspense fallback={<div />}>
           <div className="min-h-screen bg-[#080808]">
@@ -127,6 +136,15 @@ const App: React.FC = () => {
               <Footer />
             </div>
           </div>
+        </React.Suspense>
+      ),
+    },
+    // --- Brand Ambassador Funnel — alias to HartLimesLanding influencer mode ---
+    {
+      path: '/brand-ambassador',
+      element: (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <HartLimesLanding forceMode="influencer" onApplyClick={() => setApplyPanelOpen(true)} />
         </React.Suspense>
       ),
     },

@@ -92,7 +92,7 @@ const TaskManager: React.FC = () => {
           <p className="text-[#6e6e73] text-sm mt-1">Die aktive Aufgabe wird Bewerbern auf der Task-Seite angezeigt.</p>
         </div>
         <button onClick={startNew}
-          className="px-5 py-2.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-500/20">
+          className="px-5 py-2.5 bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-primary-500/20">
           + Neue Aufgabe
         </button>
       </div>
@@ -175,7 +175,7 @@ const TaskManager: React.FC = () => {
                 {(['editor', 'preview'] as const).map(m => (
                   <button key={m} type="button" onClick={() => setPreview(m === 'preview')}
                     className={`px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest transition-all ${
-                      (m === 'preview') === preview ? 'bg-[#E09B37] text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                      (m === 'preview') === preview ? 'bg-[#0F766E] text-[#1d1d1f]' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                     }`}>
                     {m === 'editor' ? 'HTML Editor' : 'Vorschau'}
                   </button>
@@ -204,7 +204,7 @@ const TaskManager: React.FC = () => {
               Abbrechen
             </button>
             <button type="submit" disabled={saving}
-              className="px-8 py-3 bg-[#E09B37] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all">
+              className="px-8 py-3 bg-[#0F766E] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all">
               {saving && <Spinner className="w-4 h-4" />}
               {editing ? 'Änderungen speichern' : 'Task erstellen'}
             </button>

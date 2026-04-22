@@ -9,23 +9,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        // HSB Growth Teal — brand primary
         primary: {
-          50: '#fdf6ec',
-          100: '#faecd4',
-          200: '#f5d9a9',
-          300: '#efc07a',
-          400: '#e8aa52',
-          500: '#E09B37',
-          600: '#c8832a',
-          700: '#a66a22',
-          800: '#85531b',
-          900: '#6b4216',
-          950: '#3d2509',
+          50:  '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6',
+          600: '#0D9488',
+          700: '#0F766E', // ← HSB brand
+          800: '#115E59',
+          900: '#134E4A',
+          950: '#042F2E',
         },
+        // HSB Pythia Coral — accent / CTA highlight
         secondary: {
-          500: '#334FB4',
-          600: '#2a3f91',
-          700: '#1f2f6e',
+          400: '#FCA5A5',
+          500: '#F97066', // ← HSB brand
+          600: '#EF4444',
+          700: '#DC2626',
         },
         // Dark surface palette
         surface: {

@@ -120,7 +120,7 @@ const CvDownload: React.FC<{ path: string; filename?: string | null }> = ({ path
       target="_blank"
       rel="noopener noreferrer"
       download={filename ?? undefined}
-      className="inline-flex items-center gap-2 px-4 py-2 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-[#c8832a] transition-colors"
+      className="inline-flex items-center gap-2 px-4 py-2 bg-[#0F766E] text-[#1d1d1f] text-xs font-bold rounded-lg hover:bg-[#c8832a] transition-colors"
     >
       📄 {filename ?? 'Download CV'}
     </a>
@@ -370,7 +370,7 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
           {/* Welle 1b Item 5 — Coming-Soon pill while Resend Domain is unverified */}
           {!emailSendEnabled && (
             <span
-              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-[#E09B37]/15 text-[#E09B37] border border-amber-500/30"
+              className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg bg-[#0F766E]/15 text-[#0F766E] border border-amber-500/30"
               title="Resend Domain verification pending — emails are queued but not sent"
             >
               🔒 Email Coming Soon

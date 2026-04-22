@@ -549,11 +549,11 @@ const Dashboard: React.FC = () => {
           </h1>
           <p className="text-sm mt-1" style={{ color: '#6e6e73' }}>
             {isDemoMode ? (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse" style={{ background: 'rgba(224,155,55,0.12)', color: '#E09B37', border: '1px solid rgba(224,155,55,0.25)' }}>
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse" style={{ background: 'rgba(224,155,55,0.12)', color: '#0F766E', border: '1px solid rgba(224,155,55,0.25)' }}>
                 {t.dashboard.demoMode}
               </span>
             ) : (
-              <>{t.dashboard.loggedInAs} <span className="font-bold" style={{ color: '#E09B37' }}>{session?.user.email}</span></>
+              <>{t.dashboard.loggedInAs} <span className="font-bold" style={{ color: '#0F766E' }}>{session?.user.email}</span></>
             )}
           </p>
         </div>
@@ -570,14 +570,14 @@ const Dashboard: React.FC = () => {
             <button
               onClick={() => handleLangChange('de')}
               className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
-              style={{ background: lang === 'de' ? '#E09B37' : 'transparent', color: lang === 'de' ? '#fff' : '#6e6e73' }}
+              style={{ background: lang === 'de' ? '#0F766E' : 'transparent', color: lang === 'de' ? '#fff' : '#6e6e73' }}
             >
               DE
             </button>
             <button
               onClick={() => handleLangChange('en')}
               className="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all"
-              style={{ background: lang === 'en' ? '#E09B37' : 'transparent', color: lang === 'en' ? '#fff' : '#6e6e73' }}
+              style={{ background: lang === 'en' ? '#0F766E' : 'transparent', color: lang === 'en' ? '#fff' : '#6e6e73' }}
             >
               EN
             </button>
@@ -625,7 +625,7 @@ const Dashboard: React.FC = () => {
             onClick={() => handleSectionChange(s.id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all rounded-lg mx-0.5 ${
               section === s.id
-                ? 'bg-[#E09B37] text-white border border-[#b8801f] shadow-sm'
+                ? 'bg-[#0F766E] text-white border border-[#b8801f] shadow-sm'
                 : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03]'
             } ${s.tabs.length === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
             disabled={s.tabs.length === 0}
@@ -639,12 +639,12 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Actions Bar */}
       <div className="relative z-10 flex items-center gap-2 py-2.5 px-4 md:px-8 overflow-x-auto border-b border-black/[0.04]" style={{ background: 'rgba(255,255,255,0.4)' }}>
-        <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap" style={{ color: '#E09B37' }}>✦ Jarvis</span>
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] whitespace-nowrap" style={{ color: '#0F766E' }}>✦ Jarvis</span>
         {(QUICK_ACTIONS[section] ?? DEFAULT_QUICK_ACTIONS).map(action => (
           <button
             key={action.label}
             onClick={() => { setChatInitialPrompt(action.prompt); setChatOpen(true); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-[#E09B37]/10 hover:text-[#E09B37] text-[#515154] text-xs font-semibold rounded-full whitespace-nowrap transition-all border border-black/[0.06] hover:border-[#E09B37]/25"
+            className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-[#0F766E]/10 hover:text-[#0F766E] text-[#515154] text-xs font-semibold rounded-full whitespace-nowrap transition-all border border-black/[0.06] hover:border-[#0F766E]/25"
             style={{ background: 'rgba(0,0,0,0.03)' }}
           >
             <span>{action.emoji}</span> {action.label}
@@ -665,7 +665,7 @@ const Dashboard: React.FC = () => {
                   onClick={() => { setTab(tabItem.id); setSelectedAppId(null); }}
                   className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 ${
                     tab === tabItem.id
-                      ? 'bg-[#E09B37]/15 text-[#E09B37] border border-amber-500/25'
+                      ? 'bg-[#0F766E]/15 text-[#0F766E] border border-amber-500/25'
                       : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03] border border-transparent'
                   }`}
                 >
@@ -683,7 +683,7 @@ const Dashboard: React.FC = () => {
                     onClick={() => { setTab(tabItem.id); setSelectedAppId(null); }}
                     className={`text-left px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
                       tab === tabItem.id
-                        ? 'bg-[#E09B37] text-white border border-[#b8801f]'
+                        ? 'bg-[#0F766E] text-white border border-[#b8801f]'
                         : 'text-[#515154] hover:text-[#1d1d1f] hover:bg-black/[0.03] border border-transparent'
                     }`}
                   >
@@ -728,7 +728,7 @@ const Dashboard: React.FC = () => {
             onClick={() => handleSectionChange(s.id)}
             className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all min-w-[3.5rem] ${
               section === s.id
-                ? 'bg-[#E09B37]/15 text-[#E09B37]'
+                ? 'bg-[#0F766E]/15 text-[#0F766E]'
                 : 'text-[#515154] hover:text-[#1d1d1f]'
             }`}
           >

@@ -46,7 +46,7 @@ const BRANDS = ['thiocyn', 'take-a-shot', 'dr-severin', 'paigh', 'wristr', 'timb
 
 const BRAND_META: Record<string, { name: string; color: string }> = {
   'thiocyn':      { name: 'Thiocyn',       color: '#8b5cf6' },
-  'take-a-shot':  { name: 'Take A Shot',   color: '#E09B37' },
+  'take-a-shot':  { name: 'Take A Shot',   color: '#0F766E' },
   'dr-severin':   { name: 'Dr. Severin',   color: '#10b981' },
   'paigh':        { name: 'Paigh',         color: '#f43f5e' },
   'wristr':       { name: 'Wristr',        color: '#0ea5e9' },

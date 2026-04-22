@@ -17,7 +17,7 @@ const STAGE_LABELS: Record<string, string> = {
 // Stage badge color map
 const stageBadgeClasses: Record<string, string> = {
   applied: 'bg-blue-500/15 text-blue-400',
-  task_requested: 'bg-[#E09B37]/15 text-[#E09B37]',
+  task_requested: 'bg-[#0F766E]/15 text-[#0F766E]',
   task_submitted: 'bg-emerald-500/15 text-emerald-400',
   interview: 'bg-indigo-500/15 text-indigo-400',
   hired: 'bg-violet-500/15 text-violet-400',

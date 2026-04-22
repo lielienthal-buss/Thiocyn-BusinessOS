@@ -174,7 +174,7 @@ export default function DailyBriefingView() {
     <div className="flex flex-col items-center justify-center py-20 gap-3">
       <p className="text-sm text-red-600">{error}</p>
       <button onClick={() => { setError(null); setLoading(true); load(true); }}
-        className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a]">
+        className="px-4 py-2 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a]">
         Nochmal versuchen
       </button>
     </div>

@@ -171,7 +171,7 @@ const EmailTemplateManager: React.FC = () => {
                 onClick={() => setSelectedSlug(slug)}
                 className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                   isActive
-                    ? 'bg-[#E09B37] text-[#1d1d1f] shadow-lg shadow-primary-500/25'
+                    ? 'bg-[#0F766E] text-[#1d1d1f] shadow-lg shadow-primary-500/25'
                     : 'bg-black/[0.03] border border-white/[0.10] text-[#515154] hover:text-[#1d1d1f] hover:bg-white/[0.08]'
                 }`}
               >
@@ -207,7 +207,7 @@ const EmailTemplateManager: React.FC = () => {
                     onClick={() => setMode(m)}
                     className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                       mode === m
-                        ? 'bg-[#E09B37] text-[#1d1d1f]'
+                        ? 'bg-[#0F766E] text-[#1d1d1f]'
                         : 'text-[#515154] hover:text-[#1d1d1f]'
                     }`}
                   >
@@ -288,7 +288,7 @@ const EmailTemplateManager: React.FC = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-8 py-3.5 bg-[#E09B37] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all"
+                className="px-8 py-3.5 bg-[#0F766E] hover:bg-[#c8832a] disabled:opacity-60 text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-primary-500/25 flex items-center gap-2 transition-all"
               >
                 {saving && <Spinner className="w-4 h-4" />}
                 Save Changes

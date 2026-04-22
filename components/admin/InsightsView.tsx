@@ -235,7 +235,7 @@ const InsightsView: React.FC = () => {
               </div>
               <div className="w-full h-3 bg-black/[0.04] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#E09B37] transition-all duration-1000"
+                  className="h-full bg-[#0F766E] transition-all duration-1000"
                   style={{ width: stats.total > 0 ? `${step.fromTop}%` : '0%' }}
                 />
               </div>

@@ -70,7 +70,7 @@ const INTERN_ROSTER: { email: string; name: string; role: string }[] = [
 
 function scoreColor(s: number) {
   if (s >= 80) return 'text-emerald-400';
-  if (s >= 60) return 'text-[#E09B37]';
+  if (s >= 60) return 'text-[#0F766E]';
   return 'text-red-400';
 }
 function scoreBg(s: number) {
@@ -166,7 +166,7 @@ const InternCard: React.FC<{
       >
         {/* Score circle */}
         <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center shrink-0 ${
-          score.overall >= 80 ? 'bg-emerald-500/15' : score.overall >= 60 ? 'bg-[#E09B37]/15' : 'bg-red-500/15'
+          score.overall >= 80 ? 'bg-emerald-500/15' : score.overall >= 60 ? 'bg-[#0F766E]/15' : 'bg-red-500/15'
         }`}>
           <span className={`text-xl font-black leading-none ${scoreColor(score.overall)}`}>
             {score.raw.total === 0 ? '—' : score.overall}
@@ -232,12 +232,12 @@ const InternCard: React.FC<{
           {/* Unrated tasks (need quality/impact score) */}
           {done.filter(t => t.quality_score == null).length > 0 && (
             <div>
-              <p className="text-xs font-bold text-[#E09B37] mb-2 flex items-center gap-1">
+              <p className="text-xs font-bold text-[#0F766E] mb-2 flex items-center gap-1">
                 <span>⚠</span> {done.filter(t => t.quality_score == null).length} tasks need rating
               </p>
               <div className="space-y-1.5">
                 {done.filter(t => t.quality_score == null).map(task => (
-                  <div key={task.id} className="flex items-center gap-2 text-xs bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-lg px-3 py-2">
+                  <div key={task.id} className="flex items-center gap-2 text-xs bg-[#0F766E]/12 border border-[#0F766E]/25 rounded-lg px-3 py-2">
                     <span className="flex-1 text-[#1d1d1f] font-medium truncate">{task.title}</span>
                     {task.brand && (
                       <span className="text-[10px] text-primary-600 font-bold uppercase">{task.brand}</span>
@@ -322,7 +322,7 @@ const RateTaskModal: React.FC<{
         {/* Quality */}
         <div className="mb-5">
           <label className="block text-xs font-bold text-[#515154] mb-2 uppercase tracking-wide">
-            Quality Score <span className="text-[#E09B37]">★</span>
+            Quality Score <span className="text-[#0F766E]">★</span>
           </label>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(v => (
@@ -371,7 +371,7 @@ const RateTaskModal: React.FC<{
           <button
             onClick={save}
             disabled={saving}
-            className="flex-1 py-2.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-bold rounded-xl transition-all disabled:opacity-60"
+            className="flex-1 py-2.5 bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-bold rounded-xl transition-all disabled:opacity-60"
           >
             {saving ? 'Saving…' : 'Save Rating'}
           </button>
@@ -457,7 +457,7 @@ const PerformanceView: React.FC = () => {
 
         <div className="ml-auto flex items-center gap-2">
           {totalUnrated > 0 && (
-            <span className="px-3 py-1.5 bg-[#E09B37]/15 border border-[#E09B37]/25 text-[#E09B37] text-xs font-bold rounded-full">
+            <span className="px-3 py-1.5 bg-[#0F766E]/15 border border-[#0F766E]/25 text-[#0F766E] text-xs font-bold rounded-full">
               ⚠ {totalUnrated} tasks need rating
             </span>
           )}
@@ -467,7 +467,7 @@ const PerformanceView: React.FC = () => {
                 key={p.id}
                 onClick={() => setPeriod(p.id)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  period === p.id ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+                  period === p.id ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
                 }`}
               >
                 {p.label}
@@ -481,7 +481,7 @@ const PerformanceView: React.FC = () => {
       <div className="grid grid-cols-3 gap-3 text-center">
         {[
           { label: 'High Performer', range: '80–100', color: 'bg-emerald-500/15 border-emerald-500/20 text-emerald-400' },
-          { label: 'On Track', range: '60–79', color: 'bg-[#E09B37]/15 border-[#E09B37]/25 text-[#E09B37]' },
+          { label: 'On Track', range: '60–79', color: 'bg-[#0F766E]/15 border-[#0F766E]/25 text-[#0F766E]' },
           { label: 'Needs Attention', range: '0–59', color: 'bg-red-500/15 border-red-500/20 text-red-400' },
         ].map(l => (
           <div key={l.label} className={`rounded-xl border px-3 py-2.5 ${l.color}`}>

@@ -85,7 +85,7 @@ const PriorityDot: React.FC<{ priority: number }> = ({ priority }) => (
 const BrandBadge: React.FC<{ brand: string | null }> = ({ brand }) => {
   if (!brand) return null;
   return (
-    <span className="px-1.5 py-0.5 bg-[#E09B37]/12 text-[#E09B37] text-[10px] font-bold rounded-full border border-[#E09B37]/25 uppercase tracking-wide">
+    <span className="px-1.5 py-0.5 bg-[#0F766E]/12 text-[#0F766E] text-[10px] font-bold rounded-full border border-[#0F766E]/25 uppercase tracking-wide">
       {brand}
     </span>
   );
@@ -99,7 +99,7 @@ const StatusBadge: React.FC<{ status: TaskStatus }> = ({ status }) => (
 
 const ScopeBadge: React.FC<{ scope: TaskScope }> = ({ scope }) =>
   scope === 'private' ? (
-    <span className="px-1.5 py-0.5 bg-[#E09B37]/12 text-[#E09B37] text-[10px] font-bold rounded-full border border-[#E09B37]/25 uppercase tracking-wide">
+    <span className="px-1.5 py-0.5 bg-[#0F766E]/12 text-[#0F766E] text-[10px] font-bold rounded-full border border-[#0F766E]/25 uppercase tracking-wide">
       🔒 Private
     </span>
   ) : null;
@@ -118,7 +118,7 @@ const ScopeSelector: React.FC<{
         onClick={() => onChange('private')}
         className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-all flex items-center justify-center gap-1 ${
           value === 'private'
-            ? 'border-amber-500/40 bg-[#E09B37]/12 text-[#E09B37]'
+            ? 'border-amber-500/40 bg-[#0F766E]/12 text-[#0F766E]'
             : 'border-black/[0.06] text-[#6e6e73] hover:border-white/[0.12]'
         }`}
       >
@@ -191,7 +191,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
         onClick={e => e.stopPropagation()}
       >
         <div className={`flex items-center justify-between px-6 py-4 border-b ${
-          form.scope === 'private' ? 'border-[#E09B37]/25 bg-[#E09B37]/12' : 'border-blue-500/20 bg-blue-500/10'
+          form.scope === 'private' ? 'border-[#0F766E]/25 bg-[#0F766E]/12' : 'border-blue-500/20 bg-blue-500/10'
         }`}>
           <h2 className="text-base font-black text-[#1d1d1f]">
             {form.scope === 'private' ? '🔒 New Private Task' : '👥 New Team Task'}
@@ -210,7 +210,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               type="text"
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
               placeholder="Task title..."
             />
           </div>
@@ -221,7 +221,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               rows={3}
-              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 resize-none placeholder-[#86868b]"
+              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 resize-none placeholder-[#86868b]"
               placeholder="Optional details..."
             />
           </div>
@@ -233,7 +233,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
                 type="email"
                 value={form.assigned_to_email}
                 onChange={e => setForm(f => ({ ...f, assigned_to_email: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
                 placeholder="intern@example.com"
               />
             </div>
@@ -245,7 +245,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               <select
                 value={form.brand}
                 onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
               >
                 <option value="">— None —</option>
                 {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
@@ -256,7 +256,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               <select
                 value={form.status}
                 onChange={e => setForm(f => ({ ...f, status: e.target.value as TaskStatus }))}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
               >
                 <option value="todo">To Do</option>
                 <option value="in_progress">In Progress</option>
@@ -276,7 +276,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
                   onClick={() => setForm(f => ({ ...f, priority: p }))}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                     form.priority === p
-                      ? 'border-amber-500/40 bg-[#E09B37]/12 text-[#E09B37]'
+                      ? 'border-amber-500/40 bg-[#0F766E]/12 text-[#0F766E]'
                       : 'border-black/[0.06] text-[#6e6e73] hover:border-white/[0.12]'
                   }`}
                   title={PRIORITY_LABEL[p]}
@@ -294,7 +294,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               type="date"
               value={form.due_date}
               onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
-              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
             />
           </div>
 
@@ -304,7 +304,7 @@ const AddTaskPanel: React.FC<AddTaskPanelProps> = ({ onClose, onSaved, userEmail
               className={`w-full py-2.5 text-[#1d1d1f] text-sm font-bold rounded-lg transition-all disabled:opacity-60 ${
                 form.scope === 'private'
                   ? 'bg-amber-500 hover:bg-amber-600'
-                  : 'bg-[#E09B37] hover:bg-[#c8832a]'
+                  : 'bg-[#0F766E] hover:bg-[#c8832a]'
               }`}
             >
               {saving ? 'Saving…' : form.scope === 'private' ? '🔒 Add to My Desk' : '👥 Create Team Task'}
@@ -379,7 +379,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
 
   return (
     <div className={`mt-2 mb-4 mx-2 border rounded-xl p-4 flex flex-col gap-3 ${
-      form.scope === 'private' ? 'bg-[#E09B37]/12 border-[#E09B37]/25' : 'bg-white/50 border-black/[0.06]'
+      form.scope === 'private' ? 'bg-[#0F766E]/12 border-[#0F766E]/25' : 'bg-white/50 border-black/[0.06]'
     }`}>
       {error && <p className="text-red-400 text-xs font-semibold bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</p>}
 
@@ -391,7 +391,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
           <input
             value={form.title}
             onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           />
         </div>
         <div className="sm:col-span-2">
@@ -400,7 +400,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
             value={form.description}
             onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
             rows={2}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 resize-none"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 resize-none"
           />
         </div>
         <div>
@@ -409,7 +409,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
             type="email"
             value={form.assigned_to_email}
             onChange={e => setForm(f => ({ ...f, assigned_to_email: e.target.value }))}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           />
         </div>
         <div>
@@ -417,7 +417,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
           <select
             value={form.brand}
             onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           >
             <option value="">— None —</option>
             {BRANDS.map(b => <option key={b} value={b}>{b}</option>)}
@@ -428,7 +428,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
           <select
             value={form.status}
             onChange={e => setForm(f => ({ ...f, status: e.target.value as TaskStatus }))}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           >
             <option value="todo">To Do</option>
             <option value="in_progress">In Progress</option>
@@ -443,7 +443,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
             type="date"
             value={form.due_date}
             onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))}
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           />
         </div>
         <div className="sm:col-span-2">
@@ -455,7 +455,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
                 onClick={() => setForm(f => ({ ...f, priority: p }))}
                 className={`flex-1 py-1 rounded-lg text-xs font-bold border transition-all ${
                   form.priority === p
-                    ? 'border-amber-500/40 bg-[#E09B37]/12 text-[#E09B37]'
+                    ? 'border-amber-500/40 bg-[#0F766E]/12 text-[#0F766E]'
                     : 'border-black/[0.06] text-[#6e6e73] hover:border-white/[0.12]'
                 }`}
               >
@@ -470,7 +470,7 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose, onUpdated }) => 
       <div className="flex items-center gap-2 pt-1 flex-wrap">
         <button
           onClick={handleSave} disabled={saving}
-          className="px-4 py-1.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-bold rounded-lg transition-all disabled:opacity-60"
+          className="px-4 py-1.5 bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-bold rounded-lg transition-all disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
@@ -542,7 +542,7 @@ const BoardView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ tas
                     onClick={() => toggle(task.id)}
                     className={`border rounded-xl p-3 cursor-pointer hover:shadow-sm transition-all ${
                       task.scope === 'private'
-                        ? 'bg-[#E09B37]/12 border-[#E09B37]/25 hover:border-amber-500/40'
+                        ? 'bg-[#0F766E]/12 border-[#0F766E]/25 hover:border-amber-500/40'
                         : 'bg-white/70 border-black/[0.06] hover:border-white/[0.14]'
                     } ${expandedId === task.id ? (task.scope === 'private' ? 'border-amber-500/40' : 'border-white/[0.20] shadow-sm') : ''}`}
                   >
@@ -598,8 +598,8 @@ const MyDeskView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ ta
         onClick={() => toggle(task.id)}
         className={`border rounded-xl px-4 py-3 cursor-pointer transition-all flex items-start gap-3 ${
           expandedId === task.id
-            ? 'border-amber-500/40 bg-[#E09B37]/12 shadow-sm'
-            : 'border-amber-500/15 bg-white/70 hover:border-amber-500/30 hover:bg-[#E09B37]/12'
+            ? 'border-amber-500/40 bg-[#0F766E]/12 shadow-sm'
+            : 'border-amber-500/15 bg-white/70 hover:border-amber-500/30 hover:bg-[#0F766E]/12'
         }`}
       >
         <div className="flex flex-col items-center gap-1 pt-0.5">
@@ -635,16 +635,16 @@ const MyDeskView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ ta
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-2xl p-4">
+      <div className="bg-[#0F766E]/12 border border-[#0F766E]/25 rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-lg">🔒</span>
-          <h3 className="text-sm font-black text-[#E09B37] uppercase tracking-wider">My Desk — Private Tasks</h3>
-          <span className="ml-auto text-xs font-bold text-[#E09B37] bg-[#E09B37]/15 px-2 py-0.5 rounded-full">
+          <h3 className="text-sm font-black text-[#0F766E] uppercase tracking-wider">My Desk — Private Tasks</h3>
+          <span className="ml-auto text-xs font-bold text-[#0F766E] bg-[#0F766E]/15 px-2 py-0.5 rounded-full">
             {open.length} open
           </span>
         </div>
         {open.length === 0 ? (
-          <p className="text-sm text-[#E09B37]/60 italic text-center py-4">All clear 🎉</p>
+          <p className="text-sm text-[#0F766E]/60 italic text-center py-4">All clear 🎉</p>
         ) : (
           <div className="space-y-2">
             {open
@@ -717,12 +717,12 @@ const ListView: React.FC<{ tasks: TeamTask[]; onRefresh: () => void }> = ({ task
               <tr
                 onClick={() => setExpandedId(prev => (prev === task.id ? null : task.id))}
                 className={`border-b border-black/[0.04] cursor-pointer transition-colors ${
-                  expandedId === task.id ? 'bg-[#E09B37]/12' :
+                  expandedId === task.id ? 'bg-[#0F766E]/12' :
                   task.scope === 'private' ? 'hover:bg-amber-500/5' : 'hover:bg-black/[0.03]'
                 }`}
               >
                 <td className="py-2.5 pl-1 pr-1">
-                  {task.scope === 'private' && <span className="text-[#E09B37] text-xs">🔒</span>}
+                  {task.scope === 'private' && <span className="text-[#0F766E] text-xs">🔒</span>}
                 </td>
                 <td className="py-2.5 pr-4 pl-1">
                   <div className="flex items-center gap-2">
@@ -802,7 +802,7 @@ const TeamTasksView: React.FC<Props> = ({ userEmail }) => {
           <button
             onClick={() => setView('my_desk')}
             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
-              view === 'my_desk' ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
+              view === 'my_desk' ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25' : 'text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}
           >
             🔒 My Desk
@@ -849,7 +849,7 @@ const TeamTasksView: React.FC<Props> = ({ userEmail }) => {
           </button>
           <button
             onClick={handleAddTeam}
-            className="flex items-center gap-1 px-3 py-1.5 bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-bold rounded-lg transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] text-xs font-bold rounded-lg transition-all"
           >
             👥 + Delegate
           </button>

@@ -14,7 +14,7 @@ const PHASE_INFO: Record<AcademyPhase, { label: string; color: string; chip: str
   onboarding:     { label: 'Onboarding',     color: 'sky',     chip: 'bg-sky-500/15 text-sky-400 border-sky-500/30' },
   foundation:     { label: 'Foundation',     color: 'cyan',    chip: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30' },
   specialisation: { label: 'Specialisation', color: 'violet',  chip: 'bg-violet-500/15 text-violet-400 border-violet-500/30' },
-  ownership:      { label: 'Ownership',      color: 'amber',   chip: 'bg-[#E09B37]/15 text-[#E09B37] border-amber-500/30' },
+  ownership:      { label: 'Ownership',      color: 'amber',   chip: 'bg-[#0F766E]/15 text-[#0F766E] border-amber-500/30' },
   completed:      { label: 'Completed',      color: 'emerald', chip: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
 };
 
@@ -147,7 +147,7 @@ const PhaseStatusCard: React.FC<{ intern: InternWithData; onRefresh: () => void 
           <button
             onClick={advance}
             disabled={advancing}
-            className="text-xs bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1 rounded transition-colors disabled:opacity-50"
+            className="text-xs bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1 rounded transition-colors disabled:opacity-50"
           >
             {advancing ? 'Advancing…' : `Advance →`}
           </button>
@@ -218,7 +218,7 @@ const AssignmentReviewCard: React.FC<{
               {assignment.status.replace('_', ' ')}
             </span>
             {assignment.review_score && (
-              <span className="text-[9px] text-[#E09B37]">★ {assignment.review_score}/5</span>
+              <span className="text-[9px] text-[#0F766E]">★ {assignment.review_score}/5</span>
             )}
           </div>
         </div>
@@ -317,9 +317,9 @@ const AdminNotesEditor: React.FC<{ intern: InternWithData; onRefresh: () => void
 
   if (!editing && intern.admin_notes) {
     return (
-      <div className="text-xs bg-amber-500/5 border border-[#E09B37]/25 rounded-lg p-3">
+      <div className="text-xs bg-amber-500/5 border border-[#0F766E]/25 rounded-lg p-3">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="text-[10px] font-bold text-[#E09B37] uppercase">Admin Notes</p>
+          <p className="text-[10px] font-bold text-[#0F766E] uppercase">Admin Notes</p>
           <button onClick={() => setEditing(true)} className="text-[10px] text-primary-500 hover:underline">edit</button>
         </div>
         <p className="text-[#1d1d1f] whitespace-pre-wrap">{intern.admin_notes}</p>
@@ -337,7 +337,7 @@ const AdminNotesEditor: React.FC<{ intern: InternWithData; onRefresh: () => void
         className="w-full text-xs bg-black/[0.03] border border-white/10 rounded px-2 py-1.5 text-[#1d1d1f] focus:outline-none focus:ring-2 focus:ring-primary-500/30"
       />
       <div className="flex gap-2">
-        <button onClick={save} disabled={saving} className="text-xs bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1.5 rounded">
+        <button onClick={save} disabled={saving} className="text-xs bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] font-semibold px-3 py-1.5 rounded">
           {saving ? 'Saving…' : 'Save'}
         </button>
         <button onClick={() => { setNotes(intern.admin_notes ?? ''); setEditing(false); }} className="text-xs text-[#6e6e73] hover:text-[#1d1d1f]">
@@ -385,7 +385,7 @@ const WeeklyReviewForm: React.FC<{
             rows={2}
             value={form[key as keyof typeof form] as string}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            className="w-full text-sm border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30"
+            className="w-full text-sm border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded px-2 py-1.5 resize-none focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30"
           />
         </div>
       ))}
@@ -406,7 +406,7 @@ const WeeklyReviewForm: React.FC<{
       <button
         onClick={save}
         disabled={saving}
-        className="bg-[#E09B37] text-[#1d1d1f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
+        className="bg-[#0F766E] text-[#1d1d1f] px-4 py-2 rounded-lg text-sm font-semibold disabled:opacity-50"
       >
         {saving ? 'Saving…' : 'Save Check-in'}
       </button>
@@ -940,7 +940,7 @@ const AcademyView: React.FC = () => {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-[#E09B37] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="bg-[#0F766E] hover:bg-[#c8832a] text-[#1d1d1f] text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           ＋ Add Intern
         </button>
@@ -1046,10 +1046,10 @@ const AcademyView: React.FC = () => {
 
       {/* Welle 1b Item 9 — Monday Meeting #1 setup banner (one-shot) */}
       {hasFirstMonday === false && interns.length > 0 && (
-        <div className="bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-xl p-4 flex items-center justify-between gap-4">
+        <div className="bg-[#0F766E]/12 border border-[#0F766E]/25 rounded-xl p-4 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-bold text-[#E09B37]">📅 Monday Meeting #1 ansetzen</p>
-            <p className="text-xs text-[#E09B37]/80 mt-0.5">
+            <p className="text-sm font-bold text-[#0F766E]">📅 Monday Meeting #1 ansetzen</p>
+            <p className="text-xs text-[#0F766E]/80 mt-0.5">
               Erstes Welcome-Meeting für die {interns.length} Interns. Template mit Welcome + Intros + Programm-Übersicht ist vorgefertigt.
             </p>
           </div>
@@ -1102,7 +1102,7 @@ const AcademyView: React.FC = () => {
           onClick={() => setFilter('all')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
             filter === 'all'
-              ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+              ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25'
               : 'bg-black/[0.03] text-[#6e6e73] hover:text-[#1d1d1f] border border-black/[0.06]'
           }`}
         >
@@ -1114,7 +1114,7 @@ const AcademyView: React.FC = () => {
             onClick={() => setFilter(phase)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium capitalize transition-all ${
               filter === phase
-                ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25'
+                ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25'
                 : 'bg-black/[0.03] text-[#6e6e73] hover:text-[#1d1d1f] border border-black/[0.06]'
             }`}
           >

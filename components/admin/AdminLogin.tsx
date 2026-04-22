@@ -33,7 +33,7 @@ const AdminLogin: React.FC = () => {
     <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Ambient glows */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-[#E09B37]/15 rounded-full blur-[150px] animate-blob" />
+        <div className="absolute top-[-10%] left-[-5%] w-[45%] h-[45%] bg-[#0F766E]/15 rounded-full blur-[150px] animate-blob" />
         <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-600/12 rounded-full blur-[130px] animate-blob animation-delay-2000" />
         {/* Grid dot pattern */}
         <div className="absolute inset-0 opacity-[0.03]"
@@ -74,7 +74,7 @@ const AdminLogin: React.FC = () => {
                   Sandbox Environment<br />No live data connected.
                 </p>
                 <button type="button" onClick={startDemo}
-                  className="group w-full py-4 bg-gray-900 hover:bg-[#E09B37] text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-xl hover:shadow-primary-500/30 hover:scale-[1.02] active:scale-[0.98]">
+                  className="group w-full py-4 bg-gray-900 hover:bg-[#0F766E] text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-xl hover:shadow-primary-500/30 hover:scale-[1.02] active:scale-[0.98]">
                   <span className="group-hover:tracking-[0.3em] transition-all duration-300">Enter Preview</span>
                 </button>
               </div>
@@ -118,7 +118,7 @@ const AdminLogin: React.FC = () => {
 
               <div className="animate-slide-up-5 pt-1">
                 <button type="submit" disabled={loading}
-                  className="group relative w-full py-4 bg-gray-900 hover:bg-[#E09B37] text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-primary-500/30 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2 disabled:opacity-50 overflow-hidden">
+                  className="group relative w-full py-4 bg-gray-900 hover:bg-[#0F766E] text-[#1d1d1f] rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-primary-500/30 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] flex justify-center items-center gap-2 disabled:opacity-50 overflow-hidden">
                   {/* shimmer on hover */}
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   {loading ? <Spinner className="w-5 h-5" /> : 'Access System →'}

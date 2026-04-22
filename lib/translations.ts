@@ -2,7 +2,7 @@ export type Lang = 'en' | 'de';
 
 const en = {
   dashboard: {
-    title: 'Business OS',
+    title: 'HSB Business OS',
     loggedInAs: 'Logged in as:',
     demoMode: 'Demo Mode',
     adminBadge: 'Admin',
@@ -193,7 +193,7 @@ const en = {
 
 const de: typeof en = {
   dashboard: {
-    title: 'Business OS',
+    title: 'HSB Business OS',
     loggedInAs: 'Eingeloggt als:',
     demoMode: 'Demo Modus',
     adminBadge: 'Admin',

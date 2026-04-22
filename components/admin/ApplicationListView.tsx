@@ -52,14 +52,14 @@ const PaginationControls: React.FC<{
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-[#0F766E] text-[#1d1d1f] text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           &larr; Previous
         </button>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-[#E09B37] text-[#1d1d1f] text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-[#0F766E] text-[#1d1d1f] text-xs font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next &rarr;
         </button>
@@ -221,7 +221,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                       app.stage === 'applied' ? 'bg-blue-500/15 text-blue-400' :
-                      app.stage === 'task_requested' ? 'bg-[#E09B37]/15 text-[#E09B37]' :
+                      app.stage === 'task_requested' ? 'bg-[#0F766E]/15 text-[#0F766E]' :
                       app.stage === 'task_submitted' ? 'bg-emerald-500/15 text-emerald-400' :
                       app.stage === 'interview' ? 'bg-indigo-500/15 text-indigo-400' :
                       app.stage === 'hired' ? 'bg-violet-500/15 text-violet-400' :
@@ -283,7 +283,7 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
               <p className="font-semibold text-[#1d1d1f] text-sm">{app.full_name}</p>
               <span className={`shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full ${
                 app.stage === 'applied' ? 'bg-blue-500/15 text-blue-400' :
-                app.stage === 'task_requested' ? 'bg-[#E09B37]/15 text-[#E09B37]' :
+                app.stage === 'task_requested' ? 'bg-[#0F766E]/15 text-[#0F766E]' :
                 app.stage === 'task_submitted' ? 'bg-emerald-500/15 text-emerald-400' :
                 app.stage === 'interview' ? 'bg-indigo-500/15 text-indigo-400' :
                 app.stage === 'hired' ? 'bg-violet-500/15 text-violet-400' :

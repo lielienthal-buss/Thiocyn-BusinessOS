@@ -136,7 +136,7 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
           <div className="grid grid-cols-2 gap-2">
             {ALL_MODULES.map(m => (
               <button key={m} onClick={() => toggleModule(m)}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.enabled_modules.includes(m) ? 'bg-[#E09B37]/12 border-[#E09B37]/25 text-[#E09B37]' : 'bg-black/[0.03] border-black/[0.06] text-[#6e6e73]'}`}>
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.enabled_modules.includes(m) ? 'bg-[#0F766E]/12 border-[#0F766E]/25 text-[#0F766E]' : 'bg-black/[0.03] border-black/[0.06] text-[#6e6e73]'}`}>
                 <span className={`w-4 h-4 rounded border flex items-center justify-center text-xs ${form.enabled_modules.includes(m) ? 'bg-amber-500 border-amber-500 text-[#1d1d1f]' : 'border-white/[0.20]'}`}>
                   {form.enabled_modules.includes(m) ? '✓' : ''}
                 </span>
@@ -149,7 +149,7 @@ function ConfigPanel({ config, onSave, onClose }: ConfigPanelProps) {
         <div className="flex justify-end gap-2 pt-1">
           <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04] transition-colors">{t('ap.cancel')}</button>
           <button onClick={() => onSave(form)}
-            className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
+            className="px-4 py-2 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
             {t('ap.save')}
           </button>
         </div>
@@ -259,26 +259,26 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
             <div>
               <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.label')}</label>
               <input value={label} onChange={e => setLabel(e.target.value)}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
                 placeholder="z.B. CS Support, Mein Postfach" />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2">
                 <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.host')}</label>
                 <input value={imapHost} onChange={e => setImapHost(e.target.value)}
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
                   placeholder="mail.domain.de" />
               </div>
               <div>
                 <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.port')}</label>
                 <input type="number" value={imapPort} onChange={e => setImapPort(parseInt(e.target.value) || 993)}
-                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30" />
+                  className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30" />
               </div>
             </div>
             <div>
               <label className="text-xs text-[#6e6e73] block mb-1">{t('ap.user')}</label>
               <input value={imapUser} onChange={e => setImapUser(e.target.value)}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
                 placeholder="name@domain.de" />
             </div>
             <div>
@@ -286,13 +286,13 @@ function AccountsPanel({ userId, accounts, sessionPasses, onSaved, onClose }: Ac
                 {t('ap.password')} <span className="text-[#86868b] font-normal">({t('ap.passwordHint')})</span>
               </label>
               <input type="password" value={imapPass} onChange={e => setImapPass(e.target.value)}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 placeholder-[#86868b]"
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 placeholder-[#86868b]"
                 placeholder="App-Passwort eingeben" />
             </div>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04] transition-colors">{t('ap.cancel')}</button>
               <button onClick={handleAdd} disabled={saving || !imapHost || !imapUser}
-                className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
+                className="px-4 py-2 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
                 {saving ? '…' : t('ap.save')}
               </button>
             </div>
@@ -465,20 +465,20 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
         <div className="space-y-3">
           {steps.map(s => (
             <div key={s.num} className="bg-white/70 border border-black/[0.06] rounded-2xl p-4 flex gap-4 backdrop-blur-sm">
-              <div className="w-7 h-7 rounded-full bg-[#E09B37] text-[#1d1d1f] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-full bg-[#0F766E] text-[#1d1d1f] text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {s.num}
               </div>
               <div className="space-y-1 min-w-0">
                 <p className="text-sm font-semibold text-[#1d1d1f]">{s.title}</p>
                 <p className="text-xs text-[#515154] leading-relaxed">{s.body}</p>
-                <p className="text-xs text-[#E09B37] bg-[#E09B37]/12 rounded-lg px-2.5 py-1 inline-block mt-1">{s.tip}</p>
+                <p className="text-xs text-[#0F766E] bg-[#0F766E]/12 rounded-lg px-2.5 py-1 inline-block mt-1">{s.tip}</p>
               </div>
             </div>
           ))}
         </div>
 
         <button onClick={onNeedAccounts}
-          className="w-full py-2.5 bg-[#E09B37] text-[#1d1d1f] text-sm font-semibold rounded-xl hover:bg-[#c8832a] transition-colors">
+          className="w-full py-2.5 bg-[#0F766E] text-[#1d1d1f] text-sm font-semibold rounded-xl hover:bg-[#c8832a] transition-colors">
           {t('mt.setupBtn')}
         </button>
       </div>
@@ -497,12 +497,12 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
       {/* Account filter row */}
       <div className="flex items-center gap-2 flex-wrap">
         <button onClick={() => setActiveAccount('all')}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-[#E09B37] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
+          className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === 'all' ? 'bg-[#0F766E] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
           {t('mt.all')}
         </button>
         {accounts.map(account => (
           <button key={account.id} onClick={() => setActiveAccount(account.id)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === account.id ? 'bg-[#E09B37] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all ${activeAccount === account.id ? 'bg-[#0F766E] text-[#1d1d1f] border-primary-600' : 'bg-black/[0.03] text-[#6e6e73] border-black/[0.06] hover:border-white/[0.12]'}`}>
             {account.label}
           </button>
         ))}
@@ -518,7 +518,7 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
           ))}
         </div>
         <button onClick={syncMails} disabled={syncing}
-          className="flex items-center gap-2 px-3 py-1.5 bg-[#E09B37] text-[#1d1d1f] text-xs font-semibold rounded-xl hover:bg-[#c8832a] disabled:opacity-60 transition-colors">
+          className="flex items-center gap-2 px-3 py-1.5 bg-[#0F766E] text-[#1d1d1f] text-xs font-semibold rounded-xl hover:bg-[#c8832a] disabled:opacity-60 transition-colors">
           {syncing ? <span className="inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : (
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -619,9 +619,9 @@ function MailsTab({ userId, accounts, sessionPasses, onNeedAccounts, onPasswordN
                     <input type="text" placeholder={t('mt.notePlaceholder')}
                       value={noteValues[mail.id] ?? ''}
                       onChange={e => setNoteValues(v => ({ ...v, [mail.id]: e.target.value }))}
-                      className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 w-36 placeholder-[#86868b]" />
+                      className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 w-36 placeholder-[#86868b]" />
                     <button onClick={() => saveNote(mail.id)} disabled={savingNote === mail.id}
-                      className="px-3 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-lg hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
+                      className="px-3 py-1.5 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-lg hover:bg-[#c8832a] disabled:opacity-50 transition-colors">
                       {savingNote === mail.id ? '…' : t('mt.noteSave')}
                     </button>
                   </div>
@@ -666,12 +666,12 @@ function PasswordPrompt({ label, user, onSubmit, onClose }: PasswordPromptProps)
           <input type="password" value={pass} onChange={e => setPass(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && pass && onSubmit(pass)}
             autoFocus
-            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30" />
+            className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30" />
         </div>
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04]">{t('pp.cancel')}</button>
           <button onClick={() => pass && onSubmit(pass)} disabled={!pass}
-            className="px-4 py-2 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
+            className="px-4 py-2 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
             {t('pp.connect')}
           </button>
         </div>
@@ -855,7 +855,7 @@ function ZugaengeTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-[#6e6e73]">{requests.filter(r => r.status !== 'granted' && r.status !== 'denied').length} {t('zt.open')}</p>
-        <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
+        <button onClick={() => setShowAdd(!showAdd)} className="px-3 py-1.5 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] transition-colors">
           {t('zt.addBtn')}
         </button>
       </div>
@@ -866,28 +866,28 @@ function ZugaengeTab() {
             <div>
               <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.tool')} *</label>
               <input value={form.tool_or_service ?? ''} onChange={e => setForm(f => ({ ...f, tool_or_service: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40" />
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 focus:border-amber-500/40" />
             </div>
             <div>
               <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.responsible')}</label>
               <input value={form.responsible_person ?? ''} onChange={e => setForm(f => ({ ...f, responsible_person: e.target.value }))}
-                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 focus:border-amber-500/40" />
+                className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 focus:border-amber-500/40" />
             </div>
           </div>
           <div>
             <label className="text-xs text-[#6e6e73] block mb-1">{t('zt.description')}</label>
             <textarea value={form.description ?? ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30 resize-none" rows={2} />
+              className="w-full border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 resize-none" rows={2} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <select value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value as AccessRequest['priority'] }))}
-              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30">
+              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30">
               <option value="high">{t('zt.highPrio')}</option>
               <option value="normal">{t('zt.normal')}</option>
               <option value="low">{t('zt.low')}</option>
             </select>
             <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as AccessRequest['status'] }))}
-              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#E09B37]/30">
+              className="border border-white/[0.10] bg-black/[0.03] text-[#1d1d1f] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30">
               <option value="open">{t('zt.statusOpen')}</option>
               <option value="requested">{t('zt.statusRequested')}</option>
             </select>
@@ -895,7 +895,7 @@ function ZugaengeTab() {
           <div className="flex justify-end gap-2">
             <button onClick={() => setShowAdd(false)} className="px-4 py-1.5 text-xs font-semibold text-[#6e6e73] rounded-xl hover:bg-black/[0.04]">{t('zt.cancel')}</button>
             <button onClick={handleSave} disabled={saving || !form.tool_or_service}
-              className="px-4 py-1.5 text-xs font-semibold bg-[#E09B37] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
+              className="px-4 py-1.5 text-xs font-semibold bg-[#0F766E] text-[#1d1d1f] rounded-xl hover:bg-[#c8832a] disabled:opacity-50">
               {saving ? '…' : t('zt.save')}
             </button>
           </div>
@@ -1066,7 +1066,7 @@ export default function WorkspaceView() {
           <div className="flex gap-1 bg-black/[0.03] border border-black/[0.06] p-1 rounded-2xl w-fit flex-wrap">
             {visibleTabs.map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id as WorkspaceTab)}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === tab.id ? 'bg-[#E09B37]/12 text-[#E09B37] border border-[#E09B37]/25 shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-xl transition-all ${currentTab === tab.id ? 'bg-[#0F766E]/12 text-[#0F766E] border border-[#0F766E]/25 shadow-sm' : 'text-[#6e6e73] hover:text-[#1d1d1f]'}`}>
                 <span>{tab.emoji}</span>{TAB_LABELS[tab.id]}
               </button>
             ))}

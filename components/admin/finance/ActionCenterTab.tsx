@@ -76,7 +76,7 @@ const SECTION_DEFS: SectionDef[] = [
     key: 'month',
     label: 'Diesen Monat',
     emptyMsg: 'Nichts diesen Monat fällig.',
-    dotColor: '#334FB4',
+    dotColor: '#F97066',
   },
   {
     key: 'pending',

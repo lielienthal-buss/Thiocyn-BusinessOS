@@ -44,7 +44,7 @@ interface Props {
 const STATUSES: { id: TicketStatus; label: string; color: string }[] = [
   { id: 'open',        label: 'Open',        color: 'bg-red-500/15 text-red-400 border-red-500/20' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-blue-500/15 text-blue-400 border-blue-500/20' },
-  { id: 'waiting',     label: 'Waiting',     color: 'bg-[#E09B37]/15 text-[#E09B37] border-[#E09B37]/25' },
+  { id: 'waiting',     label: 'Waiting',     color: 'bg-[#0F766E]/15 text-[#0F766E] border-[#0F766E]/25' },
   { id: 'resolved',    label: 'Resolved',    color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20' },
   { id: 'closed',      label: 'Closed',      color: 'bg-slate-500/15 text-[#6e6e73] border-slate-500/20' },
 ];
@@ -202,7 +202,7 @@ function InlineSelect<T extends string>({
                 key={o.id}
                 onClick={() => { onSave(o.id); setOpen(false); }}
                 className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
-                  value === o.id ? 'bg-[#E09B37]/12 text-[#E09B37] font-bold' : 'text-[#1d1d1f] hover:bg-black/[0.03]'
+                  value === o.id ? 'bg-[#0F766E]/12 text-[#0F766E] font-bold' : 'text-[#1d1d1f] hover:bg-black/[0.03]'
                 }`}
               >
                 {o.label}
@@ -259,7 +259,7 @@ function QuickAddRow({ onAdd }: { onAdd: (subject: string) => void }) {
       {value.trim() && (
         <button
           onClick={submit}
-          className="text-[10px] font-bold text-[#E09B37] bg-[#E09B37]/12 border border-[#E09B37]/25 rounded px-2 py-0.5 hover:bg-amber-500/20 transition-colors"
+          className="text-[10px] font-bold text-[#0F766E] bg-[#0F766E]/12 border border-[#0F766E]/25 rounded px-2 py-0.5 hover:bg-amber-500/20 transition-colors"
         >
           Add
         </button>
@@ -663,7 +663,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
         {[
           { label: 'Open', value: stats.open, color: 'text-red-400 bg-red-500/10 border-red-500/20', filter: 'open' as const },
           { label: 'In Progress', value: stats.inProgress, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', filter: 'in_progress' as const },
-          { label: 'Waiting', value: stats.waiting, color: 'text-[#E09B37] bg-[#E09B37]/12 border-[#E09B37]/25', filter: 'waiting' as const },
+          { label: 'Waiting', value: stats.waiting, color: 'text-[#0F766E] bg-[#0F766E]/12 border-[#0F766E]/25', filter: 'waiting' as const },
           { label: 'Resolved', value: stats.resolved, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', filter: 'resolved' as const },
         ].map(s => (
           <button
@@ -694,7 +694,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             key={t.id}
             onClick={() => setTab(t.id)}
             className={`px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 -mb-px ${
-              tab === t.id ? 'border-amber-500 text-[#E09B37]' : 'border-transparent text-[#6e6e73] hover:text-[#1d1d1f]'
+              tab === t.id ? 'border-amber-500 text-[#0F766E]' : 'border-transparent text-[#6e6e73] hover:text-[#1d1d1f]'
             }`}
           >
             {t.label}
@@ -733,7 +733,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
             {/* Bulk actions */}
             {selected.size > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <span className="text-[10px] font-bold text-[#E09B37]">{selected.size} selected</span>
+                <span className="text-[10px] font-bold text-[#0F766E]">{selected.size} selected</span>
                 <select
                   defaultValue=""
                   onChange={e => {
@@ -786,7 +786,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                     className="text-[10px] font-black uppercase tracking-wider text-[#6e6e73] hover:text-[#1d1d1f] text-left transition-colors flex items-center gap-1"
                   >
                     {col.label}
-                    {sortKey === col.key && <span className="text-[#E09B37]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
+                    {sortKey === col.key && <span className="text-[#0F766E]">{sortDir === 'asc' ? '↑' : '↓'}</span>}
                   </button>
                 ))}
                 <div />
@@ -845,7 +845,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                         options={BRANDS}
                         onSave={v => updateTicket(ticket.id, { brand_id: v })}
                         renderValue={v => (
-                          <span className="text-[10px] font-bold text-[#E09B37] bg-[#E09B37]/12 border border-[#E09B37]/25 rounded-full px-1.5 py-0.5 uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#0F766E] bg-[#0F766E]/12 border border-[#0F766E]/25 rounded-full px-1.5 py-0.5 uppercase tracking-wide">
                             {BRAND_LABELS[v] ?? v}
                           </span>
                         )}
@@ -907,7 +907,7 @@ const CustomerSupportView: React.FC<Props> = ({ isAdmin }) => {
                     <div className="flex justify-end">
                       <button
                         onClick={() => setSelectedId(ticket.id)}
-                        className="opacity-0 group-hover:opacity-100 text-[#6e6e73] hover:text-[#E09B37] text-xs transition-all"
+                        className="opacity-0 group-hover:opacity-100 text-[#6e6e73] hover:text-[#0F766E] text-xs transition-all"
                         title="Open details"
                       >
                         →
