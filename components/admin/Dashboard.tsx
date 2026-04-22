@@ -1,41 +1,24 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import SettingsView from './SettingsView';
-import ApplicationListView from './ApplicationListView';
-import ApplicantDetailView from './ApplicantDetailView';
-import InsightsView from './InsightsView';
-import EvalDashboardView from './EvalDashboardView';
-import EmailTemplateManager from './EmailTemplateManager';
-import KanbanBoard from './KanbanBoard'; // Import the Kanban board
-import ProjectAreaManager from './ProjectAreaManager';
-import TaskManager from './TaskManager';
-import AcademyView from './AcademyView';
-import CustomerSupportView from './CustomerSupportView';
+// Shell components — always loaded (part of every Dashboard render)
+import HomeView from './HomeView';
 import AgentChatDrawer from './AgentChatDrawer';
 import NotificationBell from './NotificationBell';
-import AccountView from './AccountView';
-import TeamManagementView from './TeamManagementView';
-import TeamTasksView from './TeamTasksView';
-import PerformanceView from './PerformanceView';
-import HomeView from './HomeView';
-import FinanceView from './FinanceView';
-import ToolStackView from './ToolStackView';
-import EcommerceView from './EcommerceView';
-import AnalyticsView from './AnalyticsView';
-import WorkspaceView from './WorkspaceView';
-import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '@/lib/agentQuickActions';
-import { getApplicant } from '@/lib/actions'; // Import getApplicant
-import type { Application } from '@/types'; // Import Application
+import OnboardingTour from './OnboardingTour';
+import BrandSwitcher from '@/components/ui/BrandSwitcher';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Spinner from '@/components/ui/Spinner';
+// Data + types
+import { QUICK_ACTIONS, DEFAULT_QUICK_ACTIONS } from '@/lib/agentQuickActions';
+import { getApplicant } from '@/lib/actions';
+import type { Application } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import type { Session } from '@supabase/supabase-js';
 import { useLang } from '@/lib/i18n';
 import { translations } from '@/lib/translations';
 import { LanguageProvider, useLang as useWorkspaceLang } from '@/lib/language';
-import BrandSwitcher from '@/components/ui/BrandSwitcher';
-import ErrorBoundary from '@/components/ui/ErrorBoundary';
-import OnboardingTour from './OnboardingTour';
-// Lazy import with auto-reload on chunk load failure (stale deploy)
+
+// Lazy-load with auto-reload on stale-chunk errors
 function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
   return lazy(() =>
     factory().catch((err) => {
@@ -48,6 +31,27 @@ function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ defaul
   );
 }
 
+// Tab-specific views — lazy, only loaded when tab opens
+const SettingsView = lazyLoad(() => import('./SettingsView'));
+const ApplicationListView = lazyLoad(() => import('./ApplicationListView'));
+const ApplicantDetailView = lazyLoad(() => import('./ApplicantDetailView'));
+const InsightsView = lazyLoad(() => import('./InsightsView'));
+const EvalDashboardView = lazyLoad(() => import('./EvalDashboardView'));
+const EmailTemplateManager = lazyLoad(() => import('./EmailTemplateManager'));
+const KanbanBoard = lazyLoad(() => import('./KanbanBoard'));
+const ProjectAreaManager = lazyLoad(() => import('./ProjectAreaManager'));
+const TaskManager = lazyLoad(() => import('./TaskManager'));
+const AcademyView = lazyLoad(() => import('./AcademyView'));
+const CustomerSupportView = lazyLoad(() => import('./CustomerSupportView'));
+const AccountView = lazyLoad(() => import('./AccountView'));
+const TeamManagementView = lazyLoad(() => import('./TeamManagementView'));
+const TeamTasksView = lazyLoad(() => import('./TeamTasksView'));
+const PerformanceView = lazyLoad(() => import('./PerformanceView'));
+const FinanceView = lazyLoad(() => import('./FinanceView'));
+const ToolStackView = lazyLoad(() => import('./ToolStackView'));
+const EcommerceView = lazyLoad(() => import('./EcommerceView'));
+const AnalyticsView = lazyLoad(() => import('./AnalyticsView'));
+const WorkspaceView = lazyLoad(() => import('./WorkspaceView'));
 const DailyBriefingView = lazyLoad(() => import('./DailyBriefingView'));
 const ISOComplianceView = lazyLoad(() => import('./ISOComplianceView'));
 const CreatorView = lazyLoad(() => import('./CreatorView'));
@@ -596,7 +600,17 @@ const Dashboard: React.FC = () => {
         borderBottom: '1px solid rgba(0,0,0,0.06)',
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
       }}>
-        <div>
+        <div className="flex items-center gap-3">
+          <svg viewBox="0 0 44 44" className="h-8 w-8 shrink-0" xmlns="http://www.w3.org/2000/svg" aria-label="HSB">
+            <defs>
+              <linearGradient id="hsbDashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="var(--brand-primary, #0F766E)" />
+                <stop offset="100%" stopColor="#14B8A6" />
+              </linearGradient>
+            </defs>
+            <rect width="44" height="44" rx="10" fill="url(#hsbDashGrad)" />
+            <text x="22" y="30" textAnchor="middle" fontFamily="Inter, sans-serif" fontWeight="800" fontSize="16" fill="#FFFFFF" letterSpacing="-0.5">HSB</text>
+          </svg>
           <h1 className="text-lg md:text-2xl font-black tracking-tighter" style={{ color: '#1d1d1f' }}>
             {companyName} <span className="hidden md:inline font-medium" style={{ color: '#6e6e73' }}>— {t.dashboard.title}</span>
           </h1>
