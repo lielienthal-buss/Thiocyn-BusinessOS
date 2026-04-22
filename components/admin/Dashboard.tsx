@@ -73,12 +73,12 @@ type Tab =
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
   | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
 type Section = 'home' | 'marketing' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
-type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'viewer';
+type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'fellow' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
 
-// Role hierarchy: owner > admin > staff > intern_lead > viewer
-const ROLE_LEVEL: Record<UserRole, number> = { owner: 4, admin: 3, staff: 2, intern_lead: 1, viewer: 0 };
+// Role hierarchy: owner > admin > staff > intern_lead > fellow > viewer
+const ROLE_LEVEL: Record<UserRole, number> = { owner: 4, admin: 3, staff: 2, intern_lead: 1, fellow: 0.5, viewer: 0 };
 const hasRole = (userRole: string, minRole: UserRole) =>
   (ROLE_LEVEL[userRole as UserRole] ?? 0) >= ROLE_LEVEL[minRole];
 
@@ -100,6 +100,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'marketing',
     label: 'Marketing',
     emoji: '📣',
+    minRole: 'intern_lead',
     tabs: [
       { id: 'marketingCockpit', label: 'Cockpit' },
       { id: 'marketingCampaigns', label: 'Campaigns' },
@@ -143,6 +144,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'customerSupport',
     label: 'Customer Support',
     emoji: '💬',
+    minRole: 'intern_lead',
     tabs: [
       { id: 'customerSupportOverview', label: 'Overview' },
     ],
@@ -185,6 +187,59 @@ function LangToggle() {
     </button>
   );
 }
+
+// WIP-Banner: shown to non-admin roles on first sessions after rollout (2026-04-22)
+// Dismissible per browser via localStorage.
+const WipBanner: React.FC<{ effectiveRole: UserRole; lang: 'de' | 'en' }> = ({ effectiveRole, lang }) => {
+  const STORAGE_KEY = 'hsb-wip-banner-dismissed-2026-04-22';
+  const [dismissed, setDismissed] = useState(() => typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === '1');
+  if (effectiveRole === 'owner' || effectiveRole === 'admin') return null;
+  if (dismissed) return null;
+  const copy = lang === 'de'
+    ? {
+        title: 'Willkommen im HSB Business OS',
+        body: 'Einige Live-Integrationen (Meta Ads, Shopify, PayPal) sind noch im Setup — wenn Zahlen stale wirken, liegt\'s meistens am Sync, nicht an dir. Deine Academy, Aufgaben und dein Profil sind vollständig funktional.',
+        dismiss: 'Verstanden',
+      }
+    : {
+        title: 'Welcome to HSB Business OS',
+        body: 'A few live integrations (Meta Ads, Shopify, PayPal) are still connecting — if numbers look stale, it\'s usually the sync catching up, not you. Your Academy, tasks and profile are fully functional.',
+        dismiss: 'Got it',
+      };
+  return (
+    <div style={{
+      background: 'linear-gradient(90deg, rgba(15,118,110,0.06), rgba(249,112,102,0.04))',
+      borderBottom: '1px solid rgba(15,118,110,0.15)',
+      padding: '10px 24px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 16,
+      fontSize: 13,
+    }}>
+      <div style={{ color: '#0F766E', fontWeight: 600, letterSpacing: '0.02em' }}>
+        {copy.title}
+        <span style={{ color: '#475569', fontWeight: 400, marginLeft: 10 }}>— {copy.body}</span>
+      </div>
+      <button
+        onClick={() => { localStorage.setItem(STORAGE_KEY, '1'); setDismissed(true); }}
+        style={{
+          padding: '4px 12px',
+          borderRadius: 999,
+          background: '#0F766E',
+          color: 'white',
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          border: 'none',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+      >{copy.dismiss}</button>
+    </div>
+  );
+};
 
 const Dashboard: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -615,6 +670,9 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </header>
+
+      {/* WIP Banner — shown to non-admin users, dismissible per-session */}
+      <WipBanner effectiveRole={effectiveRole} lang={lang} />
 
       {/* Top Section Nav — desktop only */}
       <nav className="relative z-10 hidden md:flex items-center gap-1 border-b border-black/[0.06] px-4 md:px-8 overflow-x-auto" style={{ background: 'rgba(255,255,255,0.5)' }}>
