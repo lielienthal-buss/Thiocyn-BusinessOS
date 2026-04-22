@@ -1,0 +1,102 @@
+import React from 'react';
+import CountUp from '@/components/landing/effects/CountUp';
+import BlurText from '@/components/landing/effects/BlurText';
+import { useLocale } from '@/lib/landing/i18n';
+
+const METRICS = {
+  en: [
+    { value: 6, suffix: '', kicker: '/01', label: 'Brands under one house', accent: 'teal' },
+    { value: 158000, suffix: '+', kicker: '/02', label: 'Followers across the portfolio', accent: 'coral', separator: ',' },
+    { value: 11, suffix: '', kicker: '/03', label: 'Fellows in Founders University', accent: 'indigo' },
+    { value: 2021, suffix: '', kicker: '/04', label: 'Founded in Hamburg', accent: 'amber' },
+  ],
+  de: [
+    { value: 6, suffix: '', kicker: '/01', label: 'Marken unter einem Haus', accent: 'teal' },
+    { value: 158000, suffix: '+', kicker: '/02', label: 'Follower im Portfolio', accent: 'coral', separator: '.' },
+    { value: 11, suffix: '', kicker: '/03', label: 'Fellows in Founders University', accent: 'indigo' },
+    { value: 2021, suffix: '', kicker: '/04', label: 'Gegründet in Hamburg', accent: 'amber' },
+  ],
+} as const;
+
+const ACCENT_RGB: Record<string, string> = {
+  teal:   '15, 189, 189',
+  coral:  '242, 112, 98',
+  indigo: '99, 102, 241',
+  amber:  '245, 158, 11',
+};
+
+export function MetricsSection() {
+  const locale = useLocale();
+  const metrics = METRICS[locale] ?? METRICS.en;
+
+  return (
+    <section className="relative overflow-hidden border-t border-border/40 py-32 md:py-48">
+      <div className="mx-auto max-w-7xl px-6 md:px-12">
+        <div className="mb-24 flex items-end justify-between">
+          <BlurText
+            text="BY THE NUMBERS"
+            className="justify-start font-mono text-xs font-medium uppercase tracking-[0.4em] text-muted-foreground"
+            animateBy="words"
+            direction="top"
+            delay={50}
+          />
+          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60 md:text-xs">
+            {locale === 'de' ? 'Stand 2026' : 'As of 2026'}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-12 gap-y-20 md:gap-y-32">
+          <MetricBlock m={metrics[0]} offset="md:col-span-8" />
+          <MetricBlock m={metrics[1]} offset="md:col-span-10 md:col-start-3" align="right" />
+          <MetricBlock m={metrics[2]} offset="md:col-span-7 md:col-start-2" />
+          <MetricBlock m={metrics[3]} offset="md:col-span-8 md:col-start-5" align="right" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+interface MetricBlockProps {
+  m: {
+    value: number;
+    suffix: string;
+    kicker: string;
+    label: string;
+    accent: string;
+    separator?: string;
+  };
+  offset: string;
+  align?: 'left' | 'right';
+}
+
+function MetricBlock({ m, offset, align = 'left' }: MetricBlockProps) {
+  const rgb = ACCENT_RGB[m.accent] ?? ACCENT_RGB.teal;
+  return (
+    <div className={`col-span-12 ${offset} ${align === 'right' ? 'md:text-right' : ''}`}>
+      <div className={`flex items-baseline gap-4 ${align === 'right' ? 'justify-end' : ''}`}>
+        <span
+          className="font-mono text-xs font-medium uppercase tracking-[0.3em]"
+          style={{ color: `rgb(${rgb})` }}
+        >
+          {m.kicker}
+        </span>
+      </div>
+      <div
+        className="metric-number mt-4 block font-sans font-black tracking-[-0.04em] tabular-nums"
+        style={{ color: `rgb(${rgb})` }}
+      >
+        <CountUp to={m.value} duration={2.2} separator={m.separator ?? ''} />
+        <span>{m.suffix}</span>
+      </div>
+      <p
+        className={`mt-6 max-w-md font-sans text-base leading-relaxed text-muted-foreground md:text-lg ${
+          align === 'right' ? 'md:ml-auto' : ''
+        }`}
+      >
+        {m.label}
+      </p>
+    </div>
+  );
+}
+
+export default MetricsSection;

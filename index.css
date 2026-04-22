@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -889,3 +890,80 @@ body {
 .lt-slideover-panel .lt-text-danger { color: #dc2626; }
 .lt-slideover-panel .lt-text-secondary { color: #515154; }
 .lt-slideover-panel .lt-tabular { font-variant-numeric: tabular-nums; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HSB Landing — Imported from HSB-Web (2026-04-22)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* shadcn-compatible tokens (HSB landing components reference these) */
+:root {
+  --background: oklch(0.14 0.006 240);
+  --foreground: oklch(0.97 0.003 240);
+  --card: oklch(0.17 0.008 240);
+  --card-foreground: oklch(0.97 0.003 240);
+  --muted: oklch(0.22 0.010 240);
+  --muted-foreground: oklch(0.66 0.012 240);
+  --border: oklch(0.25 0 0);
+  --hsb-teal-rgb: 15, 189, 189;
+  --hsb-coral-rgb: 242, 112, 98;
+}
+
+/* Tailwind utility shims so HSB components find these classes */
+.bg-background { background-color: var(--background); }
+.text-background { color: var(--background); }
+.bg-foreground { background-color: var(--foreground); }
+.text-foreground { color: var(--foreground); }
+.bg-card { background-color: var(--card); }
+.text-card-foreground { color: var(--card-foreground); }
+.bg-muted { background-color: var(--muted); }
+.text-muted { color: var(--muted); }
+.text-muted-foreground { color: var(--muted-foreground); }
+.border-border { border-color: var(--border); }
+
+/* Brand color shorthand — used by HSB sections directly */
+.text-coral { color: rgb(var(--hsb-coral-rgb)); }
+.text-teal { color: rgb(var(--hsb-teal-rgb)); }
+.bg-coral { background-color: rgb(var(--hsb-coral-rgb)); }
+.bg-teal { background-color: rgb(var(--hsb-teal-rgb)); }
+.border-teal\/40 { border-color: rgba(var(--hsb-teal-rgb), 0.4); }
+.bg-teal\/10 { background-color: rgba(var(--hsb-teal-rgb), 0.1); }
+.bg-teal\/06, .bg-teal\/\[0\.06\] { background-color: rgba(var(--hsb-teal-rgb), 0.06); }
+.bg-coral\/05, .bg-coral\/\[0\.05\] { background-color: rgba(var(--hsb-coral-rgb), 0.05); }
+.border-border\/40 { border-color: rgba(255, 255, 255, 0.16); }
+.border-border\/60 { border-color: rgba(255, 255, 255, 0.24); }
+.border-border\/20 { border-color: rgba(255, 255, 255, 0.08); }
+.bg-background\/80 { background-color: rgba(20, 20, 28, 0.8); }
+.bg-background\/0 { background-color: rgba(20, 20, 28, 0); }
+.bg-background\/10 { background-color: rgba(20, 20, 28, 0.1); }
+.bg-card\/30 { background-color: rgba(28, 28, 38, 0.3); }
+.bg-card\/40 { background-color: rgba(28, 28, 38, 0.4); }
+
+.font-serif { font-family: 'Instrument Serif', Georgia, serif; }
+
+/* HSB Typography classes */
+.hero-type {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.2rem, 0.5vw, 0.8rem);
+}
+.hero-word {
+  font-size: clamp(3.5rem, 13vw, 16rem);
+}
+.hero-of-row {
+  padding-left: clamp(1.5rem, 8vw, 10rem);
+  line-height: 0.9;
+  margin-top: clamp(-0.8rem, -1.5vw, -0.2rem);
+  margin-bottom: clamp(-0.6rem, -1.2vw, -0.1rem);
+}
+.hero-of {
+  font-size: clamp(2.5rem, 9vw, 11rem);
+  line-height: 1;
+}
+.mission-line { font-size: clamp(1.75rem, 4.2vw, 4.5rem); }
+.path-number { font-size: clamp(8rem, 22vw, 28rem); }
+.path-title { font-size: clamp(2.5rem, 6vw, 6rem); }
+.path-hook { font-size: clamp(1rem, 1.4vw, 1.375rem); }
+.brand-name { font-size: clamp(3.5rem, 9vw, 10rem); }
+.brand-tagline { font-size: clamp(1.5rem, 2.8vw, 2.75rem); line-height: 1.2; }
+.metric-number { font-size: clamp(4rem, 10vw, 12rem); line-height: 0.9; }
+.pythia-heading { font-size: clamp(2.5rem, 7vw, 7.5rem); }

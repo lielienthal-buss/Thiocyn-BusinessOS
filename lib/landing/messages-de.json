@@ -1,0 +1,60 @@
+{
+  "intro": {
+    "reveal": "House of Sustainable Brands",
+    "welcome": "Willkommen · Welcome",
+    "prompt": "Wähle deine Sprache, um zu starten",
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "nav": {
+    "portfolio": "Portfolio",
+    "about": "Über uns",
+    "foundersUniversity": "Founders University",
+    "ambassadors": "Ambassador Programm",
+    "founders": "Für Gründer",
+    "login": "App Login"
+  },
+  "hero": {
+    "eyebrow": "HOLDING · HAMBURG",
+    "headline1": "House of",
+    "headline2": "Sustainable Brands",
+    "tagline1": "Eine neue Art von Marken-Haus.",
+    "tagline2": "Sechs Marken. Ein Team. Eine Erzählung."
+  },
+  "mission": {
+    "block1": "Die meisten Konsummarken werden in Silos gebaut. Marketing hier, Ops dort, Daten nirgendwo.",
+    "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Geteilte Intelligenz, geteilte Ops, geteilte Geschichten.",
+    "block3": "HoSB ist dieses Haus. Sechs Marken, ein operatives Team, ein gemeinsames Playbook."
+  },
+  "paths": {
+    "title": "Wohin möchtest du?",
+    "foundersUniversity": {
+      "title": "Founders University",
+      "hook": "Baue Marken von innen auf. 3–6 Monate Fellowship.",
+      "cta": "Öffnen"
+    },
+    "ambassadors": {
+      "title": "Ambassador Programm",
+      "hook": "Nachhaltige Marken, gute Samples, faire Commissions.",
+      "cta": "Öffnen"
+    },
+    "founders": {
+      "title": "Marke verkaufen",
+      "hook": "Ein Zuhause für das, was du gebaut hast?",
+      "cta": "Öffnen"
+    }
+  },
+  "stub": {
+    "comingSoon": "Bald verfügbar",
+    "description": "Dieser Funnel wird gerade gebaut. Bewerbungsformular kommt mit Phase B.",
+    "back": "Zurück zur Übersicht"
+  },
+  "footer": {
+    "tagline": "House of Sustainable Brands",
+    "explore": "Entdecken",
+    "company": "Unternehmen",
+    "contact": "Kontakt",
+    "operated": "Betrieben von Hart Limes GmbH · Hamburg",
+    "copyright": "Alle Rechte vorbehalten."
+  }
+}

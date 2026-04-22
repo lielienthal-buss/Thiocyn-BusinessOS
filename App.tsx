@@ -23,6 +23,11 @@ const Dashboard = React.lazy(() => import('@/components/admin/Dashboard'));
 const AdminLogin = React.lazy(() => import('@/components/admin/AdminLogin'));
 const ForgotPassword = React.lazy(() => import('@/components/admin/ForgotPassword'));
 const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
+const HSBLanding = React.lazy(() => import('@/components/landing/HSBLanding'));
+const AboutPage = React.lazy(() => import('@/components/landing/pages/AboutPage'));
+const AmbassadorsPage = React.lazy(() => import('@/components/landing/pages/AmbassadorsPage'));
+const FoundersPage = React.lazy(() => import('@/components/landing/pages/FoundersPage'));
+const FoundersUniversityPage = React.lazy(() => import('@/components/landing/pages/FoundersUniversityPage'));
 const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
 const ApplicationSlidePanel = React.lazy(() => import('@/components/public/ApplicationSlidePanel'));
 const TaskSubmissionPage = React.lazy(() => import('@/components/public/TaskSubmissionPage'));
@@ -104,12 +109,37 @@ function CursorGlow() {
 const App: React.FC = () => {
   const [applyPanelOpen, setApplyPanelOpen] = React.useState(false);
   const router = createBrowserRouter([
-    // --- HSB Public Root — replaces former Take A Shot landing ---
+    // --- HSB Public Root — full landing imported from HSB-Web ---
     {
       path: '/',
       element: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <HartLimesLanding />
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <HSBLanding />
+        </React.Suspense>
+      ),
+    },
+    // --- HSB Sub-Pages ---
+    {
+      path: '/about',
+      element: (
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <AboutPage />
+        </React.Suspense>
+      ),
+    },
+    {
+      path: '/founders',
+      element: (
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <FoundersPage />
+        </React.Suspense>
+      ),
+    },
+    {
+      path: '/founders-university',
+      element: (
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <FoundersUniversityPage />
         </React.Suspense>
       ),
     },
@@ -139,12 +169,12 @@ const App: React.FC = () => {
         </React.Suspense>
       ),
     },
-    // --- Brand Ambassador Funnel — alias to HartLimesLanding influencer mode ---
+    // --- Brand Ambassador Funnel — HSB AmbassadorsPage stub ---
     {
       path: '/brand-ambassador',
       element: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <HartLimesLanding forceMode="influencer" onApplyClick={() => setApplyPanelOpen(true)} />
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <AmbassadorsPage />
         </React.Suspense>
       ),
     },

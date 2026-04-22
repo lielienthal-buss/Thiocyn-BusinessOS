@@ -1,0 +1,60 @@
+{
+  "intro": {
+    "reveal": "House of Sustainable Brands",
+    "welcome": "Welcome · Willkommen",
+    "prompt": "Choose your language to begin",
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "nav": {
+    "portfolio": "Portfolio",
+    "about": "About",
+    "foundersUniversity": "Founders University",
+    "ambassadors": "Ambassador Program",
+    "founders": "For Founders",
+    "login": "App Login"
+  },
+  "hero": {
+    "eyebrow": "HOLDING · HAMBURG",
+    "headline1": "House of",
+    "headline2": "Sustainable Brands",
+    "tagline1": "A new kind of brand house.",
+    "tagline2": "Six brands. One team. One set of stories."
+  },
+  "mission": {
+    "block1": "Most consumer brands are built in silos. Marketing here, ops there, data nowhere.",
+    "block2": "We believe the next decade belongs to houses — not brands. Shared intelligence, shared ops, shared stories.",
+    "block3": "HoSB is that house. Six brands, one operating team, one set of playbooks."
+  },
+  "paths": {
+    "title": "Where are you headed?",
+    "foundersUniversity": {
+      "title": "Founders University",
+      "hook": "Build brands from inside. 3–6 month fellowship.",
+      "cta": "Enter"
+    },
+    "ambassadors": {
+      "title": "Ambassador Program",
+      "hook": "Sustainable brands, great samples, fair commissions.",
+      "cta": "Enter"
+    },
+    "founders": {
+      "title": "Sell your Brand",
+      "hook": "Looking for the right home for what you built?",
+      "cta": "Enter"
+    }
+  },
+  "stub": {
+    "comingSoon": "Coming soon",
+    "description": "This funnel is under construction. Application form launching with Phase B.",
+    "back": "Back to overview"
+  },
+  "footer": {
+    "tagline": "House of Sustainable Brands",
+    "explore": "Explore",
+    "company": "Company",
+    "contact": "Contact",
+    "operated": "Operated by Hart Limes GmbH · Hamburg",
+    "copyright": "All rights reserved."
+  }
+}
