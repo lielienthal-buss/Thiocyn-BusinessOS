@@ -19,7 +19,7 @@ import {
   IconCash,
   IconDocument,
 } from '@/components/ui/light';
-import { ShinyText, MetallicShine, AnimatedCounter, GradientOrbs } from '@/components/ui/effects';
+import { AnimatedCounter } from '@/components/ui/effects';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -168,8 +168,6 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
 
   return (
     <Section className="space-y-6">
-      <GradientOrbs intensity="subtle" />
-
       {/* ── Executive Summary ── */}
       <ExecutiveSummary role={userRole} />
 
@@ -177,7 +175,7 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="lt-text-h1" style={{ fontSize: '1.5rem' }}>
-            <ShinyText color="teal" speed="slow">Command Center</ShinyText>
+            Command Center
           </h1>
           <p className="lt-text-meta mt-1">
             {new Date().toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
@@ -223,7 +221,6 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
       </div>
 
       {/* ── Brand Performance Grid ── */}
-      <MetallicShine color="teal" intensity={0.1}>
       <Card padding="none">
         <div className="px-5 py-3.5 lt-header-divider">
           <span className="lt-text-label">Brand Performance</span>
@@ -269,7 +266,6 @@ export default function HomeView({ userRole = 'viewer' }: HomeViewProps) {
           })}
         </div>
       </Card>
-      </MetallicShine>
 
       {/* ── 3-Column Detail Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

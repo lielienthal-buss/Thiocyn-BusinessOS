@@ -1,22 +1,15 @@
 import React from 'react';
 import CountUp from '@/components/landing/effects/CountUp';
 import BlurText from '@/components/landing/effects/BlurText';
-import { useLocale } from '@/lib/landing/i18n';
+import { useLocale, useTranslations } from '@/lib/landing/i18n';
 
-const METRICS = {
-  en: [
-    { value: 6, suffix: '', kicker: '/01', label: 'Brands under one house', accent: 'teal' },
-    { value: 158000, suffix: '+', kicker: '/02', label: 'Followers across the portfolio', accent: 'coral', separator: ',' },
-    { value: 11, suffix: '', kicker: '/03', label: 'Fellows in Founders University', accent: 'indigo' },
-    { value: 2021, suffix: '', kicker: '/04', label: 'Founded in Hamburg', accent: 'amber' },
-  ],
-  de: [
-    { value: 6, suffix: '', kicker: '/01', label: 'Marken unter einem Haus', accent: 'teal' },
-    { value: 158000, suffix: '+', kicker: '/02', label: 'Follower im Portfolio', accent: 'coral', separator: '.' },
-    { value: 11, suffix: '', kicker: '/03', label: 'Fellows in Founders University', accent: 'indigo' },
-    { value: 2021, suffix: '', kicker: '/04', label: 'Gegründet in Hamburg', accent: 'amber' },
-  ],
-} as const;
+const ACCENTS = ['teal', 'coral', 'indigo', 'amber'] as const;
+const VALUES = [
+  { value: 6, suffix: '', kicker: '/01', separator: '' },
+  { value: 158000, suffix: '+', kicker: '/02', separator: '.' },
+  { value: 11, suffix: '', kicker: '/03', separator: '' },
+  { value: 2021, suffix: '', kicker: '/04', separator: '' },
+] as const;
 
 const ACCENT_RGB: Record<string, string> = {
   teal:   '15, 189, 189',
@@ -27,21 +20,27 @@ const ACCENT_RGB: Record<string, string> = {
 
 export function MetricsSection() {
   const locale = useLocale();
-  const metrics = METRICS[locale] ?? METRICS.en;
+  const t = useTranslations('metrics');
+  const metrics = VALUES.map((v, i) => ({
+    ...v,
+    separator: locale === 'de' ? v.separator : (v.separator ? ',' : ''),
+    accent: ACCENTS[i],
+    label: t(`label${i}`),
+  }));
 
   return (
     <section className="relative overflow-hidden border-t border-border/40 py-32 md:py-48">
       <div className="mx-auto max-w-7xl px-6 md:px-12">
         <div className="mb-24 flex items-end justify-between">
           <BlurText
-            text="BY THE NUMBERS"
+            text={t('label')}
             className="justify-start font-mono text-xs font-medium uppercase tracking-[0.4em] text-muted-foreground"
             animateBy="words"
             direction="top"
             delay={50}
           />
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60 md:text-xs">
-            {locale === 'de' ? 'Stand 2026' : 'As of 2026'}
+            {t('subtitle')}
           </p>
         </div>
 

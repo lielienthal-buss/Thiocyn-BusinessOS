@@ -1,40 +1,22 @@
 import React from 'react';
 import BlurText from '@/components/landing/effects/BlurText';
 import SplitText from '@/components/landing/effects/SplitText';
-import { useLocale } from '@/lib/landing/i18n';
-
-const CONTENT = {
-  en: {
-    label: 'PYTHIA',
-    kicker: 'Named after the Oracle of Delphi.',
-    heading: 'An AI that sees brands before the market does.',
-    paragraph:
-      'Pythia reads what the market is too slow to notice. Signal across consumer data, creator reach, and retention — unified, surfaced, actionable.',
-    capability1Tag: 'ACQUISITION',
-    capability1: 'Pattern-match brand health against our playbook. Surface what the market has mispriced.',
-    capability2Tag: 'OPERATIONS',
-    capability2: 'Identify the operational lever that moves each brand. Learn across the house.',
-    capability3Tag: 'GROWTH',
-    capability3: 'Attribute signal to outcome. No dashboard theater — one reading, every morning.',
-  },
-  de: {
-    label: 'PYTHIA',
-    kicker: 'Benannt nach dem Orakel von Delphi.',
-    heading: 'Eine KI, die Marken vor dem Markt sieht.',
-    paragraph:
-      'Pythia liest, was der Markt zu langsam bemerkt. Signal über Konsumentendaten, Creator-Reach und Retention — vereint, sichtbar gemacht, handlungsfähig.',
-    capability1Tag: 'AKQUISE',
-    capability1: 'Marken-Gesundheit gegen unser Playbook gematched. Was der Markt falsch bewertet, wird sichtbar.',
-    capability2Tag: 'OPERATIONS',
-    capability2: 'Den operativen Hebel pro Marke erkennen. Lernen über das ganze Haus hinweg.',
-    capability3Tag: 'WACHSTUM',
-    capability3: 'Signale auf Ergebnis zurechnen. Kein Dashboard-Theater — ein Reading pro Morgen.',
-  },
-} as const;
+import { useTranslations } from '@/lib/landing/i18n';
 
 export function AIFeatureSection() {
-  const locale = useLocale();
-  const c = CONTENT[locale] ?? CONTENT.en;
+  const t = useTranslations('ai');
+  const c = {
+    label: t('label'),
+    kicker: t('kicker'),
+    heading: t('heading'),
+    paragraph: t('paragraph'),
+    capability1Tag: t('capability1Tag'),
+    capability1: t('capability1'),
+    capability2Tag: t('capability2Tag'),
+    capability2: t('capability2'),
+    capability3Tag: t('capability3Tag'),
+    capability3: t('capability3'),
+  };
 
   return (
     <section className="relative overflow-hidden border-t border-border/40 py-32 md:py-48">

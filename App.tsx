@@ -83,14 +83,29 @@ const AppLayout: React.FC = () => {
   );
 };
 
-// --- Cursor Glow ---
+// --- Cursor Glow — Landing only, disabled on /admin/* for workflow clarity ---
 function CursorGlow() {
   const [pos, setPos] = React.useState({ x: -999, y: -999 });
+  const [enabled, setEnabled] = React.useState(() =>
+    typeof window !== 'undefined' ? !window.location.pathname.startsWith('/admin') : true,
+  );
   React.useEffect(() => {
+    const onNav = () => setEnabled(!window.location.pathname.startsWith('/admin'));
+    window.addEventListener('popstate', onNav);
+    // Poll for SPA route changes (router doesn't emit popstate on Link clicks)
+    const interval = setInterval(onNav, 500);
+    return () => {
+      window.removeEventListener('popstate', onNav);
+      clearInterval(interval);
+    };
+  }, []);
+  React.useEffect(() => {
+    if (!enabled) return;
     const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', move);
     return () => window.removeEventListener('mousemove', move);
-  }, []);
+  }, [enabled]);
+  if (!enabled) return null;
   return (
     <div
       className="fixed pointer-events-none z-[9998] w-[650px] h-[650px] rounded-full"

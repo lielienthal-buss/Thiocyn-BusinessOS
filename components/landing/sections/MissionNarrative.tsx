@@ -14,7 +14,7 @@ export function MissionNarrative() {
       <div className="relative mx-auto max-w-7xl px-6 md:px-12">
         <div className="mb-24 flex justify-end">
           <BlurText
-            text="MISSION"
+            text={t('label')}
             className="justify-end font-mono text-xs font-medium uppercase tracking-[0.4em] text-muted-foreground"
             animateBy="words"
             direction="top"

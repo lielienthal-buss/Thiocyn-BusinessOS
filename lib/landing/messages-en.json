@@ -19,34 +19,60 @@
     "headline1": "House of",
     "headline2": "Sustainable Brands",
     "tagline1": "A new kind of brand house.",
-    "tagline2": "Six brands. One team. One set of stories."
+    "tagline2": "Six brands. One team. One story."
   },
   "mission": {
+    "label": "MISSION",
     "block1": "Most consumer brands are built in silos. Marketing here, ops there, data nowhere.",
-    "block2": "We believe the next decade belongs to houses — not brands. Shared intelligence, shared ops, shared stories.",
-    "block3": "HoSB is that house. Six brands, one operating team, one set of playbooks."
+    "block2": "We believe the next decade belongs to houses — not single brands. Shared intelligence, shared ops, shared stories.",
+    "block3": "HoSB is that house. Six brands, one operating team, one shared playbook."
   },
   "paths": {
-    "title": "Where are you headed?",
+    "title": "Where do you want to go?",
     "foundersUniversity": {
       "title": "Founders University",
-      "hook": "Build brands from inside. 3–6 month fellowship.",
-      "cta": "Enter"
+      "hook": "Build brands from the inside. 3–6 month fellowship.",
+      "cta": "Open"
     },
     "ambassadors": {
       "title": "Ambassador Program",
       "hook": "Sustainable brands, great samples, fair commissions.",
-      "cta": "Enter"
+      "cta": "Open"
     },
     "founders": {
-      "title": "Sell your Brand",
-      "hook": "Looking for the right home for what you built?",
-      "cta": "Enter"
+      "title": "Sell your brand",
+      "hook": "A home for what you've built?",
+      "cta": "Open"
     }
+  },
+  "portfolio": {
+    "label": "PORTFOLIO",
+    "subtitle": "Six brands · One house",
+    "visit": "Visit"
+  },
+  "ai": {
+    "label": "PYTHIA",
+    "kicker": "Named after the Oracle of Delphi.",
+    "heading": "An AI that sees brands before the market does.",
+    "paragraph": "Pythia reads what the market is too slow to notice. Signal across consumer data, creator reach, and retention — unified, surfaced, actionable.",
+    "capability1Tag": "ACQUISITION",
+    "capability1": "Pattern-match brand health against our playbook. Surface what the market has mispriced.",
+    "capability2Tag": "OPERATIONS",
+    "capability2": "Identify the operational lever that moves each brand. Learn across the house.",
+    "capability3Tag": "GROWTH",
+    "capability3": "Attribute signal to outcome. No dashboard theater — one reading, every morning."
+  },
+  "metrics": {
+    "label": "BY THE NUMBERS",
+    "subtitle": "As of 2026",
+    "label0": "Brands under one house",
+    "label1": "Followers across the portfolio",
+    "label2": "Fellows in Founders University",
+    "label3": "Founded in Hamburg"
   },
   "stub": {
     "comingSoon": "Coming soon",
-    "description": "This funnel is under construction. Application form launching with Phase B.",
+    "description": "This funnel is being built. Application form ships with Phase B.",
     "back": "Back to overview"
   },
   "footer": {

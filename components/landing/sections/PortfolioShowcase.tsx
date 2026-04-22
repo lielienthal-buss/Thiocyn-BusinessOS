@@ -3,7 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import BlurText from '@/components/landing/effects/BlurText';
 import SplitText from '@/components/landing/effects/SplitText';
 import { BRANDS, type Brand } from '@/lib/landing/brands';
-import { useLocale } from '@/lib/landing/i18n';
+import { useLocale, useTranslations } from '@/lib/landing/i18n';
 
 const ACCENT_RGB: Record<Brand['accent'], string> = {
   teal:    '15, 189, 189',
@@ -16,6 +16,7 @@ const ACCENT_RGB: Record<Brand['accent'], string> = {
 
 export function PortfolioShowcase() {
   const locale = useLocale();
+  const t = useTranslations('portfolio');
 
   return (
     <section
@@ -25,21 +26,21 @@ export function PortfolioShowcase() {
       <div className="mx-auto mb-24 max-w-7xl px-6 md:px-12">
         <div className="flex items-end justify-between">
           <BlurText
-            text="PORTFOLIO"
+            text={t('label')}
             className="justify-start font-mono text-xs font-medium uppercase tracking-[0.4em] text-muted-foreground"
             animateBy="words"
             direction="top"
             delay={50}
           />
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60 md:text-xs">
-            {locale === 'de' ? 'Sechs Marken · Ein Haus' : 'Six brands · One house'}
+            {t('subtitle')}
           </p>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl">
         {BRANDS.map((brand, i) => (
-          <BrandRow key={brand.slug} brand={brand} index={i} locale={locale} />
+          <BrandRow key={brand.slug} brand={brand} index={i} locale={locale} visitLabel={t('visit')} />
         ))}
       </div>
     </section>
@@ -50,9 +51,10 @@ interface BrandRowProps {
   brand: Brand;
   index: number;
   locale: string;
+  visitLabel: string;
 }
 
-function BrandRow({ brand, index, locale }: BrandRowProps) {
+function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
   const rgb = ACCENT_RGB[brand.accent];
   const isRight = index % 2 === 1;
   const tagline = locale === 'de' ? brand.taglineDe : brand.taglineEn;
@@ -139,7 +141,7 @@ function BrandRow({ brand, index, locale }: BrandRowProps) {
               }`}
               style={{ color: `rgb(${rgb})` }}
             >
-              {locale === 'de' ? 'Besuchen' : 'Visit'}
+              {visitLabel}
               <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
             </a>
           )}

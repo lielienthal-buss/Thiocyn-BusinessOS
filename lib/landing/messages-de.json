@@ -22,6 +22,7 @@
     "tagline2": "Sechs Marken. Ein Team. Eine Erzählung."
   },
   "mission": {
+    "label": "MISSION",
     "block1": "Die meisten Konsummarken werden in Silos gebaut. Marketing hier, Ops dort, Daten nirgendwo.",
     "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Geteilte Intelligenz, geteilte Ops, geteilte Geschichten.",
     "block3": "HoSB ist dieses Haus. Sechs Marken, ein operatives Team, ein gemeinsames Playbook."
@@ -43,6 +44,31 @@
       "hook": "Ein Zuhause für das, was du gebaut hast?",
       "cta": "Öffnen"
     }
+  },
+  "portfolio": {
+    "label": "PORTFOLIO",
+    "subtitle": "Sechs Marken · Ein Haus",
+    "visit": "Besuchen"
+  },
+  "ai": {
+    "label": "PYTHIA",
+    "kicker": "Benannt nach dem Orakel von Delphi.",
+    "heading": "Eine KI, die Marken vor dem Markt sieht.",
+    "paragraph": "Pythia liest, was der Markt zu langsam bemerkt. Signal über Konsumentendaten, Creator-Reach und Retention — vereint, sichtbar gemacht, handlungsfähig.",
+    "capability1Tag": "AKQUISE",
+    "capability1": "Marken-Gesundheit gegen unser Playbook gematched. Was der Markt falsch bewertet, wird sichtbar.",
+    "capability2Tag": "OPERATIONS",
+    "capability2": "Den operativen Hebel pro Marke erkennen. Lernen über das ganze Haus hinweg.",
+    "capability3Tag": "WACHSTUM",
+    "capability3": "Signale auf Ergebnis zurechnen. Kein Dashboard-Theater — ein Reading pro Morgen."
+  },
+  "metrics": {
+    "label": "ZAHLEN",
+    "subtitle": "Stand 2026",
+    "label0": "Marken unter einem Haus",
+    "label1": "Follower im Portfolio",
+    "label2": "Fellows in Founders University",
+    "label3": "Gegründet in Hamburg"
   },
   "stub": {
     "comingSoon": "Bald verfügbar",
