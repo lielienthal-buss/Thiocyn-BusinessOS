@@ -100,7 +100,6 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'marketing',
     label: 'Marketing',
     emoji: '📣',
-    minRole: 'intern_lead',
     tabs: [
       { id: 'marketingCockpit', label: 'Cockpit' },
       { id: 'marketingCampaigns', label: 'Campaigns' },
@@ -144,7 +143,6 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'customerSupport',
     label: 'Customer Support',
     emoji: '💬',
-    minRole: 'intern_lead',
     tabs: [
       { id: 'customerSupportOverview', label: 'Overview' },
     ],
