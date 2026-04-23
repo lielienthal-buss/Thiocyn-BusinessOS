@@ -125,36 +125,57 @@ export default function AboutPage() {
           </div>
 
           <div className="relative mx-auto max-w-6xl px-6 md:px-12">
-            <BlurText
-              text={t.eyebrow}
-              className="justify-start font-mono text-xs font-medium uppercase tracking-[0.4em] text-coral"
-              animateBy="words"
-              direction="top"
-              delay={40}
-            />
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-12 md:items-start md:gap-16">
+              <div className="md:col-span-7">
+                <BlurText
+                  text={t.eyebrow}
+                  className="justify-start font-mono text-xs font-medium uppercase tracking-[0.4em] text-coral"
+                  animateBy="words"
+                  direction="top"
+                  delay={40}
+                />
 
-            <h1 className="mt-8 text-pretty font-sans font-black leading-[0.9] tracking-[-0.04em] text-[clamp(3rem,10vw,8rem)]">
-              <SplitText
-                text={t.name}
-                tag="span"
-                className="block"
-                textAlign="left"
-                delay={24}
-                duration={0.95}
-                splitType="chars"
-                from={{ opacity: 0, y: 80 }}
-                to={{ opacity: 1, y: 0 }}
-              />
-            </h1>
+                <h1 className="mt-8 text-pretty font-sans font-black leading-[0.9] tracking-[-0.04em] text-[clamp(3rem,9vw,7rem)]">
+                  <SplitText
+                    text={t.name}
+                    tag="span"
+                    className="block"
+                    textAlign="left"
+                    delay={24}
+                    duration={0.95}
+                    splitType="chars"
+                    from={{ opacity: 0, y: 80 }}
+                    to={{ opacity: 1, y: 0 }}
+                  />
+                </h1>
 
-            <p className="mt-4 max-w-xl font-serif italic text-xl text-muted-foreground md:text-2xl">
-              {t.role}
-            </p>
-            <p className="mt-8 max-w-2xl text-pretty text-lg text-foreground/80 md:text-xl">
-              {t.kicker}
-            </p>
+                <p className="mt-4 font-serif italic text-xl text-muted-foreground md:text-2xl">
+                  {t.role}
+                </p>
+                <p className="mt-8 text-pretty text-lg text-foreground/80 md:text-xl">
+                  {t.kicker}
+                </p>
+              </div>
 
-            <blockquote className="mt-16 max-w-3xl border-l-2 border-coral/60 pl-6 font-serif text-2xl italic leading-relaxed text-foreground/90 md:text-3xl">
+              <div className="md:col-span-5">
+                <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-card/30 shadow-[0_40px_80px_-30px_rgba(15,189,189,0.35)]">
+                  <img
+                    src="/team/peter-hart.jpg"
+                    alt="Peter Hart"
+                    width={1200}
+                    height={1200}
+                    loading="eager"
+                    fetchPriority="high"
+                    className="block h-full w-full object-cover"
+                  />
+                </div>
+                <figcaption className="mt-4 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/70">
+                  Hamburg · 2026
+                </figcaption>
+              </div>
+            </div>
+
+            <blockquote className="mt-20 max-w-4xl border-l-2 border-coral/60 pl-6 font-serif text-2xl italic leading-relaxed text-foreground/90 md:text-3xl">
               {t.quote}
             </blockquote>
           </div>
