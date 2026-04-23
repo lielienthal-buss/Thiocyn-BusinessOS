@@ -1,5 +1,4 @@
-import { useInView, useMotionValue, useSpring } from 'motion/react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface CountUpProps {
   to: number;
@@ -27,25 +26,13 @@ export default function CountUp({
   onEnd
 }: CountUpProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const motionValue = useMotionValue(direction === 'down' ? to : from);
-
-  const damping = 20 + 40 * (1 / duration);
-  const stiffness = 100 * (1 / duration);
-
-  const springValue = useSpring(motionValue, {
-    damping,
-    stiffness
-  });
-
-  const isInView = useInView(ref, { once: true, margin: '0px' });
+  const [inView, setInView] = useState(false);
 
   const getDecimalPlaces = (num: number): number => {
     const str = num.toString();
     if (str.includes('.')) {
       const decimals = str.split('.')[1];
-      if (parseInt(decimals) !== 0) {
-        return decimals.length;
-      }
+      if (parseInt(decimals) !== 0) return decimals.length;
     }
     return 0;
   };
@@ -55,16 +42,13 @@ export default function CountUp({
   const formatValue = useCallback(
     (latest: number) => {
       const hasDecimals = maxDecimals > 0;
-
       const options: Intl.NumberFormatOptions = {
         useGrouping: !!separator,
         minimumFractionDigits: hasDecimals ? maxDecimals : 0,
         maximumFractionDigits: hasDecimals ? maxDecimals : 0
       };
-
-      const formattedNumber = Intl.NumberFormat('en-US', options).format(latest);
-
-      return separator ? formattedNumber.replace(/,/g, separator) : formattedNumber;
+      const formatted = Intl.NumberFormat('en-US', options).format(latest);
+      return separator ? formatted.replace(/,/g, separator) : formatted;
     },
     [maxDecimals, separator]
   );
@@ -76,40 +60,56 @@ export default function CountUp({
   }, [from, to, direction, formatValue]);
 
   useEffect(() => {
-    if (isInView && startWhen) {
-      if (typeof onStart === 'function') {
-        onStart();
-      }
-
-      const timeoutId = setTimeout(() => {
-        motionValue.set(direction === 'down' ? from : to);
-      }, delay * 1000);
-
-      const durationTimeoutId = setTimeout(
-        () => {
-          if (typeof onEnd === 'function') {
-            onEnd();
-          }
-        },
-        delay * 1000 + duration * 1000
-      );
-
-      return () => {
-        clearTimeout(timeoutId);
-        clearTimeout(durationTimeoutId);
-      };
-    }
-  }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = springValue.on('change', (latest: number) => {
-      if (ref.current) {
-        ref.current.textContent = formatValue(latest);
-      }
-    });
+    if (!inView || !startWhen) return;
+    onStart?.();
 
-    return () => unsubscribe();
-  }, [springValue, formatValue]);
+    const startValue = direction === 'down' ? to : from;
+    const endValue = direction === 'down' ? from : to;
+    const durationMs = duration * 1000;
+    const delayMs = delay * 1000;
+    let rafId = 0;
+    let startTs = 0;
+
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+
+    const tick = (ts: number) => {
+      if (!startTs) startTs = ts;
+      const elapsed = ts - startTs;
+      const t = Math.min(elapsed / durationMs, 1);
+      const eased = easeOutQuart(t);
+      const value = startValue + (endValue - startValue) * eased;
+      if (ref.current) ref.current.textContent = formatValue(value);
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        onEnd?.();
+      }
+    };
+
+    const delayTimer = window.setTimeout(() => {
+      rafId = requestAnimationFrame(tick);
+    }, delayMs);
+
+    return () => {
+      window.clearTimeout(delayTimer);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [inView, startWhen, direction, from, to, delay, duration, formatValue, onStart, onEnd]);
 
   return <span className={className} ref={ref} />;
 }

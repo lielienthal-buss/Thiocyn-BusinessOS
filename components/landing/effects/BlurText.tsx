@@ -1,5 +1,4 @@
-import { motion, Transition, Easing } from 'motion/react';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type BlurTextProps = {
   text?: string;
@@ -9,24 +8,8 @@ type BlurTextProps = {
   direction?: 'top' | 'bottom';
   threshold?: number;
   rootMargin?: string;
-  animationFrom?: Record<string, string | number>;
-  animationTo?: Array<Record<string, string | number>>;
-  easing?: Easing | Easing[];
   onAnimationComplete?: () => void;
   stepDuration?: number;
-};
-
-const buildKeyframes = (
-  from: Record<string, string | number>,
-  steps: Array<Record<string, string | number>>
-): Record<string, Array<string | number>> => {
-  const keys = new Set<string>([...Object.keys(from), ...steps.flatMap(s => Object.keys(s))]);
-
-  const keyframes: Record<string, Array<string | number>> = {};
-  keys.forEach(k => {
-    keyframes[k] = [from[k], ...steps.map(s => s[k])];
-  });
-  return keyframes;
 };
 
 const BlurText: React.FC<BlurTextProps> = ({
@@ -37,15 +20,14 @@ const BlurText: React.FC<BlurTextProps> = ({
   direction = 'top',
   threshold = 0.1,
   rootMargin = '0px',
-  animationFrom,
-  animationTo,
-  easing = (t: number) => t,
   onAnimationComplete,
   stepDuration = 0.35
 }) => {
   const elements = animateBy === 'words' ? text.split(' ') : text.split('');
   const [inView, setInView] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
+  const durationMs = stepDuration * 1000 * 2;
+  const animationName = direction === 'top' ? 'hsb-blur-text-top' : 'hsb-blur-text-bottom';
 
   useEffect(() => {
     if (!ref.current) return;
@@ -62,58 +44,38 @@ const BlurText: React.FC<BlurTextProps> = ({
     return () => observer.disconnect();
   }, [threshold, rootMargin]);
 
-  const defaultFrom = useMemo(
-    () =>
-      direction === 'top' ? { filter: 'blur(10px)', opacity: 0, y: -50 } : { filter: 'blur(10px)', opacity: 0, y: 50 },
-    [direction]
-  );
-
-  const defaultTo = useMemo(
-    () => [
-      {
-        filter: 'blur(5px)',
-        opacity: 0.5,
-        y: direction === 'top' ? 5 : -5
-      },
-      { filter: 'blur(0px)', opacity: 1, y: 0 }
-    ],
-    [direction]
-  );
-
-  const fromSnapshot = animationFrom ?? defaultFrom;
-  const toSnapshots = animationTo ?? defaultTo;
-
-  const stepCount = toSnapshots.length + 1;
-  const totalDuration = stepDuration * (stepCount - 1);
-  const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
+  useEffect(() => {
+    if (!inView || !onAnimationComplete) return;
+    const total = (elements.length - 1) * delay + durationMs;
+    const t = window.setTimeout(() => onAnimationComplete(), total);
+    return () => window.clearTimeout(t);
+  }, [inView, elements.length, delay, durationMs, onAnimationComplete]);
 
   return (
     <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
       {elements.map((segment, index) => {
-        const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
-
-        const spanTransition: Transition = {
-          duration: totalDuration,
-          times,
-          delay: (index * delay) / 1000,
-          ease: easing
-        };
+        const style: React.CSSProperties = inView
+          ? {
+              display: 'inline-block',
+              animationName,
+              animationDuration: `${durationMs}ms`,
+              animationDelay: `${(index * delay) / 1}ms`,
+              animationTimingFunction: 'cubic-bezier(0.2, 0.65, 0.3, 0.9)',
+              animationFillMode: 'both',
+              willChange: 'transform, filter, opacity'
+            }
+          : {
+              display: 'inline-block',
+              opacity: 0,
+              filter: 'blur(10px)',
+              transform: direction === 'top' ? 'translateY(-50px)' : 'translateY(50px)'
+            };
 
         return (
-          <motion.span
-            key={index}
-            initial={fromSnapshot}
-            animate={inView ? animateKeyframes : fromSnapshot}
-            transition={spanTransition}
-            onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
-            style={{
-              display: 'inline-block',
-              willChange: 'transform, filter, opacity'
-            }}
-          >
-            {segment === ' ' ? '\u00A0' : segment}
-            {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
-          </motion.span>
+          <span key={index} style={style}>
+            {segment === ' ' ? ' ' : segment}
+            {animateBy === 'words' && index < elements.length - 1 && ' '}
+          </span>
         );
       })}
     </p>
