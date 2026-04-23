@@ -975,16 +975,18 @@ body {
   margin-bottom: -0.18em;
 }
 
-/* BlurText CSS keyframes (replaces motion/react) */
+/* BlurText CSS keyframes (replaces motion/react).
+   Note: filter:blur() is deliberately omitted — on low-GPU devices (8GB Macs,
+   integrated graphics) animating filter:blur() across 100+ spans simultaneously
+   causes severe fillrate stutter. Opacity + transform are compositor-only and
+   stay smooth on any hardware. Visual effect is near-identical. */
 @keyframes hsb-blur-text-top {
-  0%   { opacity: 0;   filter: blur(10px); transform: translateY(-50px); }
-  50%  { opacity: 0.5; filter: blur(5px);  transform: translateY(5px); }
-  100% { opacity: 1;   filter: blur(0);    transform: translateY(0); }
+  0%   { opacity: 0;   transform: translate3d(0, -40px, 0); }
+  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
 }
 @keyframes hsb-blur-text-bottom {
-  0%   { opacity: 0;   filter: blur(10px); transform: translateY(50px); }
-  50%  { opacity: 0.5; filter: blur(5px);  transform: translateY(-5px); }
-  100% { opacity: 1;   filter: blur(0);    transform: translateY(0); }
+  0%   { opacity: 0;   transform: translate3d(0, 40px, 0); }
+  100% { opacity: 1;   transform: translate3d(0, 0, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .blur-text span { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }

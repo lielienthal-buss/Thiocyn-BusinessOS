@@ -59,16 +59,15 @@ const BlurText: React.FC<BlurTextProps> = ({
               display: 'inline-block',
               animationName,
               animationDuration: `${durationMs}ms`,
-              animationDelay: `${(index * delay) / 1}ms`,
+              animationDelay: `${index * delay}ms`,
               animationTimingFunction: 'cubic-bezier(0.2, 0.65, 0.3, 0.9)',
               animationFillMode: 'both',
-              willChange: 'transform, filter, opacity'
+              willChange: 'transform, opacity'
             }
           : {
               display: 'inline-block',
               opacity: 0,
-              filter: 'blur(10px)',
-              transform: direction === 'top' ? 'translateY(-50px)' : 'translateY(50px)'
+              transform: direction === 'top' ? 'translate3d(0, -40px, 0)' : 'translate3d(0, 40px, 0)'
             };
 
         return (
