@@ -26,6 +26,7 @@ export function MetricsSection() {
     separator: locale === 'de' ? v.separator : (v.separator ? ',' : ''),
     accent: ACCENTS[i],
     label: t(`label${i}`),
+    localeTag: locale === 'de' ? 'de-DE' : 'en-US',
   }));
 
   return (
@@ -63,6 +64,7 @@ interface MetricBlockProps {
     label: string;
     accent: string;
     separator?: string;
+    localeTag?: string;
   };
   offset: string;
   align?: 'left' | 'right';
@@ -84,7 +86,7 @@ function MetricBlock({ m, offset, align = 'left' }: MetricBlockProps) {
         className="metric-number mt-4 block font-sans font-black tracking-[-0.04em] tabular-nums"
         style={{ color: `rgb(${rgb})` }}
       >
-        <CountUp to={m.value} duration={2.2} separator={m.separator ?? ''} />
+        <CountUp to={m.value} duration={2.2} separator={m.separator ?? ''} locale={m.localeTag} />
         <span>{m.suffix}</span>
       </div>
       <p

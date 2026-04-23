@@ -58,8 +58,8 @@ export function AIFeatureSection() {
               duration={0.9}
               ease="power3.out"
               splitType="words"
-              from={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 40 }}
+              to={{ opacity: 1, y: 0 }}
               threshold={0.2}
             />
           </div>

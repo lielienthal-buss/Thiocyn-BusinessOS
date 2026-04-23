@@ -56,20 +56,20 @@ export function HeroSection() {
         </div>
 
         <div className="col-span-12 row-start-2 flex flex-col justify-center">
-          <div className="hero-type">
+          <h1 className="hero-type" aria-label={`${t('headline1')} ${t('headline2')}`}>
             <SplitText
               text="HOUSE"
-              tag="h1"
+              tag="span"
               className="hero-word block font-sans font-black leading-[0.85] tracking-[-0.04em]"
               textAlign="left"
               delay={28}
               duration={0.95}
               ease="power3.out"
               splitType="chars"
-              from={{ opacity: 0, y: 80, filter: 'blur(10px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 80 }}
+              to={{ opacity: 1, y: 0 }}
             />
-            <div className="hero-of-row">
+            <span className="hero-of-row">
               <SplitText
                 text="of"
                 tag="span"
@@ -79,35 +79,35 @@ export function HeroSection() {
                 duration={1.0}
                 ease="power3.out"
                 splitType="chars"
-                from={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-                to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
               />
-            </div>
+            </span>
             <SplitText
               text="SUSTAINABLE"
-              tag="h1"
+              tag="span"
               className="hero-word block font-sans font-black leading-[0.85] tracking-[-0.04em]"
               textAlign="left"
               delay={24}
               duration={0.95}
               ease="power3.out"
               splitType="chars"
-              from={{ opacity: 0, y: 80, filter: 'blur(10px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 80 }}
+              to={{ opacity: 1, y: 0 }}
             />
             <SplitText
               text="BRANDS"
-              tag="h1"
+              tag="span"
               className="hero-word block font-sans font-black leading-[0.85] tracking-[-0.04em]"
               textAlign="left"
               delay={24}
               duration={0.95}
               ease="power3.out"
               splitType="chars"
-              from={{ opacity: 0, y: 80, filter: 'blur(10px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 80 }}
+              to={{ opacity: 1, y: 0 }}
             />
-          </div>
+          </h1>
         </div>
 
         <div className="col-span-12 row-start-3 flex justify-end md:col-span-5 md:col-start-8">

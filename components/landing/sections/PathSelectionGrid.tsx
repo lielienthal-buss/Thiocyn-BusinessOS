@@ -42,7 +42,7 @@ export function PathSelectionGrid() {
       if (!section || !track) return;
 
       const mm = gsap.matchMedia();
-      mm.add('(min-width: 768px)', () => {
+      mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
         const distance = track.scrollWidth - window.innerWidth;
         gsap.to(track, {
           x: -distance,
@@ -132,6 +132,7 @@ function PathPanel({ href, Icon, accent, number, title, hook, cta }: PathPanelPr
           <div
             className="inline-flex h-14 w-14 items-center justify-center rounded-2xl"
             style={{ background: `rgba(${rgb}, 0.12)`, color: `rgb(${rgb})` }}
+            aria-hidden="true"
           >
             <Icon className="h-7 w-7" />
           </div>
@@ -147,11 +148,11 @@ function PathPanel({ href, Icon, accent, number, title, hook, cta }: PathPanelPr
           <Link
             to={href}
             data-tactile
-            className="mt-12 inline-flex items-center gap-3 self-start rounded-full border border-border/60 bg-card/30 px-8 py-4 text-sm font-semibold uppercase tracking-[0.2em] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-border"
+            className="mt-12 inline-flex items-center gap-3 self-start rounded-full border border-border/60 bg-card/30 px-8 py-4 text-sm font-semibold uppercase tracking-[0.2em] backdrop-blur-xl transition-[transform,border-color,background-color] duration-300 hover:-translate-y-0.5 hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             style={{ color: `rgb(${rgb})` }}
           >
             {cta}
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
       </div>

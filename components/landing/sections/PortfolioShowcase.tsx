@@ -81,7 +81,7 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
           </span>
         </div>
 
-        <div className={`col-span-12 md:col-span-7 ${isRight ? 'md:col-start-5' : 'md:col-start-2'}`}>
+        <div className={`col-span-12 md:col-span-7 ${isRight ? 'md:col-start-5' : 'md:col-start-2'}`} translate="no">
           <SplitText
             text={brand.name}
             tag="h3"
@@ -91,8 +91,8 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
             duration={0.9}
             ease="power3.out"
             splitType="chars"
-            from={{ opacity: 0, y: 60, filter: 'blur(8px)' }}
-            to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            from={{ opacity: 0, y: 60 }}
+            to={{ opacity: 1, y: 0 }}
             threshold={0.2}
           />
           <p
@@ -136,13 +136,16 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
               href={brand.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`group/link inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] transition-colors ${
+              className={`group/link inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                 isRight ? '' : 'md:self-end'
               }`}
               style={{ color: `rgb(${rgb})` }}
             >
               {visitLabel}
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+              <ArrowUpRight
+                aria-hidden="true"
+                className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+              />
             </a>
           )}
         </div>

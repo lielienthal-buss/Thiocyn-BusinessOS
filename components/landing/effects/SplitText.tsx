@@ -62,6 +62,17 @@ const SplitText: React.FC<SplitTextProps> = ({
       if (!ref.current || !text || !fontsLoaded) return;
       // Prevent re-animation if already completed
       if (animationCompletedRef.current) return;
+
+      // Honor prefers-reduced-motion: show final state immediately, skip split
+      if (
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        animationCompletedRef.current = true;
+        onCompleteRef.current?.();
+        return;
+      }
+
       const el = ref.current as HTMLElement & {
         _rbsplitInstance?: GSAPSplitText;
       };
@@ -120,6 +131,7 @@ const SplitText: React.FC<SplitTextProps> = ({
               onComplete: () => {
                 animationCompletedRef.current = true;
                 onCompleteRef.current?.();
+                gsap.set(targets, { clearProps: 'willChange' });
               },
               willChange: 'transform, opacity',
               force3D: true
@@ -158,8 +170,7 @@ const SplitText: React.FC<SplitTextProps> = ({
   const renderTag = () => {
     const style: React.CSSProperties = {
       textAlign,
-      wordWrap: 'break-word',
-      willChange: 'transform, opacity'
+      wordWrap: 'break-word'
     };
     const classes = `split-parent overflow-hidden inline-block whitespace-normal ${className}`;
     const Tag = (tag || 'p') as React.ElementType;

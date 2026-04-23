@@ -10,15 +10,23 @@ import MetricsSection from './sections/MetricsSection';
 
 export default function HSBLanding() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      <HeroSection />
-      <MissionNarrative />
-      <PathSelectionGrid />
-      <PortfolioShowcase />
-      <AIFeatureSection />
-      <MetricsSection />
-      <Footer />
-    </main>
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-sm focus:text-background focus:outline-none focus:ring-2 focus:ring-teal"
+      >
+        Skip to main content
+      </a>
+      <main id="main" className="min-h-screen bg-background text-foreground">
+        <Navbar />
+        <HeroSection />
+        <MissionNarrative />
+        <PathSelectionGrid />
+        <PortfolioShowcase />
+        <AIFeatureSection />
+        <MetricsSection />
+        <Footer />
+      </main>
+    </>
   );
 }

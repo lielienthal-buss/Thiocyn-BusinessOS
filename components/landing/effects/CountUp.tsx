@@ -9,6 +9,7 @@ interface CountUpProps {
   className?: string;
   startWhen?: boolean;
   separator?: string;
+  locale?: string;
   onStart?: () => void;
   onEnd?: () => void;
 }
@@ -22,9 +23,13 @@ export default function CountUp({
   className = '',
   startWhen = true,
   separator = '',
+  locale,
   onStart,
   onEnd
 }: CountUpProps) {
+  const resolvedLocale =
+    locale ??
+    (typeof navigator !== 'undefined' ? navigator.language : 'en-US');
   const ref = useRef<HTMLSpanElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -47,10 +52,14 @@ export default function CountUp({
         minimumFractionDigits: hasDecimals ? maxDecimals : 0,
         maximumFractionDigits: hasDecimals ? maxDecimals : 0
       };
-      const formatted = Intl.NumberFormat('en-US', options).format(latest);
-      return separator ? formatted.replace(/,/g, separator) : formatted;
+      const formatted = Intl.NumberFormat(resolvedLocale, options).format(latest);
+      if (!separator) return formatted;
+      const groupSep = (Intl.NumberFormat(resolvedLocale)
+        .formatToParts(1000)
+        .find((p) => p.type === 'group')?.value) ?? ',';
+      return formatted.split(groupSep).join(separator);
     },
-    [maxDecimals, separator]
+    [maxDecimals, separator, resolvedLocale]
   );
 
   useEffect(() => {
@@ -80,6 +89,16 @@ export default function CountUp({
 
     const startValue = direction === 'down' ? to : from;
     const endValue = direction === 'down' ? from : to;
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduced) {
+      if (ref.current) ref.current.textContent = formatValue(endValue);
+      onEnd?.();
+      return;
+    }
+
     const durationMs = duration * 1000;
     const delayMs = delay * 1000;
     let rafId = 0;

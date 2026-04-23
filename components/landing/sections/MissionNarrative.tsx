@@ -33,8 +33,8 @@ export function MissionNarrative() {
               duration={0.9}
               ease="power3.out"
               splitType="words"
-              from={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 30 }}
+              to={{ opacity: 1, y: 0 }}
               threshold={0.25}
             />
           </div>
@@ -49,8 +49,8 @@ export function MissionNarrative() {
               duration={0.95}
               ease="power3.out"
               splitType="words"
-              from={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 30 }}
+              to={{ opacity: 1, y: 0 }}
               threshold={0.25}
             />
           </div>
@@ -65,8 +65,8 @@ export function MissionNarrative() {
               duration={0.9}
               ease="power3.out"
               splitType="words"
-              from={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              from={{ opacity: 0, y: 30 }}
+              to={{ opacity: 1, y: 0 }}
               threshold={0.25}
             />
           </div>

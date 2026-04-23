@@ -12,7 +12,10 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-1">
-            <Link to="/" className="text-xl font-semibold tracking-tight">
+            <Link
+              to="/"
+              className="rounded-sm text-xl font-semibold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
               HSB
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">{t('tagline')}</p>
@@ -42,7 +45,7 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:info@hartlimesgmbh.de"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   info@hartlimesgmbh.de
                 </a>
@@ -66,7 +69,7 @@ function FooterLink({ to, children }: { to: string; children: React.ReactNode })
     <li>
       <Link
         to={to}
-        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {children}
       </Link>
