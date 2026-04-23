@@ -5,7 +5,7 @@ import { useLocale } from '@/lib/landing/i18n';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type RevenueRange = 'under_100k' | '100k_500k' | '500k_1m' | '1m_5m' | '5m_plus';
+type RevenueRange = 'under_500k' | '500k_2m' | '2m_5m' | '5m_15m' | '15m_plus';
 type Timeline = 'now' | '3_6_months' | '6_12_months' | 'exploring';
 
 const COPY = {
@@ -31,11 +31,11 @@ const COPY = {
     thankBody: 'Confidential. Reviewed by founders only. We reply within 5 business days.',
     back: 'Back to overview',
     revenue: {
-      under_100k: '< 100k €',
-      '100k_500k': '100k – 500k €',
-      '500k_1m': '500k – 1M €',
-      '1m_5m': '1M – 5M €',
-      '5m_plus': '5M+ €',
+      under_500k: '< 500k €',
+      '500k_2m': '500k – 2M €',
+      '2m_5m': '2M – 5M €',
+      '5m_15m': '5M – 15M €',
+      '15m_plus': '15M+ €',
     },
     timelineOpts: {
       now: 'Ready now',
@@ -66,11 +66,11 @@ const COPY = {
     thankBody: 'Vertraulich. Nur für Gründer einsehbar. Antwort innerhalb von 5 Werktagen.',
     back: 'Zurück zur Übersicht',
     revenue: {
-      under_100k: '< 100k €',
-      '100k_500k': '100k – 500k €',
-      '500k_1m': '500k – 1M €',
-      '1m_5m': '1M – 5M €',
-      '5m_plus': '5M+ €',
+      under_500k: '< 500k €',
+      '500k_2m': '500k – 2M €',
+      '2m_5m': '2M – 5M €',
+      '5m_15m': '5M – 15M €',
+      '15m_plus': '15M+ €',
     },
     timelineOpts: {
       now: 'Sofort bereit',

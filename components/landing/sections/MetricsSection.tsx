@@ -8,7 +8,7 @@ const VALUES = [
   { value: 6, suffix: '', kicker: '/01', separator: '' },
   { value: 158000, suffix: '+', kicker: '/02', separator: '.' },
   { value: 11, suffix: '', kicker: '/03', separator: '' },
-  { value: 2021, suffix: '', kicker: '/04', separator: '' },
+  { value: 2022, suffix: '', kicker: '/04', separator: '' },
 ] as const;
 
 const ACCENT_RGB: Record<string, string> = {
