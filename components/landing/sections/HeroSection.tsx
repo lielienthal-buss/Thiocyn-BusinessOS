@@ -2,23 +2,35 @@ import React from 'react';
 import SplitText from '@/components/landing/effects/SplitText';
 import BlurText from '@/components/landing/effects/BlurText';
 import { useTranslations } from '@/lib/landing/i18n';
+import { useHighPerfDevice } from '@/lib/landing/useHighPerfDevice';
 
 const Aurora = React.lazy(() => import('@/components/landing/effects/Aurora'));
 
+const STATIC_AURORA_FALLBACK = `
+  radial-gradient(ellipse 80% 60% at 20% 30%, rgba(15, 189, 189, 0.35), transparent 60%),
+  radial-gradient(ellipse 70% 70% at 80% 70%, rgba(242, 112, 98, 0.25), transparent 60%),
+  radial-gradient(ellipse 60% 50% at 50% 90%, rgba(245, 245, 244, 0.08), transparent 70%)
+`;
+
 export function HeroSection() {
   const t = useTranslations('hero');
+  const isHighPerf = useHighPerfDevice();
 
   return (
     <section className="relative flex min-h-screen flex-col overflow-hidden bg-background pt-16">
       <div className="absolute inset-0 z-0 opacity-70">
-        <React.Suspense fallback={null}>
-          <Aurora
-            colorStops={['#0FBDBD', '#F5F5F4', '#F27062']}
-            amplitude={1.1}
-            blend={0.55}
-            speed={0.5}
-          />
-        </React.Suspense>
+        {isHighPerf ? (
+          <React.Suspense fallback={<div className="h-full w-full" style={{ background: STATIC_AURORA_FALLBACK }} />}>
+            <Aurora
+              colorStops={['#0FBDBD', '#F5F5F4', '#F27062']}
+              amplitude={1.1}
+              blend={0.55}
+              speed={0.5}
+            />
+          </React.Suspense>
+        ) : (
+          <div className="h-full w-full" style={{ background: STATIC_AURORA_FALLBACK }} />
+        )}
       </div>
 
       <div className="absolute inset-0 z-[1] bg-gradient-to-b from-background/0 via-background/10 to-background/80 pointer-events-none" />
