@@ -18,12 +18,12 @@
     "eyebrow": "HOLDING · HAMBURG",
     "headline1": "House of",
     "headline2": "Sustainable Brands",
-    "tagline1": "A new kind of brand house.",
+    "tagline1": "The sustainable way to build brands.",
     "tagline2": "Six brands. One team. One story."
   },
   "mission": {
     "label": "MISSION",
-    "block1": "Most consumer brands are built in silos. Marketing here, ops there, data nowhere.",
+    "block1": "Most brands live in three separate worlds: brand, ops, data. None of them see each other.",
     "block2": "We believe the next decade belongs to houses — not single brands. Shared intelligence, shared ops, shared stories.",
     "block3": "HoSB is that house. Six brands, one operating team, one shared playbook."
   },
@@ -41,7 +41,7 @@
     },
     "founders": {
       "title": "Sell your brand",
-      "hook": "A home for what you've built?",
+      "hook": "In the right hands.",
       "cta": "Open"
     }
   },
@@ -53,9 +53,9 @@
   "ai": {
     "label": "PYTHIA",
     "kicker": "Named after the Oracle of Delphi.",
-    "heading": "An AI that sees brands before the market does.",
-    "paragraph": "Pythia reads what the market is too slow to notice. Signal across consumer data, creator reach, and retention — unified, surfaced, actionable.",
-    "capability1Tag": "ACQUISITION",
+    "heading": "An AI that sees trends before the market reacts.",
+    "paragraph": "Pythia reads Google and Amazon searches in real time. Trends, category shifts, buying intent — surfaced early, acted on fast.",
+    "capability1Tag": "M&A",
     "capability1": "Pattern-match brand health against our playbook. Surface what the market has mispriced.",
     "capability2Tag": "OPERATIONS",
     "capability2": "Identify the operational lever that moves each brand. Learn across the house.",

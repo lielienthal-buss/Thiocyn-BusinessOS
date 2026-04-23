@@ -18,14 +18,14 @@
     "eyebrow": "HOLDING · HAMBURG",
     "headline1": "House of",
     "headline2": "Sustainable Brands",
-    "tagline1": "Eine neue Art von Marken-Haus.",
-    "tagline2": "Sechs Marken. Ein Team. Eine Erzählung."
+    "tagline1": "Die nachhaltige Art, Marken zu entwickeln.",
+    "tagline2": "Sechs Marken. Ein Team. Eine Geschichte."
   },
   "mission": {
     "label": "MISSION",
-    "block1": "Die meisten Konsummarken werden in Silos gebaut. Marketing hier, Ops dort, Daten nirgendwo.",
+    "block1": "Die meisten Marken leben in drei getrennten Welten: Brand, Ops, Daten. Keine sieht die andere.",
     "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Geteilte Intelligenz, geteilte Ops, geteilte Geschichten.",
-    "block3": "HoSB ist dieses Haus. Sechs Marken, ein operatives Team, ein gemeinsames Playbook."
+    "block3": "HSB ist dieses Haus. Sechs Marken, ein operatives Team, ein gemeinsames Playbook."
   },
   "paths": {
     "title": "Wohin möchtest du?",
@@ -36,12 +36,12 @@
     },
     "ambassadors": {
       "title": "Ambassador Programm",
-      "hook": "Nachhaltige Marken, gute Samples, faire Commissions.",
+      "hook": "Nachhaltige Marken. Echte Samples. Faire Provisionen.",
       "cta": "Öffnen"
     },
     "founders": {
-      "title": "Marke verkaufen",
-      "hook": "Ein Zuhause für das, was du gebaut hast?",
+      "title": "Deine Marke verkaufen",
+      "hook": "In die richtigen Hände.",
       "cta": "Öffnen"
     }
   },
@@ -53,9 +53,9 @@
   "ai": {
     "label": "PYTHIA",
     "kicker": "Benannt nach dem Orakel von Delphi.",
-    "heading": "Eine KI, die Marken vor dem Markt sieht.",
-    "paragraph": "Pythia liest, was der Markt zu langsam bemerkt. Signal über Konsumentendaten, Creator-Reach und Retention — vereint, sichtbar gemacht, handlungsfähig.",
-    "capability1Tag": "AKQUISE",
+    "heading": "Eine KI, die Trends sieht, bevor der Markt reagiert.",
+    "paragraph": "Pythia liest Google- und Amazon-Suchen in Echtzeit. Trends, Kategorie-Shifts, Kaufabsichten — früher sichtbar, schneller handelbar.",
+    "capability1Tag": "M&A",
     "capability1": "Markengesundheit gegen unser Playbook abgeglichen. Was der Markt falsch bewertet, wird sichtbar.",
     "capability2Tag": "OPERATIONS",
     "capability2": "Den operativen Hebel pro Marke erkennen. Lernen über das ganze Haus hinweg.",
@@ -80,7 +80,7 @@
     "explore": "Entdecken",
     "company": "Unternehmen",
     "contact": "Kontakt",
-    "operated": "Betrieben von Hart Limes GmbH · Hamburg",
+    "operated": "Ein Unternehmen der Hart Limes GmbH · Hamburg",
     "copyright": "Alle Rechte vorbehalten."
   }
 }
