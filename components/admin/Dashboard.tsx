@@ -79,7 +79,7 @@ type Tab =
   | 'customerSupportOverview'
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
   | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
-type Section = 'home' | 'marketing' | 'recruiting' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
+type Section = 'home' | 'marketing' | 'recruiting' | 'ambassador' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'fellow' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -125,21 +125,28 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     tabs: [
       { id: 'recruitingOverview', label: 'Overview' },
       { id: 'applications', label: 'Fellow Applications' },
-      { id: 'ambassadorApplications', label: 'Ambassador Applications' },
       { id: 'kanban', label: 'Pipeline (Kanban)' },
+      { id: 'taskManager', label: 'Hiring Tasks' },
       { id: 'insights', label: 'Funnel Insights' },
       { id: 'projectAreas', label: 'Project Areas' },
       { id: 'emailTemplates', label: 'Email Templates' },
     ],
   },
   {
+    id: 'ambassador',
+    label: 'Ambassador',
+    emoji: '✨',
+    tabs: [
+      { id: 'ambassadorApplications', label: 'Applications' },
+    ],
+  },
+  {
     id: 'teamAcademy',
-    label: 'Team & Academy',
+    label: 'Academy',
     emoji: '🎓',
     tabs: [
-      { id: 'academy', label: 'Academy' },
+      { id: 'academy', label: 'Intern Academy' },
       { id: 'evalDashboard', label: 'Eval Dashboard' },
-      { id: 'taskManager', label: 'Aufgaben' },
     ],
   },
   {
@@ -531,7 +538,17 @@ const Dashboard: React.FC = () => {
     if (tab === 'recruitingOverview') {
       return (
         <RecruitingOverview
-          onNavigate={(t) => { setTab(t); setSelectedAppId(null); }}
+          onNavigate={(t) => {
+            const sectionMap: Record<string, Section> = {
+              applications: 'recruiting',
+              ambassadorApplications: 'ambassador',
+              maInquiries: 'admin',
+            };
+            const targetSection = sectionMap[t];
+            if (targetSection) setSection(targetSection);
+            setTab(t);
+            setSelectedAppId(null);
+          }}
           isAdminOrOwner={hasRole(effectiveRole, 'admin')}
         />
       );
