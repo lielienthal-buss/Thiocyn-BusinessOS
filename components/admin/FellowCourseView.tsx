@@ -17,11 +17,17 @@ import type {
 // Tom's Intern Academy framework — bundled at build time so Fellows always
 // see the latest version of the program guide inside their own surface.
 import readmeDoc from '@/docs/intern-academy/README.md?raw';
+import employmentDoc from '@/docs/intern-academy/thiocyn-employment-onboarding.md?raw';
 import mondayDoc from '@/docs/intern-academy/monday-meeting-template.md?raw';
 import tracksDoc from '@/docs/intern-academy/specialisation-tracks.md?raw';
 import rubricsDoc from '@/docs/intern-academy/assessment-rubrics.md?raw';
 import buddyDoc from '@/docs/intern-academy/buddy-program.md?raw';
-import takeAShotOnboardingDoc from '@/docs/intern-academy/brand-onboarding/take-a-shot.md?raw';
+import brandThiocyn from '@/docs/intern-academy/brand-walkthroughs/thiocyn.md?raw';
+import brandDrSeverin from '@/docs/intern-academy/brand-walkthroughs/dr-severin.md?raw';
+import brandTakeAShot from '@/docs/intern-academy/brand-walkthroughs/take-a-shot.md?raw';
+import brandPaigh from '@/docs/intern-academy/brand-walkthroughs/paigh.md?raw';
+import brandTimberJohn from '@/docs/intern-academy/brand-walkthroughs/timber-and-john.md?raw';
+import brandWristr from '@/docs/intern-academy/brand-walkthroughs/wristr.md?raw';
 
 // ─── Phase metadata (single source of truth) ─────────────────────────────
 interface PhaseMeta {
@@ -585,13 +591,21 @@ const LogTab: React.FC<{
 
 // ─── Program Tab — renders Tom's Academy framework docs in-app ───────────
 
-const PROGRAM_DOCS: Array<{ k: string; label: string; doc: string }> = [
-  { k: 'overview',  label: 'Overview',                 doc: readmeDoc },
-  { k: 'tracks',    label: 'Specialisation Tracks',    doc: tracksDoc },
-  { k: 'monday',    label: 'Monday Meeting',           doc: mondayDoc },
-  { k: 'rubrics',   label: 'Assessment Rubrics',       doc: rubricsDoc },
-  { k: 'buddy',     label: 'Buddy Program',            doc: buddyDoc },
-  { k: 'tas',       label: 'Brand: Take A Shot',       doc: takeAShotOnboardingDoc },
+const PROGRAM_DOCS: Array<{ k: string; label: string; group: 'core' | 'brand'; doc: string }> = [
+  // Core program
+  { k: 'overview',   label: 'Overview',              group: 'core',  doc: readmeDoc },
+  { k: 'employment', label: 'Day-1 Setup',           group: 'core',  doc: employmentDoc },
+  { k: 'tracks',     label: 'Specialisation Tracks', group: 'core',  doc: tracksDoc },
+  { k: 'monday',     label: 'Monday Meeting',        group: 'core',  doc: mondayDoc },
+  { k: 'rubrics',    label: 'Assessment Rubrics',    group: 'core',  doc: rubricsDoc },
+  { k: 'buddy',      label: 'Buddy Program',         group: 'core',  doc: buddyDoc },
+  // Brand walkthroughs
+  { k: 'b-thiocyn',  label: 'Thiocyn',               group: 'brand', doc: brandThiocyn },
+  { k: 'b-severin',  label: 'Dr. Severin',           group: 'brand', doc: brandDrSeverin },
+  { k: 'b-tas',      label: 'Take A Shot',           group: 'brand', doc: brandTakeAShot },
+  { k: 'b-paigh',    label: 'Paigh',                 group: 'brand', doc: brandPaigh },
+  { k: 'b-tj',       label: 'Timber & John',         group: 'brand', doc: brandTimberJohn },
+  { k: 'b-wristr',   label: 'Wristr',                group: 'brand', doc: brandWristr },
 ];
 
 const ProgramTab: React.FC = () => {
@@ -604,21 +618,39 @@ const ProgramTab: React.FC = () => {
         Das komplette 12-Wochen-Curriculum zum Nachlesen. Phasen, Tracks, Meeting-Struktur, Bewertungen, Buddy-Programm.
       </p>
 
-      <nav className="mb-8 flex flex-wrap gap-2">
-        {PROGRAM_DOCS.map(d => (
-          <button
-            key={d.k}
-            onClick={() => setActiveDoc(d.k)}
-            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
-              activeDoc === d.k
-                ? 'bg-[#0F766E] text-white'
-                : 'bg-white border border-black/10 text-[#515154] hover:border-black/20 hover:text-[#1d1d1f]'
-            }`}
-          >
-            {d.label}
-          </button>
-        ))}
-      </nav>
+      <div className="mb-8 space-y-3">
+        <nav className="flex flex-wrap gap-2">
+          {PROGRAM_DOCS.filter(d => d.group === 'core').map(d => (
+            <button
+              key={d.k}
+              onClick={() => setActiveDoc(d.k)}
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                activeDoc === d.k
+                  ? 'bg-[#0F766E] text-white'
+                  : 'bg-white border border-black/10 text-[#515154] hover:border-black/20 hover:text-[#1d1d1f]'
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </nav>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#515154] mr-1">Brand-Walkthroughs:</span>
+          {PROGRAM_DOCS.filter(d => d.group === 'brand').map(d => (
+            <button
+              key={d.k}
+              onClick={() => setActiveDoc(d.k)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                activeDoc === d.k
+                  ? 'bg-[#F97066] text-white'
+                  : 'bg-white border border-black/10 text-[#515154] hover:border-black/20 hover:text-[#1d1d1f]'
+              }`}
+            >
+              {d.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <article className="rounded-2xl border border-black/[0.08] bg-white p-8 prose prose-slate max-w-none prose-headings:font-sans prose-headings:tracking-tight prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-10 prose-h3:font-bold prose-h3:text-base prose-table:text-sm prose-table:overflow-x-auto prose-th:bg-black/[0.03] prose-th:text-left prose-th:font-bold prose-td:py-2 prose-td:align-top prose-td:border-t prose-td:border-black/[0.06] prose-code:bg-black/[0.05] prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-li:my-0.5 prose-p:leading-relaxed prose-a:text-[#0F766E] prose-a:no-underline hover:prose-a:underline">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{current.doc}</ReactMarkdown>
