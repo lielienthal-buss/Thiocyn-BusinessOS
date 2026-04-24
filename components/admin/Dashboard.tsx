@@ -107,6 +107,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'marketing',
     label: 'Marketing',
     emoji: '📣',
+    minRole: 'staff',
     tabs: [
       { id: 'marketingCockpit', label: 'Cockpit' },
       { id: 'marketingCampaigns', label: 'Campaigns' },
@@ -136,6 +137,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'ambassador',
     label: 'Ambassador',
     emoji: '✨',
+    minRole: 'staff',
     tabs: [
       { id: 'ambassadorApplications', label: 'Applications' },
     ],
@@ -165,6 +167,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     id: 'customerSupport',
     label: 'Customer Support',
     emoji: '💬',
+    minRole: 'staff',
     tabs: [
       { id: 'customerSupportOverview', label: 'Overview' },
     ],
@@ -338,7 +341,8 @@ const Dashboard: React.FC = () => {
           localStorage.setItem('app_lang', data.preferred_language);
         }
         if (data?.role) { setUserRole(data.role as UserRole); return; }
-        // Fallback: check intern_accounts for intern_lead
+        // Fallback: check intern_accounts for intern_lead or fellow
+        // (legacy — most interns now also have a team_members row with role='fellow')
         supabase
           .from('intern_accounts')
           .select('id, department')
@@ -349,7 +353,9 @@ const Dashboard: React.FC = () => {
             if (intern.department === 'lead') {
               setUserRole('intern_lead');
             } else if (intern.department !== 'recruiting') {
-              navigate('/intern/' + intern.id);
+              // Unified Dashboard: no more redirect to /intern/{id}.
+              // Fellow surface is the Academy section, gated per role.
+              setUserRole('fellow');
             }
           });
       });
@@ -567,7 +573,7 @@ const Dashboard: React.FC = () => {
     }
 
     if (tab === 'academy') {
-      return <AcademyView />;
+      return <AcademyView role={effectiveRole} />;
     }
 
     if (tab === 'customerSupportOverview') {
@@ -620,6 +626,13 @@ const Dashboard: React.FC = () => {
 
   const effectiveRole: UserRole = previewRole ?? (isDemoMode ? 'owner' : userRole);
   const visibleSections = SECTIONS.filter(s => !s.minRole || hasRole(effectiveRole, s.minRole));
+  // Fellow default landing = Academy. Other roles = Home.
+  useEffect(() => {
+    if (effectiveRole === 'fellow' && section === 'home') {
+      setSection('teamAcademy');
+      setTab('academy');
+    }
+  }, [effectiveRole]); // eslint-disable-line react-hooks/exhaustive-deps
   const activeSection = SECTIONS.find(s => s.id === section) ?? SECTIONS[0];
   const activeTabs = activeSection.tabs;
 

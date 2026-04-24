@@ -6,6 +6,7 @@ import {
   RouterProvider,
   Outlet,
   useNavigate,
+  Navigate,
 } from 'react-router-dom';
 import TopNav from '@/components/TopNav';
 import { Toaster } from 'sonner';
@@ -31,7 +32,6 @@ const FoundersUniversityPage = React.lazy(() => import('@/components/landing/pag
 const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
 const ApplicationSlidePanel = React.lazy(() => import('@/components/public/ApplicationSlidePanel'));
 const TaskSubmissionPage = React.lazy(() => import('@/components/public/TaskSubmissionPage'));
-const InternPortalPage = React.lazy(() => import('@/components/public/InternPortalPage'));
 const Imprint = React.lazy(() => import('@/components/legal/Imprint'));
 const PrivacyPolicy = React.lazy(() => import('@/components/legal/PrivacyPolicy'));
 const LegalPage = React.lazy(() => import('@/components/legal/LegalPage'));
@@ -258,12 +258,10 @@ const App: React.FC = () => {
           ),
         },
         {
+          // Legacy /intern/:internId route — unified Dashboard now handles fellow
+          // surface via Academy section. Redirect cleanly.
           path: 'intern/:internId',
-          element: (
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <InternPortalPage />
-            </React.Suspense>
-          ),
+          element: <Navigate to="/admin" replace />,
         },
         {
           path: 'imprint',
