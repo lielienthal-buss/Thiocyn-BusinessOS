@@ -37,6 +37,7 @@ const ApplicationListView = lazyLoad(() => import('./ApplicationListView'));
 const ApplicantDetailView = lazyLoad(() => import('./ApplicantDetailView'));
 const AmbassadorApplicationsView = lazyLoad(() => import('./AmbassadorApplicationsView'));
 const MAInquiriesView = lazyLoad(() => import('./MAInquiriesView'));
+const RecruitingOverview = lazyLoad(() => import('./RecruitingOverview'));
 const InsightsView = lazyLoad(() => import('./InsightsView'));
 const EvalDashboardView = lazyLoad(() => import('./EvalDashboardView'));
 const EmailTemplateManager = lazyLoad(() => import('./EmailTemplateManager'));
@@ -73,12 +74,12 @@ type Tab =
   | 'creatorPipeline' | 'videoGeneration'
   | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
   | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
-  | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
+  | 'recruitingOverview' | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
   | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails'
   | 'customerSupportOverview'
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
   | 'insights' | 'notificationFeed' | 'accountProfile' | 'workspace';
-type Section = 'home' | 'marketing' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
+type Section = 'home' | 'marketing' | 'recruiting' | 'teamAcademy' | 'finance' | 'customerSupport' | 'account' | 'admin';
 type UserRole = 'owner' | 'admin' | 'staff' | 'intern_lead' | 'fellow' | 'viewer';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? '';
@@ -110,13 +111,25 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'marketingCockpit', label: 'Cockpit' },
       { id: 'marketingCampaigns', label: 'Campaigns' },
       { id: 'analyticsAds', label: 'Ad Performance' },
-      { id: 'ecomOverview', label: 'E-Com Overview' },
-      { id: 'ecomOrders', label: 'E-Com Orders' },
       { id: 'analyticsKpis', label: 'Ad Analytics' },
+      { id: 'ecomOverview', label: 'E-Commerce' },
       { id: 'marketingContentCalendar', label: 'Content Calendar' },
       { id: 'creatorPipeline', label: 'Creators' },
-      { id: 'ambassadorApplications', label: 'Ambassador Apps' },
       { id: 'marketingBriefs', label: 'Briefs' },
+    ],
+  },
+  {
+    id: 'recruiting',
+    label: 'Recruiting',
+    emoji: '🎯',
+    tabs: [
+      { id: 'recruitingOverview', label: 'Overview' },
+      { id: 'applications', label: 'Fellow Applications' },
+      { id: 'ambassadorApplications', label: 'Ambassador Applications' },
+      { id: 'kanban', label: 'Pipeline (Kanban)' },
+      { id: 'insights', label: 'Funnel Insights' },
+      { id: 'projectAreas', label: 'Project Areas' },
+      { id: 'emailTemplates', label: 'Email Templates' },
     ],
   },
   {
@@ -124,14 +137,9 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     label: 'Team & Academy',
     emoji: '🎓',
     tabs: [
-      { id: 'applications', label: 'Applications' },
-      { id: 'kanban', label: 'Kanban Board' },
-      { id: 'projectAreas', label: 'Project Areas' },
-      { id: 'taskManager', label: 'Aufgaben' },
       { id: 'academy', label: 'Academy' },
       { id: 'evalDashboard', label: 'Eval Dashboard' },
-      { id: 'insights', label: 'Insights' },
-      { id: 'emailTemplates', label: 'Email Templates' },
+      { id: 'taskManager', label: 'Aufgaben' },
     ],
   },
   {
@@ -518,6 +526,15 @@ const Dashboard: React.FC = () => {
         );
       }
       return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
+    }
+
+    if (tab === 'recruitingOverview') {
+      return (
+        <RecruitingOverview
+          onNavigate={(t) => { setTab(t); setSelectedAppId(null); }}
+          isAdminOrOwner={hasRole(effectiveRole, 'admin')}
+        />
+      );
     }
 
     if (tab === 'ambassadorApplications') {
