@@ -170,7 +170,7 @@ export default function AboutPage() {
                   />
                 </div>
                 <figcaption className="mt-4 font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground/70">
-                  Hamburg · 2026
+                  Founder · 2026
                 </figcaption>
               </div>
             </div>
