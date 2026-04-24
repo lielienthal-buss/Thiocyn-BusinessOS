@@ -21,6 +21,7 @@ import mondayDoc from '@/docs/intern-academy/monday-meeting-template.md?raw';
 import tracksDoc from '@/docs/intern-academy/specialisation-tracks.md?raw';
 import rubricsDoc from '@/docs/intern-academy/assessment-rubrics.md?raw';
 import buddyDoc from '@/docs/intern-academy/buddy-program.md?raw';
+import takeAShotOnboardingDoc from '@/docs/intern-academy/brand-onboarding/take-a-shot.md?raw';
 
 // ─── Phase metadata (single source of truth) ─────────────────────────────
 interface PhaseMeta {
@@ -585,11 +586,12 @@ const LogTab: React.FC<{
 // ─── Program Tab — renders Tom's Academy framework docs in-app ───────────
 
 const PROGRAM_DOCS: Array<{ k: string; label: string; doc: string }> = [
-  { k: 'overview',  label: 'Overview',           doc: readmeDoc },
-  { k: 'tracks',    label: 'Specialisation Tracks', doc: tracksDoc },
-  { k: 'monday',    label: 'Monday Meeting',      doc: mondayDoc },
-  { k: 'rubrics',   label: 'Assessment Rubrics',  doc: rubricsDoc },
-  { k: 'buddy',     label: 'Buddy Program',       doc: buddyDoc },
+  { k: 'overview',  label: 'Overview',                 doc: readmeDoc },
+  { k: 'tracks',    label: 'Specialisation Tracks',    doc: tracksDoc },
+  { k: 'monday',    label: 'Monday Meeting',           doc: mondayDoc },
+  { k: 'rubrics',   label: 'Assessment Rubrics',       doc: rubricsDoc },
+  { k: 'buddy',     label: 'Buddy Program',            doc: buddyDoc },
+  { k: 'tas',       label: 'Brand: Take A Shot',       doc: takeAShotOnboardingDoc },
 ];
 
 const ProgramTab: React.FC = () => {

@@ -10,6 +10,8 @@ The structured 12-week internship programme for the House of Sustainable Brands.
 | [assessment-rubrics.md](./assessment-rubrics.md) | Scoring criteria for the Month 1, Month 2, and Graduation assessments |
 | [specialisation-tracks.md](./specialisation-tracks.md) | The 5 tracks (Growth, Creative, Ops, AI, Finance) with example Big Target projects |
 | [buddy-program.md](./buddy-program.md) | Buddy pairing rules, cadence, conversation starters, and the buddy → admin feedback loop |
+| [program-buildout-roadmap.md](./program-buildout-roadmap.md) | Luis's original 4-week buildout plan + delivery status (which features are live, partial, pending) |
+| [brand-onboarding/](./brand-onboarding/) | Per-brand operational onboarding guides. Currently: Take A Shot. Other brands TBD. |
 
 ## How the programme runs in Business OS
 
