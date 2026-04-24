@@ -132,7 +132,7 @@ For each track: scope, what the Big Target looks like, 2–3 example projects, s
 
 ## 5. Finance & Analytics
 
-**Track lead:** Vanessa (Finance) or Tom (analytics ops)
+**Track lead:** Vanessa (Finance) or Luis (analytics ops)
 **Tools:** Google Sheets, Billbee, GMI, Shopify reports, GA4, Looker
 
 **Big Target shape:** Build one piece of financial visibility that didn't exist before.

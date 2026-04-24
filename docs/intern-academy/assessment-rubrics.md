@@ -99,11 +99,11 @@ A passing score is **15/25** (60%). Below 12/25 triggers the improvement plan (s
 
 If an intern scores below 12/25 on the Month 1 or Month 2 assessment:
 
-1. **Same day:** 1:1 conversation with Tom (programme lead) — frame as "we want you to succeed, here's what we saw"
+1. **Same day:** 1:1 conversation with Danylo (programme lead) — frame as "we want you to succeed, here's what we saw"
 2. **Within 48h:** Written 2-week improvement plan
    - 3 specific things to change
    - Daily 5-minute check-ins with buddy
-   - Weekly 30-minute review with Tom
+   - Weekly 30-minute review with Danylo
 3. **End of 2 weeks:** Re-evaluation
    - Improved → continue programme normally
    - Not improved → respectful exit conversation, generic reference letter for participation
@@ -114,7 +114,7 @@ If an intern scores below 12/25 on the Month 1 or Month 2 assessment:
 
 ## Scoring logistics
 
-- Each panellist (Luis, Peter, Tom + relevant track lead) scores independently during the presentation
+- Each panellist (Luis, Peter, Danylo + relevant track lead) scores independently during the presentation
 - Scores entered into Business OS academy view immediately after
 - Final score = average across all panellists
 - Written feedback provided within 24h

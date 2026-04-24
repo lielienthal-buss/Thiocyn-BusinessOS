@@ -49,7 +49,7 @@ Tactics to keep engagement up:
 For Weeks 4, 8, and 12.
 
 - 1–3 interns present (10 min each + 3 min Q&A)
-- Scoring panel: Luis, Peter, Tom (or relevant track lead)
+- Scoring panel: Luis, Peter, Danylo (or relevant track lead)
 - Use the relevant rubric (Month 1, Month 2, or Graduation)
 - Capture scores in the Business OS academy view
 - After each presentation: 1 specific compliment + 1 specific improvement from each panellist

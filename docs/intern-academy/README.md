@@ -22,9 +22,11 @@ The structured 12-week internship programme for the House of Sustainable Brands.
 ## Roles
 
 - **Programme owner:** Luis
-- **Programme lead:** Tom Roelants — runs onboarding, Monday meetings, day-to-day intern operations
+- **Programme lead:** Danylo Kutsiuk — runs onboarding, Monday meetings, day-to-day intern operations
 - **Track leads:** assigned per cohort based on which tracks interns pick
 - **Buddies:** full-time employees, paired with interns in Week 1
+
+> Note: Tom Roelants co-created this framework as the original programme lead (March–April 2026). After his exit, Danylo Kutsiuk took over the role on 2026-04-23.
 
 ## Cohort flow at a glance
 
@@ -50,4 +52,4 @@ In the academy view, expand the intern card and click **Advance →** in the Pha
 - Grants the next milestone
 - Auto-creates assignments for the new phase
 
-The action is intentional — there's no auto-advance based on completed assignments. Tom or Luis decides when an intern is ready.
+The action is intentional — there's no auto-advance based on completed assignments. Danylo or Luis decides when an intern is ready.

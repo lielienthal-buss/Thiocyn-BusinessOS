@@ -16,7 +16,7 @@ Without structured peer contact, interns drift. They sit silently for days, accu
 
 ## What the buddy does NOT do
 
-- ❌ Performance reviews (that's Tom + Luis)
+- ❌ Performance reviews (that's Danylo + Luis)
 - ❌ Decide on promotions, exits, or hiring
 - ❌ Set the intern's main work priorities
 - ❌ Replace the track lead
@@ -72,7 +72,7 @@ After every 1:1, the buddy spends 60 seconds writing a 2-line note in the academ
 1. **Status:** Green / Yellow / Red
 2. **One observation:** something specific (not "going well")
 
-Yellow or Red triggers a Tom check-in within 48h. Most issues caught at Yellow are fixable.
+Yellow or Red triggers a Danylo check-in within 48h. Most issues caught at Yellow are fixable.
 
 ---
 
@@ -90,7 +90,7 @@ Bad fits:
 - Don't use Slack regularly
 - Already overcommitted to mentoring others
 
-Tom assigns buddies in Week 1 of each cohort. Reassignment is possible (and not a failure) if the chemistry is off — it's more important to find the right pairing than to preserve the original assignment.
+Danylo assigns buddies in Week 1 of each cohort. Reassignment is possible (and not a failure) if the chemistry is off — it's more important to find the right pairing than to preserve the original assignment.
 
 ---
 
@@ -111,5 +111,5 @@ The deal is: 30 minutes/week of structured time, in exchange for a free pair of 
 
 | Intern | Buddy | Why this pairing |
 |--------|-------|------------------|
-| Tom Roelants | Luis | Tom is programme lead — direct line to OS owner |
+| Danylo Kutsiuk | Luis | Programme lead — direct line to OS owner |
 | _other 9 interns_ | TBD Week 1 | Match on track interest + buddy bandwidth |

@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';
 import type {
@@ -12,6 +14,14 @@ import type {
   MilestoneKey,
 } from '@/types';
 
+// Tom's Intern Academy framework — bundled at build time so Fellows always
+// see the latest version of the program guide inside their own surface.
+import readmeDoc from '@/docs/intern-academy/README.md?raw';
+import mondayDoc from '@/docs/intern-academy/monday-meeting-template.md?raw';
+import tracksDoc from '@/docs/intern-academy/specialisation-tracks.md?raw';
+import rubricsDoc from '@/docs/intern-academy/assessment-rubrics.md?raw';
+import buddyDoc from '@/docs/intern-academy/buddy-program.md?raw';
+
 // ─── Phase metadata (single source of truth) ─────────────────────────────
 interface PhaseMeta {
   id: AcademyPhase;
@@ -24,11 +34,11 @@ interface PhaseMeta {
 }
 
 const PHASES: PhaseMeta[] = [
-  { id: 'onboarding',     label: 'Onboarding',     weeks: 'Woche 1',     description: 'Ankommen, Tools, Team, erste Goals.',        color: '#0EA5E9', emoji: '🌱', order: 0 },
-  { id: 'foundation',     label: 'Foundation',     weeks: 'Wochen 2–4',  description: 'Grundlagen bauen, erste echte Aufgaben.',    color: '#06B6D4', emoji: '🎯', order: 1 },
-  { id: 'specialisation', label: 'Specialisation', weeks: 'Monat 2',      description: 'Vertiefung im gewählten Bereich.',           color: '#8B5CF6', emoji: '🚀', order: 2 },
-  { id: 'ownership',      label: 'Ownership',      weeks: 'Monat 3',      description: 'Verantwortung für eigene Projekte.',         color: '#F59E0B', emoji: '👑', order: 3 },
-  { id: 'completed',      label: 'Completed',      weeks: 'Abschluss',    description: 'Fellowship erfolgreich abgeschlossen.',      color: '#10B981', emoji: '🎓', order: 4 },
+  { id: 'onboarding',     label: 'Onboarding',     weeks: 'Woche 1',      description: 'Ankommen, Tools, Team, erste Goals. Du wirst gepaart mit einem Buddy am Tag 2 und setzt deine 3 persönlichen Ziele.',                                                                                            color: '#0EA5E9', emoji: '🌱', order: 0 },
+  { id: 'foundation',     label: 'Foundation',     weeks: 'Wochen 2–4',   description: 'CS-Academy: 100 Tickets analysieren. Operations-Walk-Throughs. Brand-Deep-Dives. Endet mit dem Month-1-Pitch (Consultancy-Plan) in Woche 4.',                                                                  color: '#06B6D4', emoji: '🎯', order: 1 },
+  { id: 'specialisation', label: 'Specialisation', weeks: 'Wochen 5–8',   description: 'Du wählst einen der 5 Tracks (Growth · Creative · Ops · AI · Finance) und ownst dein Big Target — ein konkretes Projekt mit messbarem Ergebnis. Endet mit Month-2-Pitch in Woche 8.',                          color: '#8B5CF6', emoji: '🚀', order: 2 },
+  { id: 'ownership',      label: 'Ownership',      weeks: 'Wochen 9–12',  description: 'Du übernimmst Verantwortung für eine Funktion. KPIs definieren, Entscheidungen treffen, Ergebnisse messen. Endet mit der Graduation-Präsentation in Woche 12.',                                                color: '#F59E0B', emoji: '👑', order: 3 },
+  { id: 'completed',      label: 'Completed',      weeks: 'Abschluss',    description: 'Fellowship erfolgreich abgeschlossen. Programme certificate, ggf. Reference Letter, ggf. weiterführende Rolle.',                                                                                              color: '#10B981', emoji: '🎓', order: 4 },
 ];
 
 const LEVEL_NAMES: Record<number, { name: string; emoji: string }> = {
@@ -63,7 +73,7 @@ const FellowCourseView: React.FC<FellowCourseViewProps> = ({ internId, showEvalL
   const [milestones, setMilestones] = useState<InternMilestone[]>([]);
   const [logEntries, setLogEntries] = useState<LearningLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'journey' | 'tasks' | 'goals' | 'log'>('journey');
+  const [activeTab, setActiveTab] = useState<'journey' | 'tasks' | 'goals' | 'log' | 'program'>('journey');
   const [newLogContent, setNewLogContent] = useState('');
   const [savingLog, setSavingLog] = useState(false);
 
@@ -111,9 +121,10 @@ const FellowCourseView: React.FC<FellowCourseViewProps> = ({ internId, showEvalL
   const currentPhase = useMemo(() => PHASES.find(p => p.id === (intern?.phase ?? 'onboarding')) ?? PHASES[0], [intern]);
   const level = intern?.level ?? 1;
   const levelInfo = LEVEL_NAMES[level] ?? LEVEL_NAMES[1];
-  const daysInProgram = useMemo(() => {
+  const programWeek = useMemo(() => {
     if (!intern?.start_date) return null;
-    return Math.floor((Date.now() - new Date(intern.start_date).getTime()) / (1000 * 60 * 60 * 24));
+    const days = Math.floor((Date.now() - new Date(intern.start_date).getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(1, Math.min(12, Math.ceil((days + 1) / 7)));
   }, [intern]);
 
   const activeAssignments = assignments.filter(a => a.status !== 'completed' && a.status !== 'skipped');
@@ -191,7 +202,7 @@ const FellowCourseView: React.FC<FellowCourseViewProps> = ({ internId, showEvalL
               {intern.full_name}
             </h1>
             <p className="mt-2 text-sm text-[#515154]">
-              {intern.department} · {daysInProgram !== null ? `Tag ${daysInProgram + 1} im Programm` : 'Noch nicht gestartet'}
+              {intern.department} · {programWeek !== null ? `Woche ${programWeek} / 12` : 'Noch nicht gestartet'}
             </p>
           </div>
 
@@ -267,12 +278,13 @@ const FellowCourseView: React.FC<FellowCourseViewProps> = ({ internId, showEvalL
       </section>
 
       {/* ═══ TABS ═══ */}
-      <nav className="mb-6 flex gap-1 border-b border-black/[0.08]">
+      <nav className="mb-6 flex gap-1 border-b border-black/[0.08] overflow-x-auto">
         {([
           { k: 'journey', label: 'Journey', count: null },
           { k: 'tasks', label: 'Tasks', count: activeAssignments.length },
           { k: 'goals', label: 'Goals', count: goals.length },
           { k: 'log', label: 'Learning Log', count: logEntries.length },
+          { k: 'program', label: 'Program', count: null },
         ] as const).map(t => (
           <button
             key={t.k}
@@ -324,6 +336,8 @@ const FellowCourseView: React.FC<FellowCourseViewProps> = ({ internId, showEvalL
           saving={savingLog}
         />
       )}
+
+      {activeTab === 'program' && <ProgramTab />}
     </div>
   );
 };
@@ -567,5 +581,48 @@ const LogTab: React.FC<{
     )}
   </div>
 );
+
+// ─── Program Tab — renders Tom's Academy framework docs in-app ───────────
+
+const PROGRAM_DOCS: Array<{ k: string; label: string; doc: string }> = [
+  { k: 'overview',  label: 'Overview',           doc: readmeDoc },
+  { k: 'tracks',    label: 'Specialisation Tracks', doc: tracksDoc },
+  { k: 'monday',    label: 'Monday Meeting',      doc: mondayDoc },
+  { k: 'rubrics',   label: 'Assessment Rubrics',  doc: rubricsDoc },
+  { k: 'buddy',     label: 'Buddy Program',       doc: buddyDoc },
+];
+
+const ProgramTab: React.FC = () => {
+  const [activeDoc, setActiveDoc] = useState(PROGRAM_DOCS[0].k);
+  const current = PROGRAM_DOCS.find(d => d.k === activeDoc) ?? PROGRAM_DOCS[0];
+
+  return (
+    <div>
+      <p className="mb-6 text-sm text-[#515154]">
+        Das komplette 12-Wochen-Curriculum zum Nachlesen. Phasen, Tracks, Meeting-Struktur, Bewertungen, Buddy-Programm.
+      </p>
+
+      <nav className="mb-8 flex flex-wrap gap-2">
+        {PROGRAM_DOCS.map(d => (
+          <button
+            key={d.k}
+            onClick={() => setActiveDoc(d.k)}
+            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+              activeDoc === d.k
+                ? 'bg-[#0F766E] text-white'
+                : 'bg-white border border-black/10 text-[#515154] hover:border-black/20 hover:text-[#1d1d1f]'
+            }`}
+          >
+            {d.label}
+          </button>
+        ))}
+      </nav>
+
+      <article className="rounded-2xl border border-black/[0.08] bg-white p-8 prose prose-slate max-w-none prose-headings:font-sans prose-headings:tracking-tight prose-h1:text-3xl prose-h1:font-black prose-h2:text-xl prose-h2:font-bold prose-h2:mt-10 prose-h3:font-bold prose-h3:text-base prose-table:text-sm prose-table:overflow-x-auto prose-th:bg-black/[0.03] prose-th:text-left prose-th:font-bold prose-td:py-2 prose-td:align-top prose-td:border-t prose-td:border-black/[0.06] prose-code:bg-black/[0.05] prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:before:content-none prose-code:after:content-none prose-li:my-0.5 prose-p:leading-relaxed prose-a:text-[#0F766E] prose-a:no-underline hover:prose-a:underline">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{current.doc}</ReactMarkdown>
+      </article>
+    </div>
+  );
+};
 
 export default FellowCourseView;
