@@ -35,6 +35,8 @@ function lazyLoad<T extends React.ComponentType>(factory: () => Promise<{ defaul
 const SettingsView = lazyLoad(() => import('./SettingsView'));
 const ApplicationListView = lazyLoad(() => import('./ApplicationListView'));
 const ApplicantDetailView = lazyLoad(() => import('./ApplicantDetailView'));
+const AmbassadorApplicationsView = lazyLoad(() => import('./AmbassadorApplicationsView'));
+const MAInquiriesView = lazyLoad(() => import('./MAInquiriesView'));
 const InsightsView = lazyLoad(() => import('./InsightsView'));
 const EvalDashboardView = lazyLoad(() => import('./EvalDashboardView'));
 const EmailTemplateManager = lazyLoad(() => import('./EmailTemplateManager'));
@@ -71,7 +73,7 @@ type Tab =
   | 'creatorPipeline' | 'videoGeneration'
   | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
   | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
-  | 'applications' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
+  | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
   | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails'
   | 'customerSupportOverview'
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
@@ -113,6 +115,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
       { id: 'analyticsKpis', label: 'Ad Analytics' },
       { id: 'marketingContentCalendar', label: 'Content Calendar' },
       { id: 'creatorPipeline', label: 'Creators' },
+      { id: 'ambassadorApplications', label: 'Ambassador Apps' },
       { id: 'marketingBriefs', label: 'Briefs' },
     ],
   },
@@ -166,6 +169,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     minRole: 'admin',
     tabs: [
       { id: 'teamManagement', label: 'Team' },
+      { id: 'maInquiries', label: 'M&A Inquiries' },
       { id: 'performance', label: 'Performance' },
       { id: 'brandConfig', label: 'Brand Config' },
       { id: 'toolStack', label: 'Tool Stack' },
@@ -514,6 +518,14 @@ const Dashboard: React.FC = () => {
         );
       }
       return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
+    }
+
+    if (tab === 'ambassadorApplications') {
+      return <AmbassadorApplicationsView />;
+    }
+
+    if (tab === 'maInquiries') {
+      return <MAInquiriesView />;
     }
 
     if (tab === 'emailTemplates') {
