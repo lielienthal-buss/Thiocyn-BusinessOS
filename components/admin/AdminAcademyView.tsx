@@ -498,9 +498,10 @@ const FinalReviewForm: React.FC<{
 };
 
 // ─── Intern Card ──────────────────────────────────────────────────────────
-const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = ({
+const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void; onOpenCourseView?: () => void }> = ({
   intern,
   onRefresh,
+  onOpenCourseView,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [showWeeklyForm, setShowWeeklyForm] = useState(false);
@@ -513,7 +514,6 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
   const inviteAccepted = intern.auth_user_id != null;
   const phaseAssignments = intern.assignments.filter(a => a.phase === intern.phase);
   const submittedAssignments = intern.assignments.filter(a => a.status === 'submitted');
-  const internPortalUrl = `${window.location.origin}/intern/${intern.id}`;
 
   return (
     <div className="bg-white/70 rounded-xl border border-black/[0.06] backdrop-blur-sm overflow-hidden">
@@ -549,6 +549,15 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
             <span className="text-xs bg-blue-500/15 text-blue-400 px-2 py-0.5 rounded-full font-semibold">
               {submittedAssignments.length} to review
             </span>
+          )}
+          {onOpenCourseView && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onOpenCourseView(); }}
+              className="text-xs font-bold bg-[#0F766E] text-white px-3 py-1 rounded-md hover:bg-[#115e59] transition-colors"
+              title="Open course view with eval layer"
+            >
+              Open →
+            </button>
           )}
           <span className="text-[#6e6e73] text-sm">{expanded ? '▲' : '▼'}</span>
         </div>
@@ -664,23 +673,20 @@ const InternCard: React.FC<{ intern: InternWithData; onRefresh: () => void }> = 
             </div>
           )}
 
-          {/* Intern Portal Link */}
-          <div className="pt-2 border-t border-black/[0.06]">
-            <p className="text-xs text-[#6e6e73] mb-1">Intern Portal Link</p>
-            <div className="flex items-center gap-2">
-              <input
-                readOnly
-                value={internPortalUrl}
-                className="flex-1 text-xs bg-black/[0.03] border border-white/[0.10] rounded px-2 py-1.5 text-[#515154]"
-              />
+          {/* Course View Quick Access */}
+          {onOpenCourseView && (
+            <div className="pt-2 border-t border-black/[0.06]">
               <button
-                onClick={() => navigator.clipboard.writeText(internPortalUrl)}
-                className="text-xs text-primary-600 hover:underline whitespace-nowrap"
+                onClick={onOpenCourseView}
+                className="w-full text-sm font-bold bg-[#0F766E] text-white px-4 py-2 rounded-lg hover:bg-[#115e59] transition-colors"
               >
-                Copy
+                Open Course View (with Eval Layer) →
               </button>
+              <p className="mt-1.5 text-[10px] text-[#6e6e73]">
+                Sieh die Sicht des Fellows mit Promotion + Notes
+              </p>
             </div>
-          </div>
+          )}
 
           {/* Deactivate */}
           {intern.is_active && (
@@ -780,12 +786,16 @@ const MondayMeetingSetupModal: React.FC<{
 };
 
 // ─── Admin Academy View (cohort management) ──────────────────────────────
+import FellowCourseView from './FellowCourseView';
+
 const AdminAcademyView: React.FC = () => {
   const [interns, setInterns] = useState<InternWithData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | AcademyPhase>('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [sendingBatch, setSendingBatch] = useState(false);
+  // Drill-down: when set, renders FellowCourseView for that intern with eval layer
+  const [drillIntoId, setDrillIntoId] = useState<string | null>(null);
   // Welle 1b Item 9 — feature flag for batch invites (Resend Domain blocker, Open Task #36).
   // Defaults to false until recruiter_settings.feature_flags.intern_invite_send is flipped on.
   const [inviteSendEnabled, setInviteSendEnabled] = useState(false);
@@ -929,6 +939,29 @@ const AdminAcademyView: React.FC = () => {
   function copyAllPendingEmails() {
     const emails = pendingInvites.map(i => i.email).join(', ');
     navigator.clipboard.writeText(emails);
+  }
+
+  // Drill-down: render a single fellow's course view with eval overlay
+  if (drillIntoId) {
+    const drillFellow = interns.find(i => i.id === drillIntoId);
+    return (
+      <div>
+        <div className="border-b border-black/[0.06] bg-white px-6 py-3 flex items-center justify-between">
+          <button
+            onClick={() => setDrillIntoId(null)}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#0F766E] hover:text-[#115e59]"
+          >
+            ← Back to cohort
+          </button>
+          {drillFellow && (
+            <div className="text-xs text-[#515154]">
+              Viewing <strong>{drillFellow.full_name}</strong> · {drillFellow.email}
+            </div>
+          )}
+        </div>
+        <FellowCourseView internId={drillIntoId} showEvalLayer />
+      </div>
+    );
   }
 
   return (
@@ -1217,7 +1250,7 @@ const AdminAcademyView: React.FC = () => {
       ) : (
         <div className="space-y-3">
           {displayed.map(intern => (
-            <InternCard key={intern.id} intern={intern} onRefresh={load} />
+            <InternCard key={intern.id} intern={intern} onRefresh={load} onOpenCourseView={() => setDrillIntoId(intern.id)} />
           ))}
         </div>
       )}

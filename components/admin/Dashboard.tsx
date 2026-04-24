@@ -38,6 +38,7 @@ const ApplicantDetailView = lazyLoad(() => import('./ApplicantDetailView'));
 const AmbassadorApplicationsView = lazyLoad(() => import('./AmbassadorApplicationsView'));
 const MAInquiriesView = lazyLoad(() => import('./MAInquiriesView'));
 const RecruitingOverview = lazyLoad(() => import('./RecruitingOverview'));
+const OnboardingChecklistView = lazyLoad(() => import('./OnboardingChecklistView'));
 const InsightsView = lazyLoad(() => import('./InsightsView'));
 const EvalDashboardView = lazyLoad(() => import('./EvalDashboardView'));
 const EmailTemplateManager = lazyLoad(() => import('./EmailTemplateManager'));
@@ -74,7 +75,7 @@ type Tab =
   | 'creatorPipeline' | 'videoGeneration'
   | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
   | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
-  | 'recruitingOverview' | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'emailTemplates' | 'evalDashboard'
+  | 'recruitingOverview' | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'academyOnboarding' | 'emailTemplates' | 'evalDashboard'
   | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails'
   | 'customerSupportOverview'
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
@@ -111,7 +112,6 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     tabs: [
       { id: 'marketingCockpit', label: 'Cockpit' },
       { id: 'marketingCampaigns', label: 'Campaigns' },
-      { id: 'analyticsAds', label: 'Ad Performance' },
       { id: 'analyticsKpis', label: 'Ad Analytics' },
       { id: 'ecomOverview', label: 'E-Commerce' },
       { id: 'marketingContentCalendar', label: 'Content Calendar' },
@@ -148,6 +148,7 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     emoji: '🎓',
     tabs: [
       { id: 'academy', label: 'Intern Academy' },
+      { id: 'academyOnboarding', label: 'Onboarding Checklist' },
       { id: 'evalDashboard', label: 'Eval Dashboard' },
     ],
   },
@@ -539,6 +540,10 @@ const Dashboard: React.FC = () => {
         );
       }
       return <ApplicationListView onSelectApplicant={setSelectedAppId} />;
+    }
+
+    if (tab === 'academyOnboarding') {
+      return <OnboardingChecklistView />;
     }
 
     if (tab === 'recruitingOverview') {
