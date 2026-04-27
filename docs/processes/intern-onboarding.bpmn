@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="Definitions_intern_onboarding"
+  targetNamespace="http://hsb.de/bpmn"
+  exporter="HSB Business OS" exporterVersion="1.0">
+
+  <bpmn:collaboration id="Collaboration_1">
+    <bpmn:participant id="Participant_HSB" name="HSB Intern Onboarding (Day 0 bis Ende Woche 1)" processRef="Process_1" />
+  </bpmn:collaboration>
+
+  <bpmn:process id="Process_1" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_HR" name="HR (Thiocyn GmbH)">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HR_Vertrag</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HR_Paperwork</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Lead" name="Programme Lead (Danylo)">
+        <bpmn:flowNodeRef>Task_Lead_BuddyMatch</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Lead_Tools</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Lead_WelcomeCall</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Lead_MidWeek</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Lead_Agenda</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Owner" name="Owner (Luis)">
+        <bpmn:flowNodeRef>Task_Owner_InternCard</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Owner_ManualFix</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Owner_MagicLink</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Buddy" name="Buddy">
+        <bpmn:flowNodeRef>Task_Buddy_Welcome</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Buddy_Coffee</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Intern" name="Intern">
+        <bpmn:flowNodeRef>Task_Intern_ClickLink</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelSplit1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelJoin1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Intern_Goals</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>IntermediateEvent_Day1End</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelSplit2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Intern_Assignments</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ParallelJoin2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Intern_Intro</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_System" name="System (Business OS)">
+        <bpmn:flowNodeRef>Task_System_AutoCreate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_AutoCreateCheck</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_1" name="Signed Offer Letter">
+      <bpmn:outgoing>Flow_Start_T1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_HR_Vertrag" name="Vertrag + Onboarding-Paket senden">
+      <bpmn:incoming>Flow_Start_T1</bpmn:incoming>
+      <bpmn:outgoing>Flow_T1_T2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Lead_BuddyMatch" name="Buddy-Kandidaten identifizieren">
+      <bpmn:incoming>Flow_T1_T2</bpmn:incoming>
+      <bpmn:outgoing>Flow_T2_T3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Owner_InternCard" name="Intern-Card in Business OS anlegen">
+      <bpmn:incoming>Flow_T2_T3</bpmn:incoming>
+      <bpmn:outgoing>Flow_T3_T4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_System_AutoCreate" name="Auto-create Intern + Assignments + Milestone">
+      <bpmn:incoming>Flow_T3_T4</bpmn:incoming>
+      <bpmn:outgoing>Flow_T4_G1</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="Gateway_AutoCreateCheck" name="Auto-create erfolgreich?">
+      <bpmn:incoming>Flow_T4_G1</bpmn:incoming>
+      <bpmn:outgoing>Flow_G1_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G1_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_Owner_ManualFix" name="Manueller Fix (SQL / Edge-Func Retry)">
+      <bpmn:incoming>Flow_G1_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_Fix_MagicLink</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Owner_MagicLink" name="Magic-Link versenden">
+      <bpmn:incoming>Flow_G1_Yes</bpmn:incoming>
+      <bpmn:incoming>Flow_Fix_MagicLink</bpmn:incoming>
+      <bpmn:outgoing>Flow_MagicLink_ClickLink</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_Intern_ClickLink" name="Magic-Link klicken + Profil vervollstaendigen">
+      <bpmn:incoming>Flow_MagicLink_ClickLink</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClickLink_G2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Gateway_ParallelSplit1" name="Parallel: Day 1">
+      <bpmn:incoming>Flow_ClickLink_G2</bpmn:incoming>
+      <bpmn:outgoing>Flow_G2_HR</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G2_Lead</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G2_Buddy</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_HR_Paperwork" name="Signed Paperwork + ID-Kopie einsammeln (Fellowship-Agreement, NDA, Notfallkontakt)">
+      <bpmn:incoming>Flow_G2_HR</bpmn:incoming>
+      <bpmn:outgoing>Flow_HR_G3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Lead_Tools" name="Tool-Access einrichten (Slack, Notion, Drive)">
+      <bpmn:incoming>Flow_G2_Lead</bpmn:incoming>
+      <bpmn:outgoing>Flow_Lead_G3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Buddy_Welcome" name="Welcome-DM + Coffee-Chat-Vorschlag">
+      <bpmn:incoming>Flow_G2_Buddy</bpmn:incoming>
+      <bpmn:outgoing>Flow_Buddy_G3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Gateway_ParallelJoin1" name="Join: Day 1">
+      <bpmn:incoming>Flow_HR_G3</bpmn:incoming>
+      <bpmn:incoming>Flow_Lead_G3</bpmn:incoming>
+      <bpmn:incoming>Flow_Buddy_G3</bpmn:incoming>
+      <bpmn:outgoing>Flow_G3_WelcomeCall</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_Lead_WelcomeCall" name="Welcome-Call (30min) + Goal-Setting-Hausaufgabe">
+      <bpmn:incoming>Flow_G3_WelcomeCall</bpmn:incoming>
+      <bpmn:outgoing>Flow_WelcomeCall_Goals</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Intern_Goals" name="3 Personal Goals in intern_goals eintragen">
+      <bpmn:incoming>Flow_WelcomeCall_Goals</bpmn:incoming>
+      <bpmn:outgoing>Flow_Goals_Day1End</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:intermediateThrowEvent id="IntermediateEvent_Day1End" name="Day 1 Complete: Rookie">
+      <bpmn:incoming>Flow_Goals_Day1End</bpmn:incoming>
+      <bpmn:outgoing>Flow_Day1End_G4</bpmn:outgoing>
+    </bpmn:intermediateThrowEvent>
+
+    <bpmn:parallelGateway id="Gateway_ParallelSplit2" name="Parallel: Day 2-4">
+      <bpmn:incoming>Flow_Day1End_G4</bpmn:incoming>
+      <bpmn:outgoing>Flow_G4_Coffee</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G4_Assignments</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G4_MidWeek</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="Task_Buddy_Coffee" name="Coffee-Chat (30-45min)">
+      <bpmn:incoming>Flow_G4_Coffee</bpmn:incoming>
+      <bpmn:outgoing>Flow_Coffee_G5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Intern_Assignments" name="6 Onboarding-Assignments bearbeiten">
+      <bpmn:incoming>Flow_G4_Assignments</bpmn:incoming>
+      <bpmn:outgoing>Flow_Assignments_G5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Lead_MidWeek" name="Mid-Week-Check-In (Slack, 15min)">
+      <bpmn:incoming>Flow_G4_MidWeek</bpmn:incoming>
+      <bpmn:outgoing>Flow_MidWeek_G5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="Gateway_ParallelJoin2" name="Join: Day 2-4">
+      <bpmn:incoming>Flow_Coffee_G5</bpmn:incoming>
+      <bpmn:incoming>Flow_Assignments_G5</bpmn:incoming>
+      <bpmn:incoming>Flow_MidWeek_G5</bpmn:incoming>
+      <bpmn:outgoing>Flow_G5_Intro</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:task id="Task_Intern_Intro" name="Kurz-Intro fuer Monday Meeting vorbereiten">
+      <bpmn:incoming>Flow_G5_Intro</bpmn:incoming>
+      <bpmn:outgoing>Flow_Intro_Agenda</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_Lead_Agenda" name="Monday-Meeting-Agenda an alle senden">
+      <bpmn:incoming>Flow_Intro_Agenda</bpmn:incoming>
+      <bpmn:outgoing>Flow_Agenda_End</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_1" name="Onboarding Phase 1 abgeschlossen - Foundation startet">
+      <bpmn:incoming>Flow_Agenda_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_Start_T1" sourceRef="StartEvent_1" targetRef="Task_HR_Vertrag" />
+    <bpmn:sequenceFlow id="Flow_T1_T2" sourceRef="Task_HR_Vertrag" targetRef="Task_Lead_BuddyMatch" />
+    <bpmn:sequenceFlow id="Flow_T2_T3" sourceRef="Task_Lead_BuddyMatch" targetRef="Task_Owner_InternCard" />
+    <bpmn:sequenceFlow id="Flow_T3_T4" sourceRef="Task_Owner_InternCard" targetRef="Task_System_AutoCreate" />
+    <bpmn:sequenceFlow id="Flow_T4_G1" sourceRef="Task_System_AutoCreate" targetRef="Gateway_AutoCreateCheck" />
+    <bpmn:sequenceFlow id="Flow_G1_Yes" name="Ja" sourceRef="Gateway_AutoCreateCheck" targetRef="Task_Owner_MagicLink" />
+    <bpmn:sequenceFlow id="Flow_G1_No" name="Nein" sourceRef="Gateway_AutoCreateCheck" targetRef="Task_Owner_ManualFix" />
+    <bpmn:sequenceFlow id="Flow_Fix_MagicLink" sourceRef="Task_Owner_ManualFix" targetRef="Task_Owner_MagicLink" />
+    <bpmn:sequenceFlow id="Flow_MagicLink_ClickLink" sourceRef="Task_Owner_MagicLink" targetRef="Task_Intern_ClickLink" />
+    <bpmn:sequenceFlow id="Flow_ClickLink_G2" sourceRef="Task_Intern_ClickLink" targetRef="Gateway_ParallelSplit1" />
+    <bpmn:sequenceFlow id="Flow_G2_HR" sourceRef="Gateway_ParallelSplit1" targetRef="Task_HR_Paperwork" />
+    <bpmn:sequenceFlow id="Flow_G2_Lead" sourceRef="Gateway_ParallelSplit1" targetRef="Task_Lead_Tools" />
+    <bpmn:sequenceFlow id="Flow_G2_Buddy" sourceRef="Gateway_ParallelSplit1" targetRef="Task_Buddy_Welcome" />
+    <bpmn:sequenceFlow id="Flow_HR_G3" sourceRef="Task_HR_Paperwork" targetRef="Gateway_ParallelJoin1" />
+    <bpmn:sequenceFlow id="Flow_Lead_G3" sourceRef="Task_Lead_Tools" targetRef="Gateway_ParallelJoin1" />
+    <bpmn:sequenceFlow id="Flow_Buddy_G3" sourceRef="Task_Buddy_Welcome" targetRef="Gateway_ParallelJoin1" />
+    <bpmn:sequenceFlow id="Flow_G3_WelcomeCall" sourceRef="Gateway_ParallelJoin1" targetRef="Task_Lead_WelcomeCall" />
+    <bpmn:sequenceFlow id="Flow_WelcomeCall_Goals" sourceRef="Task_Lead_WelcomeCall" targetRef="Task_Intern_Goals" />
+    <bpmn:sequenceFlow id="Flow_Goals_Day1End" sourceRef="Task_Intern_Goals" targetRef="IntermediateEvent_Day1End" />
+    <bpmn:sequenceFlow id="Flow_Day1End_G4" sourceRef="IntermediateEvent_Day1End" targetRef="Gateway_ParallelSplit2" />
+    <bpmn:sequenceFlow id="Flow_G4_Coffee" sourceRef="Gateway_ParallelSplit2" targetRef="Task_Buddy_Coffee" />
+    <bpmn:sequenceFlow id="Flow_G4_Assignments" sourceRef="Gateway_ParallelSplit2" targetRef="Task_Intern_Assignments" />
+    <bpmn:sequenceFlow id="Flow_G4_MidWeek" sourceRef="Gateway_ParallelSplit2" targetRef="Task_Lead_MidWeek" />
+    <bpmn:sequenceFlow id="Flow_Coffee_G5" sourceRef="Task_Buddy_Coffee" targetRef="Gateway_ParallelJoin2" />
+    <bpmn:sequenceFlow id="Flow_Assignments_G5" sourceRef="Task_Intern_Assignments" targetRef="Gateway_ParallelJoin2" />
+    <bpmn:sequenceFlow id="Flow_MidWeek_G5" sourceRef="Task_Lead_MidWeek" targetRef="Gateway_ParallelJoin2" />
+    <bpmn:sequenceFlow id="Flow_G5_Intro" sourceRef="Gateway_ParallelJoin2" targetRef="Task_Intern_Intro" />
+    <bpmn:sequenceFlow id="Flow_Intro_Agenda" sourceRef="Task_Intern_Intro" targetRef="Task_Lead_Agenda" />
+    <bpmn:sequenceFlow id="Flow_Agenda_End" sourceRef="Task_Lead_Agenda" targetRef="EndEvent_1" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1">
+      <bpmndi:BPMNShape id="Participant_HSB_di" bpmnElement="Participant_HSB" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="3200" height="840" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_HR_di" bpmnElement="Lane_HR" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Lead_di" bpmnElement="Lane_Lead" isHorizontal="true">
+        <dc:Bounds x="190" y="220" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Owner_di" bpmnElement="Lane_Owner" isHorizontal="true">
+        <dc:Bounds x="190" y="360" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Buddy_di" bpmnElement="Lane_Buddy" isHorizontal="true">
+        <dc:Bounds x="190" y="500" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Intern_di" bpmnElement="Lane_Intern" isHorizontal="true">
+        <dc:Bounds x="190" y="640" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_System_di" bpmnElement="Lane_System" isHorizontal="true">
+        <dc:Bounds x="190" y="780" width="3170" height="140" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="222" y="132" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="200" y="175" width="80" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HR_Vertrag_di" bpmnElement="Task_HR_Vertrag">
+        <dc:Bounds x="330" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Lead_BuddyMatch_di" bpmnElement="Task_Lead_BuddyMatch">
+        <dc:Bounds x="490" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Owner_InternCard_di" bpmnElement="Task_Owner_InternCard">
+        <dc:Bounds x="650" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_System_AutoCreate_di" bpmnElement="Task_System_AutoCreate">
+        <dc:Bounds x="810" y="810" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_AutoCreateCheck_di" bpmnElement="Gateway_AutoCreateCheck" isMarkerVisible="true">
+        <dc:Bounds x="965" y="825" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="945" y="885" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Owner_ManualFix_di" bpmnElement="Task_Owner_ManualFix">
+        <dc:Bounds x="1100" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Owner_MagicLink_di" bpmnElement="Task_Owner_MagicLink">
+        <dc:Bounds x="1260" y="390" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Intern_ClickLink_di" bpmnElement="Task_Intern_ClickLink">
+        <dc:Bounds x="1420" y="670" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelSplit1_di" bpmnElement="Gateway_ParallelSplit1">
+        <dc:Bounds x="1575" y="685" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1558" y="745" width="85" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HR_Paperwork_di" bpmnElement="Task_HR_Paperwork">
+        <dc:Bounds x="1680" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Lead_Tools_di" bpmnElement="Task_Lead_Tools">
+        <dc:Bounds x="1680" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Buddy_Welcome_di" bpmnElement="Task_Buddy_Welcome">
+        <dc:Bounds x="1680" y="530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelJoin1_di" bpmnElement="Gateway_ParallelJoin1">
+        <dc:Bounds x="1835" y="685" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1825" y="745" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Lead_WelcomeCall_di" bpmnElement="Task_Lead_WelcomeCall">
+        <dc:Bounds x="1940" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Intern_Goals_di" bpmnElement="Task_Intern_Goals">
+        <dc:Bounds x="2100" y="670" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="IntermediateEvent_Day1End_di" bpmnElement="IntermediateEvent_Day1End">
+        <dc:Bounds x="2272" y="692" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2240" y="735" width="100" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelSplit2_di" bpmnElement="Gateway_ParallelSplit2">
+        <dc:Bounds x="2395" y="685" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2378" y="745" width="85" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Buddy_Coffee_di" bpmnElement="Task_Buddy_Coffee">
+        <dc:Bounds x="2500" y="530" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Intern_Assignments_di" bpmnElement="Task_Intern_Assignments">
+        <dc:Bounds x="2500" y="670" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Lead_MidWeek_di" bpmnElement="Task_Lead_MidWeek">
+        <dc:Bounds x="2500" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ParallelJoin2_di" bpmnElement="Gateway_ParallelJoin2">
+        <dc:Bounds x="2655" y="685" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2645" y="745" width="70" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Intern_Intro_di" bpmnElement="Task_Intern_Intro">
+        <dc:Bounds x="2760" y="670" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Lead_Agenda_di" bpmnElement="Task_Lead_Agenda">
+        <dc:Bounds x="2920" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="3092" y="692" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="3040" y="735" width="140" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Start_T1_di" bpmnElement="Flow_Start_T1">
+        <di:waypoint x="258" y="150" /><di:waypoint x="330" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T1_T2_di" bpmnElement="Flow_T1_T2">
+        <di:waypoint x="430" y="150" /><di:waypoint x="460" y="150" /><di:waypoint x="460" y="290" /><di:waypoint x="490" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T2_T3_di" bpmnElement="Flow_T2_T3">
+        <di:waypoint x="590" y="290" /><di:waypoint x="620" y="290" /><di:waypoint x="620" y="430" /><di:waypoint x="650" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T3_T4_di" bpmnElement="Flow_T3_T4">
+        <di:waypoint x="750" y="430" /><di:waypoint x="780" y="430" /><di:waypoint x="780" y="850" /><di:waypoint x="810" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_T4_G1_di" bpmnElement="Flow_T4_G1">
+        <di:waypoint x="910" y="850" /><di:waypoint x="965" y="850" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G1_No_di" bpmnElement="Flow_G1_No">
+        <di:waypoint x="990" y="825" /><di:waypoint x="990" y="430" /><di:waypoint x="1100" y="430" />
+        <bpmndi:BPMNLabel><dc:Bounds x="998" y="580" width="20" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G1_Yes_di" bpmnElement="Flow_G1_Yes">
+        <di:waypoint x="1015" y="850" /><di:waypoint x="1310" y="850" /><di:waypoint x="1310" y="470" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1158" y="830" width="20" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Fix_MagicLink_di" bpmnElement="Flow_Fix_MagicLink">
+        <di:waypoint x="1200" y="430" /><di:waypoint x="1260" y="430" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MagicLink_ClickLink_di" bpmnElement="Flow_MagicLink_ClickLink">
+        <di:waypoint x="1360" y="430" /><di:waypoint x="1390" y="430" /><di:waypoint x="1390" y="710" /><di:waypoint x="1420" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ClickLink_G2_di" bpmnElement="Flow_ClickLink_G2">
+        <di:waypoint x="1520" y="710" /><di:waypoint x="1575" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G2_HR_di" bpmnElement="Flow_G2_HR">
+        <di:waypoint x="1600" y="685" /><di:waypoint x="1600" y="150" /><di:waypoint x="1680" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G2_Lead_di" bpmnElement="Flow_G2_Lead">
+        <di:waypoint x="1600" y="685" /><di:waypoint x="1600" y="290" /><di:waypoint x="1680" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G2_Buddy_di" bpmnElement="Flow_G2_Buddy">
+        <di:waypoint x="1600" y="685" /><di:waypoint x="1600" y="570" /><di:waypoint x="1680" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HR_G3_di" bpmnElement="Flow_HR_G3">
+        <di:waypoint x="1780" y="150" /><di:waypoint x="1860" y="150" /><di:waypoint x="1860" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Lead_G3_di" bpmnElement="Flow_Lead_G3">
+        <di:waypoint x="1780" y="290" /><di:waypoint x="1860" y="290" /><di:waypoint x="1860" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Buddy_G3_di" bpmnElement="Flow_Buddy_G3">
+        <di:waypoint x="1780" y="570" /><di:waypoint x="1860" y="570" /><di:waypoint x="1860" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G3_WelcomeCall_di" bpmnElement="Flow_G3_WelcomeCall">
+        <di:waypoint x="1860" y="685" /><di:waypoint x="1860" y="290" /><di:waypoint x="1940" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WelcomeCall_Goals_di" bpmnElement="Flow_WelcomeCall_Goals">
+        <di:waypoint x="2040" y="290" /><di:waypoint x="2070" y="290" /><di:waypoint x="2070" y="710" /><di:waypoint x="2100" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Goals_Day1End_di" bpmnElement="Flow_Goals_Day1End">
+        <di:waypoint x="2200" y="710" /><di:waypoint x="2272" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Day1End_G4_di" bpmnElement="Flow_Day1End_G4">
+        <di:waypoint x="2308" y="710" /><di:waypoint x="2395" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G4_MidWeek_di" bpmnElement="Flow_G4_MidWeek">
+        <di:waypoint x="2420" y="685" /><di:waypoint x="2420" y="290" /><di:waypoint x="2500" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G4_Coffee_di" bpmnElement="Flow_G4_Coffee">
+        <di:waypoint x="2420" y="685" /><di:waypoint x="2420" y="570" /><di:waypoint x="2500" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G4_Assignments_di" bpmnElement="Flow_G4_Assignments">
+        <di:waypoint x="2445" y="710" /><di:waypoint x="2500" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MidWeek_G5_di" bpmnElement="Flow_MidWeek_G5">
+        <di:waypoint x="2600" y="290" /><di:waypoint x="2680" y="290" /><di:waypoint x="2680" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Coffee_G5_di" bpmnElement="Flow_Coffee_G5">
+        <di:waypoint x="2600" y="570" /><di:waypoint x="2680" y="570" /><di:waypoint x="2680" y="685" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Assignments_G5_di" bpmnElement="Flow_Assignments_G5">
+        <di:waypoint x="2600" y="710" /><di:waypoint x="2655" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G5_Intro_di" bpmnElement="Flow_G5_Intro">
+        <di:waypoint x="2705" y="710" /><di:waypoint x="2760" y="710" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Intro_Agenda_di" bpmnElement="Flow_Intro_Agenda">
+        <di:waypoint x="2860" y="710" /><di:waypoint x="2890" y="710" /><di:waypoint x="2890" y="290" /><di:waypoint x="2920" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Agenda_End_di" bpmnElement="Flow_Agenda_End">
+        <di:waypoint x="3020" y="290" /><di:waypoint x="3060" y="290" /><di:waypoint x="3060" y="710" /><di:waypoint x="3092" y="710" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,6 +1,8 @@
-# Employment Onboarding · Thiocyn GmbH
+# Fellowship & Employment Onboarding · Thiocyn GmbH
 
-Das **universelle Day-1-Setup** für jeden Hire. Alle Praktikanten und Mitarbeiter werden über die **Thiocyn GmbH** (Hamburg, HRB 197608, Geschäftsführer Peter Hart) angestellt — unabhängig davon, an welcher Brand sie operativ arbeiten.
+Das **universelle Day-1-Setup** für jeden Hire. Alle Fellows und Mitarbeiter sind vertraglich mit der **Thiocyn GmbH** (Hamburg, HRB 197608, Geschäftsführer Peter Hart) verbunden — unabhängig davon, an welcher Brand sie operativ arbeiten.
+
+> **Fellows** laufen aktuell über ein **unentgeltliches, internationales Fellowship-Agreement** (12 Wochen, remote). **Mitarbeiter nach Conversion** bekommen einen regulären Arbeitsvertrag.
 
 > Diese Schritte sind **identisch für alle Brands**. Brand-spezifische Vorstellungen findest du in [`brand-walkthroughs/`](./brand-walkthroughs/).
 
@@ -14,11 +16,17 @@ Das **universelle Day-1-Setup** für jeden Hire. Alle Praktikanten und Mitarbeit
 - **Email-Account** (falls relevant für Rolle)
 - Falls technisch: Cursor-Lizenz, GitHub-Repo-Access, Supabase-Read-Access (per Anfrage)
 
-### Paperwork (HR)
-- Vertrag unterzeichnen
-- Personalfragebogen ausfüllen
-- Bescheinigung über Nebentätigkeiten
-- Bankverbindung + Steuer-ID für Lohnzahlung
+### Paperwork (HR) — Fellowship (unentgeltlich, international)
+
+Fellows sind aktuell **unentgeltlich und international** — entsprechend schlank das Paperwork. **Keine deutschen Lohn- oder Sozialversicherungs-Unterlagen** während der Fellowship-Phase.
+
+- **Fellowship-Agreement** unterzeichnen (unentgeltlich, 12 Wochen, remote) — enthält NDA, IP-Klausel, DSGVO-Einwilligung. Template: [`fellowship-agreement-template.md`](./fellowship-agreement-template.md) *(DRAFT — legal review required before first use)*
+- **Personal-Datenblatt**: Vollständige Adresse, E-Mail, Telefon, Notfallkontakt
+- **Identitätsnachweis**: Pass- oder Ausweis-Kopie als Upload (PDF/JPG)
+- **Bestätigung Krankenversicherung**: Formloser Eigennachweis — wir sind kein Arbeitgeber, stellen keine GKV
+- **Bankverbindung (optional)**: Nur falls Spesen-Erstattungen anfallen (z.B. Reisekosten zu Live-Meetings, Equipment-Budget)
+
+> **Bei Conversion zum bezahlten Vertrag nach Graduation** (Woche 12) kommen Steuer-ID, Sozialversicherungsnummer und Lohnsteuer-Unterlagen dazu — separate Doc zum Zeitpunkt.
 
 ### System-Tour
 - 30-Min Tour durchs Business OS — Onboarding Lead (aktuell Danylo) führt durch:
@@ -79,5 +87,8 @@ A: Buddy ist deine erste Anlaufstelle. Stuck nach 24h → Slack `#fellows` Chann
 **Q: Ich bin auf Brand X angesetzt, aber sehe Daten von Brand Y. Normal?**
 A: Ja. Du siehst über deine Allowed-Sections die Brands, an denen du operativ arbeitest. Cross-Brand-Sicht ist Feature, nicht Bug — du lernst durchs Beobachten.
 
-**Q: Wann werde ich offiziell hired (vs. Praktikant)?**
-A: Standard ist 3-Monate-Fellowship. Beim Graduation-Pitch (Woche 12) wird über Conversion entschieden — basierend auf Pitches + Ownership-Phase + Cultural Fit. Siehe [`assessment-rubrics.md`](./assessment-rubrics.md).
+**Q: Wann werde ich offiziell hired (vs. Fellow)?**
+A: Standard ist **12-Wochen unentgeltliches Fellowship**. Beim Graduation-Pitch (Woche 12) entscheiden wir über Conversion zum **bezahlten Vertrag** — basierend auf Pitches + Ownership-Phase + Cultural Fit. Siehe [`assessment-rubrics.md`](./assessment-rubrics.md).
+
+**Q: Ich bin nicht in Deutschland — funktioniert das trotzdem?**
+A: Ja. Das Fellowship ist **international + full remote**. Du arbeitest aus deinem Land, wir koordinieren async über Slack + Business OS, Monday Meetings via Zoom. Du bist selbst für deine lokale Steuer-/Versicherungssituation verantwortlich — wir sind während der Fellowship nicht dein Arbeitgeber.

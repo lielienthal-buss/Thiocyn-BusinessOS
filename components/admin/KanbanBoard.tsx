@@ -3,6 +3,7 @@ import { getAllApplications, updateApplicationStage } from '@/lib/actions';
 import type { Application, ApplicationStage } from '@/types';
 import Spinner from '@/components/ui/Spinner';
 import { toast } from 'sonner';
+import ApplicantDetailDrawer from './ApplicantDetailDrawer';
 
 const STAGE_LABELS: Record<string, string> = {
   applied: 'Applied',
@@ -193,10 +194,16 @@ const KanbanBoard: React.FC = () => {
         })}
       </div>
       {selectedApp && (
-        <UpdateStageModal
+        <ApplicantDetailDrawer
           application={selectedApp}
-          onClose={() => setSelectedApp(null)}
-          onUpdate={handleUpdateStage}
+          onClose={() => {
+            setSelectedApp(null);
+            // Refetch to pick up any changes made inside the drawer (notes, stage via send-email, hire flow)
+            void fetchApps();
+          }}
+          onStageChange={(newStage) => {
+            handleUpdateStage(newStage);
+          }}
         />
       )}
     </>

@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '@/lib/ConfigContext';
+import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import Spinner from '@/components/ui/Spinner';
 import type { LandingConfig } from '@/types';
+
+const FUNNEL_TABLES: Array<{ key: string; label: string; description: string }> = [
+  { key: 'applications',           label: 'Founders University', description: 'Intro-Call mit Bewerbern für die 12-Wochen-Fellowship' },
+  { key: 'ambassador_applications', label: 'Ambassador',          description: 'Kennenlern-Gespräch mit Creator-Bewerbern' },
+  { key: 'ma_inquiries',           label: 'M&A / Founders',       description: 'Erstgespräch mit verkaufsbereiten Founderns' },
+];
+
+interface TeamMemberRow {
+  id: string;
+  full_name: string | null;
+  email: string;
+  role: string;
+  calendly_url: string | null;
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -36,12 +51,30 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
   const [form, setForm] = useState({ ...config });
   const [landing, setLanding] = useState<LandingConfig>({ ...DEFAULT_LANDING, ...config.landing_config });
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'general' | 'features' | 'ai' | 'landing'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'features' | 'ai' | 'landing' | 'funnels'>('general');
+  const [teamMembers, setTeamMembers] = useState<TeamMemberRow[]>([]);
 
   useEffect(() => {
     setForm({ ...config });
     setLanding({ ...DEFAULT_LANDING, ...config.landing_config });
   }, [config]);
+
+  useEffect(() => {
+    if (activeTab !== 'funnels' || teamMembers.length > 0) return;
+    supabase
+      .from('team_members')
+      .select('id, full_name, email, role, calendly_url')
+      .eq('status', 'active')
+      .order('full_name')
+      .then(({ data }) => setTeamMembers((data as TeamMemberRow[]) ?? []));
+  }, [activeTab, teamMembers.length]);
+
+  const setFunnelOwner = (funnelKey: string, ownerId: string | null) => {
+    setForm(f => ({
+      ...f,
+      funnel_owners: { ...(f.funnel_owners ?? {}), [funnelKey]: ownerId },
+    }));
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -56,6 +89,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
       ai_instruction: form.ai_instruction,
       feature_flags: form.feature_flags,
       landing_config: landing,
+      funnel_owners: form.funnel_owners,
     });
     if (success) toast.success('Gespeichert');
     else toast.error('Fehler beim Speichern');
@@ -88,6 +122,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
   const TABS = [
     { id: 'general', label: '⚙️ Allgemein' },
     { id: 'features', label: '🧩 Features' },
+    { id: 'funnels', label: '🎯 Funnel Owners' },
     { id: 'ai', label: '🤖 KI Kontext' },
     { id: 'landing', label: '🌐 Landing Page' },
   ] as const;
@@ -141,6 +176,62 @@ const SettingsView: React.FC<SettingsViewProps> = ({ isDemoMode = false }) => {
                 </div>
               ))}
             </div>
+            <SaveButton />
+          </>
+        )}
+
+        {activeTab === 'funnels' && (
+          <>
+            <div>
+              <p className="text-sm text-[#515154] mb-1">
+                Wer macht die Intro-Calls für welchen Funnel? Dessen Calendly-Link wird automatisch in die Auto-Reply-Mail eingebunden.
+              </p>
+              <p className="text-xs text-[#86868b] mb-5">
+                Voraussetzung: Der ausgewählte Owner hat seinen Calendly-Link unter <strong>Account-Profil</strong> gepflegt.
+                Falls nicht: Fallback auf zentralen Calendly-Link aus Allgemein-Tab.
+              </p>
+            </div>
+
+            {teamMembers.length === 0 ? (
+              <div className="text-sm text-[#6e6e73] py-6 text-center">Lade Team-Mitglieder…</div>
+            ) : (
+              <div className="space-y-4">
+                {FUNNEL_TABLES.map(funnel => {
+                  const currentOwnerId = form.funnel_owners?.[funnel.key] ?? '';
+                  const currentOwner = teamMembers.find(m => m.id === currentOwnerId);
+                  const hasLink = !!currentOwner?.calendly_url;
+                  return (
+                    <div key={funnel.key} className="rounded-xl border border-black/[0.08] bg-white p-4">
+                      <div className="flex items-baseline justify-between mb-1">
+                        <p className="text-sm font-bold text-[#1d1d1f]">{funnel.label}</p>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-[#86868b]">{funnel.key}</p>
+                      </div>
+                      <p className="text-xs text-[#6e6e73] mb-3">{funnel.description}</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <select
+                          value={currentOwnerId}
+                          onChange={e => setFunnelOwner(funnel.key, e.target.value || null)}
+                          disabled={isDemoMode}
+                          className="flex-1 min-w-[200px] h-9 rounded-lg border border-black/10 bg-white px-3 text-sm text-[#1d1d1f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F766E]"
+                        >
+                          <option value="">— kein Owner (Fallback auf zentralen Link) —</option>
+                          {teamMembers.map(m => (
+                            <option key={m.id} value={m.id}>
+                              {m.full_name ?? m.email} · {m.role}{m.calendly_url ? ' · ✓ Link gepflegt' : ' · ⚠ kein Link'}
+                            </option>
+                          ))}
+                        </select>
+                        {currentOwnerId && (
+                          <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${hasLink ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}`}>
+                            {hasLink ? '✓ Calendly OK' : '⚠ Owner braucht Calendly-Link'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <SaveButton />
           </>
         )}

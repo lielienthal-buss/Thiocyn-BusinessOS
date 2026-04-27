@@ -11,14 +11,17 @@ type Locale = 'de' | 'en';
 const COPY = {
   de: {
     eyebrow: '/ 01 · FOUNDERS UNIVERSITY',
-    title: 'Baue Marken von innen. Mit den Leuten, die sie bauen.',
-    sub: '3–6 Monate Fellowship in unserem House. Marketing, E-Commerce, Ops, AI — über 6 Marken gleichzeitig. Für alle, die nicht Theorie lernen wollen, sondern Realität.',
+    titleLines: ['Marketing.', 'An echten Brands.', 'Nicht in Theorie.'] as const,
+    titleMidIndex: 1,
+    sub: '12-Wochen Fellowship in unserem House. Marketing, E-Commerce, Ops, AI — über 6 Marken gleichzeitig. Für alle, die nicht Theorie lernen wollen, sondern Realität.',
+    ctaPrimary: 'Jetzt bewerben',
+    ctaSecondary: 'Was dich erwartet',
     whyHeading: 'Was du bei uns bekommst.',
     why: [
-      { tag: 'REAL OPS', title: 'Kein Pitch-Deck-Job', body: 'Du arbeitest an echten Kampagnen, echten Budgets, echten Kund:innen. Von Tag 1 bis Tag 180. Output wird gemessen.' },
+      { tag: 'REAL OPS', title: 'Kein Pitch-Deck-Job', body: 'Du arbeitest an echten Kampagnen, echten Budgets, echten Kund:innen. Von Tag 1 bis zur letzten Woche. Output wird gemessen.' },
       { tag: 'CROSS-BRAND', title: '6 Marken, 1 Team', body: 'Du lernst Marketing in Beauty, Fashion, Accessoires, Home — gleichzeitig. Jede Brand ist ein eigenes Labor. Du siehst was funktioniert, wo und warum.' },
       { tag: 'MENTORING', title: 'Direkter Draht zu Gründer + Team', body: 'Kein Corporate-Reporting-Chain. Peter (Founder) reviewed deine Projekte selbst. Dazu: Buddy aus dem Team, monatliche 1:1s.' },
-      { tag: 'AI-NATIVE', title: 'Du arbeitest mit unserem AI-Stack', body: 'Pythia (Trend-Forecast), Content-Pipelines, Agent-Systeme. Du verstehst AI-Ops auf der Ebene, die außerhalb der Top-Startups niemand beherrscht.' },
+      { tag: 'AI-NATIVE', title: 'Du arbeitest mit unserem AI-Stack', body: 'Pythia (unsere Trend-KI), automatisierte Content-Workflows, AI-Agenten im Tagesgeschäft. Du arbeitest täglich mit dem Stack, den außerhalb von Top-Startups kaum jemand kennt.' },
     ],
     fitHeading: 'Für wen es passt.',
     fitBody: 'Du hast etwas gebaut oder versucht zu bauen — Brand, Side-Project, Content-Account, Kampagne. Du willst nicht nur ausführen, sondern verstehen warum. Du ziehst echtes Shipping dem perfekten Plan vor.',
@@ -30,20 +33,23 @@ const COPY = {
       { n: '04', dur: 'danach', title: 'Case + Start', body: 'Kurzer Praxis-Case (~2h). Bei Zusage: Startdatum, Buddy, Einarbeitung.' },
     ],
     trustHeading: 'Wir investieren in dich, nicht umgekehrt.',
-    trustBody: 'Keine Teilnahmegebühr, keine Kursgebühren, kein verstecktes Paywall. Fellowship ist vergütet und full remote — du arbeitest von wo du willst, wir koordinieren async. Einarbeitung läuft über unseren Onboarding Lead, du bist nie allein am Puzzle.',
+    trustBody: 'Keine Teilnahmegebühr, keine Kursgebühren, kein verstecktes Paywall. Das Fellowship ist unentgeltlich und full remote — du arbeitest von wo du willst, wir koordinieren async. Du investierst Zeit + Energie, wir geben dir Zugang zu echten Brands, echten Budgets und einem direkten Draht zum Team. Bei Conversion zur bezahlten Rolle nach Graduation: separater Vertrag.',
     formHeading: 'Jetzt bewerben',
     formSub: 'Ca. 10 Minuten. Wir antworten innerhalb einer Woche.',
   },
   en: {
     eyebrow: '/ 01 · FOUNDERS UNIVERSITY',
-    title: 'Build brands from the inside. With the people who build them.',
-    sub: '3–6 month fellowship in our house. Marketing, e-commerce, ops, AI — across 6 brands at once. For people who want to learn reality, not theory.',
+    titleLines: ['Marketing.', 'In real brands.', 'Not in theory.'] as const,
+    titleMidIndex: 1,
+    sub: '12-week fellowship in our house. Marketing, e-commerce, ops, AI — across 6 brands at once. For people who want to learn reality, not theory.',
+    ctaPrimary: 'Apply now',
+    ctaSecondary: 'What to expect',
     whyHeading: 'What you get with us.',
     why: [
-      { tag: 'REAL OPS', title: 'Not a pitch-deck job', body: 'You work on real campaigns, real budgets, real customers. From day 1 to day 180. Output is measured.' },
+      { tag: 'REAL OPS', title: 'Not a pitch-deck job', body: 'You work on real campaigns, real budgets, real customers. From day 1 to your final week. Output is measured.' },
       { tag: 'CROSS-BRAND', title: '6 brands, 1 team', body: 'You learn marketing in beauty, fashion, accessories, home — simultaneously. Each brand is its own lab. You see what works, where, and why.' },
       { tag: 'MENTORING', title: 'Direct line to founder + team', body: 'No corporate reporting chain. Peter (founder) reviews your projects himself. Plus: buddy from the team, monthly 1:1s.' },
-      { tag: 'AI-NATIVE', title: 'You work with our AI stack', body: 'Pythia (trend forecast), content pipelines, agent systems. You understand AI-ops at a level few outside top startups have.' },
+      { tag: 'AI-NATIVE', title: 'You work with our AI stack', body: 'Pythia (our trend AI), automated content workflows, AI agents in daily ops. You work daily with a stack few outside top startups know.' },
     ],
     fitHeading: 'Who it\'s for.',
     fitBody: 'You\'ve built something or tried to — brand, side project, content account, campaign. You don\'t just want to execute, you want to understand why. You prefer real shipping over the perfect plan.',
@@ -55,7 +61,7 @@ const COPY = {
       { n: '04', dur: 'after', title: 'Case + start', body: 'Short practical case (~2h). On acceptance: start date, buddy, onboarding.' },
     ],
     trustHeading: 'We invest in you, not the other way around.',
-    trustBody: 'No participation fee, no course fee, no hidden paywall. The fellowship is paid and fully remote — you work from wherever, we coordinate async. Onboarding runs through our onboarding lead, you\'re never alone with the puzzle.',
+    trustBody: 'No participation fee, no course fee, no hidden paywall. The fellowship is unpaid and fully remote — you work from wherever, we coordinate async. You invest your time + energy, we give you access to real brands, real budgets, and a direct line to the team. On conversion to a paid role after graduation: separate contract.',
     formHeading: 'Apply now',
     formSub: '~10 minutes. We reply within one week.',
   },
@@ -64,6 +70,10 @@ const COPY = {
 export default function FoundersUniversityPage() {
   const locale = useLocale() as Locale;
   const t = COPY[locale];
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
 
   return (
     <div className="bg-background text-foreground">
@@ -83,35 +93,62 @@ export default function FoundersUniversityPage() {
               {t.eyebrow}
             </p>
             <h1 className="mt-6 text-pretty font-sans font-black leading-[0.95] tracking-tight text-[clamp(2.5rem,7vw,5.5rem)]">
-              {t.title}
+              {t.titleLines.map((line, i) => (
+                <span key={i} className={`block ${i === t.titleMidIndex ? 'text-teal' : ''}`}>
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
               {t.sub}
             </p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#form"
+                className="inline-flex items-center justify-center rounded-full bg-teal px-7 py-3 text-base font-semibold text-background transition-colors hover:bg-teal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                {t.ctaPrimary}
+              </a>
+              <a
+                href="#why"
+                className="group inline-flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground"
+              >
+                {t.ctaSecondary}
+                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+              </a>
+            </div>
           </div>
         </section>
 
         {/* WHY / BENEFITS */}
-        <section className="border-t border-border/30 py-24 md:py-32">
+        <section id="why" className="border-t border-border/30 py-24 md:py-32">
           <div className="mx-auto max-w-6xl px-6 md:px-12">
             <h2 className="mb-16 text-pretty font-sans font-semibold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
               {t.whyHeading}
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {t.why.map((item) => (
+              {t.why.map((item, i) => (
                 <article
                   key={item.tag}
-                  className="rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-teal/40"
+                  className="relative isolate overflow-hidden rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-teal/40"
                 >
-                  <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-teal">
-                    {item.tag}
-                  </p>
-                  <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-                    {item.body}
-                  </p>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white opacity-[0.035] tabular-nums"
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="relative">
+                    <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-teal">
+                      {item.tag}
+                    </p>
+                    <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+                      {item.body}
+                    </p>
+                  </div>
                 </article>
               ))}
             </div>
@@ -131,26 +168,31 @@ export default function FoundersUniversityPage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="border-t border-border/30 py-24 md:py-32">
+        <section id="how" className="border-t border-border/30 py-24 md:py-32">
           <div className="mx-auto max-w-6xl px-6 md:px-12">
             <h2 className="mb-16 text-pretty font-sans font-semibold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
               {t.howHeading}
             </h2>
             <ol className="grid grid-cols-1 gap-10 md:grid-cols-4">
               {t.steps.map((s, i) => (
-                <li key={i} className="relative">
-                  <div className="font-serif italic text-6xl text-teal/70 leading-none tabular-nums">
+                <li key={i} className="relative isolate overflow-hidden">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal opacity-[0.08] tabular-nums"
+                  >
                     {s.n}
+                  </span>
+                  <div className="relative pt-12">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                      {s.dur}
+                    </p>
+                    <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {s.body}
+                    </p>
                   </div>
-                  <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {s.dur}
-                  </p>
-                  <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
                 </li>
               ))}
             </ol>

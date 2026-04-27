@@ -988,13 +988,13 @@ const AdminAcademyView: React.FC = () => {
 
       {/* Pending Invites Banner */}
       {pendingInvites.length > 0 && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-sm font-bold text-yellow-400">
+              <p className="text-sm font-bold text-amber-900">
                 Pending Invites ({pendingInvites.length})
               </p>
-              <p className="text-xs text-yellow-500/80 mt-0.5">
+              <p className="text-xs text-amber-800 mt-0.5">
                 Diese Interns haben ihre Einladungs-Mail noch nicht geöffnet / Zugang noch nicht aktiviert.
               </p>
             </div>
@@ -1031,7 +1031,7 @@ const AdminAcademyView: React.FC = () => {
             {pendingInvites.map(i => (
               <span
                 key={i.id}
-                className="text-xs bg-yellow-500/15 text-yellow-400 border border-yellow-500/20 px-2.5 py-1 rounded-full font-medium"
+                className="text-xs bg-white text-amber-900 border border-amber-300 px-2.5 py-1 rounded-full font-medium"
               >
                 {i.email}
               </span>
@@ -1042,28 +1042,28 @@ const AdminAcademyView: React.FC = () => {
 
       {/* Welle 1b Item 9 — Buddy Pairings setup banner */}
       {interns.some(i => i.buddy_user_id === null) && interns.length > 1 && (
-        <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+        <div className="bg-purple-50 border border-purple-300 rounded-xl p-4">
           <div className="mb-3">
-            <p className="text-sm font-bold text-purple-400">
+            <p className="text-sm font-bold text-purple-900">
               🤝 Buddy Pairings ({interns.filter(i => i.buddy_user_id === null).length} unpaired)
             </p>
-            <p className="text-xs text-purple-500/80 mt-0.5">
-              Per docs/intern-academy/buddy-program.md — jeder Intern braucht einen Buddy. Wähle aus den anderen aktiven Interns. Tom Roelants ist Programme Lead und kann mehrere Buddies haben.
+            <p className="text-xs text-purple-800 mt-0.5">
+              Per docs/intern-academy/buddy-program.md — jeder Intern braucht einen Buddy. Wähle aus den anderen aktiven Interns. Danylo (Programme Lead) kann mehrere Buddies haben.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {interns.filter(i => i.buddy_user_id === null).map(i => {
               const candidates = interns.filter(c => c.id !== i.id && c.is_active);
               return (
-                <div key={i.id} className="flex items-center gap-2 bg-purple-500/5 border border-purple-500/15 rounded-lg px-3 py-2">
-                  <span className="text-xs font-semibold text-purple-300 flex-1 truncate">{i.full_name}</span>
+                <div key={i.id} className="flex items-center gap-2 bg-white border border-purple-200 rounded-lg px-3 py-2">
+                  <span className="text-xs font-semibold text-purple-900 flex-1 truncate">{i.full_name}</span>
                   <select
                     disabled={savingBuddyFor === i.id}
                     defaultValue=""
                     onChange={(e) => {
                       if (e.target.value) void assignBuddy(i.id, e.target.value);
                     }}
-                    className="text-xs bg-white/60 border border-purple-500/30 text-purple-200 rounded px-2 py-1 max-w-[160px]"
+                    className="text-xs bg-white border border-purple-300 text-purple-900 rounded px-2 py-1 max-w-[160px]"
                   >
                     <option value="" disabled>Buddy wählen…</option>
                     {candidates.map(c => (
@@ -1079,10 +1079,10 @@ const AdminAcademyView: React.FC = () => {
 
       {/* Welle 1b Item 9 — Monday Meeting #1 setup banner (one-shot) */}
       {hasFirstMonday === false && interns.length > 0 && (
-        <div className="bg-[#0F766E]/12 border border-[#0F766E]/25 rounded-xl p-4 flex items-center justify-between gap-4">
+        <div className="bg-teal-50 border border-teal-300 rounded-xl p-4 flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-bold text-[#0F766E]">📅 Monday Meeting #1 ansetzen</p>
-            <p className="text-xs text-[#0F766E]/80 mt-0.5">
+            <p className="text-xs text-teal-900 mt-0.5">
               Erstes Welcome-Meeting für die {interns.length} Interns. Template mit Welcome + Intros + Programm-Übersicht ist vorgefertigt.
             </p>
           </div>
@@ -1106,11 +1106,11 @@ const AdminAcademyView: React.FC = () => {
 
       {/* Submissions to review banner */}
       {totalSubmissionsToReview > 0 && (
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-          <p className="text-sm font-bold text-blue-400">
+        <div className="bg-blue-50 border border-blue-300 rounded-xl p-4">
+          <p className="text-sm font-bold text-blue-900">
             📝 {totalSubmissionsToReview} assignment{totalSubmissionsToReview === 1 ? '' : 's'} waiting for review
           </p>
-          <p className="text-xs text-blue-500/80 mt-0.5">
+          <p className="text-xs text-blue-800 mt-0.5">
             Expand the relevant intern card and approve/reject submissions.
           </p>
         </div>

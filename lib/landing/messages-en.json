@@ -23,15 +23,15 @@
   },
   "mission": {
     "label": "MISSION",
-    "block1": "Most brands live in three separate worlds: brand, ops, data. None of them see each other.",
-    "block2": "We believe the next decade belongs to houses — not single brands. Shared intelligence, shared ops, shared stories.",
-    "block3": "HoSB is that house. Six brands, one operating team, one shared playbook."
+    "block1": "Most brands work in silos: marketing doesn't know the numbers. Data doesn't see the story. Operations get the trends too late.",
+    "block2": "We believe the next decade belongs to houses — not single brands. A team running six brands at once learns six times faster.",
+    "block3": "HSB is that house. Six brands, one team, one shared method."
   },
   "paths": {
     "title": "Where do you want to go?",
     "foundersUniversity": {
       "title": "Founders University",
-      "hook": "Build brands from the inside. 3–6 month fellowship.",
+      "hook": "Build brands from the inside. 12-week fellowship.",
       "cta": "Open"
     },
     "ambassadors": {
@@ -55,12 +55,12 @@
     "kicker": "Named after the Oracle of Delphi.",
     "heading": "An AI that sees trends before the market reacts.",
     "paragraph": "Pythia reads Google and Amazon searches in real time. Trends, category shifts, buying intent — surfaced early, acted on fast.",
-    "capability1Tag": "M&A",
-    "capability1": "Pattern-match brand health against our playbook. Surface what the market has mispriced.",
+    "capability1Tag": "ACQUISITIONS",
+    "capability1": "Brand health pattern-matched against our method. What the market has mispriced becomes visible.",
     "capability2Tag": "OPERATIONS",
-    "capability2": "Identify the operational lever that moves each brand. Learn across the house.",
+    "capability2": "See where a brand actually grows — and transfer that to all the others.",
     "capability3Tag": "GROWTH",
-    "capability3": "Attribute signal to outcome. No dashboard theater — one reading, every morning."
+    "capability3": "What actually drove revenue today? One clear answer every morning — no endless reports."
   },
   "metrics": {
     "label": "BY THE NUMBERS",

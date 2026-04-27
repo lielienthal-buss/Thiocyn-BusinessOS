@@ -7,6 +7,7 @@ The structured 12-week internship programme for the House of Sustainable Brands.
 | File | What it covers |
 |------|---------------|
 | [thiocyn-employment-onboarding.md](./thiocyn-employment-onboarding.md) | Universal Day-1 setup for every hire (paperwork, accounts, tools, buddy pairing). All hires go through Thiocyn GmbH. |
+| [fellowship-agreement-template.md](./fellowship-agreement-template.md) | Fellowship-Agreement template (unpaid, international, 12 weeks, GDPR + NDA + IP). **DRAFT — legal review required.** |
 | [monday-meeting-template.md](./monday-meeting-template.md) | The 3-part Monday meeting structure, weekly cadence, themes, and anti-patterns |
 | [assessment-rubrics.md](./assessment-rubrics.md) | Scoring criteria for the Month 1, Month 2, and Graduation assessments |
 | [specialisation-tracks.md](./specialisation-tracks.md) | The 5 tracks (Growth, Creative, Ops, AI, Finance) with example Big Target projects |

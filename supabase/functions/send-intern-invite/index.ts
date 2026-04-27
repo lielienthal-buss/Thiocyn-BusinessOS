@@ -93,6 +93,15 @@ serve(async (req) => {
                   This link is <strong>single-use</strong> and <strong>valid for 24 hours</strong>.
                 </p>
               </div>
+              <div style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:24px;">
+                <p style="margin:0 0 8px;color:#1e293b;font-size:13px;font-weight:600;">📄 Fellowship Agreement</p>
+                <p style="margin:0 0 10px;color:#475569;font-size:13px;line-height:1.5;">
+                  Bitte lies dir das Fellowship-Agreement durch und sende uns die unterzeichnete Version per E-Mail zurück (PDF, Foto reicht).
+                </p>
+                <a href="${config.app_url}/fellowship-agreement" style="display:inline-block;color:#2563eb;font-size:13px;font-weight:600;text-decoration:none;">
+                  ${config.app_url}/fellowship-agreement →
+                </a>
+              </div>
               <p style="margin:0;color:#64748b;font-size:13px;">
                 Your portal:<br>
                 <a href="${config.app_url}/intern/${intern.id}" style="color:#2563eb;text-decoration:none;">${config.app_url}/intern/${intern.id}</a>

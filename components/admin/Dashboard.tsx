@@ -39,6 +39,7 @@ const AmbassadorApplicationsView = lazyLoad(() => import('./AmbassadorApplicatio
 const MAInquiriesView = lazyLoad(() => import('./MAInquiriesView'));
 const RecruitingOverview = lazyLoad(() => import('./RecruitingOverview'));
 const OnboardingChecklistView = lazyLoad(() => import('./OnboardingChecklistView'));
+const FellowCoursePreviewView = lazyLoad(() => import('./FellowCoursePreviewView'));
 const InsightsView = lazyLoad(() => import('./InsightsView'));
 const EvalDashboardView = lazyLoad(() => import('./EvalDashboardView'));
 const EmailTemplateManager = lazyLoad(() => import('./EmailTemplateManager'));
@@ -75,7 +76,7 @@ type Tab =
   | 'creatorPipeline' | 'videoGeneration'
   | 'marketingCockpit' | 'marketingCampaigns' | 'marketingContentCalendar' | 'marketingBriefs'
   | 'ecomOverview' | 'ecomOrders' | 'analyticsKpis' | 'analyticsAds'
-  | 'recruitingOverview' | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'academyOnboarding' | 'emailTemplates' | 'evalDashboard'
+  | 'recruitingOverview' | 'applications' | 'ambassadorApplications' | 'maInquiries' | 'kanban' | 'projectAreas' | 'taskManager' | 'onboarding' | 'academy' | 'academyOnboarding' | 'fellowCourse' | 'emailTemplates' | 'evalDashboard'
   | 'financeOverview' | 'financePipeline' | 'financeDisputesTab' | 'financeMails'
   | 'customerSupportOverview'
   | 'teamManagement' | 'performance' | 'brandConfig' | 'toolStack' | 'knowledgeBase' | 'processExecution' | 'isoCompliance' | 'settings'
@@ -147,7 +148,8 @@ const SECTIONS: { id: Section; label: string; emoji: string; minRole?: UserRole;
     label: 'Academy',
     emoji: '🎓',
     tabs: [
-      { id: 'academy', label: 'Intern Academy' },
+      { id: 'fellowCourse', label: 'Fellow View' },
+      { id: 'academy', label: 'Cohort Management' },
       { id: 'academyOnboarding', label: 'Onboarding Checklist' },
       { id: 'evalDashboard', label: 'Eval Dashboard' },
     ],
@@ -544,6 +546,10 @@ const Dashboard: React.FC = () => {
 
     if (tab === 'academyOnboarding') {
       return <OnboardingChecklistView />;
+    }
+
+    if (tab === 'fellowCourse') {
+      return <FellowCoursePreviewView />;
     }
 
     if (tab === 'recruitingOverview') {

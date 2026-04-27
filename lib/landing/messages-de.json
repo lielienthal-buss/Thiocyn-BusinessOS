@@ -23,15 +23,15 @@
   },
   "mission": {
     "label": "MISSION",
-    "block1": "Die meisten Marken leben in drei getrennten Welten: Brand, Ops, Daten. Keine sieht die andere.",
-    "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Geteilte Intelligenz, geteilte Ops, geteilte Geschichten.",
-    "block3": "HSB ist dieses Haus. Sechs Marken, ein operatives Team, ein gemeinsames Playbook."
+    "block1": "Die meisten Marken arbeiten in Silos: Marketing kennt die Zahlen nicht. Daten sehen die Story nicht. Operations bekommen Trends zu spät.",
+    "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Ein Team, das sechs Marken gleichzeitig führt, lernt sechsmal schneller.",
+    "block3": "HSB ist dieses Haus. Sechs Marken, ein Team, eine gemeinsame Methodik."
   },
   "paths": {
     "title": "Wohin möchtest du?",
     "foundersUniversity": {
       "title": "Founders University",
-      "hook": "Baue Marken von innen auf. 3–6 Monate Fellowship.",
+      "hook": "Baue Marken von innen auf. 12-Wochen Fellowship.",
       "cta": "Öffnen"
     },
     "ambassadors": {
@@ -55,12 +55,12 @@
     "kicker": "Benannt nach dem Orakel von Delphi.",
     "heading": "Eine KI, die Trends sieht, bevor der Markt reagiert.",
     "paragraph": "Pythia liest Google- und Amazon-Suchen in Echtzeit. Trends, Kategorie-Shifts, Kaufabsichten — früher sichtbar, schneller handelbar.",
-    "capability1Tag": "M&A",
-    "capability1": "Markengesundheit gegen unser Playbook abgeglichen. Was der Markt falsch bewertet, wird sichtbar.",
+    "capability1Tag": "MARKEN-KÄUFE",
+    "capability1": "Markengesundheit gegen unsere Methodik abgeglichen. Was der Markt falsch bewertet, wird sichtbar.",
     "capability2Tag": "OPERATIONS",
-    "capability2": "Den operativen Hebel pro Marke erkennen. Lernen über das ganze Haus hinweg.",
+    "capability2": "Sehen wo eine Marke wirklich wächst — und das auf alle anderen übertragen.",
     "capability3Tag": "WACHSTUM",
-    "capability3": "Signale auf Ergebnis zurechnen. Kein Dashboard-Theater — ein Reading pro Morgen."
+    "capability3": "Was hat heute wirklich Umsatz gebracht? Eine klare Antwort pro Morgen — keine endlosen Reports."
   },
   "metrics": {
     "label": "ZAHLEN",

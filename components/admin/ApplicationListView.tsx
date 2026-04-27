@@ -12,6 +12,7 @@ import type {
 } from '@/types'; // Import ApplicationStage
 import Spinner from '@/components/ui/Spinner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import EmailComposeModal from './EmailComposeModal';
 
 const STAGE_LABELS: Record<string, string> = {
   applied: 'Applied',
@@ -130,12 +131,12 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
     });
   };
 
-  const handleEmail = (app: Application) => {
-    const subject = `Regarding your application to ${recruiterSettings?.company_name || 'Take A Shot GmbH'}`;
-    const body = `Hi ${app.full_name},
+  const [composeModal, setComposeModal] = useState<{ app: Application } | null>(null);
 
-`; // Placeholder body
-    window.location.href = `mailto:${app.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const emailSendEnabled = recruiterSettings?.feature_flags?.email_send === true;
+
+  const handleEmail = (app: Application) => {
+    setComposeModal({ app });
   };
 
   if (loading && apps.length === 0) {
@@ -148,6 +149,16 @@ const ApplicationListView: React.FC<Props> = ({ onSelectApplicant }) => {
 
   return (
     <>
+    {composeModal && (
+      <EmailComposeModal
+        application={composeModal.app}
+        templateSlug="custom"
+        lang="de"
+        emailSendEnabled={emailSendEnabled}
+        onClose={() => setComposeModal(null)}
+        onSent={() => { /* custom mail has no automatic stage change */ }}
+      />
+    )}
     {confirmModal && (
       <ConfirmModal
         isOpen={confirmModal.isOpen}

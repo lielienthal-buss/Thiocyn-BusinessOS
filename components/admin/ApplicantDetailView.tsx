@@ -9,6 +9,7 @@ import Spinner from '@/components/ui/Spinner';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from 'sonner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import EmailComposeModal from './EmailComposeModal';
 
 // --- Notes Component ---
 const NotesSection: React.FC<{
@@ -198,49 +199,15 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
     message: string;
     onConfirm: () => void;
   } | null>(null);
+  const [composeModal, setComposeModal] = useState<{ slug: string } | null>(null);
 
   const handleSendEmail = (templateSlug: string) => {
     if (!application) return;
-    // Welle 1b Item 5 — operational metric per click (regardless of flag state).
     void trackOperationalMetric('send_email_button_clicked', 'hiring', {
-      itemRef: 'welle_1b_item_5',
-      notes: `template:${templateSlug}:lang:${emailLang}:enabled:${emailSendEnabled}`,
+      itemRef: 'compose_modal',
+      notes: `template:${templateSlug}:lang:${emailLang}:resend_enabled:${emailSendEnabled}`,
     });
-    if (!emailSendEnabled) {
-      toast.error('Email-Versand ist aktuell deaktiviert (Resend Domain noch nicht verifiziert).');
-      return;
-    }
-    const labels: Record<string, string> = {
-      task_invite: 'Send Task Email',
-      interview_invite: 'Send Interview Invite',
-      rejection: 'Send Rejection',
-    };
-    setConfirmModal({
-      isOpen: true,
-      title: 'Send Email',
-      message: `Send "${labels[templateSlug] || templateSlug}" to ${application.full_name}?`,
-      onConfirm: async () => {
-        setIsSendingEmail(true);
-        try {
-          const { error } = await supabase.functions.invoke('send-email', {
-            body: { application_id: application.id, template_slug: templateSlug, lang: emailLang },
-          });
-          if (error) throw error;
-          const stageMap: Record<string, string> = {
-            task_invite: 'task_requested',
-            interview_invite: 'interview',
-            rejection: 'rejected',
-          };
-          if (stageMap[templateSlug]) {
-            setApplication((prev) => prev ? { ...prev, stage: stageMap[templateSlug] as any } : null);
-          }
-          toast.success('Email sent successfully!');
-        } catch (err: any) {
-          toast.error(`Failed to send email: ${err.message}`);
-        }
-        setIsSendingEmail(false);
-      },
-    });
+    setComposeModal({ slug: templateSlug });
   };
 
   const handleAnalyzeWithAI = async () => {
@@ -320,6 +287,20 @@ const ApplicantDetailView: React.FC<Props> = ({ application: initialApplication,
         message={confirmModal.message}
         onConfirm={() => { confirmModal.onConfirm(); setConfirmModal(null); }}
         onCancel={() => setConfirmModal(null)}
+      />
+    )}
+    {composeModal && application && (
+      <EmailComposeModal
+        application={application}
+        templateSlug={composeModal.slug}
+        lang={emailLang}
+        emailSendEnabled={emailSendEnabled}
+        onClose={() => setComposeModal(null)}
+        onSent={(newStage) => {
+          if (newStage) {
+            setApplication((prev) => prev ? { ...prev, stage: newStage as any } : null);
+          }
+        }}
       />
     )}
     {hireModal && (

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Linkedin } from 'lucide-react';
+
+const PETER_LINKEDIN = 'https://www.linkedin.com/in/peter-hart-ffm';
 import Navbar from '../sections/Navbar';
 import Footer from '../sections/Footer';
 import BlurText from '../effects/BlurText';
@@ -48,7 +50,7 @@ const COPY = {
 
     whyHeading: 'Warum HSB.',
     whyBody:
-      'Die meisten Holdings kaufen, melken, verlassen. Peters These: Wer selbst gebaut hat, weiß, wie man baut. HSB integriert Brands in 3 Monaten statt 5 Jahre Earn-Out. Das Team läuft operativ — Marketing, E-Commerce, CS, Finance — und zieht gleichzeitig an sechs Marken.',
+      'Die meisten Holdings kaufen, melken, verlassen. Peters These: Wer selbst gebaut hat, weiß, wie man baut. HSB integriert Brands in 3 Monaten statt 5 Jahre Earn-Out. Das Team läuft operativ — Marketing, E-Commerce, Kundenservice, Buchhaltung — und zieht gleichzeitig an sechs Marken.',
 
     connectHeading: 'Connect.',
     connectBody: 'Direkter Draht für Gründer, die über einen Verkauf nachdenken.',
@@ -93,7 +95,7 @@ const COPY = {
 
     whyHeading: 'Why HSB.',
     whyBody:
-      "Most holdings acquire, extract, exit. Peter's thesis: if you've built it yourself, you know how to build. HSB integrates brands in 3 months instead of a 5-year earn-out. The team runs operations — marketing, e-commerce, CS, finance — and pulls on six brands at once.",
+      "Most holdings acquire, extract, exit. Peter's thesis: if you've built it yourself, you know how to build. HSB integrates brands in 3 months instead of a 5-year earn-out. The team runs operations — marketing, e-commerce, customer service, finance — and pulls on six brands at once.",
 
     connectHeading: 'Connect.',
     connectBody: 'Direct line for founders thinking about selling.',
@@ -105,6 +107,10 @@ const COPY = {
 export default function AboutPage() {
   const locale = useLocale() as Locale;
   const t = COPY[locale];
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
 
   return (
     <div className="bg-background text-foreground">
@@ -155,6 +161,17 @@ export default function AboutPage() {
                 <p className="mt-8 text-pretty text-lg text-foreground/80 md:text-xl">
                   {t.kicker}
                 </p>
+                <a
+                  href={PETER_LINKEDIN}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/30 px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  aria-label="Peter Hart on LinkedIn"
+                >
+                  <Linkedin aria-hidden="true" className="h-4 w-4" />
+                  <span>LinkedIn</span>
+                  <ArrowUpRight aria-hidden="true" className="h-4 w-4 opacity-60" />
+                </a>
               </div>
 
               <div className="md:col-span-5">

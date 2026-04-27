@@ -21,6 +21,8 @@ export interface Brand {
   metricLabelDe: string
   accent: BrandAccent
   href?: string
+  instagram?: string
+  instagramHandle?: string
 }
 
 export const BRANDS: Brand[] = [
@@ -38,6 +40,8 @@ export const BRANDS: Brand[] = [
     metricLabelDe: 'Zufriedene Kunden · 100-Tage-Garantie',
     accent: 'teal',
     href: 'https://thiocyn.com',
+    instagram: 'https://instagram.com/thiocyn',
+    instagramHandle: '@thiocyn',
   },
   {
     slug: 'paigh',
@@ -53,6 +57,8 @@ export const BRANDS: Brand[] = [
     metricLabelDe: 'Follower · Ambassador-getrieben',
     accent: 'coral',
     href: 'https://paigh.com',
+    instagram: 'https://instagram.com/paigh',
+    instagramHandle: '@paigh',
   },
   {
     slug: 'dr-severin',
@@ -68,6 +74,8 @@ export const BRANDS: Brand[] = [
     metricLabelDe: 'Follower · Apotheke + D2C',
     accent: 'indigo',
     href: 'https://drseverin.com',
+    instagram: 'https://instagram.com/dr.severin',
+    instagramHandle: '@dr.severin',
   },
   {
     slug: 'take-a-shot',
@@ -83,6 +91,8 @@ export const BRANDS: Brand[] = [
     metricLabelDe: 'Follower · Eyewear + Accessoires',
     accent: 'amber',
     href: 'https://takeashot.de',
+    instagram: 'https://instagram.com/takeashot.official',
+    instagramHandle: '@takeashot.official',
   },
   {
     slug: 'wristr',
@@ -98,6 +108,8 @@ export const BRANDS: Brand[] = [
     metricLabelDe: 'Follower · Größte Social-Präsenz',
     accent: 'emerald',
     href: 'https://wristr.com',
+    instagram: 'https://instagram.com/wristr.official',
+    instagramHandle: '@wristr.official',
   },
   {
     slug: 'timber-john',
@@ -112,6 +124,8 @@ export const BRANDS: Brand[] = [
     metricLabelEn: 'Followers · Seasonal community',
     metricLabelDe: 'Follower · Saison-Community',
     accent: 'violet',
+    instagram: 'https://instagram.com/timberandjohn',
+    instagramHandle: '@timberandjohn',
     // TODO: Timber & John hat aktuell keine eigene Website per memory
   },
 ]

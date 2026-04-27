@@ -1,8 +1,11 @@
 import React, { Suspense } from 'react';
+import { Linkedin, ArrowUpRight } from 'lucide-react';
 import Navbar from '../sections/Navbar';
 import Footer from '../sections/Footer';
 import Spinner from '@/components/ui/Spinner';
 import { useLocale } from '@/lib/landing/i18n';
+
+const PETER_LINKEDIN = 'https://www.linkedin.com/in/peter-hart-ffm';
 
 const FoundersInquiryForm = React.lazy(() => import('../forms/FoundersInquiryForm'));
 
@@ -11,14 +14,17 @@ type Locale = 'de' | 'en';
 const COPY = {
   de: {
     eyebrow: '/ 03 · FÜR GRÜNDER',
-    title: 'Deine Marke. In die richtigen Hände.',
+    titleLines: ['Deine Marke.', 'In die richtigen', 'Hände.'] as const,
+    titleMidIndex: 1,
     sub: 'Wir übernehmen nachhaltige D2C-Marken und integrieren sie in unser House — in 3 Monaten, nicht 5 Jahren Earn-Out.',
+    ctaPrimary: 'Anfrage starten',
+    ctaSecondary: 'Wie der Verkauf läuft',
     whyHeading: 'Warum an HSB verkaufen?',
     why: [
-      { tag: 'INTEGRATION', title: '3 Monate statt 5 Jahre', body: 'Kein ewiger Earn-Out. Unser in Ressorts aufgeteiltes Team übernimmt Marketing, E-Commerce, CS, Finance in 1–3 Monaten. Du bist dann frei.' },
+      { tag: 'INTEGRATION', title: '3 Monate statt 5 Jahre', body: 'Kein ewiger Earn-Out. Unser in Ressorts aufgeteiltes Team übernimmt Marketing, E-Commerce, Kundenservice und Buchhaltung in 1–3 Monaten. Du bist dann frei.' },
       { tag: 'LEGACY', title: 'Deine Marke bleibt deine Marke', body: 'Wir kaufen keine Nummern — wir kaufen Marken. Story, Identity, Kundenbeziehung bleiben intakt. Keine Verwässerung im Billo-Portfolio.' },
       { tag: 'BRANCHEN-AGNOSTISCH', title: 'Wir sind keine Kategorie-Spezialisten', body: 'Unser Team hat selbst Marken in Beauty, Fashion, Accessoires, Home gebaut. Wir kaufen nach Qualität, nicht nach Sektor.' },
-      { tag: 'CASH-FOKUS', title: 'Klare, cash-lastige Deals', body: 'Deal-Struktur: großer Cash-at-Closing-Anteil. Wenn du einen Variable-Component willst, klar abgegrenzt und zeitlich gecapped.' },
+      { tag: 'CASH-FOKUS', title: 'Klare, cash-lastige Deals', body: 'Deal-Struktur: großer Cash-at-Closing-Anteil. Wenn du einen erfolgsabhängigen Anteil willst: klar abgegrenzt und zeitlich begrenzt.' },
     ],
     howHeading: 'So läuft es ab.',
     steps: [
@@ -35,11 +41,14 @@ const COPY = {
   },
   en: {
     eyebrow: '/ 03 · FOR FOUNDERS',
-    title: 'Your brand. In the right hands.',
+    titleLines: ['Your brand.', 'In the right', 'hands.'] as const,
+    titleMidIndex: 1,
     sub: 'We acquire sustainable D2C brands and integrate them into our house — in 3 months, not a 5-year earn-out.',
+    ctaPrimary: 'Start inquiry',
+    ctaSecondary: 'How the sale works',
     whyHeading: 'Why sell to HSB?',
     why: [
-      { tag: 'INTEGRATION', title: '3 months, not 5 years', body: 'No endless earn-out. Our resourced team takes over marketing, e-commerce, CS, finance in 1–3 months. You\'re free after that.' },
+      { tag: 'INTEGRATION', title: '3 months, not 5 years', body: 'No endless earn-out. Our resourced team takes over marketing, e-commerce, customer service and finance in 1–3 months. You\'re free after that.' },
       { tag: 'LEGACY', title: 'Your brand stays your brand', body: 'We don\'t buy numbers — we buy brands. Story, identity, customer relationships stay intact. No dilution in a faceless portfolio.' },
       { tag: 'CATEGORY-AGNOSTIC', title: 'We\'re not category specialists', body: 'Our team has built brands in beauty, fashion, accessories, home. We buy for quality, not sector.' },
       { tag: 'CASH-HEAVY', title: 'Clear, cash-heavy deals', body: 'Structure: large cash-at-closing share. If you want a variable component, clearly scoped and time-capped.' },
@@ -63,6 +72,10 @@ export default function FoundersPage() {
   const locale = useLocale() as Locale;
   const t = COPY[locale];
 
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
   return (
     <div className="bg-background text-foreground">
       <Navbar />
@@ -81,11 +94,30 @@ export default function FoundersPage() {
               {t.eyebrow}
             </p>
             <h1 className="mt-6 text-pretty font-sans font-black leading-[0.95] tracking-tight text-[clamp(2.5rem,7vw,5.5rem)]">
-              {t.title}
+              {t.titleLines.map((line, i) => (
+                <span key={i} className={`block ${i === t.titleMidIndex ? 'text-teal' : ''}`}>
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
               {t.sub}
             </p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#form"
+                className="inline-flex items-center justify-center rounded-full bg-teal px-7 py-3 text-base font-semibold text-background transition-colors hover:bg-teal/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                {t.ctaPrimary}
+              </a>
+              <a
+                href="#how"
+                className="group inline-flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground"
+              >
+                {t.ctaSecondary}
+                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+              </a>
+            </div>
           </div>
         </section>
 
@@ -96,20 +128,28 @@ export default function FoundersPage() {
               {t.whyHeading}
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {t.why.map((item) => (
+              {t.why.map((item, i) => (
                 <article
                   key={item.tag}
-                  className="rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-teal/40"
+                  className="relative isolate overflow-hidden rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-teal/40"
                 >
-                  <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-teal">
-                    {item.tag}
-                  </p>
-                  <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-                    {item.body}
-                  </p>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white opacity-[0.035] tabular-nums"
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="relative">
+                    <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-teal">
+                      {item.tag}
+                    </p>
+                    <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+                      {item.body}
+                    </p>
+                  </div>
                 </article>
               ))}
             </div>
@@ -117,26 +157,31 @@ export default function FoundersPage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="border-t border-border/30 py-24 md:py-32">
+        <section id="how" className="border-t border-border/30 py-24 md:py-32">
           <div className="mx-auto max-w-6xl px-6 md:px-12">
             <h2 className="mb-16 text-pretty font-sans font-semibold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
               {t.howHeading}
             </h2>
             <ol className="grid grid-cols-1 gap-10 md:grid-cols-5">
               {t.steps.map((s, i) => (
-                <li key={i} className="relative">
-                  <div className="font-serif italic text-6xl text-teal/70 leading-none tabular-nums">
+                <li key={i} className="relative isolate overflow-hidden">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal opacity-[0.10] tabular-nums"
+                  >
                     {s.n}
+                  </span>
+                  <div className="relative pt-12">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                      {s.dur}
+                    </p>
+                    <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {s.body}
+                    </p>
                   </div>
-                  <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {s.dur}
-                  </p>
-                  <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
                 </li>
               ))}
             </ol>
@@ -152,6 +197,17 @@ export default function FoundersPage() {
             <p className="mt-8 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
               {t.trustBody}
             </p>
+            <a
+              href={PETER_LINKEDIN}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-10 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/30 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              aria-label="Peter Hart on LinkedIn"
+            >
+              <Linkedin aria-hidden="true" className="h-4 w-4" />
+              <span>{locale === 'de' ? 'Peter Hart auf LinkedIn ansehen' : 'View Peter Hart on LinkedIn'}</span>
+              <ArrowUpRight aria-hidden="true" className="h-4 w-4 opacity-60" />
+            </a>
           </div>
         </section>
 

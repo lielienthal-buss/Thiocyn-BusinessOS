@@ -11,8 +11,11 @@ type Locale = 'de' | 'en';
 const COPY = {
   de: {
     eyebrow: '/ 02 · AMBASSADOR',
-    title: 'Bau Markenaufbau mit uns — von Anfang an.',
+    titleLines: ['Bau die Marke.', 'Mit uns.', 'Von Anfang an.'] as const,
+    titleMidIndex: 1,
     sub: 'Wir starten gerade mit unserem Ambassador-Programm. Selektiv, persönlich, direkter Draht zum Team. Du bist nicht Creator Nr. 247 auf einer Liste.',
+    ctaPrimary: 'Jetzt bewerben',
+    ctaSecondary: 'Was du bekommst',
     whyHeading: 'Was du bekommst.',
     why: [
       { tag: 'SAMPLES', title: 'Echte Produkte, nicht Schrott', body: 'Du testest die Produkte vor Posting. Sample-Versand binnen 14 Tagen nach Freigabe. Bei Nicht-Gefallen: kein Post, kein Druck.' },
@@ -34,8 +37,11 @@ const COPY = {
   },
   en: {
     eyebrow: '/ 02 · AMBASSADOR',
-    title: 'Build the brand with us — from the beginning.',
+    titleLines: ['Build the brand.', 'With us.', 'From day one.'] as const,
+    titleMidIndex: 1,
     sub: 'We\'re starting our Ambassador Program. Selective, personal, direct line to the team. You\'re not creator #247 on a list.',
+    ctaPrimary: 'Apply now',
+    ctaSecondary: 'What you get',
     whyHeading: 'What you get.',
     why: [
       { tag: 'SAMPLES', title: 'Real products, not junk', body: 'You test products before posting. Samples shipped within 14 days of approval. If you don\'t like it: no post, no pressure.' },
@@ -61,6 +67,10 @@ export default function AmbassadorsPage() {
   const locale = useLocale() as Locale;
   const t = COPY[locale];
 
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
   return (
     <div className="bg-background text-foreground">
       <Navbar />
@@ -79,35 +89,62 @@ export default function AmbassadorsPage() {
               {t.eyebrow}
             </p>
             <h1 className="mt-6 text-pretty font-sans font-black leading-[0.95] tracking-tight text-[clamp(2.5rem,7vw,5.5rem)]">
-              {t.title}
+              {t.titleLines.map((line, i) => (
+                <span key={i} className={`block ${i === t.titleMidIndex ? 'text-coral' : ''}`}>
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-8 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
               {t.sub}
             </p>
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a
+                href="#form"
+                className="inline-flex items-center justify-center rounded-full bg-coral px-7 py-3 text-base font-semibold text-background transition-colors hover:bg-coral/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                {t.ctaPrimary}
+              </a>
+              <a
+                href="#why"
+                className="group inline-flex items-center gap-2 text-base font-medium text-foreground/80 transition-colors hover:text-foreground"
+              >
+                {t.ctaSecondary}
+                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+              </a>
+            </div>
           </div>
         </section>
 
         {/* WHY / BENEFITS */}
-        <section className="border-t border-border/30 py-24 md:py-32">
+        <section id="why" className="border-t border-border/30 py-24 md:py-32">
           <div className="mx-auto max-w-6xl px-6 md:px-12">
             <h2 className="mb-16 text-pretty font-sans font-semibold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
               {t.whyHeading}
             </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {t.why.map((item) => (
+              {t.why.map((item, i) => (
                 <article
                   key={item.tag}
-                  className="rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-coral/40"
+                  className="relative isolate overflow-hidden rounded-2xl border border-border/40 bg-card/20 p-8 transition-colors hover:border-coral/40"
                 >
-                  <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-coral">
-                    {item.tag}
-                  </p>
-                  <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-                    {item.body}
-                  </p>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white opacity-[0.035] tabular-nums"
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="relative">
+                    <p className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-coral">
+                      {item.tag}
+                    </p>
+                    <h3 className="mt-4 font-sans text-2xl font-bold leading-tight tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+                      {item.body}
+                    </p>
+                  </div>
                 </article>
               ))}
             </div>
@@ -115,26 +152,31 @@ export default function AmbassadorsPage() {
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="border-t border-border/30 py-24 md:py-32">
+        <section id="how" className="border-t border-border/30 py-24 md:py-32">
           <div className="mx-auto max-w-6xl px-6 md:px-12">
             <h2 className="mb-16 text-pretty font-sans font-semibold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
               {t.howHeading}
             </h2>
             <ol className="grid grid-cols-1 gap-10 md:grid-cols-4">
               {t.steps.map((s, i) => (
-                <li key={i} className="relative">
-                  <div className="font-serif italic text-6xl text-coral/70 leading-none tabular-nums">
+                <li key={i} className="relative isolate overflow-hidden">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-coral opacity-[0.10] tabular-nums"
+                  >
                     {s.n}
+                  </span>
+                  <div className="relative pt-12">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+                      {s.dur}
+                    </p>
+                    <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {s.body}
+                    </p>
                   </div>
-                  <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-                    {s.dur}
-                  </p>
-                  <h3 className="mt-3 font-sans text-lg font-bold leading-tight tracking-tight">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {s.body}
-                  </p>
                 </li>
               ))}
             </ol>

@@ -29,6 +29,7 @@ const AboutPage = React.lazy(() => import('@/components/landing/pages/AboutPage'
 const AmbassadorsPage = React.lazy(() => import('@/components/landing/pages/AmbassadorsPage'));
 const FoundersPage = React.lazy(() => import('@/components/landing/pages/FoundersPage'));
 const FoundersUniversityPage = React.lazy(() => import('@/components/landing/pages/FoundersUniversityPage'));
+const FellowshipAgreementPage = React.lazy(() => import('@/components/landing/pages/FellowshipAgreementPage'));
 const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
 const ApplicationSlidePanel = React.lazy(() => import('@/components/public/ApplicationSlidePanel'));
 const TaskSubmissionPage = React.lazy(() => import('@/components/public/TaskSubmissionPage'));
@@ -190,6 +191,15 @@ const App: React.FC = () => {
       element: (
         <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
           <AmbassadorsPage />
+        </React.Suspense>
+      ),
+    },
+    // --- Fellowship Agreement — public viewable + printable, linked from invite emails ---
+    {
+      path: '/fellowship-agreement',
+      element: (
+        <React.Suspense fallback={<div className="bg-background min-h-screen" />}>
+          <FellowshipAgreementPage />
         </React.Suspense>
       ),
     },

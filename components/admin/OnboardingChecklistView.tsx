@@ -2,15 +2,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';
 
-// Tom's standard Week-1 onboarding items per docs/intern-academy/README.md
-// + buddy-program.md cadence. Stored as jsonb arrays in intern_onboarding_checklist.items
+// Aligned to current Day-1 BPMN (docs/processes/intern-onboarding.bpmn) + Fellowship-Agreement template.
+// Fellows are unpaid + international — no German payroll paperwork during the fellowship.
+// Stored as jsonb in intern_onboarding_checklist.items (keys are stable; unused legacy keys stay in JSON harmlessly).
 const STANDARD_ITEMS: Array<{ key: string; label: string; phase: string }> = [
-  { key: 'magic_link_used',       label: 'Magic-Link genutzt (eingeloggt)',     phase: 'Day 1' },
-  { key: 'profile_complete',      label: 'Profil ausgefüllt',                  phase: 'Day 1' },
-  { key: 'buddy_intro',           label: 'Buddy Intro 1:1 (30min)',            phase: 'Day 2' },
-  { key: 'tools_setup',           label: 'Tools-Setup (Slack, BusinessOS, ggf. Linear)', phase: 'Day 2' },
-  { key: 'goals_set',             label: '3 persönliche Goals gesetzt',         phase: 'Week 1' },
-  { key: 'first_monday_attended', label: 'First Monday Meeting attended',       phase: 'Week 1' },
+  { key: 'magic_link_used',            label: 'Magic-Link genutzt (eingeloggt)',                 phase: 'Day 1' },
+  { key: 'profile_complete',           label: 'Profil ausgefüllt',                               phase: 'Day 1' },
+  { key: 'fellowship_agreement_signed',label: 'Fellowship-Agreement signed eingegangen',         phase: 'Day 1' },
+  { key: 'paperwork_complete',         label: 'Paperwork (ID-Kopie, Notfallkontakt, Krankenvers.)', phase: 'Day 1' },
+  { key: 'tools_setup',                label: 'Tools-Setup (Slack, Drive, Business OS)',         phase: 'Day 1' },
+  { key: 'buddy_intro',                label: 'Buddy Intro 1:1 (30min)',                         phase: 'Day 2' },
+  { key: 'goals_set',                  label: '3 persönliche Goals gesetzt',                     phase: 'Week 1' },
+  { key: 'first_monday_attended',      label: 'First Monday Meeting attended',                   phase: 'Week 1' },
 ];
 
 interface InternRow {
@@ -111,7 +114,7 @@ const OnboardingChecklistView: React.FC = () => {
         <div>
           <h1 className="text-2xl font-black tracking-tight text-[#1d1d1f]">Onboarding Checklist</h1>
           <p className="mt-1 text-sm text-[#515154]">
-            Wer ist wo im Week-1-Onboarding. Items folgen Tom's Framework (Day 1, Day 2, Week 1).
+            Wer ist wo im Week-1-Onboarding. Items aligned to docs/processes/intern-onboarding.bpmn + Fellowship-Agreement template.
           </p>
         </div>
         <div className="flex items-center gap-3">

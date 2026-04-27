@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Instagram } from 'lucide-react';
 import BlurText from '@/components/landing/effects/BlurText';
 import SplitText from '@/components/landing/effects/SplitText';
 import { BRANDS, type Brand } from '@/lib/landing/brands';
@@ -131,22 +131,40 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
             </span>
           </div>
 
-          {brand.href && (
-            <a
-              href={brand.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group/link inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                isRight ? '' : 'md:self-end'
+          {(brand.href || brand.instagram) && (
+            <div
+              className={`flex flex-wrap items-center gap-x-6 gap-y-3 ${
+                isRight ? '' : 'md:justify-end'
               }`}
-              style={{ color: `rgb(${rgb})` }}
             >
-              {visitLabel}
-              <ArrowUpRight
-                aria-hidden="true"
-                className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
-              />
-            </a>
+              {brand.href && (
+                <a
+                  href={brand.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/link inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  style={{ color: `rgb(${rgb})` }}
+                >
+                  {visitLabel}
+                  <ArrowUpRight
+                    aria-hidden="true"
+                    className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+                  />
+                </a>
+              )}
+              {brand.instagram && (
+                <a
+                  href={brand.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/ig inline-flex items-center gap-2 rounded-sm text-xs font-medium tracking-wide text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  aria-label={`Instagram ${brand.instagramHandle ?? brand.name}`}
+                >
+                  <Instagram aria-hidden="true" className="h-4 w-4 transition-colors group-hover/ig:text-foreground" />
+                  <span>{brand.instagramHandle}</span>
+                </a>
+              )}
+            </div>
           )}
         </div>
       </div>

@@ -12,6 +12,7 @@ interface TeamMember {
   allowed_sections: string[];
   status: string;
   created_at: string;
+  calendly_url: string | null;
 }
 
 const ROLE_BADGE: Record<string, string> = {
@@ -52,6 +53,11 @@ const AccountView: React.FC<Props> = ({ session }) => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  // Calendly URL
+  const [editCalendly, setEditCalendly] = useState('');
+  const [savingCalendly, setSavingCalendly] = useState(false);
+  const [savedCalendly, setSavedCalendly] = useState(false);
+
   // Password change
   const [pwNew, setPwNew] = useState('');
   const [pwConfirm, setPwConfirm] = useState('');
@@ -69,6 +75,7 @@ const AccountView: React.FC<Props> = ({ session }) => {
       .then(({ data }) => {
         setMember(data);
         setEditName(data?.full_name ?? '');
+        setEditCalendly(data?.calendly_url ?? '');
         setLoading(false);
       });
   }, [session]);
@@ -94,6 +101,26 @@ const AccountView: React.FC<Props> = ({ session }) => {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleSaveCalendly = async () => {
+    if (!member) return;
+    const trimmed = editCalendly.trim();
+    if (trimmed && !/^https?:\/\//i.test(trimmed)) {
+      alert('Calendly-URL muss mit https:// beginnen.');
+      return;
+    }
+    setSavingCalendly(true);
+    const value = trimmed === '' ? null : trimmed;
+    const { error } = await supabase
+      .from('team_members')
+      .update({ calendly_url: value })
+      .eq('id', member.id);
+    setSavingCalendly(false);
+    if (error) { alert(`Save failed: ${error.message}`); return; }
+    setMember(m => m ? { ...m, calendly_url: value } : m);
+    setSavedCalendly(true);
+    setTimeout(() => setSavedCalendly(false), 2000);
   };
 
   const handleChangePassword = async () => {
@@ -170,6 +197,40 @@ const AccountView: React.FC<Props> = ({ session }) => {
           <p className="text-[11px] text-slate-500">Email changes require admin approval.</p>
         </div>
       </div>
+
+      {/* Calendly Booking Link */}
+      {member && (
+        <div className="bg-white ring-1 ring-slate-200 rounded-2xl p-6">
+          <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-2">Calendly Booking-Link</h2>
+          <p className="text-xs text-slate-500 mb-4">
+            Dein persönlicher Calendly-Link wird in Auto-Reply-Mails an Bewerber eingebunden, wenn du Owner des jeweiligen Funnels bist (siehe Settings → Funnel-Owners).
+          </p>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Calendly URL</label>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={editCalendly}
+                onChange={e => { setEditCalendly(e.target.value); setSavedCalendly(false); }}
+                placeholder="https://calendly.com/dein-username/30min"
+                className="flex-1 border border-slate-200 bg-white text-slate-900 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 placeholder-slate-400"
+              />
+              <button
+                onClick={handleSaveCalendly}
+                disabled={savingCalendly || editCalendly === (member.calendly_url ?? '')}
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-xs font-bold rounded-xl transition-all"
+              >
+                {savingCalendly ? '...' : savedCalendly ? '✓ Saved' : 'Save'}
+              </button>
+            </div>
+            {member.calendly_url && (
+              <p className="text-[11px] text-slate-500">
+                Aktuell: <a href={member.calendly_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{member.calendly_url}</a>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Access & Permissions */}
       {member && (

@@ -13,6 +13,7 @@ export interface AppConfig {
   ai_instruction: string | null;
   landing_config: Record<string, any> | null;
   feature_flags: Record<string, boolean>;
+  funnel_owners: Record<string, string | null> | null;
 }
 
 const DEFAULTS: AppConfig = {
@@ -27,6 +28,7 @@ const DEFAULTS: AppConfig = {
   ai_instruction: null,
   landing_config: null,
   feature_flags: { kanban: true, ai_analysis: true, onboarding: true, public_positions: true },
+  funnel_owners: {},
 };
 
 interface ConfigContextType {
