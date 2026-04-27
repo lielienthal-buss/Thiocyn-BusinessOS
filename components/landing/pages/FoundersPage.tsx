@@ -1,5 +1,13 @@
 import React, { Suspense } from 'react';
-import { Linkedin, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+
+const LinkedinIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect x="2" y="9" width="4" height="12" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
 import Navbar from '../sections/Navbar';
 import Footer from '../sections/Footer';
 import Spinner from '@/components/ui/Spinner';
@@ -204,7 +212,7 @@ export default function FoundersPage() {
               className="mt-10 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/30 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               aria-label="Peter Hart on LinkedIn"
             >
-              <Linkedin aria-hidden="true" className="h-4 w-4" />
+              <LinkedinIcon className="h-4 w-4" />
               <span>{locale === 'de' ? 'Peter Hart auf LinkedIn ansehen' : 'View Peter Hart on LinkedIn'}</span>
               <ArrowUpRight aria-hidden="true" className="h-4 w-4 opacity-60" />
             </a>
