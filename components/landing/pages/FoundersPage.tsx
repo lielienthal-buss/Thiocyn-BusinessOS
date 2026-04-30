@@ -143,7 +143,8 @@ export default function FoundersPage() {
                 >
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white opacity-[0.035] tabular-nums"
+                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white tabular-nums"
+                    style={{ opacity: 0.035 }}
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -175,7 +176,8 @@ export default function FoundersPage() {
                 <li key={i} className="relative isolate overflow-hidden">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal opacity-[0.10] tabular-nums"
+                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal tabular-nums"
+                    style={{ opacity: 0.10 }}
                   >
                     {s.n}
                   </span>

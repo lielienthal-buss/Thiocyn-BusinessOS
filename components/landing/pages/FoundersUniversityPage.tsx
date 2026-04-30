@@ -20,8 +20,8 @@ const COPY = {
     why: [
       { tag: 'REAL OPS', title: 'Kein Pitch-Deck-Job', body: 'Du arbeitest an echten Kampagnen, echten Budgets, echten Kund:innen. Von Tag 1 bis zur letzten Woche. Output wird gemessen.' },
       { tag: 'CROSS-BRAND', title: '6 Marken, 1 Team', body: 'Du lernst Marketing in Beauty, Fashion, Accessoires, Home — gleichzeitig. Jede Brand ist ein eigenes Labor. Du siehst was funktioniert, wo und warum.' },
-      { tag: 'MENTORING', title: 'Direkter Draht zu Gründer + Team', body: 'Kein Corporate-Reporting-Chain. Peter (Founder) reviewed deine Projekte selbst. Dazu: Buddy aus dem Team, monatliche 1:1s.' },
-      { tag: 'AI-NATIVE', title: 'Du arbeitest mit unserem AI-Stack', body: 'Pythia (unsere Trend-KI), automatisierte Content-Workflows, AI-Agenten im Tagesgeschäft. Du arbeitest täglich mit dem Stack, den außerhalb von Top-Startups kaum jemand kennt.' },
+      { tag: 'MENTORING', title: 'Direkter Draht zu Gründer + Team', body: 'Kein Corporate-Reporting-Chain. Wöchentliches Interns Jour Fixe mit Peter (Founder) — er reviewed deine Projekte direkt. Dazu: Buddy aus dem Team.' },
+      { tag: 'AI-NATIVE', title: 'Du arbeitest mit unserem AI-Stack', body: 'Higgsfield für Video, automatisierte Content-Workflows, AI-Agenten im Tagesgeschäft. Du arbeitest täglich mit dem Stack, den außerhalb von Top-Startups kaum jemand kennt.' },
     ],
     fitHeading: 'Für wen es passt.',
     fitBody: 'Du hast etwas gebaut oder versucht zu bauen — Brand, Side-Project, Content-Account, Kampagne. Du willst nicht nur ausführen, sondern verstehen warum. Du ziehst echtes Shipping dem perfekten Plan vor.',
@@ -48,8 +48,8 @@ const COPY = {
     why: [
       { tag: 'REAL OPS', title: 'Not a pitch-deck job', body: 'You work on real campaigns, real budgets, real customers. From day 1 to your final week. Output is measured.' },
       { tag: 'CROSS-BRAND', title: '6 brands, 1 team', body: 'You learn marketing in beauty, fashion, accessories, home — simultaneously. Each brand is its own lab. You see what works, where, and why.' },
-      { tag: 'MENTORING', title: 'Direct line to founder + team', body: 'No corporate reporting chain. Peter (founder) reviews your projects himself. Plus: buddy from the team, monthly 1:1s.' },
-      { tag: 'AI-NATIVE', title: 'You work with our AI stack', body: 'Pythia (our trend AI), automated content workflows, AI agents in daily ops. You work daily with a stack few outside top startups know.' },
+      { tag: 'MENTORING', title: 'Direct line to founder + team', body: 'No corporate reporting chain. Weekly Interns Jour Fixe with Peter (founder) — he reviews your projects directly. Plus a buddy from the team.' },
+      { tag: 'AI-NATIVE', title: 'You work with our AI stack', body: 'Higgsfield for video, automated content workflows, AI agents in daily ops. You work daily with a stack few outside top startups know.' },
     ],
     fitHeading: 'Who it\'s for.',
     fitBody: 'You\'ve built something or tried to — brand, side project, content account, campaign. You don\'t just want to execute, you want to understand why. You prefer real shipping over the perfect plan.',
@@ -134,7 +134,8 @@ export default function FoundersUniversityPage() {
                 >
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white opacity-[0.035] tabular-nums"
+                    className="pointer-events-none absolute -right-4 -top-6 -z-10 select-none font-sans text-[140px] font-black leading-none text-white tabular-nums"
+                    style={{ opacity: 0.035 }}
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -178,7 +179,8 @@ export default function FoundersUniversityPage() {
                 <li key={i} className="relative isolate overflow-hidden">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal opacity-[0.08] tabular-nums"
+                    className="pointer-events-none absolute -left-2 -top-4 -z-10 select-none font-sans text-[110px] font-black leading-none text-teal tabular-nums"
+                    style={{ opacity: 0.08 }}
                   >
                     {s.n}
                   </span>
