@@ -16,22 +16,16 @@ import { ConfigProvider } from '@/lib/ConfigContext';
 import CookieBanner from '@/components/CookieBanner';
 
 // Route-level lazy splits
-const Header = React.lazy(() => import('@/components/Header'));
-const ApplicationForm = React.lazy(() => import('@/components/ApplicationForm'));
 const Footer = React.lazy(() => import('@/components/Footer'));
-const FAQ = React.lazy(() => import('@/components/FAQ'));
 const Dashboard = React.lazy(() => import('@/components/admin/Dashboard'));
 const AdminLogin = React.lazy(() => import('@/components/admin/AdminLogin'));
 const ForgotPassword = React.lazy(() => import('@/components/admin/ForgotPassword'));
-const HartLimesLanding = React.lazy(() => import('./components/HartLimesLanding'));
 const HSBLanding = React.lazy(() => import('@/components/landing/HSBLanding'));
 const AboutPage = React.lazy(() => import('@/components/landing/pages/AboutPage'));
 const AmbassadorsPage = React.lazy(() => import('@/components/landing/pages/AmbassadorsPage'));
 const FoundersPage = React.lazy(() => import('@/components/landing/pages/FoundersPage'));
 const FoundersUniversityPage = React.lazy(() => import('@/components/landing/pages/FoundersUniversityPage'));
 const FellowshipAgreementPage = React.lazy(() => import('@/components/landing/pages/FellowshipAgreementPage'));
-const CreatorApplicationPage = React.lazy(() => import('./components/public/CreatorApplicationPage'));
-const ApplicationSlidePanel = React.lazy(() => import('@/components/public/ApplicationSlidePanel'));
 const TaskSubmissionPage = React.lazy(() => import('@/components/public/TaskSubmissionPage'));
 const Imprint = React.lazy(() => import('@/components/legal/Imprint'));
 const PrivacyPolicy = React.lazy(() => import('@/components/legal/PrivacyPolicy'));
@@ -123,7 +117,6 @@ function CursorGlow() {
 
 // --- Main App Component ---
 const App: React.FC = () => {
-  const [applyPanelOpen, setApplyPanelOpen] = React.useState(false);
   const router = createBrowserRouter([
     // --- HSB Public Root — full landing imported from HSB-Web ---
     {
@@ -159,31 +152,10 @@ const App: React.FC = () => {
         </React.Suspense>
       ),
     },
-    // --- Hiring Funnel — former root, now scoped to /hiring ---
+    // --- Legacy redirect: /hiring → /founders-university (HSB Praktis-Funnel, 2026-05-02) ---
     {
       path: '/hiring',
-      element: (
-        <React.Suspense fallback={<div />}>
-          <div className="min-h-screen bg-[#080808]">
-            <header className="sticky top-0 z-20 bg-[#080808]/80 backdrop-blur-xl border-b border-white/5 px-6 py-4">
-              <TopNav variant="dark" />
-            </header>
-            <div className="max-w-5xl mx-auto px-4 space-y-10 md:space-y-20 pt-10 pb-12">
-              <Header />
-              <main className="space-y-10 md:space-y-20">
-                <ApplicationForm />
-                <div className="space-y-6">
-                  <h2 className="text-xs font-black uppercase tracking-[0.4em] text-center text-gray-500 mb-8">
-                    Got Questions? Check our FAQs
-                  </h2>
-                  <FAQ />
-                </div>
-              </main>
-              <Footer />
-            </div>
-          </div>
-        </React.Suspense>
-      ),
+      element: <Navigate to="/founders-university" replace />,
     },
     // --- Brand Ambassador Funnel — HSB AmbassadorsPage stub ---
     {
@@ -222,29 +194,18 @@ const App: React.FC = () => {
         </React.Suspense>
       ),
     },
+    // --- Legacy redirects: HartLimes-branded routes → HSB equivalents (2026-05-02) ---
     {
       path: 'company',
-      element: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <HartLimesLanding />
-        </React.Suspense>
-      ),
+      element: <Navigate to="/" replace />,
     },
     {
       path: 'creators',
-      element: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <HartLimesLanding forceMode="influencer" onApplyClick={() => setApplyPanelOpen(true)} />
-        </React.Suspense>
-      ),
+      element: <Navigate to="/brand-ambassador" replace />,
     },
     {
       path: 'apply/creator',
-      element: (
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <CreatorApplicationPage />
-        </React.Suspense>
-      ),
+      element: <Navigate to="/brand-ambassador" replace />,
     },
     // --- Utility pages (AppLayout wrapper retained) ---
     {
@@ -305,7 +266,6 @@ const App: React.FC = () => {
     <LangProvider>
       <CursorGlow />
       <RouterProvider router={router} />
-      <ApplicationSlidePanel open={applyPanelOpen} onClose={() => setApplyPanelOpen(false)} />
       <Toaster position="top-right" richColors />
       <CookieBanner />
     </LangProvider>
