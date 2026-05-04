@@ -3,6 +3,16 @@ import Navbar from '../sections/Navbar';
 import Footer from '../sections/Footer';
 import Spinner from '@/components/ui/Spinner';
 import { useLocale } from '@/lib/landing/i18n';
+import { BRANDS } from '@/lib/landing/brands';
+
+const ACCENT_RGB: Record<string, string> = {
+  teal:    '15, 189, 189',
+  coral:   '242, 112, 98',
+  indigo:  '99, 102, 241',
+  amber:   '245, 158, 11',
+  emerald: '16, 185, 129',
+  violet:  '139, 92, 246',
+};
 
 const ApplicationForm = React.lazy(() => import('@/components/ApplicationForm'));
 
@@ -11,16 +21,18 @@ type Locale = 'de' | 'en';
 const COPY = {
   de: {
     eyebrow: '/ 01 · FOUNDERS UNIVERSITY',
-    titleLines: ['Marketing.', 'An echten Brands.', 'Nicht in Theorie.'] as const,
+    titleLines: ['6 Marken.', '12 Wochen.', 'Du baust mit.'] as const,
     titleMidIndex: 1,
-    sub: '12-Wochen Fellowship in unserem House. Marketing, E-Commerce, Ops, AI — über 6 Marken gleichzeitig. Für alle, die nicht Theorie lernen wollen, sondern Realität.',
+    sub: 'Du arbeitest 12 Wochen parallel an unseren 6 Marken — Beauty, Fashion, Accessoires, Home. Mit echten Budgets, eigenen Pitches und direktem Draht zum Founder. Marketing, E-Commerce, Ops, AI.',
     ctaPrimary: 'Jetzt bewerben',
     ctaSecondary: 'Was dich erwartet',
+    brandsLabel: 'Du arbeitest gleichzeitig für',
     whyHeading: 'Was du bei uns bekommst.',
     why: [
       { tag: 'REAL OPS', title: 'Kein Pitch-Deck-Job', body: 'Du arbeitest an echten Kampagnen, echten Budgets, echten Kund:innen. Von Tag 1 bis zur letzten Woche. Output wird gemessen.' },
-      { tag: 'CROSS-BRAND', title: '6 Marken, 1 Team', body: 'Du lernst Marketing in Beauty, Fashion, Accessoires, Home — gleichzeitig. Jede Brand ist ein eigenes Labor. Du siehst was funktioniert, wo und warum.' },
-      { tag: 'MENTORING', title: 'Direkter Draht zu Gründer + Team', body: 'Kein Corporate-Reporting-Chain. Wöchentliches Interns Jour Fixe mit Peter (Founder) — er reviewed deine Projekte direkt. Dazu: Buddy aus dem Team.' },
+      { tag: 'CROSS-BRAND', title: '6 Marken, 1 Team', body: 'Du arbeitest gleichzeitig für Thiocyn, Paigh, Dr. Severin, Take A Shot, Wristr und Timber & John. Beauty, Fashion, Accessoires, Home — sechs Märkte als sechs Labors. Du siehst was funktioniert, wo und warum.' },
+      { tag: 'PITCH IT', title: 'Eigene Ideen werden live', body: 'Du siehst etwas, das anders besser wäre? Pitch es. Funktioniert es, geht es live — auf einer der 6 Marken. Kein "haben wir notiert", sondern echte Ownership ab Woche 1.' },
+      { tag: 'MENTORING', title: 'Direkter Draht zum Founder', body: 'Kein Corporate-Reporting-Chain. Wöchentliches Interns Jour Fixe mit Peter (Founder) — er reviewed deine Projekte direkt. Dazu: Buddy aus dem Team.' },
       { tag: 'AI-NATIVE', title: 'Du arbeitest mit unserem AI-Stack', body: 'Higgsfield für Video, automatisierte Content-Workflows, AI-Agenten im Tagesgeschäft. Du arbeitest täglich mit dem Stack, den außerhalb von Top-Startups kaum jemand kennt.' },
     ],
     fitHeading: 'Für wen es passt.',
@@ -32,6 +44,8 @@ const COPY = {
       { n: '03', dur: '~2 Wochen', title: 'Intro-Call', body: 'Bei Fit: 30-Minuten-Call mit Onboarding Lead und/oder Peter. Beide Seiten prüfen Match.' },
       { n: '04', dur: 'danach', title: 'Case + Start', body: 'Kurzer Praxis-Case (~2h). Bei Zusage: Startdatum, Buddy, Einarbeitung.' },
     ],
+    trackRecordHeading: 'Aufgebaut von ehemaligen Fellows.',
+    trackRecordBody: 'Founders University wurde von Luis Lielienthal & Danylo Kutsiuk aufgebaut — beide aus dem ersten Cohort, beide übernommen, beide gestalten heute aktiv mit. Das ist kein Praktikum-Programm, das eine HR-Abteilung am Reißbrett designed hat. Es ist gebaut von Leuten, die selbst durchgelaufen sind.',
     trustHeading: 'Wir investieren in dich, nicht umgekehrt.',
     trustBody: 'Keine Teilnahmegebühr, keine Kursgebühren, kein verstecktes Paywall. Das Fellowship ist unentgeltlich und full remote — du arbeitest von wo du willst, wir koordinieren async. Du investierst Zeit + Energie, wir geben dir Zugang zu echten Brands, echten Budgets und einem direkten Draht zum Team. Bei Conversion zur bezahlten Rolle nach Graduation: separater Vertrag.',
     formHeading: 'Jetzt bewerben',
@@ -39,16 +53,18 @@ const COPY = {
   },
   en: {
     eyebrow: '/ 01 · FOUNDERS UNIVERSITY',
-    titleLines: ['Marketing.', 'In real brands.', 'Not in theory.'] as const,
+    titleLines: ['6 brands.', '12 weeks.', 'You build.'] as const,
     titleMidIndex: 1,
-    sub: '12-week fellowship in our house. Marketing, e-commerce, ops, AI — across 6 brands at once. For people who want to learn reality, not theory.',
+    sub: 'You work 12 weeks across our 6 brands in parallel — beauty, fashion, accessories, home. Real budgets, your own pitches, direct line to the founder. Marketing, e-commerce, ops, AI.',
     ctaPrimary: 'Apply now',
     ctaSecondary: 'What to expect',
+    brandsLabel: 'You work simultaneously for',
     whyHeading: 'What you get with us.',
     why: [
       { tag: 'REAL OPS', title: 'Not a pitch-deck job', body: 'You work on real campaigns, real budgets, real customers. From day 1 to your final week. Output is measured.' },
-      { tag: 'CROSS-BRAND', title: '6 brands, 1 team', body: 'You learn marketing in beauty, fashion, accessories, home — simultaneously. Each brand is its own lab. You see what works, where, and why.' },
-      { tag: 'MENTORING', title: 'Direct line to founder + team', body: 'No corporate reporting chain. Weekly Interns Jour Fixe with Peter (founder) — he reviews your projects directly. Plus a buddy from the team.' },
+      { tag: 'CROSS-BRAND', title: '6 brands, 1 team', body: 'You work simultaneously for Thiocyn, Paigh, Dr. Severin, Take A Shot, Wristr and Timber & John. Beauty, fashion, accessories, home — six markets as six labs. You see what works, where, and why.' },
+      { tag: 'PITCH IT', title: 'Your ideas go live', body: 'See something that should be done differently? Pitch it. If it works, it ships — on one of the 6 brands. No "we noted it", actual ownership from week 1.' },
+      { tag: 'MENTORING', title: 'Direct line to the founder', body: 'No corporate reporting chain. Weekly Interns Jour Fixe with Peter (founder) — he reviews your projects directly. Plus a buddy from the team.' },
       { tag: 'AI-NATIVE', title: 'You work with our AI stack', body: 'Higgsfield for video, automated content workflows, AI agents in daily ops. You work daily with a stack few outside top startups know.' },
     ],
     fitHeading: 'Who it\'s for.',
@@ -60,6 +76,8 @@ const COPY = {
       { n: '03', dur: '~2 weeks', title: 'Intro call', body: 'If fit: 30-minute call with onboarding lead and/or Peter. Both sides check match.' },
       { n: '04', dur: 'after', title: 'Case + start', body: 'Short practical case (~2h). On acceptance: start date, buddy, onboarding.' },
     ],
+    trackRecordHeading: 'Built by former fellows.',
+    trackRecordBody: 'Founders University was built by Luis Lielienthal & Danylo Kutsiuk — both from the first cohort, both hired, both actively shaping the program today. This is not an internship program designed by an HR department on paper. It is built by people who went through it themselves.',
     trustHeading: 'We invest in you, not the other way around.',
     trustBody: 'No participation fee, no course fee, no hidden paywall. The fellowship is unpaid and fully remote — you work from wherever, we coordinate async. You invest your time + energy, we give you access to real brands, real budgets, and a direct line to the team. On conversion to a paid role after graduation: separate contract.',
     formHeading: 'Apply now',
@@ -117,6 +135,34 @@ export default function FoundersUniversityPage() {
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
               </a>
             </div>
+          </div>
+        </section>
+
+        {/* MARKEN-STRIP */}
+        <section className="border-t border-border/30 bg-card/10 py-12 md:py-16">
+          <div className="mx-auto max-w-6xl px-6 md:px-12">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground md:text-xs">
+              {t.brandsLabel}
+            </p>
+            <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+              {BRANDS.map((brand) => {
+                const rgb = ACCENT_RGB[brand.accent];
+                const tagline = locale === 'de' ? brand.taglineDe : brand.taglineEn;
+                return (
+                  <li key={brand.slug} className="flex flex-col gap-2">
+                    <span
+                      className="font-sans text-xl font-bold leading-tight tracking-tight md:text-2xl"
+                      style={{ color: `rgb(${rgb})` }}
+                    >
+                      {brand.name}
+                    </span>
+                    <span className="text-xs leading-snug text-muted-foreground/80">
+                      {tagline}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </section>
 
@@ -198,6 +244,41 @@ export default function FoundersUniversityPage() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        {/* TRACK-RECORD — built by ex-fellows */}
+        <section className="border-t border-border/30 bg-card/10 py-24 md:py-32">
+          <div className="mx-auto max-w-4xl px-6 md:px-12">
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-teal md:text-xs">
+              {locale === 'de' ? 'Track Record' : 'Track Record'}
+            </p>
+            <h2 className="mt-4 text-pretty font-sans font-bold leading-tight tracking-tight text-[clamp(1.75rem,4vw,3rem)]">
+              {t.trackRecordHeading}
+            </h2>
+            <p className="mt-8 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+              {t.trackRecordBody}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="https://www.linkedin.com/in/luis-lielienthal"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60"
+              >
+                <span>Luis Lielienthal</span>
+                <span aria-hidden className="text-muted-foreground">↗</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/danylo-kutsiuk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60"
+              >
+                <span>Danylo Kutsiuk</span>
+                <span aria-hidden className="text-muted-foreground">↗</span>
+              </a>
+            </div>
           </div>
         </section>
 
