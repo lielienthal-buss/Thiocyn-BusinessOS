@@ -440,7 +440,7 @@ const ApplicationForm: React.FC = () => {
                 className="pb-6 border-b border-gray-100 last:border-0"
               >
                 <p className="font-semibold text-lg text-gray-900 mb-3">
-                  {q.text}
+                  {lang === 'de' ? q.de : q.en}
                 </p>
                 <div className="flex gap-2">
                   {[1, 2, 3, 4, 5, 6, 7].map((val) => (

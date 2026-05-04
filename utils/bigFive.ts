@@ -1,19 +1,25 @@
-export const BFI_QUESTIONS = [
-  { id: 1, text: '... works thoroughly.' }, // Conscientiousness (+)
-  { id: 2, text: '... is communicative, talkative.' }, // Extraversion (+)
-  { id: 3, text: '... is sometimes a bit rough with others.' }, // Agreeableness (-)
-  { id: 4, text: '... is original, brings new ideas.' }, // Openness (+)
-  { id: 5, text: '... often worries.' }, // Neuroticism (+)
-  { id: 6, text: '... can forgive.' }, // Agreeableness (+)
-  { id: 7, text: '... is rather lazy.' }, // Conscientiousness (-)
-  { id: 8, text: '... can go out of their way, is sociable.' }, // Extraversion (+)
-  { id: 9, text: '... appreciates artistic experiences.' }, // Openness (+)
-  { id: 10, text: '... easily gets nervous.' }, // Neuroticism (+)
-  { id: 11, text: '... completes tasks effectively and efficiently.' }, // Conscientiousness (+)
-  { id: 12, text: '... is reserved.' }, // Extraversion (-)
-  { id: 13, text: '... is considerate and friendly with others.' }, // Agreeableness (+)
-  { id: 14, text: '... has a vivid imagination, ideas.' }, // Openness (+)
-  { id: 15, text: '... is relaxed, can handle stress well.' }, // Neuroticism (-)
+export interface BfiQuestion {
+  id: number;
+  de: string;
+  en: string;
+}
+
+export const BFI_QUESTIONS: BfiQuestion[] = [
+  { id: 1,  de: 'Ich arbeite gründlich.',                                   en: 'I work thoroughly.' },                                   // C+
+  { id: 2,  de: 'Ich bin gesprächig und kommunikativ.',                     en: 'I am communicative and talkative.' },                    // E+
+  { id: 3,  de: 'Ich bin manchmal etwas grob zu anderen.',                  en: 'I am sometimes a bit rude to others.' },                 // A-
+  { id: 4,  de: 'Ich bringe oft neue Ideen ein.',                           en: 'I often come up with new ideas.' },                      // O+
+  { id: 5,  de: 'Ich mache mir oft Sorgen.',                                en: 'I worry a lot.' },                                       // N+
+  { id: 6,  de: 'Ich kann verzeihen.',                                      en: 'I can forgive.' },                                       // A+
+  { id: 7,  de: 'Ich bin eher faul.',                                       en: 'I tend to be lazy.' },                                   // C-
+  { id: 8,  de: 'Ich kann aus mir herausgehen und bin gesellig.',           en: 'I can come out of myself and am sociable.' },            // E+
+  { id: 9,  de: 'Ich schätze künstlerische Erfahrungen.',                   en: 'I value artistic experiences.' },                        // O+
+  { id: 10, de: 'Ich werde leicht nervös.',                                 en: 'I get nervous easily.' },                                // N+
+  { id: 11, de: 'Ich erledige Aufgaben effektiv und effizient.',            en: 'I complete tasks effectively and efficiently.' },        // C+
+  { id: 12, de: 'Ich bin zurückhaltend.',                                   en: 'I am reserved.' },                                       // E-
+  { id: 13, de: 'Ich bin rücksichtsvoll und freundlich zu anderen.',        en: 'I am considerate and friendly toward others.' },         // A+
+  { id: 14, de: 'Ich habe eine lebhafte Vorstellungskraft.',                en: 'I have a vivid imagination.' },                          // O+
+  { id: 15, de: 'Ich bin entspannt und kann mit Stress gut umgehen.',       en: 'I am relaxed and handle stress well.' },                 // N-
 ];
 
 export const calculateBigFive = (answers: Record<number, number>) => {
