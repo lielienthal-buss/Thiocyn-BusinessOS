@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabaseClient';
 import Spinner from '@/components/ui/Spinner';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
@@ -290,8 +291,10 @@ const DetailDrawer: React.FC<DrawerProps> = ({ row, onClose, onStatus, onNotes, 
     setSavingNotes(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex" role="dialog" aria-modal="true">
       <button type="button" onClick={onClose} className="flex-1 bg-black/40 backdrop-blur-sm" aria-label="Close drawer" />
       <div className="flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl">
         <header className="flex items-start justify-between border-b border-black/[0.06] p-6">
@@ -373,7 +376,8 @@ const DetailDrawer: React.FC<DrawerProps> = ({ row, onClose, onStatus, onNotes, 
           <button onClick={onClose} className="rounded-lg bg-[#1d1d1f] px-4 py-1.5 text-xs font-bold text-white hover:bg-black">Close</button>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

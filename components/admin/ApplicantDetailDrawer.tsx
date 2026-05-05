@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import type { Application, ApplicationStage } from '@/types';
 import { updateApplicationStage } from '@/lib/actions';
@@ -52,8 +53,10 @@ const ApplicantDetailDrawer: React.FC<Props> = ({ application, onClose, onStageC
     setSavingStage(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-40 flex">
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex">
       {/* Backdrop */}
       <div
         className="flex-1 bg-black/40 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]"
@@ -112,7 +115,8 @@ const ApplicantDetailDrawer: React.FC<Props> = ({ application, onClose, onStageC
           to { opacity: 1; }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 };
 
