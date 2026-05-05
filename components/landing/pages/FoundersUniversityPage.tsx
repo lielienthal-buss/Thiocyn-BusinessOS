@@ -259,26 +259,6 @@ export default function FoundersUniversityPage() {
             <p className="mt-8 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
               {t.trackRecordBody}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="https://www.linkedin.com/in/luis-lielienthal"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60"
-              >
-                <span>Luis Lielienthal</span>
-                <span aria-hidden className="text-muted-foreground">↗</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/danylo-kutsiuk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:border-teal/60 hover:bg-card/60"
-              >
-                <span>Danylo Kutsiuk</span>
-                <span aria-hidden className="text-muted-foreground">↗</span>
-              </a>
-            </div>
           </div>
         </section>
 
