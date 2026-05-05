@@ -5,15 +5,6 @@ import Spinner from '@/components/ui/Spinner';
 import { useLocale } from '@/lib/landing/i18n';
 import { BRANDS } from '@/lib/landing/brands';
 
-const ACCENT_RGB: Record<string, string> = {
-  teal:    '15, 189, 189',
-  coral:   '242, 112, 98',
-  indigo:  '99, 102, 241',
-  amber:   '245, 158, 11',
-  emerald: '16, 185, 129',
-  violet:  '139, 92, 246',
-};
-
 const ApplicationForm = React.lazy(() => import('@/components/ApplicationForm'));
 
 type Locale = 'de' | 'en';
@@ -144,18 +135,19 @@ export default function FoundersUniversityPage() {
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground md:text-xs">
               {t.brandsLabel}
             </p>
-            <ul className="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-3 lg:grid-cols-6">
+            <ul className="mt-8 grid grid-cols-2 items-center gap-x-8 gap-y-10 md:grid-cols-3 lg:grid-cols-6">
               {BRANDS.map((brand) => {
-                const rgb = ACCENT_RGB[brand.accent];
                 const tagline = locale === 'de' ? brand.taglineDe : brand.taglineEn;
                 return (
-                  <li key={brand.slug} className="flex flex-col gap-2">
-                    <span
-                      className="font-sans text-xl font-bold leading-tight tracking-tight md:text-2xl"
-                      style={{ color: `rgb(${rgb})` }}
-                    >
-                      {brand.name}
-                    </span>
+                  <li key={brand.slug} className="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
+                    <div className="flex h-10 w-full items-center md:justify-start justify-center">
+                      <img
+                        src={brand.logo}
+                        alt={brand.name}
+                        loading="lazy"
+                        className="max-h-10 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+                      />
+                    </div>
                     <span className="text-xs leading-snug text-muted-foreground/80">
                       {tagline}
                     </span>

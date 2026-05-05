@@ -12,6 +12,7 @@ export type BrandAccent = 'teal' | 'coral' | 'indigo' | 'amber' | 'emerald' | 'v
 export interface Brand {
   slug: string
   name: string
+  logo: string
   taglineEn: string
   taglineDe: string
   storyEn: string
@@ -29,6 +30,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'thiocyn',
     name: 'Thiocyn',
+    logo: '/brands/thiocyn.svg',
     taglineEn: 'A molecule your body already knows.',
     taglineDe: 'Ein Molekül, das dein Körper kennt.',
     storyEn:
@@ -46,6 +48,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'paigh',
     name: 'Paigh',
+    logo: '/brands/paigh.svg',
     taglineEn: 'Fair fashion, genuine comfort.',
     taglineDe: 'Faire & bequeme Mode.',
     storyEn:
@@ -63,6 +66,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'dr-severin',
     name: 'Dr. Severin',
+    logo: '/brands/dr-severin.avif',
     taglineEn: 'Results, not empty promises.',
     taglineDe: 'Ergebnisse, keine leeren Versprechen.',
     storyEn:
@@ -80,6 +84,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'take-a-shot',
     name: 'Take A Shot',
+    logo: '/brands/take-a-shot.avif',
     taglineEn: 'Sustainable sunglasses since 2012.',
     taglineDe: 'Nachhaltige Sonnenbrillen seit 2012.',
     storyEn:
@@ -97,6 +102,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'wristr',
     name: 'Wristr',
+    logo: '/brands/wristr.svg',
     taglineEn: 'Apple Watch bands, reimagined.',
     taglineDe: 'Apple Watch Armbänder, neu gedacht.',
     storyEn:
@@ -114,6 +120,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'timber-john',
     name: 'Timber & John',
+    logo: '/brands/timber-john.avif',
     taglineEn: 'Natural, crafted, timeless.',
     taglineDe: 'Naturverbunden, handwerklich, zeitlos.',
     storyEn:
