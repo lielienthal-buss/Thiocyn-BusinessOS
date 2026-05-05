@@ -83,7 +83,8 @@ const RecruitingOverview: React.FC<RecruitingOverviewProps> = ({ onNavigate, isA
       <header>
         <h1 className="text-2xl font-black tracking-tight text-[#1d1d1f]">Recruiting Overview</h1>
         <p className="mt-1 text-sm text-[#515154]">
-          Combined view across all 3 funnels: Founders University, Ambassador Program, M&A pipeline.
+          Inbound funnels: <strong>Founders University</strong> + <strong>Ambassador Program</strong> (people).
+          M&amp;A is shown for awareness — it&apos;s an external <strong>Brand Acquisitions</strong> pipeline, not recruiting.
         </p>
       </header>
 
@@ -106,29 +107,40 @@ const RecruitingOverview: React.FC<RecruitingOverviewProps> = ({ onNavigate, isA
         </section>
       )}
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <FunnelCard
-          title="Founders University"
-          subtitle="Fellow applications"
-          counts={fellows}
-          accentColor="#0F766E"
-          onClick={() => onNavigate('applications')}
-        />
-        <FunnelCard
-          title="Ambassador Program"
-          subtitle="Creator applications"
-          counts={ambassadors}
-          accentColor="#F27062"
-          onClick={() => onNavigate('ambassadorApplications')}
-        />
-        <FunnelCard
-          title="M&A Inquiries"
-          subtitle={isAdminOrOwner ? 'Sell-your-brand pipeline' : 'Owner / Admin only'}
-          counts={maInquiries}
-          accentColor="#1d1d1f"
-          onClick={() => isAdminOrOwner && onNavigate('maInquiries')}
-          locked={!isAdminOrOwner}
-        />
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-[#515154]">Inbound — People</h2>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <FunnelCard
+            title="Founders University"
+            subtitle="Fellow applications"
+            counts={fellows}
+            accentColor="#0F766E"
+            onClick={() => onNavigate('applications')}
+          />
+          <FunnelCard
+            title="Ambassador Program"
+            subtitle="Creator applications"
+            counts={ambassadors}
+            accentColor="#F27062"
+            onClick={() => onNavigate('ambassadorApplications')}
+          />
+        </div>
+      </section>
+
+      <section className="border-t border-dashed border-black/10 pt-6">
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-[#515154]">
+          External — Brand Acquisitions <span className="font-normal normal-case text-[#9b9b9d]">(separate from recruiting)</span>
+        </h2>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <FunnelCard
+            title="M&A Inquiries"
+            subtitle={isAdminOrOwner ? 'Sell-your-brand pipeline — external' : 'Owner / Admin only'}
+            counts={maInquiries}
+            accentColor="#1d1d1f"
+            onClick={() => isAdminOrOwner && onNavigate('maInquiries')}
+            locked={!isAdminOrOwner}
+          />
+        </div>
       </section>
     </div>
   );
