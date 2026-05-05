@@ -45,7 +45,7 @@ const COPY = {
       { year: '2019', title: 'Silicon Valley', body: 'Plug&Play Batch Winner. 150.000 € + ein Jahr Office in Sunnyvale, CA. Stanford-Programm: Building Company Culture.' },
       { year: '2022', title: 'House of Sustainable Brands', body: 'Erste Akquisition: Take A Shot (nachhaltige Eyewear, Leipzig). Der Startpunkt der Gruppe.' },
       { year: '2023–24', title: 'Portfolio-Expansion', body: 'Paigh (Slow Fashion), Timber & John (Naturmode + Holzuhren), Dr. Severin ins HSB-Portfolio, zwei weitere Brands folgen.' },
-      { year: 'heute', title: '6 Brands. Ein Haus.', body: 'Shared Ops, geteilte Intelligenz, gemeinsame Infrastruktur. Pipeline: 20+ Targets, Umsatzbereich 500k bis 27M €.' },
+      { year: 'heute', title: '6 Brands. Ein Haus.', body: 'Shared Ops, geteilte Intelligenz, gemeinsame Infrastruktur. Aktive Akquisitionspipeline.' },
     ],
 
     milestonesHeading: 'In Zahlen.',
@@ -53,7 +53,7 @@ const COPY = {
       { number: '11', label: 'Jahre Unternehmer' },
       { number: '6', label: 'Marken unter einem Dach' },
       { number: '4', label: 'Akquisitionen abgeschlossen' },
-      { number: '1', label: 'Silicon-Valley-Batch-Winner' },
+      { number: '2019', label: 'Silicon Valley Batch Winner' },
     ],
 
     whyHeading: 'Warum HSB.',
@@ -90,7 +90,7 @@ const COPY = {
       { year: '2019', title: 'Silicon Valley', body: 'Plug&Play Batch Winner. €150k + one year in Sunnyvale, CA. Stanford program: Building Company Culture.' },
       { year: '2022', title: 'House of Sustainable Brands', body: 'First acquisition: Take A Shot (sustainable eyewear, Leipzig). Start of the group.' },
       { year: '2023–24', title: 'Portfolio expansion', body: 'Paigh (slow fashion), Timber & John (natural apparel + wood watches), Dr. Severin rolled in, two more brands following.' },
-      { year: 'today', title: '6 brands. One house.', body: 'Shared ops, shared intelligence, shared infrastructure. Pipeline: 20+ targets, revenue range 500k to 27M €.' },
+      { year: 'today', title: '6 brands. One house.', body: 'Shared ops, shared intelligence, shared infrastructure. Active acquisition pipeline.' },
     ],
 
     milestonesHeading: 'In numbers.',
@@ -98,7 +98,7 @@ const COPY = {
       { number: '11', label: 'Years as founder' },
       { number: '6', label: 'Brands under one roof' },
       { number: '4', label: 'Acquisitions closed' },
-      { number: '1', label: 'Silicon Valley batch winner' },
+      { number: '2019', label: 'Silicon Valley batch winner' },
     ],
 
     whyHeading: 'Why HSB.',

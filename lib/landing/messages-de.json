@@ -18,13 +18,13 @@
     "eyebrow": "HOLDING · HAMBURG",
     "headline1": "House of",
     "headline2": "Sustainable Brands",
-    "tagline1": "Die nachhaltige Art, Marken zu entwickeln.",
-    "tagline2": "Sechs Marken. Ein Team. Eine Geschichte."
+    "tagline1": "Wir kaufen und betreiben sechs nachhaltige D2C-Marken.",
+    "tagline2": "Operativ. Parallel. In einem Team."
   },
   "mission": {
     "label": "MISSION",
     "block1": "Die meisten Marken arbeiten in Silos: Marketing kennt die Zahlen nicht. Daten sehen die Story nicht. Operations bekommen Trends zu spät.",
-    "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Ein Team, das sechs Marken gleichzeitig führt, lernt sechsmal schneller.",
+    "block2": "Wir glauben, das nächste Jahrzehnt gehört Häusern — nicht einzelnen Marken. Ein Team, das sechs Marken parallel führt, sieht sofort, was in einer Marke funktioniert — und kann es in den anderen testen.",
     "block3": "HSB ist dieses Haus. Sechs Marken, ein Team, eine gemeinsame Methodik."
   },
   "paths": {
@@ -60,14 +60,14 @@
     "capability2Tag": "OPERATIONS",
     "capability2": "Sehen wo eine Marke wirklich wächst — und das auf alle anderen übertragen.",
     "capability3Tag": "WACHSTUM",
-    "capability3": "Was hat heute wirklich Umsatz gebracht? Eine klare Antwort pro Morgen — keine endlosen Reports."
+    "capability3": "Was hat wirklich Umsatz gebracht? Trends im Suchverhalten zeigen, welche Hebel sich bewegen — bevor es im Reporting sichtbar wird."
   },
   "metrics": {
     "label": "ZAHLEN",
     "subtitle": "Stand 2026",
     "label0": "Marken unter einem Haus",
     "label1": "Follower im Portfolio",
-    "label2": "Fellows in Founders University",
+    "label2": "Fellows ausgebildet",
     "label3": "Gegründet in Hamburg"
   },
   "stub": {

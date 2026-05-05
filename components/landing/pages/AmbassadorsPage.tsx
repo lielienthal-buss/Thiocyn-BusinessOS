@@ -19,8 +19,8 @@ const COPY = {
     whyHeading: 'Was du bekommst.',
     why: [
       { tag: 'SAMPLES', title: 'Echte Produkte, nicht Schrott', body: 'Du testest die Produkte vor Posting. Sample-Versand binnen 14 Tagen nach Freigabe. Bei Nicht-Gefallen: kein Post, kein Druck.' },
-      { tag: 'COMMISSIONS', title: 'Faire Provisionen, monatlich', body: 'Klare Provisionssätze (10–20% je Brand, je nach Produktmarge). Abrechnung per PayPal oder Banküberweisung am Monatsende. Tracking über eigene Codes.' },
-      { tag: 'CROSS-BRAND', title: 'Du bleibst frei', body: 'Keine Exklusivität. Du kannst parallel mit anderen Brands arbeiten. Bei uns kannst du 1 oder alle 6 HSB-Brands repräsentieren — deine Wahl.' },
+      { tag: 'COMMISSIONS', title: 'Faire Provisionen, monatlich', body: 'Provisionssätze werden individuell vereinbart — abhängig von Produktmarge und deinem Reichweiten-Profil. Abrechnung per PayPal oder Banküberweisung am Monatsende. Tracking über eigene Codes.' },
+      { tag: 'CROSS-BRAND', title: 'Du bleibst frei', body: 'Aktuell live für Paigh. Weitere HSB-Brands folgen schrittweise — du kannst dann erweitern, wenn du willst. Keine Exklusivität: parallele Kooperationen mit anderen Brands sind möglich.' },
       { tag: 'DIREKT', title: 'Direkter Kontakt', body: 'Noch keine Mass-Creator-Plattform. Du sprichst mit echten Menschen aus dem HSB-Team. Feedback kommt zügig. Anpassungen sind möglich.' },
     ],
     howHeading: 'So läuft es ab.',
@@ -45,8 +45,8 @@ const COPY = {
     whyHeading: 'What you get.',
     why: [
       { tag: 'SAMPLES', title: 'Real products, not junk', body: 'You test products before posting. Samples shipped within 14 days of approval. If you don\'t like it: no post, no pressure.' },
-      { tag: 'COMMISSIONS', title: 'Fair commissions, monthly', body: 'Clear commission rates (10–20% per brand, based on product margin). Paid via PayPal or bank transfer at month-end. Tracking via your own codes.' },
-      { tag: 'CROSS-BRAND', title: 'You stay free', body: 'No exclusivity. You can work in parallel with other brands. With us you can represent 1 or all 6 HSB brands — your call.' },
+      { tag: 'COMMISSIONS', title: 'Fair commissions, monthly', body: 'Commission rates are negotiated individually — based on product margin and your reach profile. Paid via PayPal or bank transfer at month-end. Tracking via your own codes.' },
+      { tag: 'CROSS-BRAND', title: 'You stay free', body: 'Currently live for Paigh. More HSB brands roll out step by step — you can expand if you want. No exclusivity: parallel collaborations with other brands are possible.' },
       { tag: 'DIRECT', title: 'Direct contact', body: 'Not a mass creator platform. You talk to real people from the HSB team. Feedback comes fast. Adjustments possible.' },
     ],
     howHeading: 'How it works.',

@@ -6,8 +6,8 @@ import { useLocale, useTranslations } from '@/lib/landing/i18n';
 const ACCENTS = ['teal', 'coral', 'indigo', 'amber'] as const;
 const VALUES = [
   { value: 6, suffix: '', kicker: '/01', separator: '' },
-  { value: 158000, suffix: '+', kicker: '/02', separator: '.' },
-  { value: 11, suffix: '', kicker: '/03', separator: '' },
+  { value: 150000, suffix: '+', kicker: '/02', separator: '.' },
+  { value: 10, suffix: '+', kicker: '/03', separator: '' },
   { value: 2022, suffix: '', kicker: '/04', separator: '' },
 ] as const;
 

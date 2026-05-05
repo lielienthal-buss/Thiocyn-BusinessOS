@@ -18,13 +18,13 @@
     "eyebrow": "HOLDING · HAMBURG",
     "headline1": "House of",
     "headline2": "Sustainable Brands",
-    "tagline1": "The sustainable way to build brands.",
-    "tagline2": "Six brands. One team. One story."
+    "tagline1": "We acquire and operate six sustainable D2C brands.",
+    "tagline2": "Hands-on. In parallel. As one team."
   },
   "mission": {
     "label": "MISSION",
     "block1": "Most brands work in silos: marketing doesn't know the numbers. Data doesn't see the story. Operations get the trends too late.",
-    "block2": "We believe the next decade belongs to houses — not single brands. A team running six brands at once learns six times faster.",
+    "block2": "We believe the next decade belongs to houses — not single brands. A team running six brands in parallel sees instantly what works in one — and can test it across the others.",
     "block3": "HSB is that house. Six brands, one team, one shared method."
   },
   "paths": {
@@ -60,14 +60,14 @@
     "capability2Tag": "OPERATIONS",
     "capability2": "See where a brand actually grows — and transfer that to all the others.",
     "capability3Tag": "GROWTH",
-    "capability3": "What actually drove revenue today? One clear answer every morning — no endless reports."
+    "capability3": "What actually drove revenue? Search-trend signals surface which levers are moving — before it shows up in the reporting."
   },
   "metrics": {
     "label": "BY THE NUMBERS",
     "subtitle": "As of 2026",
     "label0": "Brands under one house",
     "label1": "Followers across the portfolio",
-    "label2": "Fellows in Founders University",
+    "label2": "Fellows trained",
     "label3": "Founded in Hamburg"
   },
   "stub": {
