@@ -135,20 +135,20 @@ export default function FoundersUniversityPage() {
             <p className="font-mono text-[10px] font-medium uppercase tracking-[0.4em] text-muted-foreground md:text-xs">
               {t.brandsLabel}
             </p>
-            <ul className="mt-8 grid grid-cols-2 items-center gap-x-8 gap-y-10 md:grid-cols-3 lg:grid-cols-6">
+            <ul className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
               {BRANDS.map((brand) => {
                 const tagline = locale === 'de' ? brand.taglineDe : brand.taglineEn;
                 return (
-                  <li key={brand.slug} className="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
-                    <div className="flex h-10 w-full items-center md:justify-start justify-center">
+                  <li key={brand.slug} className="flex flex-col gap-3">
+                    <div className="flex h-20 items-center justify-center rounded-xl bg-white px-5 py-4 transition-transform hover:-translate-y-0.5">
                       <img
                         src={brand.logo}
                         alt={brand.name}
                         loading="lazy"
-                        className="max-h-10 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+                        className="max-h-12 w-auto max-w-full object-contain"
                       />
                     </div>
-                    <span className="text-xs leading-snug text-muted-foreground/80">
+                    <span className="text-center text-xs leading-snug text-muted-foreground/80 md:text-left">
                       {tagline}
                     </span>
                   </li>
