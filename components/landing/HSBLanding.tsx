@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './sections/Navbar';
 import Footer from './sections/Footer';
 import HeroSection from './sections/HeroSection';
+import BrandsTrustBar from './sections/BrandsTrustBar';
 import MissionNarrative from './sections/MissionNarrative';
 import PathSelectionGrid from './sections/PathSelectionGrid';
 import PortfolioShowcase from './sections/PortfolioShowcase';
@@ -20,6 +21,7 @@ export default function HSBLanding() {
       <main id="main" className="min-h-screen bg-background text-foreground">
         <Navbar />
         <HeroSection />
+        <BrandsTrustBar />
         <MissionNarrative />
         <PathSelectionGrid />
         <PortfolioShowcase />

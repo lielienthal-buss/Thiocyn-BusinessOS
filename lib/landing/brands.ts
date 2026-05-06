@@ -13,6 +13,7 @@ export interface Brand {
   slug: string
   name: string
   logo: string
+  logoLight: string
   taglineEn: string
   taglineDe: string
   storyEn: string
@@ -31,6 +32,7 @@ export const BRANDS: Brand[] = [
     slug: 'thiocyn',
     name: 'Thiocyn',
     logo: '/brands/thiocyn-dark.png',
+    logoLight: '/brands/thiocyn-white.png',
     taglineEn: 'A molecule your body already knows.',
     taglineDe: 'Ein Molekül, das dein Körper kennt.',
     storyEn:
@@ -49,6 +51,7 @@ export const BRANDS: Brand[] = [
     slug: 'paigh',
     name: 'Paigh',
     logo: '/brands/paigh.svg',
+    logoLight: '/brands/paigh-white.svg',
     taglineEn: 'Fair fashion, genuine comfort.',
     taglineDe: 'Faire & bequeme Mode.',
     storyEn:
@@ -67,6 +70,7 @@ export const BRANDS: Brand[] = [
     slug: 'dr-severin',
     name: 'Dr. Severin',
     logo: '/brands/dr-severin.avif',
+    logoLight: '/brands/dr-severin-white.png',
     taglineEn: 'Results, not empty promises.',
     taglineDe: 'Ergebnisse, keine leeren Versprechen.',
     storyEn:
@@ -85,6 +89,7 @@ export const BRANDS: Brand[] = [
     slug: 'take-a-shot',
     name: 'Take A Shot',
     logo: '/brands/take-a-shot-dark.png',
+    logoLight: '/brands/take-a-shot-white.png',
     taglineEn: 'Sustainable sunglasses since 2012.',
     taglineDe: 'Nachhaltige Sonnenbrillen seit 2012.',
     storyEn:
@@ -103,6 +108,7 @@ export const BRANDS: Brand[] = [
     slug: 'wristr',
     name: 'Wristr',
     logo: '/brands/wristr.svg',
+    logoLight: '/brands/wristr-white.svg',
     taglineEn: 'Apple Watch bands, reimagined.',
     taglineDe: 'Apple Watch Armbänder, neu gedacht.',
     storyEn:
@@ -121,6 +127,7 @@ export const BRANDS: Brand[] = [
     slug: 'timber-john',
     name: 'Timber & John',
     logo: '/brands/timber-john-dark.png',
+    logoLight: '/brands/timber-john-white.png',
     taglineEn: 'Natural, crafted, timeless.',
     taglineDe: 'Naturverbunden, handwerklich, zeitlos.',
     storyEn:
