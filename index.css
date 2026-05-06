@@ -962,7 +962,7 @@ body {
 .path-hook { font-size: clamp(1rem, 1.4vw, 1.375rem); }
 .brand-name { font-size: clamp(3.5rem, 9vw, 10rem); }
 .brand-tagline { font-size: clamp(1.5rem, 2.8vw, 2.75rem); line-height: 1.2; }
-.metric-number { font-size: clamp(4rem, 10vw, 12rem); line-height: 0.9; }
+.metric-number { font-size: clamp(2.75rem, 5vw, 5rem); line-height: 0.95; }
 .pythia-heading { font-size: clamp(2.5rem, 7vw, 7.5rem); }
 
 /* Prevent descender/diacritic clipping in GSAP SplitText wrappers.
