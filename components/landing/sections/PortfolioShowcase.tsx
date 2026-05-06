@@ -9,7 +9,6 @@ const InstagramIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 import BlurText from '@/components/landing/effects/BlurText';
-import SplitText from '@/components/landing/effects/SplitText';
 import { BRANDS, type Brand } from '@/lib/landing/brands';
 import { useLocale, useTranslations } from '@/lib/landing/i18n';
 
@@ -81,32 +80,19 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
 
       <div className="relative mx-auto grid grid-cols-12 gap-8 px-6 py-20 md:px-12 md:py-32">
         <div className={`col-span-12 md:col-span-1 ${isRight ? 'md:order-2 md:col-start-12' : ''}`}>
-          <span
-            className="font-mono text-xs font-medium uppercase tracking-[0.3em]"
-            style={{ color: `rgb(${rgb})` }}
-          >
+          <span className="font-mono text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground/70">
             /{String(index + 1).padStart(2, '0')}
           </span>
         </div>
 
-        <div className={`col-span-12 md:col-span-7 ${isRight ? 'md:col-start-5' : 'md:col-start-2'}`} translate="no">
-          <SplitText
-            text={brand.name}
-            tag="h3"
-            className="brand-name block font-sans font-black leading-[0.85] tracking-[-0.04em]"
-            textAlign="left"
-            delay={22}
-            duration={0.9}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 60 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.2}
+        <div className={`col-span-12 md:col-span-7 ${isRight ? 'md:col-start-5' : 'md:col-start-2'}`}>
+          <img
+            src={brand.logoLight}
+            alt={brand.name}
+            loading="lazy"
+            className="h-14 w-auto max-w-full object-contain object-left opacity-90 md:h-20"
           />
-          <p
-            className="brand-tagline mt-6 font-serif italic"
-            style={{ color: `rgb(${rgb})` }}
-          >
+          <p className="brand-tagline mt-6 font-serif italic text-foreground/80">
             {tagline}
           </p>
         </div>
@@ -128,10 +114,7 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
           />
 
           <div className={`flex flex-col gap-1 ${isRight ? '' : 'md:items-end'}`}>
-            <span
-              className="font-sans text-2xl font-bold tabular-nums md:text-3xl"
-              style={{ color: `rgb(${rgb})` }}
-            >
+            <span className="font-sans text-2xl font-bold tabular-nums text-foreground md:text-3xl">
               {brand.metric}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 md:text-xs">
@@ -150,8 +133,7 @@ function BrandRow({ brand, index, locale, visitLabel }: BrandRowProps) {
                   href={brand.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group/link inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.2em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  style={{ color: `rgb(${rgb})` }}
+                  className="group/link inline-flex items-center gap-2 rounded-sm text-sm font-semibold uppercase tracking-[0.2em] text-primary-300 transition-colors hover:text-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   {visitLabel}
                   <ArrowUpRight
