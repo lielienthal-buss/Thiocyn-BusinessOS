@@ -84,7 +84,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'take-a-shot',
     name: 'Take A Shot',
-    logo: '/brands/take-a-shot.avif',
+    logo: '/brands/take-a-shot-dark.png',
     taglineEn: 'Sustainable sunglasses since 2012.',
     taglineDe: 'Nachhaltige Sonnenbrillen seit 2012.',
     storyEn:
@@ -120,7 +120,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'timber-john',
     name: 'Timber & John',
-    logo: '/brands/timber-john.avif',
+    logo: '/brands/timber-john-dark.png',
     taglineEn: 'Natural, crafted, timeless.',
     taglineDe: 'Naturverbunden, handwerklich, zeitlos.',
     storyEn:

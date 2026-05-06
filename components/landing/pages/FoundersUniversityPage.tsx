@@ -140,12 +140,12 @@ export default function FoundersUniversityPage() {
                 const tagline = locale === 'de' ? brand.taglineDe : brand.taglineEn;
                 return (
                   <li key={brand.slug} className="flex flex-col gap-3">
-                    <div className="flex h-20 items-center justify-center rounded-xl bg-white px-5 py-4 transition-transform hover:-translate-y-0.5">
+                    <div className="flex h-24 w-full items-center justify-center rounded-xl bg-white px-3 py-3 transition-transform hover:-translate-y-0.5">
                       <img
                         src={brand.logo}
                         alt={brand.name}
                         loading="lazy"
-                        className="max-h-12 w-auto max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain"
                       />
                     </div>
                     <span className="text-center text-xs leading-snug text-muted-foreground/80 md:text-left">
