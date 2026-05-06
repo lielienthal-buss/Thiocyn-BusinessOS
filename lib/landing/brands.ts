@@ -30,7 +30,7 @@ export const BRANDS: Brand[] = [
   {
     slug: 'thiocyn',
     name: 'Thiocyn',
-    logo: '/brands/thiocyn.svg',
+    logo: '/brands/thiocyn-dark.png',
     taglineEn: 'A molecule your body already knows.',
     taglineDe: 'Ein Molekül, das dein Körper kennt.',
     storyEn:
