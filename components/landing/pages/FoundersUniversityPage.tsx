@@ -277,11 +277,9 @@ export default function FoundersUniversityPage() {
                 {t.formSub}
               </p>
             </header>
-            <div className="rounded-3xl bg-white p-6 text-gray-900 shadow-2xl shadow-black/40 ring-1 ring-black/5 md:p-10">
-              <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
-                <ApplicationForm />
-              </Suspense>
-            </div>
+            <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
+              <ApplicationForm />
+            </Suspense>
           </div>
         </section>
       </main>
