@@ -53,14 +53,12 @@
   "ai": {
     "label": "PYTHIA",
     "kicker": "Benannt nach dem Orakel von Delphi.",
-    "heading": "Eine KI, die Trends sieht, bevor der Markt reagiert.",
-    "paragraph": "Pythia liest Google- und Amazon-Suchen in Echtzeit. Trends, Kategorie-Shifts, Kaufabsichten — früher sichtbar, schneller handelbar.",
-    "capability1Tag": "MARKEN-KÄUFE",
-    "capability1": "Markengesundheit gegen unsere Methodik abgeglichen. Was der Markt falsch bewertet, wird sichtbar.",
-    "capability2Tag": "OPERATIONS",
-    "capability2": "Sehen wo eine Marke wirklich wächst — und das auf alle anderen übertragen.",
-    "capability3Tag": "WACHSTUM",
-    "capability3": "Was hat wirklich Umsatz gebracht? Trends im Suchverhalten zeigen, welche Hebel sich bewegen — bevor es im Reporting sichtbar wird."
+    "heading": "Eine KI, die Trends erkennt — bevor sie ins Reporting wandern.",
+    "paragraph": "Pythia ist unsere Schwester-Firma — eigenständiges AI-Unternehmen. Sie liest Google- und Amazon-Suchen in Echtzeit und macht Bewegungen früh sichtbar: Kategorie-Shifts, neue Suchen, verschiebende Kaufabsichten.",
+    "capability1Tag": "DEALFLOW",
+    "capability1": "Bei Akquisitionschecks zeigt Pythia, ob eine Marke echtes Tail-Wind hat — oder ob das Wachstum nur auf einem einzigen Kanal hängt.",
+    "capability2Tag": "HOLDING-STRATEGIE",
+    "capability2": "Welche Kategorien drehen, welche kühlen ab. Wo lohnt es sich, ein neues Brand-Investment zu prüfen — und wo nicht."
   },
   "metrics": {
     "label": "ZAHLEN",

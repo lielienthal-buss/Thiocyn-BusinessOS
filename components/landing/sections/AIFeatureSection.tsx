@@ -14,8 +14,6 @@ export function AIFeatureSection() {
     capability1: t('capability1'),
     capability2Tag: t('capability2Tag'),
     capability2: t('capability2'),
-    capability3Tag: t('capability3Tag'),
-    capability3: t('capability3'),
   };
 
   return (
@@ -81,7 +79,6 @@ export function AIFeatureSection() {
         <div className="mt-32 grid grid-cols-12 gap-x-8 gap-y-16 md:mt-40">
           <Capability tag={c.capability1Tag} text={c.capability1} index="/01" offset="md:col-span-10" />
           <Capability tag={c.capability2Tag} text={c.capability2} index="/02" offset="md:col-span-9 md:col-start-3" />
-          <Capability tag={c.capability3Tag} text={c.capability3} index="/03" offset="md:col-span-10" />
         </div>
       </div>
     </section>
